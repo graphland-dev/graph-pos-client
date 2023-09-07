@@ -3,7 +3,9 @@ import { Paper, Text } from "@mantine/core";
 import {
   IconAdjustments,
   IconBuildingWarehouse,
-  IconCashBanknote,
+  IconPremiumRights,
+  IconReportAnalytics,
+  IconSettingsCog,
   IconUsers,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +14,7 @@ const modules = [
   {
     path: "accounting",
     label: "Accounting",
-    icon: IconCashBanknote,
+    icon: IconPremiumRights,
   },
   {
     path: "inventory-management",
@@ -25,9 +27,19 @@ const modules = [
     icon: IconUsers,
   },
   {
+    path: "reports",
+    label: "Reports",
+    icon: IconReportAnalytics,
+  },
+  {
     path: "settings",
     label: "Settings",
     icon: IconAdjustments,
+  },
+  {
+    path: "global-setting",
+    label: "Global Settings",
+    icon: IconSettingsCog,
   },
 ];
 
@@ -36,12 +48,12 @@ const ModulesPage = () => {
   return (
     <>
       <CommonHeader />
-      <div className="grid lg:grid-cols-4 p-10 gap-10">
+      <div className="grid lg:grid-cols-4 p-10 gap-5">
         {modules.map((module) => (
           <Paper
             onClick={() => navigate(module.path)}
             withBorder
-            p={"md"}
+            p={"xl"}
             className="flex flex-col items-center gap-3 cursor-pointer"
           >
             <module.icon />
