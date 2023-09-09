@@ -20,7 +20,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
         <Navbar p="md" hiddenBreakpoint="sm" width={{ sm: 200, lg: 300 }}>
           {title && (
             <Navbar.Section p={"sm"}>
-              <Title order={4}>Accounting</Title>
+              <Title order={4}>{title}</Title>
             </Navbar.Section>
           )}
           <Navbar.Section grow mt="md" component={ScrollArea}>
