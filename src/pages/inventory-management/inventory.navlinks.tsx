@@ -1,5 +1,5 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { IconBrandProducthunt, IconForklift, IconReport, IconShoppingCart } from "@tabler/icons-react";
+import { IconBrandProducthunt, IconForklift, IconShoppingCart } from "@tabler/icons-react";
 
 
 export const inventoryNavlinks: AppNavLink[] = [
@@ -50,29 +50,6 @@ export const inventoryNavlinks: AppNavLink[] = [
       {
         label: "Adjustment",
         href: "adjustment",
-      },
-    ],
-  },
-  {
-    label: "Report",
-    icon: <IconReport />,
-    href: "Report",
-    children: [
-      {
-        label: "Balance Shit",
-        href: "balance-shit",
-      },
-      {
-        label: "Summary Report",
-        href: "summary-report",
-      },
-      {
-        label: "Expense Report",
-        href: "expense-report",
-      },
-      {
-        label: "Loss Profit Report",
-        href: "loss-profit-report",
       },
     ],
   },
