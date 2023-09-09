@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Adjustment = () => {
-  return (
-    <div>Adjustment</div>
-  )
-}
+  return <div>Adjustment</div>;
+};
 
-export default Adjustment
+export default Adjustment;

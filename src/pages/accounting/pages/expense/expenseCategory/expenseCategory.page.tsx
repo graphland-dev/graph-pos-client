@@ -1,9 +1,5 @@
-import React from 'react'
-
 const ExpenseCategoryPage = () => {
-  return (
-    <div>ExpenseCategoryPage</div>
-  )
-}
+  return <div>ExpenseCategoryPage</div>;
+};
 
-export default ExpenseCategoryPage
+export default ExpenseCategoryPage;

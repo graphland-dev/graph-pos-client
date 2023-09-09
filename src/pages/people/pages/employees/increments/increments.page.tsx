@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Increments = () => {
-  return (
-    <div>Increments</div>
-  )
-}
+  return <div>Increments</div>;
+};
 
-export default Increments
+export default Increments;

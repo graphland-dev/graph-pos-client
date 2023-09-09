@@ -1,9 +1,5 @@
-import React from 'react'
-
 const TransferPage = () => {
-  return (
-    <div>TransferPage</div>
-  )
-}
+  return <div>TransferPage</div>;
+};
 
-export default TransferPage
+export default TransferPage;
