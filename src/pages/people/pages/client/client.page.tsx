@@ -1,9 +1,5 @@
-import React from 'react'
-
 const ClientPage = () => {
-  return (
-    <div>ClientPage</div>
-  )
-}
+  return <div>ClientPage</div>;
+};
 
-export default ClientPage
+export default ClientPage;

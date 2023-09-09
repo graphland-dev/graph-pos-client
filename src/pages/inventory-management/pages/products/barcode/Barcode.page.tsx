@@ -1,9 +1,5 @@
-import React from 'react'
-
 const Barcode = () => {
-  return (
-    <div>Barcode</div>
-  )
-}
+  return <div>Barcode</div>;
+};
 
-export default Barcode
+export default Barcode;
