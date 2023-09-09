@@ -1,5 +1,20 @@
 import { SpotlightAction } from "@mantine/spotlight";
-import { IconBrandProducthunt, IconDashboard, IconExchange, IconForklift, IconHome, IconLoadBalancer, IconShoppingCart, IconTableShare, IconVectorTriangle, IconWallet } from "@tabler/icons-react";
+import {
+  Icon3dRotate,
+  IconBrandProducthunt,
+  IconDashboard,
+  IconExchange,
+  IconForklift,
+  IconFriends,
+  IconHome,
+  IconLoadBalancer,
+  IconReport,
+  IconShoppingCart,
+  IconTableShare,
+  IconUsersGroup,
+  IconVectorTriangle,
+  IconWallet,
+} from "@tabler/icons-react";
 
 export const spotlightItems: SpotlightAction[] = [
   {
@@ -185,5 +200,89 @@ export const spotlightItems: SpotlightAction[] = [
       window.location.href = "/inventory-management/inventory/adjustment";
     },
     icon: <IconShoppingCart size="1.2rem" />,
+  },
+  //People
+  {
+    title: "People",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/people";
+    },
+    icon: <IconFriends size="1.2rem" />,
+  },
+
+  //PEOPLE
+  {
+    title: "People > Client",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/people/client";
+    },
+    icon: <IconFriends size="1.2rem" />,
+  },
+  {
+    title: "People > Suppliers",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/people/suppliers";
+    },
+    icon: <Icon3dRotate size="1.2rem" />,
+  },
+  {
+    title: "People > Employees > Departments",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/people/employees/departments";
+    },
+    icon: <IconUsersGroup size="1.2rem" />,
+  },
+  {
+    title: "People > Employees > Employees",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "people/employees/employees";
+    },
+    icon: <IconUsersGroup size="1.2rem" />,
+  },
+  {
+    title: "People > Employees > Increments",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/people/employees/increments";
+    },
+    icon: <IconUsersGroup size="1.2rem" />,
+  },
+  //Report
+  {
+    title: "Report",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/reports";
+    },
+    icon: <IconReport size="1.2rem" />,
+  },
+  {
+    title: "Report > Reports > Balance-shit",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/reports/reports/balance-shit";
+    },
+    icon: <IconReport size="1.2rem" />,
+  },
+  {
+    title: "Report > Reports > Summary-Report",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/reports/reports/summary-report";
+    },
+    icon: <IconReport size="1.2rem" />,
+  },
+  {
+    title: "Report > Reports > Expense-Report",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/reports/reports/expense-report";
+    },
+    icon: <IconReport size="1.2rem" />,
   },
 ];
