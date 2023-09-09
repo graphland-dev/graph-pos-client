@@ -1,5 +1,5 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { IconTableShare } from "@tabler/icons-react";
+import { IconExchange, IconLoadBalancer, IconTableShare, IconVectorTriangle, IconWallet } from "@tabler/icons-react";
 
 export const accountingNavlinks: AppNavLink[] = [
   {
@@ -15,6 +15,70 @@ export const accountingNavlinks: AppNavLink[] = [
         label: "Adjustment",
         href: "adjustment",
       },
+      {
+        label: "Transfer",
+        href: "transfer",
+      },
+      {
+        label: "Ledger",
+        href: "ledger",
+      },
     ],
+  },
+  {
+    label: "Expense",
+    icon: <IconExchange />,
+    href: "expense",
+    children: [
+      {
+        label: "Expense List",
+        href: "expense-list",
+      },
+      {
+        label: "Expense Category",
+        href: "expense-category",
+      },
+    ],
+  },
+  {
+    label: "Load Management",
+    icon: <IconLoadBalancer />,
+    href: "load-Management",
+    children: [
+      {
+        label: "Authorities",
+        href: "authorities",
+      },
+      {
+        label: "Loans",
+        href: "loans",
+      },
+      {
+        label: "Payments",
+        href: "payments",
+      },
+    ],
+  },
+  {
+    label: "Asset Management",
+    icon: <IconVectorTriangle />,
+    href: "asset-Management",
+    children: [
+      {
+        label: "Types",
+        href: "types",
+      },
+      {
+        label: "Assets",
+        href: "assets",
+      },
+      
+    ],
+  },
+  {
+    label: "Payroll",
+    icon: <IconWallet />,
+    href: "payroll",
+    
   },
 ];
