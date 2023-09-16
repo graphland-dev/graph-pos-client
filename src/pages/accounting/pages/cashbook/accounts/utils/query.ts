@@ -20,3 +20,11 @@ export const AccountListQuery = gql`
     }
   }
 `;
+
+export const ACCOUNT_CREATE_MUTATION = gql`
+  mutation Accounting__createAccount($body: CreateAccountInput!) {
+    accounting__createAccount(body: $body) {
+      _id
+    }
+  }
+`;

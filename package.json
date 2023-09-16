@@ -13,6 +13,8 @@
   "dependencies": {
     "@apollo/client": "^3.8.3",
     "@emotion/react": "^11.11.1",
+    "@hookform/error-message": "^2.0.1",
+    "@hookform/resolvers": "^3.3.1",
     "@mantine/core": "^6.0.20",
     "@mantine/dates": "^6.0.20",
     "@mantine/hooks": "^6.0.20",
@@ -24,8 +26,10 @@
     "mantine-react-table": "^1.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.46.1",
     "react-router-dom": "^6.15.0",
-    "sass": "^1.66.1"
+    "sass": "^1.66.1",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@graphql-codegen/cli": "^5.0.0",

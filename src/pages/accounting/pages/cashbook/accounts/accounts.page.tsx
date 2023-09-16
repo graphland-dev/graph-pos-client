@@ -2,11 +2,15 @@ import DataTable from "@/_app/common/data-table/DataTable";
 import { AccountsWithPagination } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { AccountListQuery } from "./utils/query";
-import { Button } from "@mantine/core";
+import { Button, Drawer } from "@mantine/core";
+import AccountForm from "./components/AccountForm";
+import { IconPlus } from "@tabler/icons-react";
+import dayjs from "dayjs";
 
 const AccountsPage = () => {
+  const [open, setOpen] = React.useState(false);
   const { data, loading } = useQuery<{
     accounting__accounts: AccountsWithPagination;
   }>(AccountListQuery);
@@ -16,6 +20,15 @@ const AccountsPage = () => {
       {
         accessorKey: "name",
         header: "Account Name",
+      },
+      {
+        accessorKey: "note",
+        header: "Note",
+      },
+      {
+        accessorFn: (row) => dayjs(row.createdAt).format("MMMM D, YYYY h:mm A"),
+        accessorKey: "CreatedAt",
+        header: "CreatedAt",
       },
       {
         accessorKey: "referenceNumber",
@@ -32,12 +45,27 @@ const AccountsPage = () => {
   return (
     <>
       {/* <pre>{JSON.stringify(pagination)}</pre> */}
+
+      <Drawer opened={open} onClose={() => setOpen(false)} position="right">
+        <AccountForm
+        // onSubmissionDone={() => {
+        //   refetch();
+        //   setOpen(false);
+        // }}
+        />
+      </Drawer>
       <DataTable
         columns={columns}
         data={data?.accounting__accounts.nodes ?? []}
         ActionArea={
           <>
-            <Button size="sm">Add new</Button>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() => setOpen(true)}
+              size="sm"
+            >
+              Add new
+            </Button>
           </>
         }
         loading={loading}
