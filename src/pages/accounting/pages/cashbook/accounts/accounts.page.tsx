@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 
 const AccountsPage = () => {
   const [open, setOpen] = React.useState(false);
-  const { data, loading } = useQuery<{
+  const { data, loading, refetch } = useQuery<{
     accounting__accounts: AccountsWithPagination;
   }>(AccountListQuery);
 
@@ -48,10 +48,10 @@ const AccountsPage = () => {
 
       <Drawer opened={open} onClose={() => setOpen(false)} position="right">
         <AccountForm
-        // onSubmissionDone={() => {
-        //   refetch();
-        //   setOpen(false);
-        // }}
+        onSubmissionDone={() => {
+          refetch();
+          setOpen(false);
+        }}
         />
       </Drawer>
       <DataTable

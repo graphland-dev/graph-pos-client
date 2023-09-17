@@ -7,7 +7,11 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@apollo/client";
 import { ACCOUNT_CREATE_MUTATION } from "../utils/query";
 
-const AccountForm = () => {
+interface IAccountFormProps {
+  onSubmissionDone: () => void;
+}
+
+const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
   const {
     register,
     handleSubmit,
@@ -35,7 +39,7 @@ const AccountForm = () => {
       },
       onCompleted: (res) => {
         console.log(res);
-        // onSubmissionDone();
+        onSubmissionDone();
       },
       onError: (err) => console.log(err),
     });
@@ -47,15 +51,26 @@ const AccountForm = () => {
       <Title order={4}>Account Create</Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input.Wrapper>
+        <Input.Wrapper
+          error={<ErrorMessage name={"name"} errors={errors} />}
+          label="Name"
+        >
           <Input placeholder="Name" {...register("name")} />
         </Input.Wrapper>
-        <Input.Wrapper>
+        <Input.Wrapper
+          error={<ErrorMessage name={"brunchName"} errors={errors} />}
+          label="Branch Name"
+        >
           <Input placeholder="Branch Name" {...register("brunchName")} />
         </Input.Wrapper>
-        <Textarea {...register("note")} placeholder="Write your note" />
+        <Textarea
+          label="Note"
+          {...register("note")}
+          placeholder="Write your note"
+        />
         <Input.Wrapper
-          error={<ErrorMessage errors={errors} name="referenceNumber" />}
+          label="Reference Number"
+          error={<ErrorMessage name={"referenceNumber"} errors={errors} />}
         >
           <Input
             placeholder="Reference Number"
@@ -98,9 +113,9 @@ export default AccountForm;
 
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
-  brunchName: yup.string().required("Required"),
-  note: yup.string().required("Required"),
-  referenceNumber: yup.string().required("Required"),
-  openedAt: yup.string().required("Required"),
-  isActive: yup.boolean().required("Required"),
+  brunchName: yup.string().required(),
+  note: yup.string().optional(),
+  referenceNumber: yup.string().optional(),
+  openedAt: yup.string().required(),
+  isActive: yup.boolean().optional(),
 });
