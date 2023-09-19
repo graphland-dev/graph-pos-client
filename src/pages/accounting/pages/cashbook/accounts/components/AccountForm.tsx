@@ -52,12 +52,14 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input.Wrapper
+          withAsterisk
           error={<ErrorMessage name={"name"} errors={errors} />}
           label="Name"
         >
           <Input placeholder="Name" {...register("name")} />
         </Input.Wrapper>
         <Input.Wrapper
+          withAsterisk
           error={<ErrorMessage name={"brunchName"} errors={errors} />}
           label="Branch Name"
         >
@@ -70,6 +72,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
         />
         <Input.Wrapper
           label="Reference Number"
+          withAsterisk
           error={<ErrorMessage name={"referenceNumber"} errors={errors} />}
         >
           <Input
@@ -78,6 +81,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
           />
         </Input.Wrapper>
         <DateTimePicker
+          withAsterisk
           {...register("openedAt")}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
@@ -112,10 +116,10 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
 export default AccountForm;
 
 const validationSchema = yup.object({
-  name: yup.string().required("Required"),
-  brunchName: yup.string().required(),
-  note: yup.string().optional(),
-  referenceNumber: yup.string().optional(),
-  openedAt: yup.string().required(),
-  isActive: yup.boolean().optional(),
+  name: yup.string().required().label("Bank Name"),
+  brunchName: yup.string().required().label("Brunch Name"),
+  note: yup.string().optional().label("Note"),
+  referenceNumber: yup.string().required().label("Reference Number"),
+  openedAt: yup.string().required().label("Opening Data"),
+  isActive: yup.boolean().optional().label("Active"),
 });

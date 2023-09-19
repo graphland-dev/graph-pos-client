@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const AccountListQuery = gql`
+export const ACCOUNTING_ACCOUNTS_LIST = gql`
   query Accounts($where: CommonPaginationDto) {
     accounting__accounts(where: $where) {
       meta {
