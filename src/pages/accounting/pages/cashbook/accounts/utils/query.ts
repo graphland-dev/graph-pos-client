@@ -28,3 +28,12 @@ export const ACCOUNT_CREATE_MUTATION = gql`
     }
   }
 `;
+
+export const ACCOUNT_UPDATE_MUTATION = gql`
+  mutation Accounting__updateAccount(
+    $where: CommonFindDocumentDto
+    $body: UpdateAccountInput
+  ) {
+    accounting__updateAccount(where: $where, body: $body)
+  }
+`;

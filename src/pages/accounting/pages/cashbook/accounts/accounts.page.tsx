@@ -1,17 +1,31 @@
 import DataTable from "@/_app/common/data-table/DataTable";
-import { AccountsWithPagination } from "@/_app/graphql-models/graphql";
+import { Account, AccountsWithPagination } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Button, Drawer } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
+import { Button, Drawer, Menu } from "@mantine/core";
+import { useSetState } from "@mantine/hooks";
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import AccountForm from "./components/AccountForm";
 import { ACCOUNTING_ACCOUNTS_LIST } from "./utils/query";
 
+interface IState {
+  modalOpened: boolean;
+  operationType: "create" | "update";
+  operationId?: string | null;
+  operationPayload?: any;
+  refetching: boolean;
+}
+
 const AccountsPage = () => {
-  const [open, setOpen] = React.useState(false);
-  const [refetching, setRefetching] = React.useState(false);
+  const [state, setState] = useSetState<IState>({
+    modalOpened: false,
+    operationType: "create",
+    operationId: null,
+    operationPayload: {},
+    refetching: false,
+  });
 
   const { data, loading, refetch } = useQuery<{
     accounting__accounts: AccountsWithPagination;
@@ -25,11 +39,21 @@ const AccountsPage = () => {
   });
 
   const handleRefetch = (variables: any) => {
-    setRefetching(true);
+    setState({ refetching: true });
     refetch(variables).finally(() => {
-      setRefetching(false);
+      setState({ refetching: false });
     });
   };
+
+  // const handleDeleteAccount = (_id: string) => {
+  //   // confirmModal({
+  //   //   title: "Sure to delete account?",
+  //   //   onConfirm() {
+  //   //     // alert("Delete mutation" + _id);
+  //   //   },
+  //   // });
+  //   // mutation
+  // };
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -60,12 +84,19 @@ const AccountsPage = () => {
 
   return (
     <>
-      <Drawer opened={open} onClose={() => setOpen(false)} position="right">
+      <Drawer
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
+        position="right"
+      >
         <AccountForm
           onSubmissionDone={() => {
             refetch();
-            setOpen(false);
+            setState({ modalOpened: false });
           }}
+          operationType={state.operationType}
+          operationId={state.operationId}
+          formData={state.operationPayload}
         />
       </Drawer>
       <DataTable
@@ -73,22 +104,38 @@ const AccountsPage = () => {
         data={data?.accounting__accounts.nodes ?? []}
         refetch={handleRefetch}
         totalCount={data?.accounting__accounts.meta?.totalCount ?? 10}
+        RowIconMenu={(row: Account) => (
+          <>
+            <Menu.Item
+              onClick={() =>
+                setState({
+                  modalOpened: true,
+                  operationType: "update",
+                  operationId: row._id,
+                  operationPayload: row,
+                })
+              }
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item icon={<IconTrash size={18} />}>Delete</Menu.Item>
+          </>
+        )}
         ActionArea={
           <>
             <Button
               leftIcon={<IconPlus size={16} />}
-              onClick={() => setOpen(true)}
+              onClick={() =>
+                setState({ modalOpened: true, operationType: "create" })
+              }
               size="sm"
             >
               Add new
             </Button>
           </>
         }
-        loading={loading || refetching}
-        onPaginationChange={(p) => {
-          console.log(p.pageIndex);
-          console.log(p.pageSize);
-        }}
+        loading={loading || state.refetching}
       />
     </>
   );

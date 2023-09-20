@@ -5,13 +5,26 @@ import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@apollo/client";
-import { ACCOUNT_CREATE_MUTATION } from "../utils/query";
+import {
+  ACCOUNT_CREATE_MUTATION,
+  ACCOUNT_UPDATE_MUTATION,
+} from "../utils/query";
+import { MatchOperator } from "@/_app/graphql-models/graphql";
+import { useEffect } from "react";
 
 interface IAccountFormProps {
   onSubmissionDone: () => void;
+  operationType: "create" | "update";
+  operationId?: string | null;
+  formData?: any;
 }
 
-const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
+const AccountForm: React.FC<IAccountFormProps> = ({
+  onSubmissionDone,
+  operationType,
+  operationId,
+  formData,
+}) => {
   const {
     register,
     handleSubmit,
@@ -30,25 +43,58 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
     },
   });
 
-  const [mutate] = useMutation(ACCOUNT_CREATE_MUTATION);
+  useEffect(() => {
+    setValue("name", formData?.["name"]);
+    setValue("brunchName", formData?.["brunchName"]);
+    setValue("note", formData?.["note"]);
+    setValue("openedAt", formData?.["openedAt"]);
+  }, [formData]);
+
+  const [createMutation, { loading: creating }] = useMutation(
+    ACCOUNT_CREATE_MUTATION
+  );
+  const [updateMutation, { loading: updating }] = useMutation(
+    ACCOUNT_UPDATE_MUTATION
+  );
 
   const onSubmit = (data: any) => {
-    mutate({
-      variables: {
-        body: data,
-      },
-      onCompleted: (res) => {
-        console.log(res);
-        onSubmissionDone();
-      },
-      onError: (err) => console.log(err),
-    });
+    if (operationType === "create") {
+      createMutation({
+        variables: {
+          body: data,
+        },
+        onCompleted: (res) => {
+          console.log(res);
+          onSubmissionDone();
+        },
+        onError: (err) => console.log(err),
+      });
+    }
+
+    if (operationType === "update") {
+      updateMutation({
+        variables: {
+          where: {
+            key: "_id",
+            operator: MatchOperator.Eq,
+            value: operationId,
+          },
+          body: data,
+        },
+        onCompleted: (res) => {
+          console.log(res);
+          onSubmissionDone();
+        },
+        onError: (err) => console.log(err),
+      });
+    }
   };
 
-  console.log(watch("openedAt"), new Date(watch("openedAt")).toLocaleString());
   return (
     <div>
-      <Title order={4}>Account Create</Title>
+      <Title order={4}>
+        <span className="capitalize">{operationType}</span> Account
+      </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input.Wrapper
@@ -107,7 +153,9 @@ const AccountForm: React.FC<IAccountFormProps> = ({ onSubmissionDone }) => {
           onLabel="True"
           offLabel="False"
         />
-        <Button type="submit">Save</Button>
+        <Button loading={creating || updating} type="submit">
+          Save
+        </Button>
       </form>
     </div>
   );

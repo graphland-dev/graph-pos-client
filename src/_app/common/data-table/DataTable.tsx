@@ -22,12 +22,9 @@ interface Prop {
   data: any[];
   refetch: (v: any) => void;
   totalCount: number;
-  ActionArea: React.ReactNode;
   loading: boolean;
-  onPaginationChange: (pagination: {
-    pageIndex: number;
-    pageSize: number;
-  }) => void;
+  ActionArea: React.ReactNode;
+  RowIconMenu: (row: any) => React.ReactNode;
 }
 
 const csvConfig = mkConfig({
@@ -42,6 +39,7 @@ const DataTable: React.FC<Prop> = ({
   data,
   refetch,
   ActionArea,
+  RowIconMenu,
   totalCount,
 }) => {
   const [pagination, setPagination] = useState({
@@ -67,8 +65,6 @@ const DataTable: React.FC<Prop> = ({
           : undefined,
       },
     });
-
-    console.log(columnFilters);
   }, [pagination.pageIndex, pagination.pageSize, sorting, columnFilters]);
 
   const exportCSV = () => {
@@ -107,7 +103,7 @@ const DataTable: React.FC<Prop> = ({
     },
     enableRowActions: true,
     positionActionsColumn: "last",
-    renderRowActionMenuItems: () => <h1>Hello</h1>,
+    renderRowActionMenuItems: (_row) => RowIconMenu(_row?.row?.original),
     renderTopToolbar: () => {
       return (
         <div className="flex justify-between p-2">
@@ -144,7 +140,6 @@ const DataTable: React.FC<Prop> = ({
   });
   return (
     <>
-      {/* <pre>{JSON.stringify(pagination, null, 2)}</pre> */}
       <MantineReactTable table={table} />
     </>
   );
