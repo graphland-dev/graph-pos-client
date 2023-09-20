@@ -10,6 +10,11 @@ import {
   MantineReactTable,
   useMantineReactTable,
 } from "mantine-react-table";
+import {
+  mkConfig,
+  generateCsv,
+  download as downloadCsvFile,
+} from "export-to-csv";
 import React, { useEffect, useState } from "react";
 
 interface Prop {
@@ -24,6 +29,12 @@ interface Prop {
     pageSize: number;
   }) => void;
 }
+
+const csvConfig = mkConfig({
+  fieldSeparator: ",",
+  decimalSeparator: ".",
+  useKeysAsHeaders: true,
+});
 
 const DataTable: React.FC<Prop> = ({
   columns,
@@ -59,6 +70,11 @@ const DataTable: React.FC<Prop> = ({
 
     console.log(columnFilters);
   }, [pagination.pageIndex, pagination.pageSize, sorting, columnFilters]);
+
+  const exportCSV = () => {
+    const csv = generateCsv(csvConfig)(data);
+    downloadCsvFile(csvConfig)(csv);
+  };
 
   const table = useMantineReactTable({
     columns,
@@ -113,6 +129,7 @@ const DataTable: React.FC<Prop> = ({
                   Download Pdf
                 </Menu.Item>
                 <Menu.Item
+                  onClick={exportCSV}
                   icon={<IconCsv style={{ width: rem(18), height: rem(18) }} />}
                 >
                   Download Excel
