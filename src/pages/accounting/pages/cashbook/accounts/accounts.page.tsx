@@ -104,7 +104,7 @@ const AccountsPage = () => {
         data={data?.accounting__accounts.nodes ?? []}
         refetch={handleRefetch}
         totalCount={data?.accounting__accounts.meta?.totalCount ?? 10}
-        RowIconMenu={(row: Account) => (
+        RowActionMenu={(row: Account) => (
           <>
             <Menu.Item
               onClick={() =>

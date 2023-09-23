@@ -113,7 +113,7 @@ const TransferPage = () => {
             </Button>
           </>
         }
-        RowIconMenu={(row: Transfer) => (
+        RowActionMenu={(row: Transfer) => (
           <>
             <Menu.Item
               onClick={() =>

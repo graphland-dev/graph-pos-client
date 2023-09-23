@@ -24,7 +24,7 @@ interface Prop {
   totalCount: number;
   loading: boolean;
   ActionArea: React.ReactNode;
-  RowIconMenu: (row: any) => React.ReactNode;
+  RowActionMenu: (row: any) => React.ReactNode;
 }
 
 const csvConfig = mkConfig({
@@ -39,7 +39,7 @@ const DataTable: React.FC<Prop> = ({
   data,
   refetch,
   ActionArea,
-  RowIconMenu,
+  RowActionMenu,
   totalCount,
 }) => {
   const [pagination, setPagination] = useState({
@@ -103,7 +103,7 @@ const DataTable: React.FC<Prop> = ({
     },
     enableRowActions: true,
     positionActionsColumn: "last",
-    renderRowActionMenuItems: (_row) => RowIconMenu(_row?.row?.original),
+    renderRowActionMenuItems: (_row) => RowActionMenu(_row?.row?.original),
     renderTopToolbar: () => {
       return (
         <div className="flex justify-between p-2">

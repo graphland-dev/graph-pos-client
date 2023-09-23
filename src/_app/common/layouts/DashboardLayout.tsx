@@ -40,6 +40,8 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                       key={key}
                       label={_item.label}
                       component={Link}
+                      px={"xs"}
+                      py={2}
                       active={pathname.includes(_item?.href as string)}
                       to={`/${path}/${item?.href}/${_item.href}`}
                     />
