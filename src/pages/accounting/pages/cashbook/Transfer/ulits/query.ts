@@ -1,8 +1,11 @@
 import { gql } from "@apollo/client";
 
-export const ACCOUNT_TRANSFER_QUERY_LIST = gql`
-  query transferQuery {
-    acounting__transfers {
+export const ACCOUNTING_TRANSFER_QUERY_LIST = gql`
+  query TransferQuery($where: CommonPaginationDto) {
+    acounting__transfers(where: $where) {
+      meta {
+        totalCount
+      }
       nodes {
         _id
         amount

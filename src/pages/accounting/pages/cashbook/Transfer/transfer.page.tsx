@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import TransferForm from "./components/TransferForm";
-import { ACCOUNT_TRANSFER_QUERY_LIST } from "./ulits/query";
+import { ACCOUNTING_TRANSFER_QUERY_LIST } from "./ulits/query";
 
 interface IState {
   modalOpened: boolean;
@@ -32,7 +32,7 @@ const TransferPage = () => {
 
   const { data, loading, refetch } = useQuery<{
     acounting__transfers: TransfersWithPagination;
-  }>(ACCOUNT_TRANSFER_QUERY_LIST, {
+  }>(ACCOUNTING_TRANSFER_QUERY_LIST, {
     variables: {
       where: {
         limit: 10,
@@ -40,8 +40,6 @@ const TransferPage = () => {
       },
     },
   });
-
-  console.log(data);
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
