@@ -131,9 +131,9 @@ const AccountForm: React.FC<IAccountFormProps> = ({
           {...register("openedAt")}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
-          value={new Date(watch("openedAt"))}
           onChange={(e) => {
-            const dateTimeValue = e?.toISOString() || new Date().toISOString();
+            const dateTimeValue =
+              e?.toISOString() || new Date()?.toISOString() || "";
             setValue("openedAt", dateTimeValue);
           }}
           label="Date & Time"
