@@ -84,7 +84,7 @@ const TransferPage = () => {
       >
         <TransferForm
           onSubmissionDone={() => {
-            refetch();
+            handleRefetch({});
             setState({ modalOpened: false });
           }}
           operationType={state.operationType}

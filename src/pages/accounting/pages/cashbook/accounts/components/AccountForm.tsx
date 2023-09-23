@@ -47,7 +47,9 @@ const AccountForm: React.FC<IAccountFormProps> = ({
     setValue("name", formData?.["name"]);
     setValue("brunchName", formData?.["brunchName"]);
     setValue("note", formData?.["note"]);
+    setValue("referenceNumber", formData?.["referenceNumber"]);
     setValue("openedAt", formData?.["openedAt"]);
+    setValue("isActive", formData?.["isActive"]);
   }, [formData]);
 
   const [createMutation, { loading: creating }] = useMutation(
