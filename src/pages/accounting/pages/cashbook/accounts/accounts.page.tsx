@@ -80,6 +80,10 @@ const AccountsPage = () => {
         header: "Account Name",
       },
       {
+        accessorKey: "referenceNumber",
+        header: "Reference",
+      },
+      {
         accessorKey: "note",
         header: "Note",
       },
@@ -87,10 +91,6 @@ const AccountsPage = () => {
         accessorFn: (row) => dayjs(row.createdAt).format("MMMM D, YYYY h:mm A"),
         accessorKey: "createdAt",
         header: "CreatedAt",
-      },
-      {
-        accessorKey: "referenceNumber",
-        header: "Reference Number",
       },
       {
         accessorKey: "brunchName",
@@ -109,7 +109,7 @@ const AccountsPage = () => {
       >
         <AccountForm
           onSubmissionDone={() => {
-            refetch();
+            handleRefetch({});
             setState({ modalOpened: false });
           }}
           operationType={state.operationType}

@@ -48,7 +48,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({
     setValue("brunchName", formData?.["brunchName"]);
     setValue("note", formData?.["note"]);
     setValue("referenceNumber", formData?.["referenceNumber"]);
-    setValue("openedAt", formData?.["openedAt"]);
+    setValue("openedAt", formData?.["openedAt"] || new Date().toISOString());
     setValue("isActive", formData?.["isActive"]);
   }, [formData]);
 
@@ -131,6 +131,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({
         <DateTimePicker
           withAsterisk
           {...register("openedAt")}
+          value={new Date(watch("openedAt"))}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
           onChange={(e) => {
