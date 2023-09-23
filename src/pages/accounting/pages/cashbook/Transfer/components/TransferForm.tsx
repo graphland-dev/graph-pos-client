@@ -1,12 +1,18 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { ACCOUNT_CREATE_TRANSFER_MUTATION } from "../ulits/query";
+import {
+  ACCOUNT_CREATE_TRANSFER_MUTATION,
+  ACCOUNT_UPDATE_TRANSFER_MUTATION,
+} from "../ulits/query";
 import { Button, Input, Select, Space, Textarea, Title } from "@mantine/core";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ErrorMessage } from "@hookform/error-message";
 import { DateTimePicker } from "@mantine/dates";
-import { AccountsWithPagination } from "@/_app/graphql-models/graphql";
+import {
+  AccountsWithPagination,
+  MatchOperator,
+} from "@/_app/graphql-models/graphql";
 import { ACCOUNTING_ACCOUNTS_LIST } from "../../accounts/utils/query";
 import { useEffect } from "react";
 
@@ -20,6 +26,8 @@ interface IAccountTransferFormProps {
 const TransferForm: React.FC<IAccountTransferFormProps> = ({
   onSubmissionDone,
   formData,
+  operationType,
+  operationId,
 }) => {
   const {
     register,
@@ -74,25 +82,48 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
   console.log(accountData?.accounting__accounts?.nodes);
   console.log(allAccounts);
 
-  const [transferCreateMutation, { loading: transferLoading }] = useMutation(
-    ACCOUNT_CREATE_TRANSFER_MUTATION
-  );
+  const [transferCreateMutation, { loading: transferCreateLoading }] =
+    useMutation(ACCOUNT_CREATE_TRANSFER_MUTATION);
+  const [transferUpdateMutation, { loading: transferUpdateLoading }] =
+    useMutation(ACCOUNT_UPDATE_TRANSFER_MUTATION);
 
   const onSubmit = (data: any) => {
-    transferCreateMutation({
-      variables: {
-        body: data,
-      },
-      onCompleted: (res) => {
-        console.log(res);
-        onSubmissionDone();
-      },
-      onError: (err) => console.log(err),
-    });
+    if (operationType === "create") {
+      transferCreateMutation({
+        variables: {
+          body: data,
+        },
+        onCompleted: (res) => {
+          console.log(res);
+          onSubmissionDone();
+        },
+        onError: (err) => console.log(err),
+      });
+    }
+
+    if (operationType === "update") {
+      transferUpdateMutation({
+        variables: {
+          where: {
+            key: "_id",
+            operator: MatchOperator.Eq,
+            value: operationId,
+          },
+          body: data,
+        },
+        onCompleted: (res) => {
+          console.log(res);
+          onSubmissionDone();
+        },
+        onError: (err) => console.log(err),
+      });
+    }
   };
   return (
     <div>
-      <Title order={4}>Create a Balance transfer</Title>
+      <Title order={4}>
+        <span className="capitalize">{operationType}</span> a Balance Transfer
+      </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Select
@@ -139,7 +170,10 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
           mx="auto"
         />
 
-        <Button loading={transferLoading} type="submit">
+        <Button
+          loading={transferUpdateLoading || transferCreateLoading}
+          type="submit"
+        >
           Save
         </Button>
       </form>

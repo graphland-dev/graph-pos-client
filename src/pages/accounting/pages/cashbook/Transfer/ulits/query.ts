@@ -38,11 +38,19 @@ export const ACCOUNT_TRANSFER_QUERY_LIST = gql`
   }
 `;
 
-
 export const ACCOUNT_CREATE_TRANSFER_MUTATION = gql`
   mutation Acounting__createTransfer($body: CreateTransferInput!) {
     acounting__createTransfer(body: $body) {
       _id
     }
+  }
+`;
+
+export const ACCOUNT_UPDATE_TRANSFER_MUTATION = gql`
+  mutation Accounting__updateTransaction(
+    $body: UpdateTransactionInput
+    $where: CommonFindDocumentDto
+  ) {
+    accounting__updateTransaction(body: $body, where: $where)
   }
 `;
