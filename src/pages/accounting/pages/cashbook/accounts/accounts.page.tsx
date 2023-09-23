@@ -93,9 +93,9 @@ const AccountsPage = () => {
         header: "Note",
       },
       {
-        accessorFn: (row) => dayjs(row.createdAt).format("MMMM D, YYYY h:mm A"),
-        accessorKey: "createdAt",
-        header: "CreatedAt",
+        accessorFn: (row: Account) =>
+          dayjs(row?.openedAt).format("MMMM D, YYYY h:mm A"),
+        header: "Date",
       },
       {
         accessorKey: "brunchName",

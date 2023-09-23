@@ -93,7 +93,7 @@ const TransferPage = () => {
         header: "From Account",
       },
       {
-        accessorFn(row) {
+        accessorFn(row: Transfer) {
           return row?.toAccount?.name;
         },
         header: "To Account",
@@ -103,10 +103,9 @@ const TransferPage = () => {
         header: "Amount",
       },
       {
-        accessorFn: (row: any) =>
-          dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
-        accessorKey: "createdAt",
-        header: "CreatedAt",
+        accessorFn: (row: Transfer) =>
+          dayjs(row?.date).format("MMMM D, YYYY h:mm A"),
+        header: "Date",
       },
     ],
     []
