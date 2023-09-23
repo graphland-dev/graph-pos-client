@@ -1,5 +1,19 @@
 import { gql } from "@apollo/client";
 
+export const ACCOUNTS_LIST_DROPDOWN = gql`
+  query Accounts($where: CommonPaginationDto) {
+    accounting__accounts(where: $where) {
+      nodes {
+        _id
+        name
+        referenceNumber
+        creditAmount
+        debitAmount
+      }
+    }
+  }
+`;
+
 export const ACCOUNTING_TRANSFER_QUERY_LIST = gql`
   query TransferQuery($where: CommonPaginationDto) {
     acounting__transfers(where: $where) {
@@ -55,5 +69,11 @@ export const ACCOUNT_UPDATE_TRANSFER_MUTATION = gql`
     $where: CommonFindDocumentDto
   ) {
     accounting__updateTransaction(body: $body, where: $where)
+  }
+`;
+
+export const ACCOUNTING_DELETE_TRANSFER_MUTATION = gql`
+  mutation Accounting__removeTransfer($where: CommonFindDocumentDto!) {
+    accounting__removeTransfer(where: $where)
   }
 `;

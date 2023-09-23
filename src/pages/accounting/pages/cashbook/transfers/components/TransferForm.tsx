@@ -1,20 +1,29 @@
-import { useMutation, useQuery } from "@apollo/client";
 import {
-  ACCOUNT_CREATE_TRANSFER_MUTATION,
-  ACCOUNT_UPDATE_TRANSFER_MUTATION,
-} from "../ulits/query";
-import { Button, Input, Select, Space, Textarea, Title } from "@mantine/core";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { ErrorMessage } from "@hookform/error-message";
-import { DateTimePicker } from "@mantine/dates";
-import {
+  Account,
   AccountsWithPagination,
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
-import { ACCOUNTING_ACCOUNTS_LIST } from "../../accounts/utils/query";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  Space,
+  Textarea,
+  Title,
+} from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
 import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
+import {
+  ACCOUNTS_LIST_DROPDOWN,
+  ACCOUNT_CREATE_TRANSFER_MUTATION,
+  ACCOUNT_UPDATE_TRANSFER_MUTATION,
+} from "../ulits/query";
 
 interface IAccountTransferFormProps {
   onSubmissionDone: () => void;
@@ -48,7 +57,7 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
 
   const { data: accountData } = useQuery<{
     accounting__accounts: AccountsWithPagination;
-  }>(ACCOUNTING_ACCOUNTS_LIST, {
+  }>(ACCOUNTS_LIST_DROPDOWN, {
     variables: {
       where: { limit: -1 },
     },
@@ -68,6 +77,14 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
       label: `${item?.name} [${item?.referenceNumber}]`,
     })
   );
+
+  const getAccountBalance = (
+    accounts: Account[],
+    accountId: string
+  ): number => {
+    const account = accounts.find((a) => a._id === accountId);
+    return (account?.creditAmount || 0) - (account?.debitAmount || 0);
+  };
 
   const [transferCreateMutation, { loading: transferCreateLoading }] =
     useMutation(ACCOUNT_CREATE_TRANSFER_MUTATION);
@@ -124,14 +141,30 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
           data={accountListForDrop || []}
           value={watch("fromAccountId")}
         />
+
+        {watch("fromAccountId") && (
+          <Badge p={"md"}>
+            Available Balance:{" "}
+            {getAccountBalance(
+              accountData?.accounting__accounts?.nodes || [],
+              watch("fromAccountId")
+            )}
+          </Badge>
+        )}
+
         <Select
           searchable
           withAsterisk
           onChange={(toAccountId) => setValue("toAccountId", toAccountId || "")}
           label="To Account"
           placeholder="To Account"
-          data={accountListForDrop || []}
+          data={
+            accountListForDrop?.filter(
+              (a) => a.value !== watch("fromAccountId")
+            ) || []
+          }
           value={watch("toAccountId")}
+          disabled={!watch("fromAccountId")}
         />
 
         <Textarea

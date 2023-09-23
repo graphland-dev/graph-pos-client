@@ -14,6 +14,8 @@ export const ACCOUNTING_ACCOUNTS_LIST = gql`
         openedAt
         note
         isActive
+        creditAmount
+        debitAmount
         createdAt
         updatedAt
       }

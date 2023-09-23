@@ -84,6 +84,11 @@ const AccountsPage = () => {
         header: "Reference",
       },
       {
+        accessorFn: (row: Account) =>
+          (row?.creditAmount || 0) - (row?.debitAmount || 0),
+        header: "Balance",
+      },
+      {
         accessorKey: "note",
         header: "Note",
       },

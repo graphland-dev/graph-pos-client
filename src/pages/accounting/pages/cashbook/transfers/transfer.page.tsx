@@ -1,9 +1,10 @@
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
+  MatchOperator,
   Transfer,
   TransfersWithPagination,
 } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -11,7 +12,11 @@ import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import TransferForm from "./components/TransferForm";
-import { ACCOUNTING_TRANSFER_QUERY_LIST } from "./ulits/query";
+import {
+  ACCOUNTING_DELETE_TRANSFER_MUTATION,
+  ACCOUNTING_TRANSFER_QUERY_LIST,
+} from "./ulits/query";
+import { confirmModal } from "@/_app/common/confirm/confirm";
 
 interface IState {
   modalOpened: boolean;
@@ -40,6 +45,26 @@ const TransferPage = () => {
       },
     },
   });
+
+  const [deleteAccountMutation] = useMutation(
+    ACCOUNTING_DELETE_TRANSFER_MUTATION,
+    { onCompleted: () => handleRefetch({}) }
+  );
+
+  const handleDeleteAccount = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteAccountMutation({
+          variables: {
+            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+          },
+        });
+      },
+    });
+  };
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -125,7 +150,12 @@ const TransferPage = () => {
             >
               Edit
             </Menu.Item>
-            <Menu.Item icon={<IconTrash size={18} />}>Delete</Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteAccount(row?._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
           </>
         )}
         loading={loading || state.refetching}
