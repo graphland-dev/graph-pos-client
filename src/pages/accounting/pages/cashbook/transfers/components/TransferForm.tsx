@@ -64,8 +64,8 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
 
   const accountListForDrop = accountData?.accounting__accounts?.nodes?.map(
     (item) => ({
-      value: item._id,
-      label: `${item.name} [${item.referenceNumber}]`,
+      value: item?._id,
+      label: `${item?.name} [${item?.referenceNumber}]`,
     })
   );
 

@@ -3,7 +3,7 @@ import { RouteObject } from "react-router-dom";
 import { accountingNavlinks } from "./accounting.navlinks";
 import AccountsPage from "./pages/cashbook/accounts/accounts.page";
 import AdjustmentPage from "./pages/cashbook/adjustment/adjustment.page";
-import TransferPage from "./pages/cashbook/Transfer/transfer.page";
+import TransferPage from "./pages/cashbook/transfers/transfer.page";
 import ExpenseListPage from "./pages/expense/expenseList/expenseList.page";
 import ExpenseCategoryPage from "./pages/expense/expenseCategory/expenseCategory.page";
 import Authorities from "./pages/load-manegment/authorities/authorities.page";
@@ -44,7 +44,6 @@ export const accountingModuleRouter: RouteObject[] = [
           },
         ],
       },
-
       {
         path: "expense",
         children: [

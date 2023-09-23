@@ -37,3 +37,9 @@ export const ACCOUNT_UPDATE_MUTATION = gql`
     accounting__updateAccount(where: $where, body: $body)
   }
 `;
+
+export const ACCOUNTING_ACCOUNT_DELETE_MUTATION = gql`
+  mutation Accounting__removeAccount($where: CommonFindDocumentDto) {
+    accounting__removeAccount(where: $where)
+  }
+`;

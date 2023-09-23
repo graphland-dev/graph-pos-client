@@ -52,17 +52,14 @@ const TransferPage = () => {
     () => [
       {
         accessorFn(row) {
-          return row.fromAccount.name;
+          return row?.fromAccount?.name;
         },
-        accessorKey: "fromAccountId",
         header: "From Account",
       },
-
       {
         accessorFn(row) {
-          return row.toAccount.name;
+          return row?.toAccount?.name;
         },
-        accessorKey: "toAccountId",
         header: "To Account",
       },
       {
@@ -71,7 +68,7 @@ const TransferPage = () => {
       },
       {
         accessorFn: (row: any) =>
-          dayjs(row.createdAt).format("MMMM D, YYYY h:mm A"),
+          dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
         accessorKey: "createdAt",
         header: "CreatedAt",
       },

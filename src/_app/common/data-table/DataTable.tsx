@@ -1,6 +1,11 @@
 import { MatchOperator, SortType } from "@/_app/graphql-models/graphql";
-import { Menu, UnstyledButton, rem } from "@mantine/core";
-import { IconCsv, IconDownload, IconPdf } from "@tabler/icons-react";
+import { ActionIcon, Flex, Menu, UnstyledButton, rem } from "@mantine/core";
+import {
+  IconCsv,
+  IconDownload,
+  IconPdf,
+  IconRefresh,
+} from "@tabler/icons-react";
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -10,6 +15,7 @@ import {
   MantineReactTable,
   useMantineReactTable,
 } from "mantine-react-table";
+import cls from "classnames";
 import {
   mkConfig,
   generateCsv,
@@ -48,23 +54,22 @@ const DataTable: React.FC<Prop> = ({
   });
   const [sorting, setSorting] = useState<any[]>([]);
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
+  const where = {
+    page: pagination.pageIndex + 1,
+    limit: pagination.pageSize,
+    sortBy: sorting[0]?.id,
+    sort: sorting[0]?.desc ? SortType.Desc : SortType.Asc,
+    filters: columnFilters.length
+      ? columnFilters.map((f: any) => ({
+          key: f.id,
+          operator: MatchOperator.Contains,
+          value: f.value,
+        }))
+      : undefined,
+  };
 
   useEffect(() => {
-    refetch({
-      where: {
-        page: pagination.pageIndex + 1,
-        limit: pagination.pageSize,
-        sortBy: sorting[0]?.id,
-        sort: sorting[0]?.desc ? SortType.Desc : SortType.Asc,
-        filters: columnFilters.length
-          ? columnFilters.map((f: any) => ({
-              key: f.id,
-              operator: MatchOperator.Contains,
-              value: f.value,
-            }))
-          : undefined,
-      },
-    });
+    refetch({ where });
   }, [pagination.pageIndex, pagination.pageSize, sorting, columnFilters]);
 
   const exportCSV = () => {
@@ -133,7 +138,19 @@ const DataTable: React.FC<Prop> = ({
               </Menu.Dropdown>
             </Menu>
           </div>
-          {ActionArea}
+          <Flex gap={"md"}>
+            <ActionIcon
+              onClick={() => refetch({ where })}
+              variant="outline"
+              radius={100}
+              size={"lg"}
+            >
+              <IconRefresh
+                className={cls({ "animate-reverse-spin": loading })}
+              />
+            </ActionIcon>
+            {ActionArea}
+          </Flex>
         </div>
       );
     },
