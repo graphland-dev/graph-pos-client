@@ -196,6 +196,12 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
         <Button
           loading={transferUpdateLoading || transferCreateLoading}
           type="submit"
+          disabled={
+            getAccountBalance(
+              accountData?.accounting__accounts?.nodes || [],
+              watch("fromAccountId")
+            ) < watch("amount")
+          }
         >
           Save
         </Button>
