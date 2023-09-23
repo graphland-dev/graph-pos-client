@@ -1,3 +1,6 @@
+import { MatchOperator, SortType } from "@/_app/graphql-models/graphql";
+import { Menu, UnstyledButton, rem } from "@mantine/core";
+import { IconCsv, IconDownload, IconPdf } from "@tabler/icons-react";
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -7,45 +10,139 @@ import {
   MantineReactTable,
   useMantineReactTable,
 } from "mantine-react-table";
-import React from "react";
+import {
+  mkConfig,
+  generateCsv,
+  download as downloadCsvFile,
+} from "export-to-csv";
+import React, { useEffect, useState } from "react";
 
 interface Prop {
   columns: MRT_ColumnDef<any>[];
   data: any[];
-  ActionArea: React.ReactNode;
+  refetch: (v: any) => void;
+  totalCount: number;
   loading: boolean;
+  ActionArea: React.ReactNode;
+  RowIconMenu: (row: any) => React.ReactNode;
 }
 
-const DataTable: React.FC<Prop> = ({ columns, loading, data, ActionArea }) => {
+const csvConfig = mkConfig({
+  fieldSeparator: ",",
+  decimalSeparator: ".",
+  useKeysAsHeaders: true,
+});
+
+const DataTable: React.FC<Prop> = ({
+  columns,
+  loading,
+  data,
+  refetch,
+  ActionArea,
+  RowIconMenu,
+  totalCount,
+}) => {
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 100,
+  });
+  const [sorting, setSorting] = useState<any[]>([]);
+  const [columnFilters, setColumnFilters] = useState<any[]>([]);
+
+  useEffect(() => {
+    refetch({
+      where: {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize,
+        sortBy: sorting[0]?.id,
+        sort: sorting[0]?.desc ? SortType.Desc : SortType.Asc,
+        filters: columnFilters.length
+          ? columnFilters.map((f: any) => ({
+              key: f.id,
+              operator: MatchOperator.Contains,
+              value: f.value,
+            }))
+          : undefined,
+      },
+    });
+  }, [pagination.pageIndex, pagination.pageSize, sorting, columnFilters]);
+
+  const exportCSV = () => {
+    const csv = generateCsv(csvConfig)(data);
+    downloadCsvFile(csvConfig)(csv);
+  };
+
   const table = useMantineReactTable({
-    state: {
-      showSkeletons: loading,
-    },
     columns,
     data,
-    enableRowSelection: false, //enable some features
+
+    state: {
+      showProgressBars: loading,
+      pagination,
+      sorting,
+    },
+    rowCount: totalCount,
+
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+
+    enableRowSelection: false,
     enableColumnOrdering: false,
-    enableGlobalFilter: true, //turn off a feature
+    enableGlobalFilter: true,
     enableRowNumbers: true,
+
+    manualPagination: true,
+    manualSorting: true,
+    manualFiltering: true,
+
+    paginationDisplayMode: "pages",
     initialState: {
       showGlobalFilter: true,
       density: "xs",
     },
+    enableRowActions: true,
+    positionActionsColumn: "last",
+    renderRowActionMenuItems: (_row) => RowIconMenu(_row?.row?.original),
     renderTopToolbar: () => {
       return (
         <div className="flex justify-between p-2">
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <MRT_GlobalFilterTextInput table={table} />
             <MRT_ToggleFiltersButton table={table} />
             <MRT_ToggleFullScreenButton table={table} />
             <MRT_ShowHideColumnsButton table={table} />
+            <Menu shadow="md" width={200}>
+              <Menu.Target>
+                <UnstyledButton>
+                  <IconDownload color="gray" size={20} />
+                </UnstyledButton>
+              </Menu.Target>
+              <Menu.Dropdown>
+                <Menu.Item
+                  icon={<IconPdf style={{ width: rem(18), height: rem(18) }} />}
+                >
+                  Download Pdf
+                </Menu.Item>
+                <Menu.Item
+                  onClick={exportCSV}
+                  icon={<IconCsv style={{ width: rem(18), height: rem(18) }} />}
+                >
+                  Download Excel
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
           </div>
           {ActionArea}
         </div>
       );
     },
   });
-  return <MantineReactTable table={table} />;
+  return (
+    <>
+      <MantineReactTable table={table} />
+    </>
+  );
 };
 
 export default DataTable;

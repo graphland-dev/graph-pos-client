@@ -1,6 +1,6 @@
 import { gql } from "@apollo/client";
 
-export const AccountListQuery = gql`
+export const ACCOUNTING_ACCOUNTS_LIST = gql`
   query Accounts($where: CommonPaginationDto) {
     accounting__accounts(where: $where) {
       meta {
@@ -26,5 +26,14 @@ export const ACCOUNT_CREATE_MUTATION = gql`
     accounting__createAccount(body: $body) {
       _id
     }
+  }
+`;
+
+export const ACCOUNT_UPDATE_MUTATION = gql`
+  mutation Accounting__updateAccount(
+    $where: CommonFindDocumentDto
+    $body: UpdateAccountInput
+  ) {
+    accounting__updateAccount(where: $where, body: $body)
   }
 `;
