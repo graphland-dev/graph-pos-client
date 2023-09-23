@@ -106,7 +106,9 @@ const TransferPage = () => {
           <>
             <Button
               leftIcon={<IconPlus size={16} />}
-              onClick={() => setState({ modalOpened: true })}
+              onClick={() =>
+                setState({ modalOpened: true, operationPayload: {} })
+              }
               size="sm"
             >
               Add new

@@ -18,8 +18,8 @@ interface IAccountTransferFormProps {
 }
 
 const TransferForm: React.FC<IAccountTransferFormProps> = ({
-    onSubmissionDone,
-    formData
+  onSubmissionDone,
+  formData,
 }) => {
   const {
     register,
@@ -48,14 +48,22 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
       },
     },
   });
-    
-    useEffect(() => {
+
+  useEffect(() => {
+    if (formData?.date) {
       setValue("fromAccountId", formData?.fromAccount?._id);
       setValue("toAccountId", formData?.toAccount?._id);
       setValue("note", formData?.["note"]);
       setValue("date", formData?.["date"]);
       setValue("amount", formData?.["amount"]);
-    }, [formData]);
+    } else {
+      setValue("fromAccountId", "");
+      setValue("toAccountId", "");
+      setValue("note", "");
+      setValue("date", new Date().toISOString());
+      setValue("amount", 0.0);
+    }
+  }, [formData]);
 
   const allAccounts = accountData?.accounting__accounts?.nodes?.map((item) => {
     return {
