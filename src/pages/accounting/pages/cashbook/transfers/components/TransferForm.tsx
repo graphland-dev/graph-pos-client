@@ -1,9 +1,5 @@
-import {
-  Account,
-  AccountsWithPagination,
-  MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { Account, MatchOperator } from "@/_app/graphql-models/graphql";
+import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -20,7 +16,6 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import {
-  ACCOUNTS_LIST_DROPDOWN,
   ACCOUNT_CREATE_TRANSFER_MUTATION,
   ACCOUNT_UPDATE_TRANSFER_MUTATION,
 } from "../ulits/query";
@@ -30,6 +25,7 @@ interface IAccountTransferFormProps {
   operationType: "create" | "update";
   operationId?: string | null;
   formData?: any;
+  accounts?: Account[];
 }
 
 const TransferForm: React.FC<IAccountTransferFormProps> = ({
@@ -37,6 +33,7 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
   formData,
   operationType,
   operationId,
+  accounts,
 }) => {
   const {
     register,
@@ -55,14 +52,6 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
     },
   });
 
-  const { data: accountData } = useQuery<{
-    accounting__accounts: AccountsWithPagination;
-  }>(ACCOUNTS_LIST_DROPDOWN, {
-    variables: {
-      where: { limit: -1 },
-    },
-  });
-
   useEffect(() => {
     setValue("fromAccountId", formData?.fromAccount?._id);
     setValue("toAccountId", formData?.toAccount?._id);
@@ -71,12 +60,10 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
     setValue("amount", formData?.["amount"]);
   }, [formData]);
 
-  const accountListForDrop = accountData?.accounting__accounts?.nodes?.map(
-    (item) => ({
-      value: item?._id,
-      label: `${item?.name} [${item?.referenceNumber}]`,
-    })
-  );
+  const accountListForDrop = accounts?.map((item) => ({
+    value: item?._id,
+    label: `${item?.name} [${item?.referenceNumber}]`,
+  }));
 
   const getAccountBalance = (
     accounts: Account[],
@@ -145,10 +132,7 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
         {watch("fromAccountId") && (
           <Badge p={"md"}>
             Available Balance:{" "}
-            {getAccountBalance(
-              accountData?.accounting__accounts?.nodes || [],
-              watch("fromAccountId")
-            )}
+            {getAccountBalance(accounts || [], watch("fromAccountId"))}
           </Badge>
         )}
 
@@ -197,10 +181,8 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
           loading={transferUpdateLoading || transferCreateLoading}
           type="submit"
           disabled={
-            getAccountBalance(
-              accountData?.accounting__accounts?.nodes || [],
-              watch("fromAccountId")
-            ) < watch("amount")
+            getAccountBalance(accounts || [], watch("fromAccountId")) <
+            watch("amount")
           }
         >
           Save

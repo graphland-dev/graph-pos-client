@@ -1,5 +1,7 @@
+import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
+  AccountsWithPagination,
   MatchOperator,
   Transfer,
   TransfersWithPagination,
@@ -7,7 +9,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
@@ -15,8 +17,8 @@ import TransferForm from "./components/TransferForm";
 import {
   ACCOUNTING_DELETE_TRANSFER_MUTATION,
   ACCOUNTING_TRANSFER_QUERY_LIST,
+  ACCOUNTS_LIST_DROPDOWN,
 } from "./ulits/query";
-import { confirmModal } from "@/_app/common/confirm/confirm";
 
 interface IState {
   modalOpened: boolean;
@@ -46,6 +48,14 @@ const TransferPage = () => {
     },
   });
 
+  const { data: accountData, refetch: refetchAccounts } = useQuery<{
+    accounting__accounts: AccountsWithPagination;
+  }>(ACCOUNTS_LIST_DROPDOWN, {
+    variables: {
+      where: { limit: -1 },
+    },
+  });
+
   const [deleteAccountMutation] = useMutation(
     ACCOUNTING_DELETE_TRANSFER_MUTATION,
     { onCompleted: () => handleRefetch({}) }
@@ -68,6 +78,7 @@ const TransferPage = () => {
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
+    refetchAccounts();
     refetch(variables).finally(() => {
       setState({ refetching: false });
     });
@@ -112,6 +123,7 @@ const TransferPage = () => {
             handleRefetch({});
             setState({ modalOpened: false });
           }}
+          accounts={accountData?.accounting__accounts?.nodes || []}
           operationType={state.operationType}
           operationId={state.operationId}
           formData={state.operationPayload}
@@ -137,7 +149,7 @@ const TransferPage = () => {
         }
         RowActionMenu={(row: Transfer) => (
           <>
-            <Menu.Item
+            {/* <Menu.Item
               onClick={() =>
                 setState({
                   modalOpened: true,
@@ -149,7 +161,7 @@ const TransferPage = () => {
               icon={<IconPencil size={18} />}
             >
               Edit
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item
               onClick={() => handleDeleteAccount(row?._id)}
               icon={<IconTrash size={18} />}
