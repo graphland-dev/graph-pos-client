@@ -1,7 +1,9 @@
 import { modals } from "@mantine/modals";
+import { Text } from "@mantine/core";
 
 interface IConfirmModal {
   title: string;
+  description?: string;
   onCancel?: () => void;
   onConfirm?: () => void;
   isDangerous?: boolean;
@@ -11,7 +13,8 @@ interface IConfirmModal {
 
 export const confirmModal = (args: IConfirmModal) => {
   modals.openConfirmModal({
-    title: args.title,
+    title: <Text size={"lg"}>{args.title}</Text>,
+    children: args?.description && <Text>{args?.description}</Text>,
     labels: {
       confirm: args.confirmLabel ?? "Confirm",
       cancel: args.cancelLabel ?? "Cancel",

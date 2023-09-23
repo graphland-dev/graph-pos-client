@@ -9,6 +9,7 @@ import { SpotlightProvider } from "@mantine/spotlight";
 import { RouterProvider } from "react-router-dom";
 import { spotlightItems } from "./_app/configs/spotlight-items";
 import { rootRouter } from "./root.router";
+import { ModalsProvider } from "@mantine/modals";
 
 const RootApp = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -45,7 +46,9 @@ const RootApp = () => {
           shortcut={["mod + P", "mod + K"]}
           actions={spotlightItems}
         >
-          <RouterProvider router={rootRouter} />
+          <ModalsProvider>
+            <RouterProvider router={rootRouter} />
+          </ModalsProvider>
         </SpotlightProvider>
       </MantineProvider>
     </ColorSchemeProvider>

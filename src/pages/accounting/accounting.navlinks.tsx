@@ -1,5 +1,11 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { IconExchange, IconLoadBalancer, IconTableShare, IconVectorTriangle, IconWallet } from "@tabler/icons-react";
+import {
+  IconExchange,
+  IconLoadBalancer,
+  IconTableShare,
+  IconVectorTriangle,
+  IconWallet,
+} from "@tabler/icons-react";
 
 export const accountingNavlinks: AppNavLink[] = [
   {
@@ -12,16 +18,16 @@ export const accountingNavlinks: AppNavLink[] = [
         href: "accounts",
       },
       {
-        label: "Adjustment",
-        href: "adjustment",
+        label: "Adjustments",
+        href: "adjustments",
       },
       {
-        label: "Transfer",
-        href: "transfer",
+        label: "Transfers",
+        href: "transfers",
       },
       {
-        label: "Ledger",
-        href: "ledger",
+        label: "Statements",
+        href: "statements",
       },
     ],
   },
@@ -72,13 +78,11 @@ export const accountingNavlinks: AppNavLink[] = [
         label: "Assets",
         href: "assets",
       },
-      
     ],
   },
   {
     label: "Payroll",
     icon: <IconWallet />,
     href: "payroll",
-    
   },
 ];

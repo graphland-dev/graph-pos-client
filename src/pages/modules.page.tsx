@@ -48,7 +48,7 @@ const ModulesPage = () => {
   return (
     <>
       <CommonHeader />
-      <div className="grid lg:grid-cols-4 p-10 gap-5">
+      <div className="grid gap-5 p-10 lg:grid-cols-4">
         {modules.map((module) => (
           <Paper
             onClick={() => navigate(module.path)}

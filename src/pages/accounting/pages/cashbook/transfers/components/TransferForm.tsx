@@ -1,26 +1,31 @@
-import { useMutation, useQuery } from "@apollo/client";
+import { Account, MatchOperator } from "@/_app/graphql-models/graphql";
+import { useMutation } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import {
+  Badge,
+  Button,
+  Input,
+  Select,
+  Space,
+  Textarea,
+  Title,
+} from "@mantine/core";
+import { DateTimePicker } from "@mantine/dates";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as yup from "yup";
 import {
   ACCOUNT_CREATE_TRANSFER_MUTATION,
   ACCOUNT_UPDATE_TRANSFER_MUTATION,
 } from "../ulits/query";
-import { Button, Input, Select, Space, Textarea, Title } from "@mantine/core";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { ErrorMessage } from "@hookform/error-message";
-import { DateTimePicker } from "@mantine/dates";
-import {
-  AccountsWithPagination,
-  MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { ACCOUNTING_ACCOUNTS_LIST } from "../../accounts/utils/query";
-import { useEffect } from "react";
 
 interface IAccountTransferFormProps {
   onSubmissionDone: () => void;
   operationType: "create" | "update";
   operationId?: string | null;
   formData?: any;
+  accounts?: Account[];
 }
 
 const TransferForm: React.FC<IAccountTransferFormProps> = ({
@@ -28,6 +33,7 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
   formData,
   operationType,
   operationId,
+  accounts,
 }) => {
   const {
     register,
@@ -46,41 +52,26 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
     },
   });
 
-  const { data: accountData } = useQuery<{
-    accounting__accounts: AccountsWithPagination;
-  }>(ACCOUNTING_ACCOUNTS_LIST, {
-    variables: {
-      where: {
-        limit: 10,
-        page: 1,
-      },
-    },
-  });
-
   useEffect(() => {
-    if (formData?.date) {
-      setValue("fromAccountId", formData?.fromAccount?._id);
-      setValue("toAccountId", formData?.toAccount?._id);
-      setValue("note", formData?.["note"]);
-      setValue("date", formData?.["date"]);
-      setValue("amount", formData?.["amount"]);
-    } else {
-      setValue("fromAccountId", "");
-      setValue("toAccountId", "");
-      setValue("note", "");
-      setValue("date", new Date().toISOString());
-      setValue("amount", 0.0);
-    }
+    setValue("fromAccountId", formData?.fromAccount?._id);
+    setValue("toAccountId", formData?.toAccount?._id);
+    setValue("note", formData?.["note"]);
+    setValue("date", formData?.["date"] || new Date().toISOString());
+    setValue("amount", formData?.["amount"]);
   }, [formData]);
 
-  const allAccounts = accountData?.accounting__accounts?.nodes?.map((item) => {
-    return {
-      value: item._id,
-      label: item.name,
-    };
-  });
-  console.log(accountData?.accounting__accounts?.nodes);
-  console.log(allAccounts);
+  const accountListForDrop = accounts?.map((item) => ({
+    value: item?._id,
+    label: `${item?.name} [${item?.referenceNumber}]`,
+  }));
+
+  const getAccountBalance = (
+    accounts: Account[],
+    accountId: string
+  ): number => {
+    const account = accounts.find((a) => a._id === accountId);
+    return (account?.creditAmount || 0) - (account?.debitAmount || 0);
+  };
 
   const [transferCreateMutation, { loading: transferCreateLoading }] =
     useMutation(ACCOUNT_CREATE_TRANSFER_MUTATION);
@@ -128,19 +119,36 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Select
           searchable
-          onChange={(e) => setValue("fromAccountId", e || "")}
+          withAsterisk
+          onChange={(fromAccountId) =>
+            setValue("fromAccountId", fromAccountId || "")
+          }
           label="From Account"
           placeholder="From Account"
-          data={allAccounts || []}
+          data={accountListForDrop || []}
           value={watch("fromAccountId")}
         />
+
+        {watch("fromAccountId") && (
+          <Badge p={"md"}>
+            Available Balance:{" "}
+            {getAccountBalance(accounts || [], watch("fromAccountId"))}
+          </Badge>
+        )}
+
         <Select
           searchable
-          onChange={(e) => setValue("toAccountId", e || "")}
+          withAsterisk
+          onChange={(toAccountId) => setValue("toAccountId", toAccountId || "")}
           label="To Account"
           placeholder="To Account"
-          data={allAccounts || []}
+          data={
+            accountListForDrop?.filter(
+              (a) => a.value !== watch("fromAccountId")
+            ) || []
+          }
           value={watch("toAccountId")}
+          disabled={!watch("fromAccountId")}
         />
 
         <Textarea
@@ -157,7 +165,6 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
         </Input.Wrapper>
         <DateTimePicker
           withAsterisk
-          {...register("date")}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
           value={new Date(watch("date"))}
@@ -173,6 +180,10 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
         <Button
           loading={transferUpdateLoading || transferCreateLoading}
           type="submit"
+          disabled={
+            getAccountBalance(accounts || [], watch("fromAccountId")) <
+            watch("amount")
+          }
         >
           Save
         </Button>

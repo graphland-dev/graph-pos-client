@@ -3,8 +3,7 @@ import { RouteObject } from "react-router-dom";
 import { accountingNavlinks } from "./accounting.navlinks";
 import AccountsPage from "./pages/cashbook/accounts/accounts.page";
 import AdjustmentPage from "./pages/cashbook/adjustment/adjustment.page";
-import TransferPage from "./pages/cashbook/Transfer/transfer.page";
-import LedgerPage from "./pages/cashbook/ledger/ledger.page";
+import TransferPage from "./pages/cashbook/transfers/transfer.page";
 import ExpenseListPage from "./pages/expense/expenseList/expenseList.page";
 import ExpenseCategoryPage from "./pages/expense/expenseCategory/expenseCategory.page";
 import Authorities from "./pages/load-manegment/authorities/authorities.page";
@@ -12,6 +11,7 @@ import Loans from "./pages/load-manegment/loans/loans.page";
 import Payments from "./pages/load-manegment/payments/payments.page";
 import TypesPage from "./pages/asset-management/types/types.page";
 import AssetsPage from "./pages/asset-management/assets/assets.page";
+import StatementPage from "./pages/cashbook/statements/statements.page";
 export const accountingModuleRouter: RouteObject[] = [
   {
     path: "",
@@ -31,20 +31,19 @@ export const accountingModuleRouter: RouteObject[] = [
             element: <AccountsPage />,
           },
           {
-            path: "adjustment",
+            path: "adjustments",
             element: <AdjustmentPage />,
           },
           {
-            path: "transfer",
+            path: "transfers",
             element: <TransferPage />,
           },
           {
-            path: "ledger",
-            element: <LedgerPage />,
+            path: "statements",
+            element: <StatementPage />,
           },
         ],
       },
-
       {
         path: "expense",
         children: [

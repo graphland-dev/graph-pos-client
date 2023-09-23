@@ -6,16 +6,15 @@ import UserMenu from "./componants/UserMenu";
 const BaseLayout = () => {
   return (
     <>
-      <Header height={45} className="flex px-10 items-center justify-between">
+      <Header height={45} className="flex items-center justify-between px-10">
         <Link className="no-underline" to={"/"}>
           Graph ERP
         </Link>
-        <div className="flex gap-4 items-center">
+        <div className="flex items-center gap-4">
           <ThemeSwitcher />
           <UserMenu />
         </div>
       </Header>
-
       <Outlet />
     </>
   );

@@ -1,7 +1,7 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
 import { AppShell, NavLink, Navbar, ScrollArea, Title } from "@mantine/core";
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useLocation } from "react-router-dom";
 import CommonHeader from "./componants/CommonHeader";
 
 interface Prop {
@@ -11,6 +11,7 @@ interface Prop {
 }
 
 const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
+  const { pathname } = useLocation();
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
@@ -31,6 +32,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                 component={Link}
                 to={`/${path}/${item?.href}`}
                 icon={item.icon}
+                active={pathname.includes(item?.href as string)}
               >
                 {item?.children &&
                   item.children.map((_item, key) => (
@@ -38,6 +40,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                       key={key}
                       label={_item.label}
                       component={Link}
+                      px={"xs"}
+                      py={2}
+                      active={pathname.includes(_item?.href as string)}
                       to={`/${path}/${item?.href}/${_item.href}`}
                     />
                   ))}

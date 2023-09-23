@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  erp-client:
+    container_name: "erp-client"
+    ports:
+      - 3000:3000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+      - /app/node_modules
+    env_file:
+      - .env
