@@ -14,6 +14,7 @@ export const ACCOUNTING_STATEMENTS_QUERY_LIST = gql`
         note
         source
         type
+        createdAt
       }
       meta {
         totalCount
