@@ -63,6 +63,7 @@ const StatementPage = () => {
       },
       {
         accessorFn: (row: Transaction) => row?.amount,
+        accessorKey: "amount",
         header: "Amount",
       },
       {
