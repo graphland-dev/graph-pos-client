@@ -6,19 +6,14 @@ export const ACCOUNTING_STATEMENTS_QUERY_LIST = gql`
       nodes {
         _id
         account {
-          _id
           name
           referenceNumber
         }
         amount
-        coRelationId
-        createdAt
         date
-        isActive
         note
         source
         type
-        updatedAt
       }
       meta {
         totalCount
