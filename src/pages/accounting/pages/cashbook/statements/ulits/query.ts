@@ -7,16 +7,8 @@ export const ACCOUNTING_STATEMENTS_QUERY_LIST = gql`
         _id
         account {
           _id
-          brunchName
-          createdAt
-          creditAmount
-          debitAmount
-          isActive
           name
-          note
-          openedAt
           referenceNumber
-          updatedAt
         }
         amount
         coRelationId
