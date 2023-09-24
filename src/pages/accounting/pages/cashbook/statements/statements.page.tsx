@@ -55,7 +55,9 @@ const StatementPage = () => {
       {
         accessorFn: (row: Transaction) =>
           `${row?.account?.name}${
-            row?.account?.referenceNumber ? ` [${row?.account?.referenceNumber}]` : ""
+            row?.account?.referenceNumber
+              ? ` [${row?.account?.referenceNumber}]`
+              : ""
           }`,
         header: "Account",
       },
@@ -63,6 +65,10 @@ const StatementPage = () => {
         accessorFn: (row: Transaction) =>
           (row?.account?.creditAmount || 0) - (row?.account?.debitAmount || 0),
         header: "Amount",
+      },
+      {
+        accessorKey: "source",
+        header: "Source",
       },
       {
         accessorFn: (row: Transaction) =>
