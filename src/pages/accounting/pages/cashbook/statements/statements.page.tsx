@@ -72,6 +72,7 @@ const StatementPage = () => {
           ) : (
             <Badge color="green">Credit</Badge>
           ),
+        accessorKey: "type",
         header: "Type",
       },
       {
