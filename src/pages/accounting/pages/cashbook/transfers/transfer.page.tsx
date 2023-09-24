@@ -17,8 +17,8 @@ import TransferForm from "./components/TransferForm";
 import {
   ACCOUNTING_DELETE_TRANSFER_MUTATION,
   ACCOUNTING_TRANSFER_QUERY_LIST,
-  ACCOUNTS_LIST_DROPDOWN,
 } from "./ulits/query";
+import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
 
 interface IState {
   modalOpened: boolean;
@@ -105,6 +105,7 @@ const TransferPage = () => {
       {
         accessorFn: (row: Transfer) =>
           dayjs(row?.date).format("MMMM D, YYYY h:mm A"),
+        accessorKey: "date",
         header: "Date",
       },
     ],

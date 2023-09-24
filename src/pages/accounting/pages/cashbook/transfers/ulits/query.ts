@@ -1,19 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const ACCOUNTS_LIST_DROPDOWN = gql`
-  query Accounts($where: CommonPaginationDto) {
-    accounting__accounts(where: $where) {
-      nodes {
-        _id
-        name
-        referenceNumber
-        creditAmount
-        debitAmount
-      }
-    }
-  }
-`;
-
 export const ACCOUNTING_TRANSFER_QUERY_LIST = gql`
   query TransferQuery($where: CommonPaginationDto) {
     acounting__transfers(where: $where) {
