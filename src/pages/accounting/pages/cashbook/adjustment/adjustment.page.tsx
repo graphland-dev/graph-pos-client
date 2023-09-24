@@ -1,13 +1,25 @@
+import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
-import { Account, AccountsWithPagination } from '@/_app/graphql-models/graphql';
-import { useQuery } from '@apollo/client';
+import {
+	Account,
+	Accounting_Transaction_Source,
+	AccountsWithPagination,
+	MatchOperator,
+	Transaction,
+	TransactionsWithPagination,
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
-import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { MRT_ColumnDef } from 'mantine-react-table';
 import { useMemo } from 'react';
-import AccountForm from '../accounts/components/AccountForm';
-import { ACCOUNTING_TRANSACTION_QUERY } from './utils/query';
+import { ACCOUNTS_LIST_DROPDOWN } from '../transfers/ulits/query';
+import BalanceAdjustmentForm from './components/BalanceAdjustmentForm';
+import {
+	ACCOUNTING_TRANSACTION_QUERY,
+	ACCOUNT_REMOVE_TRANSACTION,
+} from './utils/query';
 
 interface IState {
 	modalOpened: boolean;
@@ -27,20 +39,34 @@ const AdjustmentPage = () => {
 	});
 
 	const { data, loading, refetch } = useQuery<{
-		accounting__accounts: AccountsWithPagination;
+		accounting__transactions: TransactionsWithPagination;
 	}>(ACCOUNTING_TRANSACTION_QUERY, {
 		variables: {
 			where: {
 				limit: 10,
 				page: 1,
+				where: {
+					filters: {
+						key: 'source',
+						operator: 'eq',
+						value: Accounting_Transaction_Source.BalanceAdjustment,
+					},
+				},
 			},
 		},
 	});
 
-	// const [deleteAccountMutation] = useMutation(
-	// 	ACCOUNTING_ACCOUNT_DELETE_MUTATION,
-	// 	{ onCompleted: () => handleRefetch({}) }
-	// );
+	const { data: accountData } = useQuery<{
+		accounting__accounts: AccountsWithPagination;
+	}>(ACCOUNTS_LIST_DROPDOWN, {
+		variables: {
+			where: { limit: -1 },
+		},
+	});
+
+	const [deleteAccountMutation] = useMutation(ACCOUNT_REMOVE_TRANSACTION, {
+		onCompleted: () => handleRefetch({}),
+	});
 
 	const handleRefetch = (variables: any) => {
 		setState({ refetching: true });
@@ -49,35 +75,31 @@ const AdjustmentPage = () => {
 		});
 	};
 
-	// const handleDeleteAccount = (_id: string) => {
-	// 	confirmModal({
-	// 		title: 'Sure to delete account?',
-	// 		description: 'Be careful!! Once you deleted, it can not be undone',
-	// 		isDangerous: true,
-	// 		onConfirm() {
-	// deleteAccountMutation({
-	// 	variables: {
-	// 		where: { key: '_id', operator: MatchOperator.Eq, value: _id },
-	// 	},
-	// });
-	// 		},
-	// 	});
-	// };
+	const handleDeleteAccount = (_id: string) => {
+		confirmModal({
+			title: 'Sure to delete account?',
+			description: 'Be careful!! Once you deleted, it can not be undone',
+			isDangerous: true,
+			onConfirm() {
+				deleteAccountMutation({
+					variables: {
+						where: { key: '_id', operator: MatchOperator.Eq, value: _id },
+					},
+				});
+			},
+		});
+	};
 
 	const columns = useMemo<MRT_ColumnDef<any>[]>(
 		() => [
 			{
-				accessorKey: 'name',
+				accessorFn: (row: Transaction) =>
+					`${row?.account?.name} [${row?.account?.referenceNumber}]`,
 				header: 'Bank Name',
 			},
 			{
-				accessorKey: 'referenceNumber',
-				header: 'Reference',
-			},
-			{
-				accessorFn: (row: Account) =>
-					(row?.creditAmount || 0) - (row?.debitAmount || 0),
-				header: 'Account Number',
+				accessorKey: 'account.brunchName',
+				header: 'Brunch Name',
 			},
 			{
 				accessorKey: 'type',
@@ -85,7 +107,7 @@ const AdjustmentPage = () => {
 			},
 
 			{
-				accessorKey: 'brunchName',
+				accessorKey: 'createdAt',
 				header: 'Date',
 			},
 		],
@@ -99,38 +121,23 @@ const AdjustmentPage = () => {
 				onClose={() => setState({ modalOpened: false })}
 				position='right'
 			>
-				<AccountForm
+				<BalanceAdjustmentForm
 					onSubmissionDone={() => {
 						handleRefetch({});
 						setState({ modalOpened: false });
 					}}
-					operationType={state.operationType}
-					operationId={state.operationId}
-					formData={state.operationPayload}
+					accounts={accountData?.accounting__accounts?.nodes || []}
 				/>
 			</Drawer>
 			<DataTable
 				columns={columns}
-				data={data?.accounting__accounts.nodes ?? []}
+				data={data?.accounting__transactions.nodes ?? []}
 				refetch={handleRefetch}
-				totalCount={data?.accounting__accounts.meta?.totalCount ?? 10}
+				totalCount={data?.accounting__transactions.meta?.totalCount ?? 10}
 				RowActionMenu={(row: Account) => (
 					<>
 						<Menu.Item
-							onClick={() =>
-								setState({
-									modalOpened: true,
-									operationType: 'update',
-									operationId: row._id,
-									operationPayload: row,
-								})
-							}
-							icon={<IconPencil size={18} />}
-						>
-							Edit
-						</Menu.Item>
-						<Menu.Item
-							// onClick={() => handleDeleteAccount(row._id)}
+							onClick={() => handleDeleteAccount(row._id)}
 							icon={<IconTrash size={18} />}
 						>
 							Delete

@@ -83,6 +83,11 @@ export type CreateAccountInput = {
   referenceNumber: Scalars['String']['input'];
 };
 
+export type CreateExpenseInput = {
+  /** Example field (placeholder) */
+  exampleField: Scalars['Int']['input'];
+};
+
 export type CreateTransactionInput = {
   accountId: Scalars['String']['input'];
   amount: Scalars['Float']['input'];
@@ -99,6 +104,17 @@ export type CreateTransferInput = {
   fromAccountId: Scalars['ID']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
   toAccountId: Scalars['ID']['input'];
+};
+
+export type Expense = {
+  __typename?: 'Expense';
+  _id: Scalars['ID']['output'];
+  account?: Maybe<Account>;
+  amount?: Maybe<Scalars['Float']['output']>;
+  checkNo?: Maybe<Scalars['String']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  note?: Maybe<Scalars['String']['output']>;
+  voucherNo?: Maybe<Scalars['String']['output']>;
 };
 
 export type Hello = {
@@ -130,6 +146,9 @@ export type Mutation = {
   accounting__updateAccount: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   acounting__createTransfer: CommonMutationResponse;
+  createExpense: Expense;
+  removeExpense: Expense;
+  updateExpense: Expense;
 };
 
 
@@ -174,6 +193,21 @@ export type MutationAcounting__CreateTransferArgs = {
   body: CreateTransferInput;
 };
 
+
+export type MutationCreateExpenseArgs = {
+  createExpenseInput: CreateExpenseInput;
+};
+
+
+export type MutationRemoveExpenseArgs = {
+  id: Scalars['Int']['input'];
+};
+
+
+export type MutationUpdateExpenseArgs = {
+  updateExpenseInput: UpdateExpenseInput;
+};
+
 export type PagniationMeta = {
   __typename?: 'PagniationMeta';
   currentPage: Scalars['Float']['output'];
@@ -190,6 +224,7 @@ export type Query = {
   accounting__transaction: Transaction;
   accounting__transactions: TransactionsWithPagination;
   acounting__transfers: TransfersWithPagination;
+  expense: Expense;
   hello: Hello;
 };
 
@@ -216,6 +251,11 @@ export type QueryAccounting__TransactionsArgs = {
 
 export type QueryAcounting__TransfersArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryExpenseArgs = {
+  id: Scalars['Int']['input'];
 };
 
 export enum SortType {
@@ -270,6 +310,12 @@ export type UpdateAccountInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   openedAt?: InputMaybe<Scalars['DateTime']['input']>;
   referenceNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateExpenseInput = {
+  /** Example field (placeholder) */
+  exampleField?: InputMaybe<Scalars['Int']['input']>;
+  id: Scalars['Int']['input'];
 };
 
 export type UpdateTransactionInput = {
