@@ -29,8 +29,8 @@ interface Prop {
   refetch: (v: any) => void;
   totalCount: number;
   loading: boolean;
-  ActionArea: React.ReactNode;
-  RowActionMenu: (row: any) => React.ReactNode;
+  ActionArea?: React.ReactNode;
+  RowActionMenu?: (row: any) => React.ReactNode;
 }
 
 const csvConfig = mkConfig({
@@ -106,9 +106,9 @@ const DataTable: React.FC<Prop> = ({
       showGlobalFilter: true,
       density: "xs",
     },
-    enableRowActions: true,
+    enableRowActions: RowActionMenu ? true : false,
     positionActionsColumn: "last",
-    renderRowActionMenuItems: (_row) => RowActionMenu(_row?.row?.original),
+    renderRowActionMenuItems: (_row) => RowActionMenu?.(_row?.row?.original),
     renderTopToolbar: () => {
       return (
         <div className="flex justify-between p-2">
