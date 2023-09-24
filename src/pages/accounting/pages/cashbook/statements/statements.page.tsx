@@ -62,8 +62,7 @@ const StatementPage = () => {
         header: "Account",
       },
       {
-        accessorFn: (row: Transaction) =>
-          (row?.account?.creditAmount || 0) - (row?.account?.debitAmount || 0),
+        accessorFn: (row: Transaction) => row?.amount,
         header: "Amount",
       },
       {
@@ -78,6 +77,10 @@ const StatementPage = () => {
             <Badge color="green">Credit</Badge>
           ),
         header: "Type",
+      },
+      {
+        accessorKey: "source",
+        header: "Source",
       },
     ],
     []
