@@ -20,6 +20,7 @@ import {
   ACCOUNTING_TRANSACTION_QUERY,
   ACCOUNT_REMOVE_TRANSACTION,
 } from "./utils/query";
+import dayjs from "dayjs";
 
 interface IState {
   modalOpened: boolean;
@@ -102,7 +103,9 @@ const AdjustmentPage = () => {
         header: "Type",
       },
       {
-        accessorKey: "date",
+        accessorFn: (row: Transaction) =>
+          dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
+        accessorKey: "createdAt",
         header: "Date",
       },
     ],
