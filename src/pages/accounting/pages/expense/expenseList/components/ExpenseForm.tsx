@@ -129,14 +129,14 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
         />
         <Input.Wrapper
           label="Voucher Number"
-          withAsterisk
+         
           error={<ErrorMessage name={"voucherNo"} errors={errors} />}
         >
           <Input placeholder="Voucher Number" {...register("voucherNo")} />
         </Input.Wrapper>
         <Input.Wrapper
           label="Check Number"
-          withAsterisk
+          
           error={<ErrorMessage name={"checkNo"} errors={errors} />}
         >
           <Input placeholder="Check Number" {...register("checkNo")} />
