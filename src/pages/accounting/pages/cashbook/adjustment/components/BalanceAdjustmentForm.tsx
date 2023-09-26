@@ -84,7 +84,7 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
             setValue("accountId", fromAccountId || "")
           }
           label="Select account"
-          placeholder="Select cccount"
+          placeholder="Select Account"
           data={accountListForDrop || []}
           value={watch("accountId")}
         />
