@@ -20,6 +20,14 @@ const InvoiceGenerator: React.FC = () => {
 	const [isTax, setIsTax] = useState(false);
 	const [isShipping, setIsShipping] = useState(true);
 
+	const [tableData, setTableData] = useState([
+		{
+			item: 'Item 1',
+			qty: 1,
+			rate: 0,
+			amount: 0,
+		},
+	]);
 	return (
 		<div className='bg-white px-5 py-5 shadow-lg rounded-md'>
 			<div className='lg:flex justify-between items-start'>
@@ -77,21 +85,69 @@ const InvoiceGenerator: React.FC = () => {
 				</div>
 			</div>
 			<Space h={'lg'} />
-			<Table>
+			<Table withBorder={false} withColumnBorders={false}>
 				<thead>
 					<tr>
-						<th>Item name</th>
+						<th className='w-6/12'>Item</th>
 						<th>Qty</th>
-						<th>Price</th>
+						<th>Rate</th>
+						<th>Amount</th>
 					</tr>
 				</thead>
 
 				<tbody>
-					<tr>
-						<td>Pant</td>
-						<td>1</td>
-						<td>1250</td>
-					</tr>
+					{tableData?.map((td, idx) => (
+						<tr key={idx}>
+							<td>
+								<TextInput
+									placeholder='Item name'
+									defaultValue={td?.item}
+									// onChange={(e) =>
+									// 	setTableData((tableData[idx]?.item = e.target.value))
+									// }
+								/>
+							</td>
+							<td>
+								<Input
+									type='number'
+									placeholder='Quantity'
+									defaultValue={td?.qty}
+								/>
+							</td>
+							<td>
+								<Input
+									type='number'
+									placeholder='Rate'
+									defaultValue={td?.rate}
+								/>
+							</td>
+							<td>
+								<Input
+									type='number'
+									placeholder='Amount'
+									defaultValue={td?.amount}
+								/>
+							</td>
+						</tr>
+					))}
+
+					<Button
+						variant='subtle'
+						color='teal'
+						onClick={() =>
+							setTableData([
+								...tableData,
+								{
+									item: `Item ${tableData?.length + 1}`,
+									qty: 1,
+									rate: 0,
+									amount: 0,
+								},
+							])
+						}
+					>
+						Add new
+					</Button>
 				</tbody>
 			</Table>
 			<Space h={'lg'} />
