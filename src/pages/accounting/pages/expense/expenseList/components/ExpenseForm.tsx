@@ -178,8 +178,8 @@ const expenseListValidationSchema = yup.object({
   purpose: yup.string().required().label("Purpose"),
   note: yup.string().optional().label("Note"),
   amount: yup.number().required().label("Amount of Balance"),
-  voucherNo: yup.string().required().label("Voucher Number"),
-  checkNo: yup.string().required().label("Check Number"),
+  voucherNo: yup.string().optional().label("Voucher Number"),
+  checkNo: yup.string().optional().label("Check Number"),
   date: yup.string().required().label("Data"),
   accountId: yup.string().required().label("Bank Name"),
 });
