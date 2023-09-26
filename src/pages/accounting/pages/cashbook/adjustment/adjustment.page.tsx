@@ -105,6 +105,7 @@ const AdjustmentPage = () => {
       {
         accessorFn: (row: Transaction) =>
           dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
+        // filterVariant: "date-range",
         accessorKey: "createdAt",
         header: "Date",
       },
