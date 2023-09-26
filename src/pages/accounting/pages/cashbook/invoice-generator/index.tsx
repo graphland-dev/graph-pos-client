@@ -1,24 +1,28 @@
 import {
+	ActionIcon,
 	Button,
 	FileInput,
+	Group,
 	Input,
 	Space,
+	Table,
 	Text,
 	TextInput,
 	Textarea,
 	Title,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
+import { IconX } from '@tabler/icons-react';
 import React, { useState } from 'react';
 
 const InvoiceGenerator: React.FC = () => {
 	const [isDiscount, setIsDiscount] = useState(false);
 	const [isTax, setIsTax] = useState(false);
-	const [isShipping, setIsShipping] = useState(false);
+	const [isShipping, setIsShipping] = useState(true);
 
 	return (
-		<div className='bg-white px-3 py-5 shadow-lg rounded-md'>
-			<div className='lg:flex justify-between items-center'>
+		<div className='bg-white px-5 py-5 shadow-lg rounded-md'>
+			<div className='lg:flex justify-between items-start'>
 				<div>
 					{' '}
 					<FileInput
@@ -73,7 +77,23 @@ const InvoiceGenerator: React.FC = () => {
 				</div>
 			</div>
 			<Space h={'lg'} />
-			Table will goes to here!
+			<Table>
+				<thead>
+					<tr>
+						<th>Item name</th>
+						<th>Qty</th>
+						<th>Price</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr>
+						<td>Pant</td>
+						<td>1</td>
+						<td>1250</td>
+					</tr>
+				</tbody>
+			</Table>
 			<Space h={'lg'} />
 			<div className='lg:flex !items-start justify-between'>
 				<div>
@@ -96,9 +116,20 @@ const InvoiceGenerator: React.FC = () => {
 
 					{isShipping && (
 						<>
-							<div className='flex items-center justify-between gap-5'>
+							<div className='flex items-center justify-between'>
 								<Text color='gray'>Shipping (OMR)</Text>
-								<Input defaultValue={0} w={100} />
+
+								<div className='flex items-center'>
+									<Input defaultValue={0} w={100} />
+									<ActionIcon
+										color='red'
+										size={'xs'}
+										ml={5}
+										onClick={() => setIsShipping(false)}
+									>
+										<IconX size={16} />
+									</ActionIcon>
+								</div>
 							</div>
 							<Space h={'sm'} />
 						</>
@@ -106,18 +137,39 @@ const InvoiceGenerator: React.FC = () => {
 
 					{isDiscount && (
 						<>
-							<div className='flex items-center justify-between gap-5'>
+							<div className='flex items-center justify-between'>
 								<Text color='gray'>Discount (%)</Text>
-								<Input defaultValue={5} w={100} />
+								<div className='flex items-center'>
+									<Input defaultValue={5} w={100} />
+									<ActionIcon
+										color='red'
+										size={'xs'}
+										ml={5}
+										onClick={() => setIsDiscount(false)}
+									>
+										<IconX size={16} />
+									</ActionIcon>
+								</div>
 							</div>
 							<Space h={'sm'} />
 						</>
 					)}
 					{isTax && (
 						<>
-							<div className='flex items-center justify-between gap-5'>
+							<div className='flex items-center justify-between'>
 								<Text color='gray'>Tax (%)</Text>
-								<Input defaultValue={5} w={100} />
+
+								<div className='flex items-center'>
+									<Input defaultValue={5} w={100} />
+									<ActionIcon
+										color='red'
+										size={'xs'}
+										ml={5}
+										onClick={() => setIsTax(false)}
+									>
+										<IconX size={16} />
+									</ActionIcon>
+								</div>
 							</div>
 
 							<Space h={'sm'} />
@@ -178,6 +230,15 @@ const InvoiceGenerator: React.FC = () => {
 					</div>
 				</div>
 			</div>
+			<Space h={50} />
+			<Group position='right'>
+				<Button color='orange' variant='subtle'>
+					Save as Default
+				</Button>
+				<Button color='teal' variant='filled'>
+					Download
+				</Button>
+			</Group>
 		</div>
 	);
 };
