@@ -48,7 +48,6 @@ const ExpenseListPage = () => {
     },
   });
 
-  console.log(data?.accounting__expenses?.nodes || null);
 
   const { data: accountData, refetch: refetchAccounts } = useQuery<{
     accounting__accounts: AccountsWithPagination;

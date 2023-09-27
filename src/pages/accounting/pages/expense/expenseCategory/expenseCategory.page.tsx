@@ -131,7 +131,7 @@ const ExpenseCategoryPage = () => {
             <Button
               leftIcon={<IconPlus size={16} />}
               onClick={() =>
-                setState({ modalOpened: true, operationType: "create" })
+                setState({ modalOpened: true, operationPayload: {} })
               }
               size="sm"
             >
