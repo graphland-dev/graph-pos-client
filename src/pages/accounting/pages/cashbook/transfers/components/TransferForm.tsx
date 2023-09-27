@@ -19,6 +19,7 @@ import {
   ACCOUNT_CREATE_TRANSFER_MUTATION,
   ACCOUNT_UPDATE_TRANSFER_MUTATION,
 } from "../ulits/query";
+import { getAccountBalance } from "@/_app/common/utils/getBalance";
 
 interface IAccountTransferFormProps {
   onSubmissionDone: () => void;
@@ -64,14 +65,6 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
     value: item?._id,
     label: `${item?.name} [${item?.referenceNumber}]`,
   }));
-
-  const getAccountBalance = (
-    accounts: Account[],
-    accountId: string
-  ): number => {
-    const account = accounts.find((a) => a._id === accountId);
-    return (account?.creditAmount || 0) - (account?.debitAmount || 0);
-  };
 
   const [transferCreateMutation, { loading: transferCreateLoading }] =
     useMutation(ACCOUNT_CREATE_TRANSFER_MUTATION);

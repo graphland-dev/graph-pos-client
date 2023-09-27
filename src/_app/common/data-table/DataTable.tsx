@@ -1,4 +1,8 @@
-import { MatchOperator, SortType } from "@/_app/graphql-models/graphql";
+import {
+  CommonFindDocumentDto,
+  MatchOperator,
+  SortType,
+} from "@/_app/graphql-models/graphql";
 import { ActionIcon, Flex, Menu, UnstyledButton, rem } from "@mantine/core";
 import {
   IconCsv,
@@ -6,6 +10,12 @@ import {
   IconPdf,
   IconRefresh,
 } from "@tabler/icons-react";
+import cls from "classnames";
+import {
+  download as downloadCsvFile,
+  generateCsv,
+  mkConfig,
+} from "export-to-csv";
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -15,17 +25,12 @@ import {
   MantineReactTable,
   useMantineReactTable,
 } from "mantine-react-table";
-import cls from "classnames";
-import {
-  mkConfig,
-  generateCsv,
-  download as downloadCsvFile,
-} from "export-to-csv";
 import React, { useEffect, useState } from "react";
 
 interface Prop {
   columns: MRT_ColumnDef<any>[];
   data: any[];
+  filters?: CommonFindDocumentDto[];
   refetch: (v: any) => void;
   totalCount: number;
   loading: boolean;
@@ -43,6 +48,7 @@ const DataTable: React.FC<Prop> = ({
   columns,
   loading,
   data,
+  filters = [],
   refetch,
   ActionArea,
   RowActionMenu,
@@ -59,13 +65,14 @@ const DataTable: React.FC<Prop> = ({
     limit: pagination.pageSize,
     sortBy: sorting[0]?.id,
     sort: sorting[0]?.desc ? SortType.Desc : SortType.Asc,
-    filters: columnFilters.length
-      ? columnFilters.map((f: any) => ({
-          key: f.id,
-          operator: MatchOperator.Contains,
-          value: f.value,
-        }))
-      : undefined,
+    filters: [
+      ...filters,
+      ...columnFilters.map((f: any) => ({
+        key: f.id,
+        operator: MatchOperator.Contains,
+        value: f.value,
+      })),
+    ],
   };
 
   useEffect(() => {

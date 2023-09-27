@@ -95,6 +95,7 @@ const AccountsPage = () => {
       {
         accessorFn: (row: Account) =>
           dayjs(row?.openedAt).format("MMMM D, YYYY h:mm A"),
+        accessorKey: "openedAt",
         header: "Date",
       },
       {

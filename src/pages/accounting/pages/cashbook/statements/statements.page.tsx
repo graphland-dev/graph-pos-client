@@ -9,6 +9,7 @@ import { useSetState } from "@mantine/hooks";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import { ACCOUNTING_STATEMENTS_QUERY_LIST } from "./ulits/query";
+import dayjs from "dayjs";
 
 interface IState {
   modalOpened: boolean;
@@ -29,14 +30,7 @@ const StatementPage = () => {
 
   const { data, loading, refetch } = useQuery<{
     accounting__transactions: TransactionsWithPagination;
-  }>(ACCOUNTING_STATEMENTS_QUERY_LIST, {
-    variables: {
-      where: {
-        limit: 10,
-        page: 1,
-      },
-    },
-  });
+  }>(ACCOUNTING_STATEMENTS_QUERY_LIST);
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -48,6 +42,12 @@ const StatementPage = () => {
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
+      {
+        accessorFn: (row: Transaction) =>
+          dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
+        accessorKey: "createdAt",
+        header: "Date",
+      },
       {
         accessorKey: "note",
         header: "Note",
@@ -63,7 +63,12 @@ const StatementPage = () => {
       },
       {
         accessorFn: (row: Transaction) => row?.amount,
+        accessorKey: "amount",
         header: "Amount",
+      },
+      {
+        accessorKey: "source",
+        header: "Source",
       },
       {
         accessorFn: (row: Transaction) =>
@@ -72,6 +77,7 @@ const StatementPage = () => {
           ) : (
             <Badge color="green">Credit</Badge>
           ),
+        accessorKey: "type",
         header: "Type",
       },
       {
