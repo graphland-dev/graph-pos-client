@@ -34,7 +34,7 @@ const ExpenseCategoryForm: React.FC<IExpenseCategoryFormProps> = ({
   });
 
   useEffect(() => {
-    setValue("name", formData?.["name"]);
+    setValue("name", formData?.name);
   }, [formData]);
     
     const [createMutation, { loading: creating }] = useMutation(
