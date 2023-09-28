@@ -1,19 +1,18 @@
 import {
   EmployeeDepartment,
   MatchOperator,
+  User_Gender,
 } from "@/_app/graphql-models/graphql";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
-  Grid,
   Input,
   Select,
   SimpleGrid,
   Space,
   Switch,
-  Textarea,
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
@@ -116,7 +115,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div className="grid gap-3 lg:grid-cols-3">
+        <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
             label="name"
             withAsterisk
@@ -139,6 +138,24 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             <Input
               placeholder="Contact Number"
               {...register("contactNumber")}
+            />
+          </Input.Wrapper>
+          <Input.Wrapper
+            label="Gender"
+            withAsterisk
+            error={<ErrorMessage name={"gender"} errors={errors} />}
+          >
+            <Select
+              data={[
+                {
+                  label: "Female",
+                  value: User_Gender.Female,
+                },
+                {
+                  label: "Beda manush",
+                  value: User_Gender.Male,
+                },
+              ]}
             />
           </Input.Wrapper>
         </div>
