@@ -64,7 +64,7 @@ const Employees = () => {
       },
       {
         accessorFn(row: Employee) {
-          return row?.department.name;
+          return row?.department?.name;
         },
         accessorKey: "department",
         header: "Department",
@@ -87,6 +87,7 @@ const Employees = () => {
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}
         position="right"
+        size={"80%"}
       >
         <EmployeesForm
           onSubmissionDone={() => {

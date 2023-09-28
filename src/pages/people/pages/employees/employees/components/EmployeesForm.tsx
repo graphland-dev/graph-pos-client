@@ -7,8 +7,10 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
+  Grid,
   Input,
   Select,
+  SimpleGrid,
   Space,
   Switch,
   Textarea,
@@ -114,99 +116,130 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <Input.Wrapper
-          label="name"
-          withAsterisk
-          error={<ErrorMessage name={"name"} errors={errors} />}
-        >
-          <Input placeholder="Name" {...register("name")} />
-        </Input.Wrapper>
-        <Input.Wrapper
-          label="Address"
-          withAsterisk
-          error={<ErrorMessage name={"address"} errors={errors} />}
-        >
-          <Input placeholder="Address" {...register("address")} />
-        </Input.Wrapper>
-        <Input.Wrapper
-          label="Contact Number"
-          withAsterisk
-          error={<ErrorMessage name={"contactNumber"} errors={errors} />}
-        >
-          <Input placeholder="Contact Number" {...register("contactNumber")} />
-        </Input.Wrapper>
-        <Select
-          searchable
-          withAsterisk
-          onChange={(departmentId) =>
-            setValue("departmentId", departmentId || "")
-          }
-          label="Department Id"
-          placeholder="From Account"
-          data={employeeDepartmentForDrop || []}
-          value={watch("departmentId")}
-        />
+        <div className="grid gap-3 lg:grid-cols-3">
+          <Input.Wrapper
+            label="name"
+            withAsterisk
+            error={<ErrorMessage name={"name"} errors={errors} />}
+          >
+            <Input placeholder="Name" {...register("name")} />
+          </Input.Wrapper>
+          <Input.Wrapper
+            label="Address"
+            withAsterisk
+            error={<ErrorMessage name={"address"} errors={errors} />}
+          >
+            <Input placeholder="Address" {...register("address")} />
+          </Input.Wrapper>
+          <Input.Wrapper
+            label="Contact Number"
+            withAsterisk
+            error={<ErrorMessage name={"contactNumber"} errors={errors} />}
+          >
+            <Input
+              placeholder="Contact Number"
+              {...register("contactNumber")}
+            />
+          </Input.Wrapper>
+        </div>
 
-        <Textarea
-          label="Doc"
-          {...register("docs")}
-          placeholder="Write your docs"
-        />
-        <Input.Wrapper
-          label="Blood Group"
-          withAsterisk
-          error={<ErrorMessage name={"bloodGroup"} errors={errors} />}
-        >
-          <Input placeholder="Blood Group" {...register("bloodGroup")} />
-        </Input.Wrapper>
-        <Input.Wrapper
-          label="designation"
-          withAsterisk
-          error={<ErrorMessage name={"designation"} errors={errors} />}
-        >
-          <Input placeholder="designation" {...register("designation")} />
-        </Input.Wrapper>
-        <Input.Wrapper
-          label="Religion"
-          withAsterisk
-          error={<ErrorMessage name={"religion"} errors={errors} />}
-        >
-          <Input placeholder="Religion" {...register("religion")} />
-        </Input.Wrapper>
-        <Input.Wrapper
-          label="Salary"
-          withAsterisk
-          error={<ErrorMessage name={"salary"} errors={errors} />}
-        >
-          <Input placeholder="Salary" {...register("salary")} />
-        </Input.Wrapper>
+        <SimpleGrid cols={2}>
+          <Input.Wrapper
+            label="designation"
+            withAsterisk
+            error={<ErrorMessage name={"designation"} errors={errors} />}
+          >
+            <Input placeholder="designation" {...register("designation")} />
+          </Input.Wrapper>
 
-        <DateTimePicker
-          withAsterisk
-          className="w-full"
-          valueFormat="DD MMM YYYY hh:mm A"
-          value={new Date(watch("appointmentDate"))}
-          onChange={(e) => {
-            const dateTimeValue = e?.toISOString() || new Date().toISOString();
-            setValue("appointmentDate", dateTimeValue);
-          }}
-          label="Date & Time"
-          placeholder="Select your date and time"
-          mx="auto"
-        />
-        <DateTimePicker
-          withAsterisk
-          className="w-full"
-          valueFormat="DD MMM YYYY hh:mm A"
-          value={new Date(watch("joiningDate"))}
-          onChange={(e) => {
-            const dateTimeValue = e?.toISOString() || new Date().toISOString();
-            setValue("joiningDate", dateTimeValue);
-          }}
-          label="Date & Time"
-          placeholder="Select your date and time"
-          mx="auto"
-        />
+          <Select
+            searchable
+            withAsterisk
+            onChange={(departmentId) =>
+              setValue("departmentId", departmentId || "")
+            }
+            label="Department Id"
+            placeholder="From Account"
+            data={employeeDepartmentForDrop || []}
+            value={watch("departmentId")}
+          />
+        </SimpleGrid>
+
+        <SimpleGrid cols={3}>
+          <Input.Wrapper
+            label="Blood Group"
+            withAsterisk
+            error={<ErrorMessage name={"bloodGroup"} errors={errors} />}
+          >
+            <Input placeholder="Blood Group" {...register("bloodGroup")} />
+          </Input.Wrapper>
+          <Input.Wrapper
+            label="Religion"
+            withAsterisk
+            error={<ErrorMessage name={"religion"} errors={errors} />}
+          >
+            <Input placeholder="Religion" {...register("religion")} />
+          </Input.Wrapper>
+          <DateTimePicker
+            withAsterisk
+            className="w-full"
+            valueFormat="DD MMM YYYY hh:mm A"
+            value={new Date(watch("appointmentDate"))}
+            onChange={(e) => {
+              const dateTimeValue =
+                e?.toISOString() || new Date().toISOString();
+              setValue("appointmentDate", dateTimeValue);
+            }}
+            label="Date & Time"
+            placeholder="Select your date and time"
+            mx="auto"
+          />
+        </SimpleGrid>
+
+        <SimpleGrid cols={2}>
+          <Input.Wrapper
+            label="Starting Salary"
+            withAsterisk
+            error={<ErrorMessage name={"salary"} errors={errors} />}
+          >
+            <Input placeholder="Salary" {...register("salary")} />
+          </Input.Wrapper>
+
+          <Input.Wrapper label="Incremented Salary">
+            <Input placeholder="Salary" {...register("salary")} disabled />
+          </Input.Wrapper>
+        </SimpleGrid>
+
+        <SimpleGrid cols={2}>
+          <DateTimePicker
+            withAsterisk
+            className="w-full"
+            valueFormat="DD MMM YYYY hh:mm A"
+            value={new Date(watch("appointmentDate"))}
+            onChange={(e) => {
+              const dateTimeValue =
+                e?.toISOString() || new Date().toISOString();
+              setValue("appointmentDate", dateTimeValue);
+            }}
+            label="Date & Time"
+            placeholder="Select your date and time"
+            mx="auto"
+          />
+          <DateTimePicker
+            withAsterisk
+            className="w-full"
+            valueFormat="DD MMM YYYY hh:mm A"
+            value={new Date(watch("joiningDate"))}
+            onChange={(e) => {
+              const dateTimeValue =
+                e?.toISOString() || new Date().toISOString();
+              setValue("joiningDate", dateTimeValue);
+            }}
+            label="Date & Time"
+            placeholder="Select your date and time"
+            mx="auto"
+          />
+        </SimpleGrid>
         <Switch
           checked={watch("isActive")}
           onChange={(event) => {
