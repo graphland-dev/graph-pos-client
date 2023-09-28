@@ -87,6 +87,7 @@ const Employees = () => {
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}
         position="right"
+        size={"80%"}
       >
         <EmployeesForm
           onSubmissionDone={() => {
