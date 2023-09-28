@@ -23,7 +23,7 @@ export const peopleNavlinks: AppNavLink[] = [
 			},
 			{
 				label: 'Employees',
-				href: 'all-employees',
+				href: 'employees',
 			},
 			{
 				label: 'Increments',

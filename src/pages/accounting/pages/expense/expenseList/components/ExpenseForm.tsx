@@ -14,7 +14,7 @@ import * as yup from "yup";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
-import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../ulits/query";
+import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
 import { useMutation } from "@apollo/client";
 import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import { Account } from "@/_app/graphql-models/graphql";
@@ -129,14 +129,12 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
         />
         <Input.Wrapper
           label="Voucher Number"
-         
           error={<ErrorMessage name={"voucherNo"} errors={errors} />}
         >
           <Input placeholder="Voucher Number" {...register("voucherNo")} />
         </Input.Wrapper>
         <Input.Wrapper
           label="Check Number"
-          
           error={<ErrorMessage name={"checkNo"} errors={errors} />}
         >
           <Input placeholder="Check Number" {...register("checkNo")} />

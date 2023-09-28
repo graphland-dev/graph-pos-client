@@ -12,7 +12,7 @@ import { useMemo } from "react";
 import {
   ACCOUNTING_EXPENSE_DELETE_MUTATION,
   ACCOUNTING_EXPENSE_QUERY_LIST,
-} from "./ulits/query";
+} from "./utils/query";
 import { Button, Drawer, Menu } from "@mantine/core";
 import ExpenseForm from "./components/ExpenseForm";
 import { useSetState } from "@mantine/hooks";
@@ -47,7 +47,6 @@ const ExpenseListPage = () => {
       },
     },
   });
-
 
   const { data: accountData, refetch: refetchAccounts } = useQuery<{
     accounting__accounts: AccountsWithPagination;
@@ -106,7 +105,6 @@ const ExpenseListPage = () => {
     ],
     []
   );
-   
 
   const handleDeleteAccount = (_id: string) => {
     confirmModal({
