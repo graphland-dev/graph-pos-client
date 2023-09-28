@@ -1,5 +1,6 @@
 README.md
 dist
 node_modules
+pnpm-lock.yaml
 package-lock.json
 .git
