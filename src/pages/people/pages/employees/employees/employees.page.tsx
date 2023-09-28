@@ -64,7 +64,7 @@ const Employees = () => {
       },
       {
         accessorFn(row: Employee) {
-          return row?.department.name;
+          return row?.department?.name;
         },
         accessorKey: "department",
         header: "Department",
