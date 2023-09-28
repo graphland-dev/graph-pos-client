@@ -5,7 +5,7 @@ import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
 import { peopleNavlinks } from "./people.navlinks";
 import Departments from "./pages/employees/departments/departments.page";
 import Increments from "./pages/employees/increments/increments.page";
-import Employees from "./pages/employees/employees.page";
+import Employees from "./pages/employees/employees/employees.page";
 
 export const peopleModuleRouter: RouteObject[] = [
   {
