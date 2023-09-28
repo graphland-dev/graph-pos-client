@@ -91,6 +91,13 @@ export type CreateEmployeeDepartmentInput = {
   note?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateEmployeeIncrementInput = {
+  amount: Scalars['Float']['input'];
+  date: Scalars['DateTime']['input'];
+  employeeId: Scalars['ID']['input'];
+  purpose: Scalars['String']['input'];
+};
+
 export type CreateEmployeeInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   appointmentDate?: InputMaybe<Scalars['DateTime']['input']>;
@@ -147,15 +154,16 @@ export type Employee = {
   bloodGroup?: Maybe<Scalars['String']['output']>;
   contactNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  department: EmployeeDepartment;
+  department?: Maybe<EmployeeDepartment>;
   designation?: Maybe<Scalars['String']['output']>;
   docs?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<User_Gender>;
+  incrementedSalary?: Maybe<Scalars['Float']['output']>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   joiningDate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   religion?: Maybe<Scalars['String']['output']>;
-  salary?: Maybe<Scalars['String']['output']>;
+  salary?: Maybe<Scalars['Float']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -172,6 +180,23 @@ export type EmployeeDepartmentWithPagination = {
   __typename?: 'EmployeeDepartmentWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<EmployeeDepartment>>;
+};
+
+export type EmployeeIncrement = {
+  __typename?: 'EmployeeIncrement';
+  _id: Scalars['ID']['output'];
+  amount: Scalars['Float']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  employee: Employee;
+  purpose: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type EmployeeIncrementsWithPagination = {
+  __typename?: 'EmployeeIncrementsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<EmployeeIncrement>>;
 };
 
 export type EmployeesWithPagination = {
@@ -251,8 +276,11 @@ export type Mutation = {
   acounting__createTransfer: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
   people__createEmployeeDepartment: CommonMutationResponse;
-  people__removeEmployeeDepartment: EmployeeDepartment;
-  people__updateEmployeeDepartment: EmployeeDepartment;
+  people__createEmployeeIncrement: CommonMutationResponse;
+  people__removeEmployeeDepartment: Scalars['Boolean']['output'];
+  people__removeEmployeeIncrement: Scalars['Boolean']['output'];
+  people__updateEmployeeDepartment: Scalars['Boolean']['output'];
+  people__updateEmployeeIncrement: Scalars['Boolean']['output'];
   removeEmployee: Employee;
   updateEmployee: Scalars['Boolean']['output'];
 };
@@ -336,13 +364,29 @@ export type MutationPeople__CreateEmployeeDepartmentArgs = {
 };
 
 
+export type MutationPeople__CreateEmployeeIncrementArgs = {
+  body: CreateEmployeeIncrementInput;
+};
+
+
 export type MutationPeople__RemoveEmployeeDepartmentArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationPeople__RemoveEmployeeIncrementArgs = {
   where: CommonFindDocumentDto;
 };
 
 
 export type MutationPeople__UpdateEmployeeDepartmentArgs = {
   body: UpdateEmployeeDepartmentInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationPeople__UpdateEmployeeIncrementArgs = {
+  body: UpdateEmployeeIncrementInput;
   where: CommonFindDocumentDto;
 };
 
@@ -382,6 +426,8 @@ export type Query = {
   people__employee: Employee;
   people__employeeDepartment: EmployeeDepartment;
   people__employeeDepartments: EmployeeDepartmentWithPagination;
+  people__employeeIncrement: EmployeeIncrement;
+  people__employeeIncrements: EmployeeIncrementsWithPagination;
   people__employees: EmployeesWithPagination;
 };
 
@@ -447,6 +493,16 @@ export type QueryPeople__EmployeeDepartmentArgs = {
 
 
 export type QueryPeople__EmployeeDepartmentsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryPeople__EmployeeIncrementArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryPeople__EmployeeIncrementsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
@@ -518,9 +574,15 @@ export type UpdateAccountInput = {
 };
 
 export type UpdateEmployeeDepartmentInput = {
-  id: Scalars['Int']['input'];
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateEmployeeIncrementInput = {
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  employeeId?: InputMaybe<Scalars['ID']['input']>;
+  purpose?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEmployeeInput = {
