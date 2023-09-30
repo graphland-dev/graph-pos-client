@@ -55,6 +55,23 @@ export type AccountsWithPagination = {
   nodes?: Maybe<Array<Account>>;
 };
 
+export type Client = {
+  __typename?: 'Client';
+  _id: Scalars['ID']['output'];
+  address?: Maybe<Scalars['String']['output']>;
+  contactNumber: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ClientsWithPagination = {
+  __typename?: 'ClientsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Client>>;
+};
+
 export type CommonFindDocumentDto = {
   and?: InputMaybe<Array<CommonFindDocumentDto>>;
   key: Scalars['String']['input'];
@@ -84,6 +101,13 @@ export type CreateAccountInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   openedAt?: InputMaybe<Scalars['DateTime']['input']>;
   referenceNumber: Scalars['String']['input'];
+};
+
+export type CreateClientInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  contactNumber: Scalars['String']['input'];
+  email?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type CreateEmployeeDepartmentInput = {
@@ -126,6 +150,14 @@ export type CreateExpenseInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   purpose: Scalars['String']['input'];
   voucherNo?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateSupplierInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  companyName?: InputMaybe<Scalars['String']['input']>;
+  contactNumber: Scalars['String']['input'];
+  email?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
 };
 
 export type CreateTransactionInput = {
@@ -275,14 +307,20 @@ export type Mutation = {
   accounting__updateExpenseCategory: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   acounting__createTransfer: CommonMutationResponse;
+  people__createClient: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
   people__createEmployeeDepartment: CommonMutationResponse;
   people__createEmployeeIncrement: CommonMutationResponse;
+  people__createSupplier: CommonMutationResponse;
+  people__removeClient: Scalars['Boolean']['output'];
   people__removeEmployeeDepartment: Scalars['Boolean']['output'];
   people__removeEmployeeIncrement: Scalars['Boolean']['output'];
+  people__removeSupplier: Scalars['Boolean']['output'];
+  people__updateClient: Scalars['Boolean']['output'];
   people__updateEmployeeDepartment: Scalars['Boolean']['output'];
   people__updateEmployeeIncrement: Scalars['Boolean']['output'];
-  removeEmployee: Employee;
+  people__updateSupplier: Scalars['Boolean']['output'];
+  removeEmployee: Scalars['Boolean']['output'];
   updateEmployee: Scalars['Boolean']['output'];
 };
 
@@ -355,6 +393,11 @@ export type MutationAcounting__CreateTransferArgs = {
 };
 
 
+export type MutationPeople__CreateClientArgs = {
+  body: CreateClientInput;
+};
+
+
 export type MutationPeople__CreateEmployeeArgs = {
   body: CreateEmployeeInput;
 };
@@ -370,12 +413,33 @@ export type MutationPeople__CreateEmployeeIncrementArgs = {
 };
 
 
+export type MutationPeople__CreateSupplierArgs = {
+  body: CreateSupplierInput;
+};
+
+
+export type MutationPeople__RemoveClientArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
 export type MutationPeople__RemoveEmployeeDepartmentArgs = {
   where: CommonFindDocumentDto;
 };
 
 
 export type MutationPeople__RemoveEmployeeIncrementArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationPeople__RemoveSupplierArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationPeople__UpdateClientArgs = {
+  body: UpdateClientInput;
   where: CommonFindDocumentDto;
 };
 
@@ -388,6 +452,12 @@ export type MutationPeople__UpdateEmployeeDepartmentArgs = {
 
 export type MutationPeople__UpdateEmployeeIncrementArgs = {
   body: UpdateEmployeeIncrementInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationPeople__UpdateSupplierArgs = {
+  body: UpdateSupplierInput;
   where: CommonFindDocumentDto;
 };
 
@@ -424,12 +494,16 @@ export type Query = {
   acounting__transfer: Transfer;
   acounting__transfers: TransfersWithPagination;
   hello: Hello;
+  people__client: Client;
+  people__clients: ClientsWithPagination;
   people__employee: Employee;
   people__employeeDepartment: EmployeeDepartment;
   people__employeeDepartments: EmployeeDepartmentWithPagination;
   people__employeeIncrement: EmployeeIncrement;
   people__employeeIncrements: EmployeeIncrementsWithPagination;
   people__employees: EmployeesWithPagination;
+  people__supplier: Supplier;
+  people__suppliers: SuppliersWithPagination;
 };
 
 
@@ -483,6 +557,16 @@ export type QueryAcounting__TransfersArgs = {
 };
 
 
+export type QueryPeople__ClientArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryPeople__ClientsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
 export type QueryPeople__EmployeeArgs = {
   where: CommonFindDocumentDto;
 };
@@ -512,10 +596,38 @@ export type QueryPeople__EmployeesArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
+
+export type QueryPeople__SupplierArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryPeople__SuppliersArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
 export enum SortType {
   Asc = 'ASC',
   Desc = 'DESC'
 }
+
+export type Supplier = {
+  __typename?: 'Supplier';
+  _id: Scalars['ID']['output'];
+  address?: Maybe<Scalars['String']['output']>;
+  companyName?: Maybe<Scalars['String']['output']>;
+  contactNumber: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  email?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type SuppliersWithPagination = {
+  __typename?: 'SuppliersWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Supplier>>;
+};
 
 export type Transaction = {
   __typename?: 'Transaction';
@@ -574,6 +686,13 @@ export type UpdateAccountInput = {
   referenceNumber?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateClientInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  contactNumber?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateEmployeeDepartmentInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -603,6 +722,14 @@ export type UpdateEmployeeInput = {
 };
 
 export type UpdateExpenseCategoryInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateSupplierInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  companyName?: InputMaybe<Scalars['String']['input']>;
+  contactNumber?: InputMaybe<Scalars['String']['input']>;
+  email?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
