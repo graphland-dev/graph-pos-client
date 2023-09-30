@@ -13,7 +13,7 @@ import {
   Space,
   Switch,
   Textarea,
-  Title
+  Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import React, { useEffect } from "react";
@@ -52,6 +52,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       departmentId: "",
       name: "",
       address: "",
+      salary: 0.0,
       startingSalary: 0.0,
       religion: "",
       gender: "",
@@ -65,30 +66,31 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     },
   });
 
-   useEffect(() => {
-     setValue("departmentId", formData?.departmentId?._id);
-     setValue("name", formData?.name);
-     setValue("docs", formData?.docs);
-     setValue("address", formData?.address);
-     setValue("startingSalary", formData?.startingSalary);
-     setValue("designation", formData?.designation);
-     setValue("contactNumber", formData?.contactNumber);
-     setValue("gender", formData?.gender);
-     setValue(
-       "joiningDate",
-       formData?.["joiningDate"] || new Date().toISOString()
-     );
-     setValue(
-       "appointmentDate",
-       formData?.["appointmentDate"] || new Date().toISOString()
-     );
-     setValue("bloodGroup", formData?.bloodGroup);
-     setValue("religion", formData?.religion);
-     setValue("isActive", formData?.isActive);
-    
-   }, [formData]);
+  useEffect(() => {
+    setValue("departmentId", formData?.department?._id);
+    setValue("name", formData?.name);
+    setValue("docs", formData?.docs);
+    setValue("address", formData?.address);
+    setValue("startingSalary", formData?.startingSalary);
+    setValue("salary", formData?.salary);
+    setValue("designation", formData?.designation);
+    setValue("contactNumber", formData?.contactNumber);
+    setValue("gender", formData?.gender);
+    setValue(
+      "joiningDate",
+      formData?.["joiningDate"] || new Date().toISOString()
+    );
+    setValue(
+      "appointmentDate",
+      formData?.["appointmentDate"] || new Date().toISOString()
+    );
+    setValue("bloodGroup", formData?.bloodGroup);
+    setValue("religion", formData?.religion);
+    setValue("isActive", formData?.isActive);
 
-  
+    console.log(formData);
+  }, [formData]);
+
   const employeeDepartmentForDrop = departments?.map((item) => ({
     value: item?._id,
     label: `${item?.name}`,
@@ -115,6 +117,21 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     }
 
     if (operationType === "update") {
+      const updateData = {
+        departmentId: data.departmentId,
+        designation: data.designation,
+        bloodGroup: data.bloodGroup,
+        address: data.address,
+        appointmentDate: data.appointmentDate,
+        contactNumber: data.contactNumber,
+        docs: data.docs,
+        gender: data.gender,
+        isActive: data.isActive,
+        joiningDate: data.joiningDate,
+        name: data.name,
+        religion: data.religion,
+        startingSalary: data.startingSalary,
+      };
       peopleEmployeeUpdateMutation({
         variables: {
           where: {
@@ -122,7 +139,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             operator: MatchOperator.Eq,
             value: operationId,
           },
-          body: data,
+          body: updateData,
         },
         onCompleted: (res) => {
           console.log(res);
@@ -277,12 +294,8 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             <Input placeholder="Salary" {...register("startingSalary")} />
           </Input.Wrapper>
 
-          <Input.Wrapper label="Incremented Salary">
-            <Input
-              placeholder="Salary"
-              {...register("startingSalary")}
-              disabled
-            />
+          <Input.Wrapper label="Salary">
+            <Input placeholder="Salary" {...register("salary")} disabled />
           </Input.Wrapper>
         </div>
 
@@ -363,16 +376,18 @@ const validationSchema = yup.object({
     .label("Please select your Designation"),
   docs: yup.string().optional().nullable().label("Please write a docs"),
   gender: yup.string().optional().nullable().label("Please select your gender"),
-  isActive: yup
-    .boolean()
-    .optional()
-    .label("Please select your status"),
+  isActive: yup.boolean().optional().label("Please select your status"),
   religion: yup
     .string()
     .optional()
     .nullable()
     .label("Please select your Religion"),
-  startingSalary: yup.number().optional().label("Write your starting salary"),
+  startingSalary: yup
+    .number()
+    .optional()
+    .nullable()
+    .label("Write your starting salary"),
+  salary: yup.number().optional().nullable().label("Write your salary"),
   joiningDate: yup.string().required().label("Write your join Date"),
   appointmentDate: yup.string().required().label("Write your appointment date"),
 });

@@ -37,7 +37,7 @@ const Employees = () => {
     people__employees: EmployeesWithPagination;
   }>(PEOPLE_EMPLOYEES_QUERY_LIST);
 
-  console.log(data?.people__employees?.nodes || null);
+
 
   const { data: employeeDepartments, refetch: refetchEmployeeDepartments } =
     useQuery<{

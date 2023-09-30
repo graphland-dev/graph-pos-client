@@ -26,6 +26,7 @@ export const PEOPLE_EMPLOYEES_QUERY_LIST = gql`
         name
         religion
         salary
+        startingSalary
         updatedAt
       }
     }
