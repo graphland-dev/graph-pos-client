@@ -40,8 +40,6 @@ const Employees = () => {
     people__employees: EmployeesWithPagination;
   }>(PEOPLE_EMPLOYEES_QUERY_LIST);
 
-
-
   const { data: employeeDepartments, refetch: refetchEmployeeDepartments } =
     useQuery<{
       people__employeeDepartments: EmployeeDepartmentWithPagination;
@@ -50,36 +48,35 @@ const Employees = () => {
         where: { limit: -1 },
       },
     });
-  
-   const handleRefetch = (variables: any) => {
-     setState({ refetching: true });
-     refetchEmployeeDepartments();
-     refetch(variables).finally(() => {
-       setState({ refetching: false });
-     });
-   };
-  
-  const [deleteEmployeeMutation] = useMutation(
-    PEOPLE_EMPLOYEES_DELETE_MUTATION,
-    { onCompleted: () => handleRefetch({}) }
-  );
-  
-   const handleDeleteEmployee = (_id: string) => {
-     confirmModal({
-       title: "Sure to delete?",
-       description: "Be careful!! Once you deleted, it can not be undone",
-       isDangerous: true,
-       onConfirm() {
-         deleteEmployeeMutation({
-           variables: {
-             where: { key: "_id", operator: MatchOperator.Eq, value: _id },
-           },
-         });
-       },
-     });
-   };
 
- 
+  const [deleteEmployeeMutation] = useMutation(
+    PEOPLE_EMPLOYEES_DELETE_MUTATION
+  );
+
+  const handleRefetch = (variables: any) => {
+    setState({ refetching: true });
+    refetchEmployeeDepartments();
+    refetch(variables).finally(() => {
+      setState({ refetching: false });
+    });
+  };
+
+  const handleDeleteEmployee = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteEmployeeMutation({
+          variables: {
+            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+          },
+          onCompleted: () => handleRefetch({}),
+          onError: (error) => console.log({ error }),
+        });
+      },
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [

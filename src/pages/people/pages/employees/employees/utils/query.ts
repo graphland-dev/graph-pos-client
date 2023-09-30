@@ -51,10 +51,8 @@ export const PEOPLE_EMPLOYEES_UPDATE_MUTATION = gql`
 `;
 
 export const PEOPLE_EMPLOYEES_DELETE_MUTATION = gql`
-  mutation RemoveEmployee($where: CommonFindDocumentDto!) {
-    removeEmployee(where: $where) {
-      _id
-    }
+  mutation removeEmployee($where: CommonFindDocumentDto!) {
+    removeEmployee(where: $where)
   }
 `;
 
