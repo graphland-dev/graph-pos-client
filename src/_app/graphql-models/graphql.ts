@@ -93,9 +93,9 @@ export type CreateEmployeeDepartmentInput = {
 
 export type CreateEmployeeIncrementInput = {
   amount: Scalars['Float']['input'];
-  date: Scalars['DateTime']['input'];
+  date?: InputMaybe<Scalars['DateTime']['input']>;
   employeeId: Scalars['ID']['input'];
-  purpose: Scalars['String']['input'];
+  note: Scalars['String']['input'];
 };
 
 export type CreateEmployeeInput = {
@@ -111,7 +111,7 @@ export type CreateEmployeeInput = {
   joiningDate?: InputMaybe<Scalars['DateTime']['input']>;
   name: Scalars['String']['input'];
   religion?: InputMaybe<Scalars['String']['input']>;
-  salary?: InputMaybe<Scalars['Float']['input']>;
+  startingSalary?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CreateExpenseCategoryInput = {
@@ -154,16 +154,17 @@ export type Employee = {
   bloodGroup?: Maybe<Scalars['String']['output']>;
   contactNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  dateOfBirth?: Maybe<Scalars['DateTime']['output']>;
   department?: Maybe<EmployeeDepartment>;
   designation?: Maybe<Scalars['String']['output']>;
   docs?: Maybe<Scalars['String']['output']>;
   gender?: Maybe<User_Gender>;
-  incrementedSalary?: Maybe<Scalars['Float']['output']>;
   isActive?: Maybe<Scalars['Boolean']['output']>;
   joiningDate?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   religion?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
+  startingSalary?: Maybe<Scalars['Float']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -189,7 +190,7 @@ export type EmployeeIncrement = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date?: Maybe<Scalars['DateTime']['output']>;
   employee: Employee;
-  purpose: Scalars['String']['output'];
+  note: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -582,7 +583,7 @@ export type UpdateEmployeeIncrementInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   employeeId?: InputMaybe<Scalars['ID']['input']>;
-  purpose?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEmployeeInput = {
@@ -598,7 +599,7 @@ export type UpdateEmployeeInput = {
   joiningDate?: InputMaybe<Scalars['DateTime']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   religion?: InputMaybe<Scalars['String']['input']>;
-  salary?: InputMaybe<Scalars['Float']['input']>;
+  startingSalary?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type UpdateExpenseCategoryInput = {
