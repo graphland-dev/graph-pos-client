@@ -50,7 +50,13 @@ export const PEOPLE_EMPLOYEES_UPDATE_MUTATION = gql`
   }
 `;
 
-// export const PEOPLE_EMPLOYEES_DELETE_MUTATION = gql``;
+export const PEOPLE_EMPLOYEES_DELETE_MUTATION = gql`
+  mutation RemoveEmployee($where: CommonFindDocumentDto!) {
+    removeEmployee(where: $where) {
+      _id
+    }
+  }
+`;
 
 export const PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN = gql`
   query People__employeeDepartments($where: CommonPaginationDto) {
