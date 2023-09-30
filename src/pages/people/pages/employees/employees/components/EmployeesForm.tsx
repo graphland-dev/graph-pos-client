@@ -10,19 +10,20 @@ import {
   Button,
   Input,
   Select,
-  SimpleGrid,
   Space,
   Switch,
+  Textarea,
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import {
   PEOPLE_EMPLOYEES_CREATE_MUTATION,
   PEOPLE_EMPLOYEES_UPDATE_MUTATION,
 } from "../utils/query";
+import { IReligion } from "@/_app/models/religion.model";
 
 interface IEmployeesFormProps {
   onSubmissionDone: () => void;
@@ -36,7 +37,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
   onSubmissionDone,
   operationType,
   operationId,
-
+  formData,
   departments,
 }) => {
   const {
@@ -52,10 +53,11 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       name: "",
       address: "",
       salary: 0.0,
+      startingSalary: 0.0,
       religion: "",
       gender: "",
       designation: "",
-      contactNumber: 0,
+      contactNumber: "",
       isActive: false,
       docs: "",
       bloodGroup: "",
@@ -63,6 +65,31 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       appointmentDate: new Date().toISOString(),
     },
   });
+
+  useEffect(() => {
+    setValue("departmentId", formData?.department?._id);
+    setValue("name", formData?.name);
+    setValue("docs", formData?.docs);
+    setValue("address", formData?.address);
+    setValue("startingSalary", formData?.startingSalary);
+    setValue("salary", formData?.salary);
+    setValue("designation", formData?.designation);
+    setValue("contactNumber", formData?.contactNumber);
+    setValue("gender", formData?.gender);
+    setValue(
+      "joiningDate",
+      formData?.["joiningDate"] || new Date().toISOString()
+    );
+    setValue(
+      "appointmentDate",
+      formData?.["appointmentDate"] || new Date().toISOString()
+    );
+    setValue("bloodGroup", formData?.bloodGroup);
+    setValue("religion", formData?.religion);
+    setValue("isActive", formData?.isActive);
+
+    console.log(formData);
+  }, [formData]);
 
   const employeeDepartmentForDrop = departments?.map((item) => ({
     value: item?._id,
@@ -74,6 +101,8 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 
   const [peopleEmployeeUpdateMutation, { loading: employeeUpdateLoading }] =
     useMutation(PEOPLE_EMPLOYEES_UPDATE_MUTATION);
+  
+  
 
   const onSubmit = (data: any) => {
     if (operationType === "create") {
@@ -90,6 +119,21 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     }
 
     if (operationType === "update") {
+      const updateData = {
+        departmentId: data.departmentId,
+        designation: data.designation,
+        bloodGroup: data.bloodGroup,
+        address: data.address,
+        appointmentDate: data.appointmentDate,
+        contactNumber: data.contactNumber,
+        docs: data.docs,
+        gender: data.gender,
+        isActive: data.isActive,
+        joiningDate: data.joiningDate,
+        name: data.name,
+        religion: data.religion,
+        startingSalary: data.startingSalary,
+      };
       peopleEmployeeUpdateMutation({
         variables: {
           where: {
@@ -97,7 +141,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             operator: MatchOperator.Eq,
             value: operationId,
           },
-          body: data,
+          body: updateData,
         },
         onCompleted: (res) => {
           console.log(res);
@@ -117,22 +161,15 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
-            label="name"
+            label="Name"
             withAsterisk
             error={<ErrorMessage name={"name"} errors={errors} />}
           >
             <Input placeholder="Name" {...register("name")} />
           </Input.Wrapper>
-          <Input.Wrapper
-            label="Address"
-            withAsterisk
-            error={<ErrorMessage name={"address"} errors={errors} />}
-          >
-            <Input placeholder="Address" {...register("address")} />
-          </Input.Wrapper>
+
           <Input.Wrapper
             label="Contact Number"
-            withAsterisk
             error={<ErrorMessage name={"contactNumber"} errors={errors} />}
           >
             <Input
@@ -142,31 +179,77 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
           </Input.Wrapper>
           <Input.Wrapper
             label="Gender"
-            withAsterisk
             error={<ErrorMessage name={"gender"} errors={errors} />}
           >
             <Select
+              onChange={(gender) => setValue("gender", gender || "")}
               data={[
                 {
                   label: "Female",
                   value: User_Gender.Female,
                 },
                 {
-                  label: "Beda manush",
+                  label: "Male",
                   value: User_Gender.Male,
+                },
+                {
+                  label: "NonBinary",
+                  value: User_Gender.NonBinary,
+                },
+                {
+                  label: "Other",
+                  value: User_Gender.Other,
+                },
+                {
+                  label: "PreferNotToSay",
+                  value: User_Gender.PreferNotToSay,
+                },
+              ]}
+            />
+          </Input.Wrapper>
+          <Input.Wrapper
+            label="Religion"
+            error={<ErrorMessage name={"religion"} errors={errors} />}
+          >
+            <Select
+              onChange={(religion) => setValue("religion", religion || "")}
+              data={[
+                {
+                  label: "ISLAM",
+                  value: IReligion.ISLAM,
+                },
+                {
+                  label: "CHRISTIANITY",
+                  value: IReligion.CHRISTIANITY,
+                },
+                {
+                  label: "BUDDHISM",
+                  value: IReligion.BUDDHISM,
+                },
+                {
+                  label: "CHRISTIANITY",
+                  value: IReligion.CHRISTIANITY,
+                },
+                {
+                  label: "JUDAISM",
+                  value: IReligion.JUDAISM,
                 },
               ]}
             />
           </Input.Wrapper>
         </div>
+        <Textarea
+          label="Address"
+          {...register("address")}
+          placeholder="Write your Address"
+        />
 
-        <SimpleGrid cols={2}>
+        <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
-            label="designation"
-            withAsterisk
+            label="Designation"
             error={<ErrorMessage name={"designation"} errors={errors} />}
           >
-            <Input placeholder="designation" {...register("designation")} />
+            <Input placeholder="Designation" {...register("designation")} />
           </Input.Wrapper>
 
           <Select
@@ -175,30 +258,22 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             onChange={(departmentId) =>
               setValue("departmentId", departmentId || "")
             }
-            label="Department Id"
+            label="Department"
             placeholder="From Account"
             data={employeeDepartmentForDrop || []}
             value={watch("departmentId")}
           />
-        </SimpleGrid>
+        </div>
 
-        <SimpleGrid cols={3}>
+        <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
             label="Blood Group"
-            withAsterisk
             error={<ErrorMessage name={"bloodGroup"} errors={errors} />}
           >
             <Input placeholder="Blood Group" {...register("bloodGroup")} />
           </Input.Wrapper>
-          <Input.Wrapper
-            label="Religion"
-            withAsterisk
-            error={<ErrorMessage name={"religion"} errors={errors} />}
-          >
-            <Input placeholder="Religion" {...register("religion")} />
-          </Input.Wrapper>
+
           <DateTimePicker
-            withAsterisk
             className="w-full"
             valueFormat="DD MMM YYYY hh:mm A"
             value={new Date(watch("appointmentDate"))}
@@ -211,23 +286,22 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             placeholder="Select your date and time"
             mx="auto"
           />
-        </SimpleGrid>
+        </div>
 
-        <SimpleGrid cols={2}>
+        <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
             label="Starting Salary"
-            withAsterisk
-            error={<ErrorMessage name={"salary"} errors={errors} />}
+            error={<ErrorMessage name={"startingSalary"} errors={errors} />}
           >
-            <Input placeholder="Salary" {...register("salary")} />
+            <Input placeholder="Salary" {...register("startingSalary")} />
           </Input.Wrapper>
 
-          <Input.Wrapper label="Incremented Salary">
+          <Input.Wrapper label="Salary">
             <Input placeholder="Salary" {...register("salary")} disabled />
           </Input.Wrapper>
-        </SimpleGrid>
+        </div>
 
-        <SimpleGrid cols={2}>
+        <div className="grid gap-3 lg:grid-cols-2">
           <DateTimePicker
             withAsterisk
             className="w-full"
@@ -256,7 +330,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             placeholder="Select your date and time"
             mx="auto"
           />
-        </SimpleGrid>
+        </div>
         <Switch
           checked={watch("isActive")}
           onChange={(event) => {
@@ -284,17 +358,38 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 export default EmployeesForm;
 
 const validationSchema = yup.object({
-  departmentId: yup.string().required().label("Department Name"),
+  departmentId: yup.string().required().label("Write your Department Name"),
   name: yup.string().required().label("Name"),
-  address: yup.string().required().label("Available Balance"),
-  bloodGroup: yup.string().optional().label("Available Balance"),
-  contactNumber: yup.number().optional().label("Available Balance"),
-  designation: yup.string().optional().label("Available Balance"),
-  docs: yup.string().optional().label("Available Balance"),
-  gender: yup.string().optional().label("Please select your gender"),
-  isActive: yup.boolean().optional().label("Available Balance"),
-  religion: yup.string().optional().label("Available Balance"),
-  salary: yup.number().optional().label("Available Balance"),
-  joiningDate: yup.string().required().label("Available Balance"),
-  appointmentDate: yup.string().required().label("Opening Data"),
+  address: yup.string().optional().nullable().label("Write your Address"),
+  bloodGroup: yup
+    .string()
+    .optional()
+    .nullable()
+    .label("Write your blood group"),
+  contactNumber: yup
+    .string()
+    .optional()
+    .nullable()
+    .label("Write your contact number"),
+  designation: yup
+    .string()
+    .optional()
+    .nullable()
+    .label("Please select your Designation"),
+  docs: yup.string().optional().nullable().label("Please write a docs"),
+  gender: yup.string().optional().nullable().label("Please select your gender"),
+  isActive: yup.boolean().optional().label("Please select your status"),
+  religion: yup
+    .string()
+    .optional()
+    .nullable()
+    .label("Please select your Religion"),
+  startingSalary: yup
+    .number()
+    .optional()
+    .nullable()
+    .label("Write your starting salary"),
+  salary: yup.number().optional().nullable().label("Write your salary"),
+  joiningDate: yup.string().required().label("Write your join Date"),
+  appointmentDate: yup.string().required().label("Write your appointment date"),
 });

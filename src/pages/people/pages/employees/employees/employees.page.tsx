@@ -3,8 +3,9 @@ import {
   Employee,
   EmployeeDepartmentWithPagination,
   EmployeesWithPagination,
+  MatchOperator,
 } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -12,9 +13,11 @@ import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import EmployeesForm from "./components/EmployeesForm";
 import {
+  PEOPLE_EMPLOYEES_DELETE_MUTATION,
   PEOPLE_EMPLOYEES_QUERY_LIST,
   PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN,
 } from "./utils/query";
+import { confirmModal } from "@/_app/common/confirm/confirm";
 
 interface IState {
   modalOpened: boolean;
@@ -37,8 +40,6 @@ const Employees = () => {
     people__employees: EmployeesWithPagination;
   }>(PEOPLE_EMPLOYEES_QUERY_LIST);
 
-  console.log(data?.people__employees?.nodes || null);
-
   const { data: employeeDepartments, refetch: refetchEmployeeDepartments } =
     useQuery<{
       people__employeeDepartments: EmployeeDepartmentWithPagination;
@@ -48,11 +49,32 @@ const Employees = () => {
       },
     });
 
+  const [deleteEmployeeMutation] = useMutation(
+    PEOPLE_EMPLOYEES_DELETE_MUTATION
+  );
+
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
     refetchEmployeeDepartments();
     refetch(variables).finally(() => {
       setState({ refetching: false });
+    });
+  };
+
+  const handleDeleteEmployee = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteEmployeeMutation({
+          variables: {
+            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+          },
+          onCompleted: () => handleRefetch({}),
+          onError: (error) => console.log({ error }),
+        });
+      },
     });
   };
 
@@ -123,7 +145,7 @@ const Employees = () => {
               Edit
             </Menu.Item>
             <Menu.Item
-              // onClick={() => handleDeleteAccount(row._id)}
+              onClick={() => handleDeleteEmployee(row._id)}
               icon={<IconTrash size={18} />}
             >
               Delete

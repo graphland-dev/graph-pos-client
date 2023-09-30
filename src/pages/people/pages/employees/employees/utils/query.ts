@@ -26,6 +26,7 @@ export const PEOPLE_EMPLOYEES_QUERY_LIST = gql`
         name
         religion
         salary
+        startingSalary
         updatedAt
       }
     }
@@ -49,7 +50,11 @@ export const PEOPLE_EMPLOYEES_UPDATE_MUTATION = gql`
   }
 `;
 
-// export const PEOPLE_EMPLOYEES_DELETE_MUTATION = gql``;
+export const PEOPLE_EMPLOYEES_DELETE_MUTATION = gql`
+  mutation removeEmployee($where: CommonFindDocumentDto!) {
+    removeEmployee(where: $where)
+  }
+`;
 
 export const PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN = gql`
   query People__employeeDepartments($where: CommonPaginationDto) {
