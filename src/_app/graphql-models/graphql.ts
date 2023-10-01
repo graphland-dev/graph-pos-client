@@ -326,6 +326,7 @@ export type Mutation = {
   accounting__removeAccount: Scalars['Boolean']['output'];
   accounting__removeExpense: Scalars['Boolean']['output'];
   accounting__removeExpenseCategory: Scalars['Boolean']['output'];
+  accounting__removePayroll: Scalars['Boolean']['output'];
   accounting__removeTransaction: Scalars['Boolean']['output'];
   accounting__removeTransfer: Scalars['Boolean']['output'];
   accounting__updateAccount: Scalars['Boolean']['output'];
@@ -386,6 +387,11 @@ export type MutationAccounting__RemoveExpenseArgs = {
 
 
 export type MutationAccounting__RemoveExpenseCategoryArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationAccounting__RemovePayrollArgs = {
   where: CommonFindDocumentDto;
 };
 

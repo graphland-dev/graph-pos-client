@@ -47,6 +47,10 @@ export const accountingModuleRouter: RouteObject[] = [
 						path: 'statements',
 						element: <StatementPage />,
 					},
+					{
+						path: 'payroll',
+						element: <TypesPage />,
+					},
 				],
 			},
 			{
@@ -91,10 +95,6 @@ export const accountingModuleRouter: RouteObject[] = [
 						element: <AssetsPage />,
 					},
 				],
-			},
-			{
-				path: 'payroll',
-				element: <TypesPage />,
 			},
 		],
 	},
