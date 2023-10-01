@@ -62,6 +62,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       docs: "",
       bloodGroup: "",
       joiningDate: new Date().toISOString(),
+      dateOfBirth: new Date().toISOString(),
       appointmentDate: new Date().toISOString(),
     },
   });
@@ -79,6 +80,10 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     setValue(
       "joiningDate",
       formData?.["joiningDate"] || new Date().toISOString()
+    );
+    setValue(
+      "dateOfBirth",
+      formData?.["dateOfBirth"] || new Date().toISOString()
     );
     setValue(
       "appointmentDate",
@@ -101,8 +106,6 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 
   const [peopleEmployeeUpdateMutation, { loading: employeeUpdateLoading }] =
     useMutation(PEOPLE_EMPLOYEES_UPDATE_MUTATION);
-  
-  
 
   const onSubmit = (data: any) => {
     if (operationType === "create") {
@@ -275,14 +278,14 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 
           <DateTimePicker
             className="w-full"
-            valueFormat="DD MMM YYYY hh:mm A"
-            value={new Date(watch("appointmentDate"))}
+            valueFormat="DD MMM YYYY"
+            value={new Date(watch("dateOfBirth"))}
             onChange={(e) => {
               const dateTimeValue =
                 e?.toISOString() || new Date().toISOString();
-              setValue("appointmentDate", dateTimeValue);
+              setValue("dateOfBirth", dateTimeValue);
             }}
-            label="Date & Time"
+            label="Date Of Birth"
             placeholder="Select your date and time"
             mx="auto"
           />
@@ -312,7 +315,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
                 e?.toISOString() || new Date().toISOString();
               setValue("appointmentDate", dateTimeValue);
             }}
-            label="Date & Time"
+            label="Appointment Date"
             placeholder="Select your date and time"
             mx="auto"
           />
@@ -326,7 +329,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
                 e?.toISOString() || new Date().toISOString();
               setValue("joiningDate", dateTimeValue);
             }}
-            label="Date & Time"
+            label="Joining Date"
             placeholder="Select your date and time"
             mx="auto"
           />
@@ -391,5 +394,6 @@ const validationSchema = yup.object({
     .label("Write your starting salary"),
   salary: yup.number().optional().nullable().label("Write your salary"),
   joiningDate: yup.string().required().label("Write your join Date"),
+  dateOfBirth: yup.string().required().label("Write your join Date"),
   appointmentDate: yup.string().required().label("Write your appointment date"),
 });

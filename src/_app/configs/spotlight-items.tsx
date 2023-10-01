@@ -240,7 +240,7 @@ export const spotlightItems: SpotlightAction[] = [
     title: "People > Employees > Employees",
     description: "Get full information about current system status",
     onTrigger: () => {
-      window.location.href = "people/employees/employees";
+      window.location.href = "employees";
     },
     icon: <IconUsersGroup size="1.2rem" />,
   },
