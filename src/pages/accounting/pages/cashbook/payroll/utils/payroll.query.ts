@@ -52,6 +52,8 @@ export const PAYROLL_ACCOUNTS_QUERY = gql`
 			nodes {
 				_id
 				name
+				creditAmount
+				debitAmount
 			}
 		}
 	}

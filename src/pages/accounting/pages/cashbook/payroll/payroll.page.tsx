@@ -1,5 +1,4 @@
 import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
 import {
 	Account,
 	AccountsWithPagination,
@@ -10,13 +9,14 @@ import {
 	PayrollsWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Drawer, Menu } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
-import { IconPlus, IconTrash } from '@tabler/icons-react';
 import { MRT_ColumnDef } from 'mantine-react-table';
 import { useMemo } from 'react';
 
+import DataTable from '@/_app/common/data-table/DataTable';
 import { INCREMENT_EMPLOYEE_QUERY } from '@/pages/people/pages/employees/increments/utils/increment.query';
+import { Button, Drawer, Menu } from '@mantine/core';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import PayrollForm from './components/PayrollForm';
 import {
@@ -29,7 +29,7 @@ interface IState {
 	refetching: boolean;
 }
 
-const Payroll = () => {
+const PayrollPage = () => {
 	const [openedDrawer, drawerHandler] = useDisclosure();
 	const [state, setState] = useSetState<IState>({
 		refetching: false,
@@ -152,4 +152,4 @@ const Payroll = () => {
 	);
 };
 
-export default Payroll;
+export default PayrollPage;
