@@ -26,7 +26,8 @@ export enum Accounting_Transaction_Source {
   ClientInvoicePayment = 'CLIENT_INVOICE_PAYMENT',
   EmployeeSalary = 'EMPLOYEE_SALARY',
   Expense = 'EXPENSE',
-  LoanPayment = 'LOAN_PAYMENT'
+  LoanPayment = 'LOAN_PAYMENT',
+  Payroll = 'PAYROLL'
 }
 
 export enum Accounting_Transaction_Type {
@@ -150,6 +151,14 @@ export type CreateExpenseInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   purpose: Scalars['String']['input'];
   voucherNo?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreatePayrollInput = {
+  accountId: Scalars['String']['input'];
+  employeeId: Scalars['String']['input'];
+  opportunities: Array<PayrollOpportunityInput>;
+  salaryDate: Scalars['DateTime']['input'];
+  salaryMonth: Month_Name;
 };
 
 export type CreateSupplierInput = {
@@ -279,6 +288,21 @@ export type Hello = {
   message: Scalars['String']['output'];
 };
 
+export enum Month_Name {
+  April = 'APRIL',
+  August = 'AUGUST',
+  December = 'DECEMBER',
+  February = 'FEBRUARY',
+  January = 'JANUARY',
+  July = 'JULY',
+  June = 'JUNE',
+  March = 'MARCH',
+  May = 'MAY',
+  November = 'NOVEMBER',
+  October = 'OCTOBER',
+  September = 'SEPTEMBER'
+}
+
 export enum MatchOperator {
   Contains = 'contains',
   Eq = 'eq',
@@ -297,6 +321,7 @@ export type Mutation = {
   accounting__createAccount: CommonMutationResponse;
   accounting__createExpense: CommonMutationResponse;
   accounting__createExpenseCategory: CommonMutationResponse;
+  accounting__createPayroll: CommonMutationResponse;
   accounting__createTransaction: CommonMutationResponse;
   accounting__removeAccount: Scalars['Boolean']['output'];
   accounting__removeExpense: Scalars['Boolean']['output'];
@@ -337,6 +362,11 @@ export type MutationAccounting__CreateExpenseArgs = {
 
 export type MutationAccounting__CreateExpenseCategoryArgs = {
   body: CreateExpenseCategoryInput;
+};
+
+
+export type MutationAccounting__CreatePayrollArgs = {
+  body: CreatePayrollInput;
 };
 
 
@@ -480,6 +510,36 @@ export type PagniationMeta = {
   totalPages: Scalars['Float']['output'];
 };
 
+export type Payroll = {
+  __typename?: 'Payroll';
+  _id: Scalars['ID']['output'];
+  account: Account;
+  coRelationId?: Maybe<Scalars['ID']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  employee: Employee;
+  opportunities: Array<PayrollOpportunity>;
+  salaryDate: Scalars['DateTime']['output'];
+  salaryMonth: Month_Name;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PayrollOpportunity = {
+  __typename?: 'PayrollOpportunity';
+  amount: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type PayrollOpportunityInput = {
+  amount: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+};
+
+export type PayrollsWithPagination = {
+  __typename?: 'PayrollsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Payroll>>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _service: _Service;
@@ -489,6 +549,7 @@ export type Query = {
   accounting__expenseCategory: ExpenseCategory;
   accounting__expenseCategorys: ExpenseCategorysWithPagination;
   accounting__expenses: ExpensesWithPagination;
+  accounting__payrolls: PayrollsWithPagination;
   accounting__transaction: Transaction;
   accounting__transactions: TransactionsWithPagination;
   acounting__transfer: Transfer;
@@ -533,6 +594,11 @@ export type QueryAccounting__ExpenseCategorysArgs = {
 
 
 export type QueryAccounting__ExpensesArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryAccounting__PayrollsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
