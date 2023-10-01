@@ -4,7 +4,6 @@ import {
 	IconLoadBalancer,
 	IconTableShare,
 	IconVectorTriangle,
-	IconWallet,
 } from '@tabler/icons-react';
 
 export const accountingNavlinks: AppNavLink[] = [
@@ -32,6 +31,10 @@ export const accountingNavlinks: AppNavLink[] = [
 			{
 				label: 'Statements',
 				href: 'statements',
+			},
+			{
+				label: 'Payroll',
+				href: 'payroll',
 			},
 		],
 	},
@@ -83,10 +86,5 @@ export const accountingNavlinks: AppNavLink[] = [
 				href: 'assets',
 			},
 		],
-	},
-	{
-		label: 'Payroll',
-		icon: <IconWallet />,
-		href: 'payroll',
 	},
 ];
