@@ -185,6 +185,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             error={<ErrorMessage name={"gender"} errors={errors} />}
           >
             <Select
+              value={watch("gender")}
               onChange={(gender) => setValue("gender", gender || "")}
               data={[
                 {
@@ -215,6 +216,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             error={<ErrorMessage name={"religion"} errors={errors} />}
           >
             <Select
+              value={watch("religion")}
               onChange={(religion) => setValue("religion", religion || "")}
               data={[
                 {
@@ -300,7 +302,12 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
           </Input.Wrapper>
 
           <Input.Wrapper label="Salary">
-            <Input placeholder="Salary" {...register("salary")} disabled />
+            <Input
+              defaultValue={watch("salary") || 0}
+              placeholder="Salary"
+              {...register("salary")}
+              disabled
+            />
           </Input.Wrapper>
         </div>
 

@@ -163,7 +163,7 @@ const Employees = () => {
             <Button
               leftIcon={<IconPlus size={16} />}
               onClick={() =>
-                setState({ modalOpened: true, operationPayload: {} })
+                setState({ modalOpened: true, operationPayload: "create" })
               }
               size="sm"
             >
