@@ -158,7 +158,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
   return (
     <div>
       <Title order={4}>
-        <span className="capitalize">{operationType}</span> a Balance Transfer
+        <span className="capitalize">{operationType}</span> a Employee
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
