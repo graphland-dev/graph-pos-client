@@ -13,6 +13,7 @@ import ExpenseListPage from './pages/expense/expenseList/expenseList.page';
 import Authorities from './pages/load-manegment/authorities/authorities.page';
 import Loans from './pages/load-manegment/loans/loans.page';
 import Payments from './pages/load-manegment/payments/payments.page';
+import PayrollPage from './pages/cashbook/payroll/payroll.page';
 export const accountingModuleRouter: RouteObject[] = [
 	{
 		path: '',
@@ -46,6 +47,10 @@ export const accountingModuleRouter: RouteObject[] = [
 					{
 						path: 'statements',
 						element: <StatementPage />,
+					},
+					{
+						path: 'payroll',
+						element: <PayrollPage />,
 					},
 				],
 			},
@@ -91,10 +96,6 @@ export const accountingModuleRouter: RouteObject[] = [
 						element: <AssetsPage />,
 					},
 				],
-			},
-			{
-				path: 'payroll',
-				element: <TypesPage />,
 			},
 		],
 	},

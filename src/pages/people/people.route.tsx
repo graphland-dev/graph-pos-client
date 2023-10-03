@@ -2,10 +2,10 @@ import DashboardLayout from '@/_app/common/layouts/DashboardLayout';
 import { RouteObject } from 'react-router-dom';
 import ClientPage from './pages/client/client.page';
 import Departments from './pages/employees/departments/departments.page';
-import Increments from './pages/employees/increments/increments.page';
-import Suppliers from './pages/suppliers/suppliers.page';
-import { peopleNavlinks } from './people.navlinks';
 import Employees from './pages/employees/employees/employees.page';
+import Increments from './pages/employees/increments/increments.page';
+import SuppliersPage from './pages/suppliers/suppliers.page';
+import { peopleNavlinks } from './people.navlinks';
 
 export const peopleModuleRouter: RouteObject[] = [
 	{
@@ -20,7 +20,7 @@ export const peopleModuleRouter: RouteObject[] = [
 			},
 			{
 				path: 'suppliers',
-				element: <Suppliers />,
+				element: <SuppliersPage />,
 			},
 			{
 				path: 'employees',
