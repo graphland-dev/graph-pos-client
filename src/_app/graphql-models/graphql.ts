@@ -56,6 +56,22 @@ export type AccountsWithPagination = {
   nodes?: Maybe<Array<Account>>;
 };
 
+export type Brand = {
+  __typename?: 'Brand';
+  _id: Scalars['ID']['output'];
+  code: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type BrandsWithPagination = {
+  __typename?: 'BrandsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Brand>>;
+};
+
 export type Client = {
   __typename?: 'Client';
   _id: Scalars['ID']['output'];
@@ -102,6 +118,12 @@ export type CreateAccountInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   openedAt?: InputMaybe<Scalars['DateTime']['input']>;
   referenceNumber: Scalars['String']['input'];
+};
+
+export type CreateBrandInput = {
+  code: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateClientInput = {
@@ -185,6 +207,19 @@ export type CreateTransferInput = {
   fromAccountId: Scalars['ID']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
   toAccountId: Scalars['ID']['input'];
+};
+
+export type CreateUnitInput = {
+  code: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateVatInput = {
+  code: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  percentage: Scalars['Float']['input'];
 };
 
 export type Employee = {
@@ -347,6 +382,15 @@ export type Mutation = {
   people__updateEmployeeIncrement: Scalars['Boolean']['output'];
   people__updateSupplier: Scalars['Boolean']['output'];
   removeEmployee: Scalars['Boolean']['output'];
+  setup__createBrand: CommonMutationResponse;
+  setup__createUnit: CommonMutationResponse;
+  setup__createVat: CommonMutationResponse;
+  setup__removeBrand: Brand;
+  setup__removeUnit: Scalars['Boolean']['output'];
+  setup__removeVat: Scalars['Boolean']['output'];
+  setup__updateBrand: Scalars['Boolean']['output'];
+  setup__updateUnit: Scalars['Boolean']['output'];
+  setup__updateVat: Scalars['Boolean']['output'];
   updateEmployee: Scalars['Boolean']['output'];
 };
 
@@ -503,6 +547,54 @@ export type MutationRemoveEmployeeArgs = {
 };
 
 
+export type MutationSetup__CreateBrandArgs = {
+  body: CreateBrandInput;
+};
+
+
+export type MutationSetup__CreateUnitArgs = {
+  body: CreateUnitInput;
+};
+
+
+export type MutationSetup__CreateVatArgs = {
+  body: CreateVatInput;
+};
+
+
+export type MutationSetup__RemoveBrandArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationSetup__RemoveUnitArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationSetup__RemoveVatArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationSetup__UpdateBrandArgs = {
+  body: UpdateBrandInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationSetup__UpdateUnitArgs = {
+  body: UpdateUnitInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationSetup__UpdateVatArgs = {
+  body: UpdateVatInput;
+  where: CommonFindDocumentDto;
+};
+
+
 export type MutationUpdateEmployeeArgs = {
   body: UpdateEmployeeInput;
   where: CommonFindDocumentDto;
@@ -520,6 +612,7 @@ export type Payroll = {
   __typename?: 'Payroll';
   _id: Scalars['ID']['output'];
   account: Account;
+  amount?: Maybe<Scalars['Float']['output']>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   employee: Employee;
@@ -571,6 +664,11 @@ export type Query = {
   people__employees: EmployeesWithPagination;
   people__supplier: Supplier;
   people__suppliers: SuppliersWithPagination;
+  setup__brand: Brand;
+  setup__brands: BrandsWithPagination;
+  setup__unit: Unit;
+  setup__units: UnitsWithPagination;
+  setup__vats: VatsWithPagination;
 };
 
 
@@ -678,6 +776,31 @@ export type QueryPeople__SuppliersArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
+
+export type QuerySetup__BrandArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QuerySetup__BrandsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QuerySetup__UnitArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QuerySetup__UnitsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QuerySetup__VatsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
 export enum SortType {
   Asc = 'ASC',
   Desc = 'DESC'
@@ -749,6 +872,23 @@ export enum User_Gender {
   PreferNotToSay = 'PREFER_NOT_TO_SAY'
 }
 
+export type Unit = {
+  __typename?: 'Unit';
+  _id: Scalars['ID']['output'];
+  code: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  percentage: Scalars['Float']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type UnitsWithPagination = {
+  __typename?: 'UnitsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Unit>>;
+};
+
 export type UpdateAccountInput = {
   brunchName?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
@@ -756,6 +896,12 @@ export type UpdateAccountInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   openedAt?: InputMaybe<Scalars['DateTime']['input']>;
   referenceNumber?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateBrandInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateClientInput = {
@@ -813,6 +959,32 @@ export type UpdateTransactionInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   source?: InputMaybe<Accounting_Transaction_Source>;
   type?: InputMaybe<Accounting_Transaction_Type>;
+};
+
+export type UpdateUnitInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateVatInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  percentage?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type Vat = {
+  __typename?: 'Vat';
+  _id: Scalars['ID']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type VatsWithPagination = {
+  __typename?: 'VatsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Vat>>;
 };
 
 export enum Where_Operator {
