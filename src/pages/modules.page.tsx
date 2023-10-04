@@ -5,7 +5,6 @@ import {
   IconBuildingWarehouse,
   IconPremiumRights,
   IconReportAnalytics,
-  IconSettingsCog,
   IconUsers,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
@@ -35,11 +34,6 @@ const modules = [
     path: "settings",
     label: "Settings",
     icon: IconAdjustments,
-  },
-  {
-    path: "global-setting",
-    label: "Global Settings",
-    icon: IconSettingsCog,
   },
 ];
 
