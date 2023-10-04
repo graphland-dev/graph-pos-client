@@ -5,7 +5,6 @@ import {
   IconBuildingWarehouse,
   IconPremiumRights,
   IconReportAnalytics,
-  IconSettingsCog,
   IconUsers,
 } from "@tabler/icons-react";
 import { useNavigate } from "react-router-dom";
@@ -36,11 +35,6 @@ const modules = [
     label: "Settings",
     icon: IconAdjustments,
   },
-  {
-    path: "global-setting",
-    label: "Global Settings",
-    icon: IconSettingsCog,
-  },
 ];
 
 const ModulesPage = () => {
@@ -49,8 +43,9 @@ const ModulesPage = () => {
     <>
       <CommonHeader />
       <div className="grid gap-5 p-10 lg:grid-cols-4">
-        {modules.map((module) => (
+        {modules.map((module, key) => (
           <Paper
+            key={key}
             onClick={() => navigate(module.path)}
             withBorder
             p={"xl"}

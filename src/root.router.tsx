@@ -6,6 +6,7 @@ import ModulesPage from "./pages/modules.page";
 import { reportsModuleRouter } from "./pages/reports/in.router";
 import { peopleModuleRouter } from "./pages/people/people.route";
 import { accountingModuleRouter } from "./pages/accounting/accounting.router";
+import { settingModuleRouter } from "./pages/settings/settings.route";
 
 export const rootRouter = createBrowserRouter([
   {
@@ -27,6 +28,10 @@ export const rootRouter = createBrowserRouter([
   {
     path: "reports",
     children: reportsModuleRouter,
+  },
+  {
+    path: "settings",
+    children: settingModuleRouter,
   },
   {
     path: "*",
