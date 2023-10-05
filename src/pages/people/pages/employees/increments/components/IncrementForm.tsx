@@ -129,7 +129,7 @@ export const formValidationSchema = Yup.object().shape({
   amount: Yup.number().required().label("Amount"),
   employeeId: Yup.string().required().label("Employee"),
   date: Yup.date().required().label("Date"),
-  note: Yup.string().nullable().label("Note"),
+  note: Yup.string().required().label("Note"),
 });
 
 interface IINCREMENTFORM {

@@ -3,6 +3,7 @@ import {
   MatchOperator,
   User_Gender,
 } from "@/_app/graphql-models/graphql";
+import { IReligion } from "@/_app/models/religion.model";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,7 +24,6 @@ import {
   PEOPLE_EMPLOYEES_CREATE_MUTATION,
   PEOPLE_EMPLOYEES_UPDATE_MUTATION,
 } from "../utils/query";
-import { IReligion } from "@/_app/models/religion.model";
 
 interface IEmployeesFormProps {
   onSubmissionDone: () => void;
@@ -53,7 +53,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       name: "",
       address: "",
       salary: 0.0,
-      startingSalary: 0.0,
+      startingSalary: "0.0",
       religion: "",
       gender: "",
       designation: "",
@@ -111,7 +111,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     if (operationType === "create") {
       peopleEmployeeCreateMutation({
         variables: {
-          body: data,
+          body: { ...data, startingSalary: parseFloat(data.startingSalary) },
         },
         onCompleted: (res) => {
           console.log(res);
@@ -135,7 +135,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
         joiningDate: data.joiningDate,
         name: data.name,
         religion: data.religion,
-        startingSalary: data.startingSalary,
+        startingSalary: parseFloat(data.startingSalary),
       };
       peopleEmployeeUpdateMutation({
         variables: {
@@ -182,11 +182,14 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
           </Input.Wrapper>
           <Input.Wrapper
             label="Gender"
+            withAsterisk
             error={<ErrorMessage name={"gender"} errors={errors} />}
           >
             <Select
               value={watch("gender")}
-              onChange={(gender) => setValue("gender", gender || "")}
+              onChange={(gender) =>
+                setValue("gender", gender || "", { shouldValidate: true })
+              }
               data={[
                 {
                   label: "Female",
@@ -217,15 +220,13 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
           >
             <Select
               value={watch("religion")}
-              onChange={(religion) => setValue("religion", religion || "")}
+              onChange={(religion) =>
+                setValue("religion", religion || "", { shouldValidate: true })
+              }
               data={[
                 {
                   label: "ISLAM",
                   value: IReligion.ISLAM,
-                },
-                {
-                  label: "CHRISTIANITY",
-                  value: IReligion.CHRISTIANITY,
                 },
                 {
                   label: "BUDDHISM",
@@ -257,17 +258,23 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
             <Input placeholder="Designation" {...register("designation")} />
           </Input.Wrapper>
 
-          <Select
-            searchable
-            withAsterisk
-            onChange={(departmentId) =>
-              setValue("departmentId", departmentId || "")
-            }
+          <Input.Wrapper
             label="Department"
-            placeholder="From Account"
-            data={employeeDepartmentForDrop || []}
-            value={watch("departmentId")}
-          />
+            withAsterisk
+            error={<ErrorMessage name={"departmentId"} errors={errors} />}
+          >
+            <Select
+              searchable
+              onChange={(departmentId) =>
+                setValue("departmentId", departmentId || "", {
+                  shouldValidate: true,
+                })
+              }
+              placeholder="Select Department"
+              data={employeeDepartmentForDrop || []}
+              value={watch("departmentId")}
+            />
+          </Input.Wrapper>
         </div>
 
         <div className="grid gap-3 lg:grid-cols-2">
@@ -296,9 +303,15 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
         <div className="grid gap-3 lg:grid-cols-2">
           <Input.Wrapper
             label="Starting Salary"
+            withAsterisk
             error={<ErrorMessage name={"startingSalary"} errors={errors} />}
           >
-            <Input placeholder="Salary" {...register("startingSalary")} />
+            <Input
+              placeholder="Salary"
+              type="number"
+              disabled={operationType === "update"}
+              {...register("startingSalary", { valueAsNumber: true })}
+            />
           </Input.Wrapper>
 
           <Input.Wrapper label="Salary">
@@ -344,8 +357,6 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
         <Switch
           checked={watch("isActive")}
           onChange={(event) => {
-            console.log(event.currentTarget.checked);
-
             setValue("isActive", event.currentTarget.checked);
           }}
           label="Is active"
@@ -368,39 +379,19 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 export default EmployeesForm;
 
 const validationSchema = yup.object({
-  departmentId: yup.string().required().label("Write your Department Name"),
+  departmentId: yup.string().required().label("Department Name"),
   name: yup.string().required().label("Name"),
-  address: yup.string().optional().nullable().label("Write your Address"),
-  bloodGroup: yup
-    .string()
-    .optional()
-    .nullable()
-    .label("Write your blood group"),
-  contactNumber: yup
-    .string()
-    .optional()
-    .nullable()
-    .label("Write your contact number"),
-  designation: yup
-    .string()
-    .optional()
-    .nullable()
-    .label("Please select your Designation"),
-  docs: yup.string().optional().nullable().label("Please write a docs"),
-  gender: yup.string().optional().nullable().label("Please select your gender"),
-  isActive: yup.boolean().optional().label("Please select your status"),
-  religion: yup
-    .string()
-    .optional()
-    .nullable()
-    .label("Please select your Religion"),
-  startingSalary: yup
-    .number()
-    .optional()
-    .nullable()
-    .label("Write your starting salary"),
-  salary: yup.number().optional().nullable().label("Write your salary"),
-  joiningDate: yup.string().required().label("Write your join Date"),
-  dateOfBirth: yup.string().required().label("Write your join Date"),
-  appointmentDate: yup.string().required().label("Write your appointment date"),
+  address: yup.string().optional().nullable().label("Address"),
+  bloodGroup: yup.string().optional().nullable().label("blood group"),
+  contactNumber: yup.string().optional().nullable().label("contact number"),
+  designation: yup.string().optional().nullable().label(" Designation"),
+  docs: yup.string().optional().nullable().label("Docs"),
+  gender: yup.string().required().label("Gender"),
+  isActive: yup.boolean().optional().label("Status"),
+  religion: yup.string().optional().nullable().label(" Religion"),
+  startingSalary: yup.string().required().label("starting salary"),
+  salary: yup.number().optional().nullable().label("salary"),
+  joiningDate: yup.string().required().label("join Date"),
+  dateOfBirth: yup.string().required().label("join Date"),
+  appointmentDate: yup.string().required().label("appointment date"),
 });
