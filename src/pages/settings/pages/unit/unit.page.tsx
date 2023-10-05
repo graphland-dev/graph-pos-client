@@ -3,6 +3,7 @@ import DataTable from '@/_app/common/data-table/DataTable';
 import {
 	MatchOperator,
 	Transfer,
+	Unit,
 	UnitsWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
@@ -13,6 +14,7 @@ import dayjs from 'dayjs';
 import { MRT_ColumnDef } from 'mantine-react-table';
 import { useMemo } from 'react';
 
+import { IconPencil } from '@tabler/icons-react';
 import CreateAndUpdateUnitForm from './components/CreateAndUpdateUnitForm';
 import { SETUP_REMOVE_UNIT, SETUP_UNITS_QUERY } from './utils/units.query';
 
@@ -82,25 +84,25 @@ const UnitPage = () => {
 	const columns = useMemo<MRT_ColumnDef<any>[]>(
 		() => [
 			{
-				accessorFn(row) {
-					return row?.fromAccount?.name;
-				},
-				header: 'From Account',
+				accessorKey: 'name',
+				header: 'Name',
 			},
 			{
-				accessorFn(row: Transfer) {
-					return row?.toAccount?.name;
-				},
-				header: 'To Account',
+				accessorKey: 'code',
+				header: 'Code',
 			},
 			{
-				accessorKey: 'amount',
-				header: 'Amount',
+				accessorKey: 'percentage',
+				header: 'Percentage',
 			},
 			{
-				accessorFn: (row: Transfer) =>
-					dayjs(row?.date).format('MMMM D, YYYY h:mm A'),
-				accessorKey: 'date',
+				accessorKey: 'note',
+				header: 'Note',
+			},
+			{
+				accessorFn: (row: Unit) =>
+					dayjs(row?.createdAt).format('MMMM D, YYYY h:mm A'),
+				accessorKey: 'createdAt',
 				header: 'Date',
 			},
 		],
@@ -114,14 +116,14 @@ const UnitPage = () => {
 				position='right'
 			>
 				<CreateAndUpdateUnitForm
-				// onSubmissionDone={() => {
-				//   handleRefetch({});
-				//   setState({ modalOpened: false });
-				// }}
-				// accounts={unitsData?.accounting__accounts?.nodes || []}
-				// operationType={state.operationType}
-				// operationId={state.operationId}
-				// formData={state.operationPayload}
+					onSubmissionDone={() => {
+						handleRefetch({});
+						setState({ modalOpened: false });
+					}}
+					// units={unitsData?.accounting__accounts?.nodes || []}
+					operationType={state.operationType}
+					operationId={state.operationId}
+					formData={state.operationPayload}
 				/>
 			</Drawer>
 			<DataTable
@@ -144,19 +146,19 @@ const UnitPage = () => {
 				}
 				RowActionMenu={(row: Transfer) => (
 					<>
-						{/* <Menu.Item
-              onClick={() =>
-                setState({
-                  modalOpened: true,
-                  operationType: "update",
-                  operationId: row._id,
-                  operationPayload: row,
-                })
-              }
-              icon={<IconPencil size={18} />}
-            >
-              Edit
-            </Menu.Item> */}
+						<Menu.Item
+							onClick={() =>
+								setState({
+									modalOpened: true,
+									operationType: 'update',
+									operationId: row._id,
+									operationPayload: row,
+								})
+							}
+							icon={<IconPencil size={18} />}
+						>
+							Edit
+						</Menu.Item>
 						<Menu.Item
 							onClick={() => handleDeleteAccount(row?._id)}
 							icon={<IconTrash size={18} />}

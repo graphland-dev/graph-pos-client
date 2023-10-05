@@ -7,7 +7,7 @@ export const SETUP_UNITS_QUERY = gql`
 				_id
 				name
 				code
-				percentage
+				# percentage
 				note
 				createdAt
 				updatedAt
