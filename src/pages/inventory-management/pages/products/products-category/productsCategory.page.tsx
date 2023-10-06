@@ -1,8 +1,8 @@
 import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
 import {
-	Account,
 	MatchOperator,
+	ProductCategory,
 	ProductCategorysWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
@@ -113,7 +113,7 @@ const ProductCategoryPage = () => {
 				data={data?.inventory__productCategories.nodes ?? []}
 				refetch={handleRefetch}
 				totalCount={data?.inventory__productCategories.meta?.totalCount ?? 10}
-				RowActionMenu={(row: Account) => (
+				RowActionMenu={(row: ProductCategory) => (
 					<>
 						<Menu.Item
 							onClick={() =>
