@@ -1,15 +1,14 @@
-import { Button, Drawer, Menu } from "@mantine/core";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
-import VatForm from "./components/VatForm";
-import DataTable from "@/_app/common/data-table/DataTable";
-import { useSetState } from "@mantine/hooks";
-import { useMutation, useQuery } from "@apollo/client";
-import {useMemo} from "react";
-import { SETTINGS_VAT_QUERY, SETTING_VAT_REMOVE_MUTATION } from "./utils/query";
-import { MatchOperator, Vat, VatsWithPagination } from "@/_app/graphql-models/graphql";
-import { MRT_ColumnDef } from "mantine-react-table";
-import dayjs from "dayjs";
 import { confirmModal } from "@/_app/common/confirm/confirm";
+import DataTable from "@/_app/common/data-table/DataTable";
+import { MatchOperator, Vat, VatsWithPagination } from "@/_app/graphql-models/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { Button, Drawer, Menu } from "@mantine/core";
+import { useSetState } from "@mantine/hooks";
+import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { MRT_ColumnDef } from "mantine-react-table";
+import { useMemo } from "react";
+import VatForm from "./components/VatForm";
+import { SETTINGS_VAT_QUERY, SETTING_VAT_REMOVE_MUTATION } from "./utils/query";
 
 interface IState {
   modalOpened: boolean;
@@ -65,22 +64,24 @@ const VatPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorFn: (row: Vat) =>(row?._id),
-        accessorKey: "id",
-        header: "Id",
-      },
-      
-      {
-        accessorFn: (row: Vat) =>
-          dayjs(row?.createdAt)?.format("MMMM D, YYYY h:mm A"),
-        accessorKey: "createdAt",
-        header: "Created Date",
+       
+        accessorKey: "name",
+        header: "Name",
       },
       {
-        accessorFn: (row: Vat) =>
-          dayjs(row?.updatedAt)?.format("MMMM D, YYYY h:mm A"),
-        accessorKey: "updatedAt",
-        header: "Update Date",
+        
+        accessorKey: "code",
+        header: "Code",
+      },
+      {
+        
+        accessorKey: "note",
+        header: "Note",
+      },
+      {
+        
+        accessorKey: "percentage",
+        header: "Percentage",
       },
       
     ],

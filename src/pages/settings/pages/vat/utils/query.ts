@@ -7,9 +7,13 @@ query Setup__vats {
       totalCount
     }
     nodes {
-      _id
-      createdAt
+      code
+      name
+      note
+      percentage
       updatedAt
+      createdAt
+      _id
     }
   }
 }
