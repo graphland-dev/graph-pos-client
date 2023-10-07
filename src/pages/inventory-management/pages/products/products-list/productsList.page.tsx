@@ -1,3 +1,4 @@
+import { Notify } from '@/_app/common/Notification/Notify';
 import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
 import {
@@ -11,9 +12,10 @@ import { useSetState } from '@mantine/hooks';
 import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
 import { MRT_ColumnDef } from 'mantine-react-table';
 import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
 	INVENTORY_PRODUCTS_LIST_QUERY,
+	INVENTORY_PRODUCT_CREATE,
 	INVENTORY_PRODUCT_REMOVE,
 } from './utils/product.query';
 
@@ -22,6 +24,8 @@ interface IState {
 }
 
 const ProductListPage = () => {
+	const navigate = useNavigate();
+
 	const [state, setState] = useSetState<IState>({
 		refetching: false,
 	});
@@ -36,6 +40,19 @@ const ProductListPage = () => {
 			},
 		},
 	});
+
+	const [createProduct, { loading: creatingProduct }] = useMutation(
+		INVENTORY_PRODUCT_CREATE,
+		Notify({
+			sucTitle: 'Inventory product created successfully!',
+			onSuccess(res) {
+				navigate(
+					`/inventory-management/products/${res?.inventory__createProduct?._id}`
+				);
+				refetch();
+			},
+		})
+	);
 
 	const [deleteProductMutation] = useMutation(INVENTORY_PRODUCT_REMOVE, {
 		onCompleted: () => handleRefetch({}),
@@ -114,9 +131,23 @@ const ProductListPage = () => {
 					<>
 						<Button
 							leftIcon={<IconPlus size={16} />}
-							// onClick={() =>
-							// 	setState({ modalOpened: true, operationType: 'create' })
-							// }
+							loading={creatingProduct}
+							onClick={() =>
+								createProduct({
+									variables: {
+										body: {
+											name: `Product ${
+												(data?.inventory__products?.meta
+													?.totalCount as number) + 1
+											}`,
+											code: `P ${
+												(data?.inventory__products?.meta
+													?.totalCount as number) + 1
+											}`,
+										},
+									},
+								})
+							}
 							size='sm'
 						>
 							Add new

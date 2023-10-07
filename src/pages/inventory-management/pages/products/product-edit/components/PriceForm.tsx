@@ -67,7 +67,9 @@ const PriceForm = () => {
 			priceInfo?.inventory__product?.discountPercentage as number
 		);
 
-		setSegment(priceInfo?.inventory__product?.discountMode as any);
+		setSegment(
+			(priceInfo?.inventory__product?.discountMode as any) ?? 'PERCENTAGE'
+		);
 	}, [priceInfo]);
 
 	const onSubmit = (value: IPriceFormState) => {
@@ -138,6 +140,7 @@ const PriceForm = () => {
 					</>
 				)}
 				{/* )} */}
+				<Space h={'sm'} />
 
 				<Button type='submit' loading={savingInfo}>
 					Save
