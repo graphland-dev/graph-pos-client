@@ -64,9 +64,9 @@ const BasicInfoForm = () => {
 		saveForm({
 			variables: {
 				where: {
-					key: '',
-					operator: 'eq',
-					value: '',
+					key: '_id',
+					operator: MatchOperator.Eq,
+					value: productId,
 				},
 				body: value,
 			},

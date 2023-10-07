@@ -14,7 +14,7 @@ import {
 } from '../utils/productEdit.query';
 
 const PriceForm = () => {
-	const [segment, setSegment] = useState<'AMOUNT' | 'PERCENTAGE'>('AMOUNT');
+	const [segment, setSegment] = useState<'AMOUNT' | 'PERCENTAGE'>('PERCENTAGE');
 
 	const { productId } = useParams();
 
@@ -103,8 +103,8 @@ const PriceForm = () => {
 					value={segment}
 					onChange={(e) => setSegment(e as 'AMOUNT' | 'PERCENTAGE')}
 					data={[
-						{ label: 'Amount', value: 'AMOUNT' },
 						{ label: 'Percentage', value: 'PERCENTAGE' },
+						{ label: 'Amount', value: 'AMOUNT' },
 					]}
 				/>
 				{segment === 'AMOUNT' && (
