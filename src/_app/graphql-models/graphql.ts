@@ -184,12 +184,6 @@ export type CreatePayrollInput = {
   salaryMonth: Month_Name;
 };
 
-export type CreateProductCategoryInput = {
-  code: Scalars['String']['input'];
-  name: Scalars['String']['input'];
-  note?: InputMaybe<Scalars['String']['input']>;
-};
-
 export type CreateSupplierInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   companyName?: InputMaybe<Scalars['String']['input']>;
@@ -375,9 +369,6 @@ export type Mutation = {
   accounting__updateExpenseCategory: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   acounting__createTransfer: CommonMutationResponse;
-  inventory__createProductCategory: ProductCategory;
-  inventory__removeProductCategory: Scalars['Boolean']['output'];
-  inventory__updateProductCategory: Scalars['Boolean']['output'];
   people__createClient: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
   people__createEmployeeDepartment: CommonMutationResponse;
@@ -480,22 +471,6 @@ export type MutationAccounting__UpdateTransactionArgs = {
 
 export type MutationAcounting__CreateTransferArgs = {
   body: CreateTransferInput;
-};
-
-
-export type MutationInventory__CreateProductCategoryArgs = {
-  body: CreateProductCategoryInput;
-};
-
-
-export type MutationInventory__RemoveProductCategoryArgs = {
-  where: CommonFindDocumentDto;
-};
-
-
-export type MutationInventory__UpdateProductCategoryArgs = {
-  body: UpdateProductCategoryInput;
-  where: CommonFindDocumentDto;
 };
 
 
@@ -665,22 +640,6 @@ export type PayrollsWithPagination = {
   nodes?: Maybe<Array<Payroll>>;
 };
 
-export type ProductCategory = {
-  __typename?: 'ProductCategory';
-  _id: Scalars['ID']['output'];
-  code: Scalars['String']['output'];
-  createdAt?: Maybe<Scalars['DateTime']['output']>;
-  name: Scalars['String']['output'];
-  note?: Maybe<Scalars['String']['output']>;
-  updatedAt?: Maybe<Scalars['DateTime']['output']>;
-};
-
-export type ProductCategorysWithPagination = {
-  __typename?: 'ProductCategorysWithPagination';
-  meta?: Maybe<PagniationMeta>;
-  nodes?: Maybe<Array<ProductCategory>>;
-};
-
 export type Query = {
   __typename?: 'Query';
   _service: _Service;
@@ -696,8 +655,6 @@ export type Query = {
   acounting__transfer: Transfer;
   acounting__transfers: TransfersWithPagination;
   hello: Hello;
-  inventory__productCategories: ProductCategorysWithPagination;
-  inventory__productCategory: ProductCategory;
   people__client: Client;
   people__clients: ClientsWithPagination;
   people__employee: Employee;
@@ -768,16 +725,6 @@ export type QueryAcounting__TransferArgs = {
 
 export type QueryAcounting__TransfersArgs = {
   where?: InputMaybe<CommonPaginationDto>;
-};
-
-
-export type QueryInventory__ProductCategoriesArgs = {
-  where?: InputMaybe<CommonPaginationDto>;
-};
-
-
-export type QueryInventory__ProductCategoryArgs = {
-  where: CommonFindDocumentDto;
 };
 
 
@@ -995,12 +942,6 @@ export type UpdateEmployeeInput = {
 
 export type UpdateExpenseCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
-};
-
-export type UpdateProductCategoryInput = {
-  code?: InputMaybe<Scalars['String']['input']>;
-  name?: InputMaybe<Scalars['String']['input']>;
-  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateSupplierInput = {
