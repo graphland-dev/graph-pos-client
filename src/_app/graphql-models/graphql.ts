@@ -1,4 +1,5 @@
 /* eslint-disable */
+import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -182,6 +183,35 @@ export type CreatePayrollInput = {
   opportunities: Array<PayrollOpportunityInput>;
   salaryDate: Scalars['DateTime']['input'];
   salaryMonth: Month_Name;
+};
+
+export type CreateProductCategoryInput = {
+  code: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateProductInput = {
+  brandId?: InputMaybe<Scalars['String']['input']>;
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  code: Scalars['String']['input'];
+  discountAmount?: InputMaybe<Scalars['Float']['input']>;
+  discountMode?: InputMaybe<ProductDiscountMode>;
+  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  modelName?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  unitId?: InputMaybe<Scalars['String']['input']>;
+  vatId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateProductStockInput = {
+  note?: InputMaybe<Scalars['String']['input']>;
+  productId: Scalars['String']['input'];
+  quantity: Scalars['Int']['input'];
+  source: ProductStockSource;
+  type: ProductStockType;
 };
 
 export type CreateSupplierInput = {
@@ -369,6 +399,14 @@ export type Mutation = {
   accounting__updateExpenseCategory: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   acounting__createTransfer: CommonMutationResponse;
+  inventory__createProduct: CommonMutationResponse;
+  inventory__createProductCategory: CommonMutationResponse;
+  inventory__createProductStock: CommonMutationResponse;
+  inventory__removeProduct: Scalars['Boolean']['output'];
+  inventory__removeProductCategory: Scalars['Boolean']['output'];
+  inventory__removeProductStock: Scalars['Boolean']['output'];
+  inventory__updateProduct: Scalars['Boolean']['output'];
+  inventory__updateProductCategory: Scalars['Boolean']['output'];
   people__createClient: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
   people__createEmployeeDepartment: CommonMutationResponse;
@@ -386,7 +424,7 @@ export type Mutation = {
   setup__createBrand: CommonMutationResponse;
   setup__createUnit: CommonMutationResponse;
   setup__createVat: CommonMutationResponse;
-  setup__removeBrand: Brand;
+  setup__removeBrand: Scalars['Boolean']['output'];
   setup__removeUnit: Scalars['Boolean']['output'];
   setup__removeVat: Scalars['Boolean']['output'];
   setup__updateBrand: Scalars['Boolean']['output'];
@@ -471,6 +509,48 @@ export type MutationAccounting__UpdateTransactionArgs = {
 
 export type MutationAcounting__CreateTransferArgs = {
   body: CreateTransferInput;
+};
+
+
+export type MutationInventory__CreateProductArgs = {
+  body: CreateProductInput;
+};
+
+
+export type MutationInventory__CreateProductCategoryArgs = {
+  body: CreateProductCategoryInput;
+};
+
+
+export type MutationInventory__CreateProductStockArgs = {
+  body: CreateProductStockInput;
+};
+
+
+export type MutationInventory__RemoveProductArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__RemoveProductCategoryArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__RemoveProductStockArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__UpdateProductArgs = {
+  body: UpdateProductInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__UpdateProductCategoryArgs = {
+  body: UpdateProductCategoryInput;
+  where: CommonFindDocumentDto;
 };
 
 
@@ -640,6 +720,100 @@ export type PayrollsWithPagination = {
   nodes?: Maybe<Array<Payroll>>;
 };
 
+export type Product = {
+  __typename?: 'Product';
+  _id: Scalars['ID']['output'];
+  brand?: Maybe<Brand>;
+  category?: Maybe<ProductCategory>;
+  code: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  discountAmount?: Maybe<Scalars['Float']['output']>;
+  discountMode?: Maybe<ProductDiscountMode>;
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
+  modelName?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  price?: Maybe<Scalars['Float']['output']>;
+  stockInQuantity: Scalars['Int']['output'];
+  stockOutQuantity: Scalars['Int']['output'];
+  unit?: Maybe<Unit>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+  vat?: Maybe<Unit>;
+};
+
+export type ProductCategory = {
+  __typename?: 'ProductCategory';
+  _id: Scalars['ID']['output'];
+  code: Scalars['String']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductCategorysWithPagination = {
+  __typename?: 'ProductCategorysWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<ProductCategory>>;
+};
+
+export enum ProductDiscountMode {
+  Amount = 'AMOUNT',
+  Percentage = 'PERCENTAGE'
+}
+
+export type ProductPurchase = {
+  __typename?: 'ProductPurchase';
+  _id: Scalars['ID']['output'];
+  costs: Array<ProductPurchaseCostReference>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  paymentTerm?: Maybe<Scalars['String']['output']>;
+  poRef?: Maybe<Scalars['String']['output']>;
+  supplier: Supplier;
+  tax?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductPurchaseCostReference = {
+  __typename?: 'ProductPurchaseCostReference';
+  amount: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+};
+
+export type ProductStock = {
+  __typename?: 'ProductStock';
+  _id: Scalars['ID']['output'];
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  note?: Maybe<Scalars['String']['output']>;
+  product: Product;
+  quantity: Scalars['Int']['output'];
+  source: ProductStockSource;
+  type: ProductStockType;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export enum ProductStockSource {
+  Adjustment = 'ADJUSTMENT',
+  Purchase = 'PURCHASE'
+}
+
+export enum ProductStockType {
+  StockIn = 'STOCK_IN',
+  StockOut = 'STOCK_OUT'
+}
+
+export type ProductStocksWithPagination = {
+  __typename?: 'ProductStocksWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<ProductStock>>;
+};
+
+export type ProductsWithPagination = {
+  __typename?: 'ProductsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<Product>>;
+};
+
 export type Query = {
   __typename?: 'Query';
   _service: _Service;
@@ -655,6 +829,11 @@ export type Query = {
   acounting__transfer: Transfer;
   acounting__transfers: TransfersWithPagination;
   hello: Hello;
+  inventory__product: Product;
+  inventory__productCategories: ProductCategorysWithPagination;
+  inventory__productCategory: ProductCategory;
+  inventory__productStocks: ProductStocksWithPagination;
+  inventory__products: ProductsWithPagination;
   people__client: Client;
   people__clients: ClientsWithPagination;
   people__employee: Employee;
@@ -728,6 +907,31 @@ export type QueryAcounting__TransfersArgs = {
 };
 
 
+export type QueryInventory__ProductArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryInventory__ProductCategoriesArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryInventory__ProductCategoryArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryInventory__ProductStocksArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryInventory__ProductsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
 export type QueryPeople__ClientArgs = {
   where: CommonFindDocumentDto;
 };
@@ -779,7 +983,7 @@ export type QueryPeople__SuppliersArgs = {
 
 
 export type QuerySetup__BrandArgs = {
-  where: CommonFindDocumentDto;
+  where?: InputMaybe<CommonFindDocumentDto>;
 };
 
 
@@ -944,6 +1148,27 @@ export type UpdateExpenseCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateProductCategoryInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateProductInput = {
+  brandId?: InputMaybe<Scalars['String']['input']>;
+  categoryId?: InputMaybe<Scalars['String']['input']>;
+  code?: InputMaybe<Scalars['String']['input']>;
+  discountAmount?: InputMaybe<Scalars['Float']['input']>;
+  discountMode?: InputMaybe<ProductDiscountMode>;
+  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  modelName?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  price?: InputMaybe<Scalars['Float']['input']>;
+  unitId?: InputMaybe<Scalars['String']['input']>;
+  vatId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateSupplierInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   companyName?: InputMaybe<Scalars['String']['input']>;
@@ -978,7 +1203,11 @@ export type UpdateVatInput = {
 export type Vat = {
   __typename?: 'Vat';
   _id: Scalars['ID']['output'];
+  code: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  percentage: Scalars['Float']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1004,3 +1233,36 @@ export enum Link__Purpose {
   /** `SECURITY` features provide metadata necessary to securely resolve fields. */
   Security = 'SECURITY'
 }
+
+export type Setup__BrandsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Setup__BrandsQuery = { __typename?: 'Query', setup__brands: { __typename?: 'BrandsWithPagination', meta?: { __typename?: 'PagniationMeta', totalCount: number } | null, nodes?: Array<{ __typename?: 'Brand', _id: string, code: string, createdAt?: any | null, name: string, note?: string | null, updatedAt?: any | null }> | null } };
+
+export type Setup__CreateBrandMutationVariables = Exact<{
+  body: CreateBrandInput;
+}>;
+
+
+export type Setup__CreateBrandMutation = { __typename?: 'Mutation', setup__createBrand: { __typename?: 'CommonMutationResponse', _id: string } };
+
+export type Setup__UpdateBrandMutationVariables = Exact<{
+  where: CommonFindDocumentDto;
+  body: UpdateBrandInput;
+}>;
+
+
+export type Setup__UpdateBrandMutation = { __typename?: 'Mutation', setup__updateBrand: boolean };
+
+export type Setup__RemoveBrandMutationVariables = Exact<{
+  where: CommonFindDocumentDto;
+}>;
+
+
+export type Setup__RemoveBrandMutation = { __typename?: 'Mutation', setup__removeBrand: boolean };
+
+
+export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
+export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;
+export const Setup__UpdateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__updateBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__updateBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}]}]}}]} as unknown as DocumentNode<Setup__UpdateBrandMutation, Setup__UpdateBrandMutationVariables>;
+export const Setup__RemoveBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__removeBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__removeBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<Setup__RemoveBrandMutation, Setup__RemoveBrandMutationVariables>;
