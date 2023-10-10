@@ -54,10 +54,6 @@ const VatForm: React.FC<IVatFormProps> = ({onSubmissionDone, operationType, oper
     }
 
     if (operationType === "update") {
-      const updateData = {
-        departmentId: data.departmentId,
-       
-      };
       vatUpdateMutation({
         variables: {
           where: {
@@ -65,7 +61,7 @@ const VatForm: React.FC<IVatFormProps> = ({onSubmissionDone, operationType, oper
             operator: MatchOperator.Eq,
             value: operationId,
           },
-          body: updateData,
+          body: data,
         },
         onCompleted: (res) => {
           console.log(res);
