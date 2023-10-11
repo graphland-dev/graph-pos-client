@@ -56,7 +56,7 @@ const PriceForm = () => {
 	);
 
 	useEffect(() => {
-		console.log(priceInfo);
+		
 		setValue('price', priceInfo?.inventory__product?.price as number);
 		setValue(
 			'discountAmount',
