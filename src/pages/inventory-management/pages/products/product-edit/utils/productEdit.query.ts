@@ -92,3 +92,47 @@ export const VATS_QUERY = gql`
 		}
 	}
 `;
+
+
+export const PRODUCT_STOCK_HISTORY_QUERY = gql`
+query Inventory__productStocks {
+  inventory__productStocks {
+    meta {
+      totalCount
+    }
+    nodes {
+      _id
+      createdAt
+      note
+      product {
+        _id
+        code
+        name
+        note
+        stockInQuantity
+        stockOutQuantity
+        createdAt
+      }
+      quantity
+      source
+      type
+      updatedAt
+    }
+  }
+}
+`
+
+export const PRODUCT_STOCK_CREATE_MUTATION = gql`
+	mutation Mutation($body: CreateProductStockInput!) {
+  inventory__createProductStock(body: $body) {
+    _id
+  }
+}
+
+`
+
+export const PRODUCT_STOCK_REMOVE_MUTATION = gql`
+	mutation Inventory__removeProductStock($where: CommonFindDocumentDto!) {
+  inventory__removeProductStock(where: $where)
+}
+`

@@ -81,7 +81,7 @@ const AssignmentForm = () => {
 	);
 
 	useEffect(() => {
-		console.log(assignmentInfo);
+		
 		setValue(
 			'categoryId',
 			assignmentInfo?.inventory__product?.category?._id as string

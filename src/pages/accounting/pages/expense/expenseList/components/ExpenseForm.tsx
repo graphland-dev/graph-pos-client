@@ -60,7 +60,9 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   }));
 
   useEffect(() => {
+    console.log(formData);
     setValue("purpose", formData?.["purpose"]);
+    setValue("accountId", formData?.accounts.label);
     setValue("amount", formData?.["amount"]);
     setValue("note", formData?.["note"]);
     setValue("voucherNo", formData?.["voucherNo"]);
@@ -103,8 +105,8 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
             setValue("accountId", fromAccountId || "")
           }
           label="Select account"
-          placeholder="Select cccount"
-          data={accountListForDrop || []}
+          placeholder="Select Account"
+          data={accountListForDrop || [] }
           value={watch("accountId")}
         />
 
@@ -114,6 +116,17 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
             {getAccountBalance(accounts || [], watch("accountId"))}
           </Badge>
         )}
+        <Select
+          searchable
+          withAsterisk
+          onChange={(fromAccountId) =>
+            setValue("accountId", fromAccountId || "")
+          }
+          label="Select account"
+          placeholder="Select Account"
+          data={accountListForDrop || []}
+          value={watch("accountId")}
+        />
 
         <Input.Wrapper
           withAsterisk
