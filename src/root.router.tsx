@@ -3,7 +3,7 @@ import NotFoundPage from "./pages/_404.page";
 
 import { inventoryModuleRouter } from "./pages/inventory-management/inventory.router";
 import ModulesPage from "./pages/modules.page";
-import { reportsModuleRouter } from "./pages/reports/in.router";
+import { reportsModuleRouter } from "./pages/reports/report.router";
 import { peopleModuleRouter } from "./pages/people/people.route";
 import { accountingModuleRouter } from "./pages/accounting/accounting.router";
 import { settingModuleRouter } from "./pages/settings/settings.route";
