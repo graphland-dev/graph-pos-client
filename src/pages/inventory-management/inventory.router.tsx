@@ -1,18 +1,13 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import { inventoryNavlinks } from "./inventory.navlinks";
-import Adjustment from "./pages/inventory/adjustment/adjustment.page";
-import InventoryList from "./pages/inventory/inventory-list/inventoryList.page";
+import SupplierPayment from "./pages/payments/supplier-payments/supplier-payment.page";
 import Barcode from "./pages/products/barcode/Barcode.page";
 import ProductEditPage from "./pages/products/product-edit/ProductEdit.page";
 import ProductCategoryPage from "./pages/products/products-category/productsCategory.page";
 import ProductListPage from "./pages/products/products-list/productsList.page";
 import PurchasesList from "./pages/purchases/purchases-list/purchasesList.page";
 import Return from "./pages/purchases/return/return.page";
-import BalanceShit from "./pages/report/balance-shit/balanceShit.page";
-import ExpenseReport from "./pages/report/expense-report/expenseReport.page";
-import LossProfitReport from "./pages/report/loss-profit-report/lossProfitReport.page";
-import SummeryReport from "./pages/report/summary-report/summaryReport.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -25,6 +20,12 @@ export const inventoryModuleRouter: RouteObject[] = [
       />
     ),
     children: [
+      {
+        path: "",
+        element: (
+          <Navigate to={"/inventory-management/products/products-list"} />
+        ),
+      },
       {
         path: "products",
         children: [
@@ -60,36 +61,11 @@ export const inventoryModuleRouter: RouteObject[] = [
         ],
       },
       {
-        path: "inventory",
+        path: "payments",
         children: [
           {
-            path: "inventory-list",
-            element: <InventoryList />,
-          },
-          {
-            path: "adjustment",
-            element: <Adjustment />,
-          },
-        ],
-      },
-      {
-        path: "report",
-        children: [
-          {
-            path: "balance-shit",
-            element: <BalanceShit />,
-          },
-          {
-            path: "summary-report",
-            element: <SummeryReport />,
-          },
-          {
-            path: "expense-report",
-            element: <ExpenseReport />,
-          },
-          {
-            path: "loss-profit-report",
-            element: <LossProfitReport />,
+            path: "supplier-payments",
+            element: <SupplierPayment />,
           },
         ],
       },
