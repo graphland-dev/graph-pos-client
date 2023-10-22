@@ -6,6 +6,7 @@ import {
 } from '@/_app/graphql-models/graphql';
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/suppliers.query';
 import { useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
 import '@mantine/carousel/styles.css';
 import {
 	ActionIcon,
@@ -29,6 +30,7 @@ import {
 } from '@tabler/icons-react';
 import classNames from 'classnames';
 import { useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { INVENTORY_PRODUCTS_LIST_QUERY } from '../../products/products-list/utils/product.query';
 
 const PurchasesList = () => {
@@ -44,6 +46,27 @@ const PurchasesList = () => {
 	}>(INVENTORY_PRODUCTS_LIST_QUERY);
 
 	const colorScheme = useColorScheme();
+
+	const {
+		register,
+		handleSubmit,
+		reset,
+		setValue,
+		formState: { errors },
+		control,
+	} = useForm({
+		defaultValues: {
+			purchaseDate: new Date(),
+			purchaseOrderDate: new Date(),
+			note: '',
+			opportunities: [{ name: '', amount: '' }],
+		},
+	});
+
+	const { append, fields, remove } = useFieldArray({
+		name: 'opportunities',
+		control,
+	});
 
 	return (
 		<Paper radius={10} p={10}>
@@ -122,125 +145,161 @@ const PurchasesList = () => {
 
 				<Space h={50} />
 
-				<Table>
-					<thead className='bg-slate-300'>
-						<tr className='!p-2 rounded-md'>
-							<th>Code</th>
-							<th>Name</th>
-							<th>Quantity</th>
-							<th>Price</th>
-							<th>Unit cost</th>
-							<th>Tax</th>
-							<th>Sub total</th>
-							<th>Action</th>
-						</tr>
-					</thead>
+				{Boolean(products?.length) && (
+					<>
+						{' '}
+						<Table>
+							<thead className='bg-slate-300'>
+								<tr className='!p-2 rounded-md'>
+									<th>Code</th>
+									<th>Name</th>
+									<th>Quantity</th>
+									<th>Price</th>
+									<th>Unit cost</th>
+									<th>Tax</th>
+									<th>Sub total</th>
+									<th>Action</th>
+								</tr>
+							</thead>
 
-					<tbody>
-						{products?.map((product: Product, idx: number) => (
-							<tr key={idx}>
-								<td className='font-medium'>{product?.code}</td>
-								<td className='font-medium'>{product?.name}</td>
-								<td className='font-medium'>{1}</td>
-								<td className='font-medium'>{product?.price}</td>
-								<td className='font-medium'>{product?.unit?.name}</td>
-								<td className='font-medium'>{product?.vat?.name}</td>
-								<td className='font-medium'>{2012}</td>
-								<td className='font-medium'>
-									<ActionIcon
-										variant='filled'
-										color='red'
-										size={'sm'}
-										onClick={() => {
-											setProducts((prev) => {
-												prev.splice(idx, 1);
-												return [...prev];
-											});
-										}}
-									>
-										<IconX size={14} />
-									</ActionIcon>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</Table>
+							<tbody>
+								{products?.map((product: Product, idx: number) => (
+									<tr key={idx}>
+										<td className='font-medium'>{product?.code}</td>
+										<td className='font-medium'>{product?.name}</td>
+										<td className='font-medium'>{1}</td>
+										<td className='font-medium'>{product?.price}</td>
+										<td className='font-medium'>{product?.unit?.name}</td>
+										<td className='font-medium'>{product?.vat?.name}</td>
+										<td className='font-medium'>{2012}</td>
+										<td className='font-medium'>
+											<ActionIcon
+												variant='filled'
+												color='red'
+												size={'sm'}
+												onClick={() => {
+													setProducts((prev) => {
+														prev.splice(idx, 1);
+														return [...prev];
+													});
+												}}
+											>
+												<IconX size={14} />
+											</ActionIcon>
+										</td>
+									</tr>
+								))}
+							</tbody>
+						</Table>
+						<Space h={50} />
+					</>
+				)}
 
-				<Space h={'xl'} />
-
-				<Input.Wrapper label='Purchase order date'>
-					<DateInput placeholder='Pick a date' />
-				</Input.Wrapper>
-
-				<Space h={'sm'} />
-
-				<Input.Wrapper label='Purchase date'>
-					<DateInput placeholder='Pick a date' />
-				</Input.Wrapper>
-
-				<Space h={'sm'} />
-
-				<Input.Wrapper label='Note'>
-					<Textarea placeholder='Write note' />
-				</Input.Wrapper>
-
-				<Space h={'xl'} />
-
-				<div
-					// key={idx}
-					className={classNames('relative p-2 my-2 rounded-sm bg-gray-100', {
-						'bg-gray-100': colorScheme != 'dark',
-						// 'bg-gray-800': colorScheme == 'dark',
-					})}
+				<Input.Wrapper
+					label='Purchase order date'
+					error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
 				>
-					<ActionIcon
-						color='red'
-						size={'sm'}
-						radius={100}
-						variant='filled'
-						className='absolute -top-2 -right-1'
-						// onClick={() => remove(idx)}
-					>
-						<IconMinus size={16} />
-					</ActionIcon>
-					<Input.Wrapper
-						label='Opportunity name'
-						withAsterisk
-						// error={
-						// 	<ErrorMessage
-						// 		errors={errors}
-						// 		name={`opportunities.${idx}.name`}
-						// 	/>
-						// }
-					>
-						<Input
-							size='xs'
-							placeholder='Write opportunity name'
-							// {...register(`opportunities.${idx}.name`)}
-						/>
-					</Input.Wrapper>
+					<DateInput
+						onChange={(d) => setValue('purchaseOrderDate', d!)}
+						placeholder='Pick a date'
+					/>
+				</Input.Wrapper>
 
-					<Space h={'xs'} />
-					<Input.Wrapper
-						label='Opportunity amount'
-						withAsterisk
-						// error={
-						// 	<ErrorMessage
-						// 		errors={errors}
-						// 		name={`opportunities.${idx}.amount`}
-						// 	/>
-						// }
+				<Space h={'sm'} />
+
+				<Input.Wrapper
+					label='Purchase date'
+					error={<ErrorMessage errors={errors} name={`purchaseDate`} />}
+				>
+					<DateInput
+						onChange={(d) => setValue('purchaseDate', d!)}
+						placeholder='Pick a date'
+					/>
+				</Input.Wrapper>
+
+				<Space h={'sm'} />
+
+				<Input.Wrapper
+					label='Note'
+					error={<ErrorMessage errors={errors} name={`note`} />}
+				>
+					<Textarea {...register('note')} placeholder='Write note' />
+				</Input.Wrapper>
+
+				<Space h={'xl'} />
+
+				{fields?.map((_, idx) => (
+					<div
+						key={idx}
+						className={classNames(
+							'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
+							{
+								'bg-gray-100': colorScheme != 'dark',
+								// 'bg-gray-800': colorScheme == 'dark',
+							}
+						)}
 					>
-						<Input
-							size='xs'
-							type='number'
-							placeholder='Write opportunity amount'
-							// {...register(`opportunities.${idx}.amount`, {
-							// 	valueAsNumber: true,
-							// })}
-						/>
-					</Input.Wrapper>
-				</div>
+						<ActionIcon
+							color='red'
+							size={'sm'}
+							radius={100}
+							variant='filled'
+							className='absolute -top-2 -right-1'
+							onClick={() => remove(idx)}
+						>
+							<IconMinus size={16} />
+						</ActionIcon>
+						<Input.Wrapper
+							label='Opportunity name'
+							withAsterisk
+							error={
+								<ErrorMessage
+									errors={errors}
+									name={`opportunities.${idx}.name`}
+								/>
+							}
+						>
+							<Input
+								size='xs'
+								placeholder='Write opportunity name'
+								{...register(`opportunities.${idx}.name`)}
+							/>
+						</Input.Wrapper>
+
+						<Space h={'xs'} />
+						<Input.Wrapper
+							label='Opportunity amount'
+							withAsterisk
+							error={
+								<ErrorMessage
+									errors={errors}
+									name={`opportunities.${idx}.amount`}
+								/>
+							}
+						>
+							<Input
+								size='xs'
+								type='number'
+								placeholder='Write opportunity amount'
+								{...register(`opportunities.${idx}.amount`, {
+									valueAsNumber: true,
+								})}
+							/>
+						</Input.Wrapper>
+					</div>
+				))}
+
+				<Button
+					variant='subtle'
+					onClick={() =>
+						append({
+							amount: '',
+							name: '',
+						})
+					}
+				>
+					Add new
+				</Button>
 			</form>
 		</Paper>
 	);
