@@ -19,24 +19,22 @@ export const reportsModuleRouter: RouteObject[] = [
     children: [
       {
         path: "reports",
-        children: [
-          {
-            path: "balance-shit",
-            element: <BalanceShit />,
-          },
-          {
-            path: "summary-report",
-            element: <SummeryReport />,
-          },
-          {
-            path: "expense-report",
-            element: <ExpenseReport />,
-          },
-          {
-            path: "loss-profit-report",
-            element: <LossProfitReport />,
-          },
-        ],
+      },
+      {
+        path: "balance-shit",
+        element: <BalanceShit />,
+      },
+      {
+        path: "summary-report",
+        element: <SummeryReport />,
+      },
+      {
+        path: "expense-report",
+        element: <ExpenseReport />,
+      },
+      {
+        path: "loss-profit-report",
+        element: <LossProfitReport />,
       },
     ],
   },
