@@ -170,6 +170,7 @@ export type CreateExpenseCategoryInput = {
 export type CreateExpenseInput = {
   accountId: Scalars['ID']['input'];
   amount: Scalars['Float']['input'];
+  categoryId?: InputMaybe<Scalars['ID']['input']>;
   checkNo?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -206,12 +207,38 @@ export type CreateProductInput = {
   vatId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateProductPurchaseInput = {
+  costAmount: Scalars['Float']['input'];
+  costs?: InputMaybe<Array<ProductPurchaseCostInput>>;
+  discountAmount?: InputMaybe<Scalars['Float']['input']>;
+  discountMode?: InputMaybe<ProductDiscountMode>;
+  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  netTotal: Scalars['Float']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
+  products: Array<PurchaseProductItemInput>;
+  purchaseDate?: InputMaybe<Scalars['DateTime']['input']>;
+  purchaseOrderDate?: InputMaybe<Scalars['DateTime']['input']>;
+  subTotal: Scalars['Float']['input'];
+  supplierId: Scalars['String']['input'];
+  taxAmount: Scalars['Float']['input'];
+  taxRate: Scalars['Float']['input'];
+};
+
 export type CreateProductStockInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   productId: Scalars['String']['input'];
   quantity: Scalars['Int']['input'];
   source: ProductStockSource;
   type: ProductStockType;
+};
+
+export type CreatePurchasePaymentInput = {
+  accountId: Scalars['String']['input'];
+  checkNo?: InputMaybe<Scalars['String']['input']>;
+  items: Array<PurchasePaymentReferenceInput>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  receptNo?: InputMaybe<Scalars['String']['input']>;
+  supplierId: Scalars['String']['input'];
 };
 
 export type CreateSupplierInput = {
@@ -318,6 +345,7 @@ export type Expense = {
   _id: Scalars['ID']['output'];
   account?: Maybe<Account>;
   amount?: Maybe<Scalars['Float']['output']>;
+  category?: Maybe<Scalars['ID']['output']>;
   checkNo?: Maybe<Scalars['String']['output']>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -346,12 +374,6 @@ export type ExpensesWithPagination = {
   __typename?: 'ExpensesWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Expense>>;
-};
-
-export type Hello = {
-  __typename?: 'Hello';
-  /** Example field (placeholder) */
-  message: Scalars['String']['output'];
 };
 
 export enum Month_Name {
@@ -388,6 +410,7 @@ export type Mutation = {
   accounting__createExpense: CommonMutationResponse;
   accounting__createExpenseCategory: CommonMutationResponse;
   accounting__createPayroll: CommonMutationResponse;
+  accounting__createPurchasePayment: CommonMutationResponse;
   accounting__createTransaction: CommonMutationResponse;
   accounting__removeAccount: Scalars['Boolean']['output'];
   accounting__removeExpense: Scalars['Boolean']['output'];
@@ -401,9 +424,11 @@ export type Mutation = {
   acounting__createTransfer: CommonMutationResponse;
   inventory__createProduct: CommonMutationResponse;
   inventory__createProductCategory: CommonMutationResponse;
+  inventory__createProductPurchase: CommonMutationResponse;
   inventory__createProductStock: CommonMutationResponse;
   inventory__removeProduct: Scalars['Boolean']['output'];
   inventory__removeProductCategory: Scalars['Boolean']['output'];
+  inventory__removeProductPurchase: Scalars['Boolean']['output'];
   inventory__removeProductStock: Scalars['Boolean']['output'];
   inventory__updateProduct: Scalars['Boolean']['output'];
   inventory__updateProductCategory: Scalars['Boolean']['output'];
@@ -420,6 +445,8 @@ export type Mutation = {
   people__updateEmployeeDepartment: Scalars['Boolean']['output'];
   people__updateEmployeeIncrement: Scalars['Boolean']['output'];
   people__updateSupplier: Scalars['Boolean']['output'];
+  pingMutation: Scalars['String']['output'];
+  pingMutationWithInput: Scalars['String']['output'];
   removeEmployee: Scalars['Boolean']['output'];
   setup__createBrand: CommonMutationResponse;
   setup__createUnit: CommonMutationResponse;
@@ -451,6 +478,11 @@ export type MutationAccounting__CreateExpenseCategoryArgs = {
 
 export type MutationAccounting__CreatePayrollArgs = {
   body: CreatePayrollInput;
+};
+
+
+export type MutationAccounting__CreatePurchasePaymentArgs = {
+  body: CreatePurchasePaymentInput;
 };
 
 
@@ -522,6 +554,11 @@ export type MutationInventory__CreateProductCategoryArgs = {
 };
 
 
+export type MutationInventory__CreateProductPurchaseArgs = {
+  body: CreateProductPurchaseInput;
+};
+
+
 export type MutationInventory__CreateProductStockArgs = {
   body: CreateProductStockInput;
 };
@@ -533,6 +570,11 @@ export type MutationInventory__RemoveProductArgs = {
 
 
 export type MutationInventory__RemoveProductCategoryArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__RemoveProductPurchaseArgs = {
   where: CommonFindDocumentDto;
 };
 
@@ -620,6 +662,11 @@ export type MutationPeople__UpdateEmployeeIncrementArgs = {
 export type MutationPeople__UpdateSupplierArgs = {
   body: UpdateSupplierInput;
   where: CommonFindDocumentDto;
+};
+
+
+export type MutationPingMutationWithInputArgs = {
+  input: PingInput;
 };
 
 
@@ -720,6 +767,11 @@ export type PayrollsWithPagination = {
   nodes?: Maybe<Array<Payroll>>;
 };
 
+export type PingInput = {
+  age: Scalars['Int']['input'];
+  name: Scalars['String']['input'];
+};
+
 export type Product = {
   __typename?: 'Product';
   _id: Scalars['ID']['output'];
@@ -736,9 +788,10 @@ export type Product = {
   price?: Maybe<Scalars['Float']['output']>;
   stockInQuantity: Scalars['Int']['output'];
   stockOutQuantity: Scalars['Int']['output'];
+  taxType?: Maybe<ProductTaxType>;
   unit?: Maybe<Unit>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
-  vat?: Maybe<Unit>;
+  vat?: Maybe<Vat>;
 };
 
 export type ProductCategory = {
@@ -765,19 +818,43 @@ export enum ProductDiscountMode {
 export type ProductPurchase = {
   __typename?: 'ProductPurchase';
   _id: Scalars['ID']['output'];
+  costAmount: Scalars['Float']['output'];
   costs: Array<ProductPurchaseCostReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  paymentTerm?: Maybe<Scalars['String']['output']>;
-  poRef?: Maybe<Scalars['String']['output']>;
-  supplier: Supplier;
-  tax?: Maybe<Scalars['String']['output']>;
+  discountAmount?: Maybe<Scalars['Float']['output']>;
+  discountMode?: Maybe<ProductDiscountMode>;
+  discountPercentage?: Maybe<Scalars['Float']['output']>;
+  dueAmount?: Maybe<Scalars['Float']['output']>;
+  netTotal: Scalars['Float']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+  paidAmount?: Maybe<Scalars['Float']['output']>;
+  products: Array<PurchaseProductItemReference>;
+  purchaseDate?: Maybe<Scalars['DateTime']['output']>;
+  purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
+  subTotal: Scalars['Float']['output'];
+  supplier?: Maybe<Supplier>;
+  taxAmount: Scalars['Float']['output'];
+  taxRate: Scalars['Float']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductPurchaseCostInput = {
+  amount: Scalars['Float']['input'];
+  name: Scalars['String']['input'];
+  note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type ProductPurchaseCostReference = {
   __typename?: 'ProductPurchaseCostReference';
   amount: Scalars['Float']['output'];
   name: Scalars['String']['output'];
+  note?: Maybe<Scalars['String']['output']>;
+};
+
+export type ProductPurchasesWithPagination = {
+  __typename?: 'ProductPurchasesWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<ProductPurchase>>;
 };
 
 export type ProductStock = {
@@ -808,10 +885,70 @@ export type ProductStocksWithPagination = {
   nodes?: Maybe<Array<ProductStock>>;
 };
 
+export enum ProductTaxType {
+  Exclusive = 'EXCLUSIVE',
+  Inclusive = 'INCLUSIVE'
+}
+
 export type ProductsWithPagination = {
   __typename?: 'ProductsWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Product>>;
+};
+
+export type PurchasePayment = {
+  __typename?: 'PurchasePayment';
+  _id: Scalars['ID']['output'];
+  account: Account;
+  checkNo?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  items: Array<PurchasePaymentReference>;
+  note?: Maybe<Scalars['String']['output']>;
+  paidAmount: Scalars['Float']['output'];
+  receptNo?: Maybe<Scalars['String']['output']>;
+  supplier: Supplier;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type PurchasePaymentReference = {
+  __typename?: 'PurchasePaymentReference';
+  amount: Scalars['Float']['output'];
+  purchase: ProductPurchase;
+};
+
+export type PurchasePaymentReferenceInput = {
+  amount: Scalars['Float']['input'];
+  purchaseId: Scalars['String']['input'];
+};
+
+export type PurchasePaymentsWithPagination = {
+  __typename?: 'PurchasePaymentsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<PurchasePayment>>;
+};
+
+export type PurchaseProductItemInput = {
+  name: Scalars['String']['input'];
+  netAmount: Scalars['Float']['input'];
+  quantity: Scalars['Int']['input'];
+  referenceId: Scalars['ID']['input'];
+  subAmount: Scalars['Float']['input'];
+  taxAmount: Scalars['Float']['input'];
+  taxRate: Scalars['Float']['input'];
+  taxType: ProductTaxType;
+  unitPrice: Scalars['Float']['input'];
+};
+
+export type PurchaseProductItemReference = {
+  __typename?: 'PurchaseProductItemReference';
+  name: Scalars['String']['output'];
+  netAmount: Scalars['Float']['output'];
+  quantity: Scalars['Int']['output'];
+  referenceId: Scalars['ID']['output'];
+  taxAmount: Scalars['Float']['output'];
+  taxRate: Scalars['Float']['output'];
+  taxType: ProductTaxType;
+  unitPrice: Scalars['Float']['output'];
 };
 
 export type Query = {
@@ -824,14 +961,16 @@ export type Query = {
   accounting__expenseCategorys: ExpenseCategorysWithPagination;
   accounting__expenses: ExpensesWithPagination;
   accounting__payrolls: PayrollsWithPagination;
+  accounting__purchasePayments: PurchasePaymentsWithPagination;
   accounting__transaction: Transaction;
   accounting__transactions: TransactionsWithPagination;
   acounting__transfer: Transfer;
   acounting__transfers: TransfersWithPagination;
-  hello: Hello;
   inventory__product: Product;
   inventory__productCategories: ProductCategorysWithPagination;
   inventory__productCategory: ProductCategory;
+  inventory__productPurchase: ProductPurchase;
+  inventory__productPurchases: ProductPurchasesWithPagination;
   inventory__productStocks: ProductStocksWithPagination;
   inventory__products: ProductsWithPagination;
   people__client: Client;
@@ -844,6 +983,7 @@ export type Query = {
   people__employees: EmployeesWithPagination;
   people__supplier: Supplier;
   people__suppliers: SuppliersWithPagination;
+  pingQuery: Scalars['String']['output'];
   setup__brand: Brand;
   setup__brands: BrandsWithPagination;
   setup__unit: Unit;
@@ -887,6 +1027,11 @@ export type QueryAccounting__PayrollsArgs = {
 };
 
 
+export type QueryAccounting__PurchasePaymentsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
 export type QueryAccounting__TransactionArgs = {
   where?: InputMaybe<CommonFindDocumentDto>;
 };
@@ -919,6 +1064,16 @@ export type QueryInventory__ProductCategoriesArgs = {
 
 export type QueryInventory__ProductCategoryArgs = {
   where: CommonFindDocumentDto;
+};
+
+
+export type QueryInventory__ProductPurchaseArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryInventory__ProductPurchasesArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
 };
 
 

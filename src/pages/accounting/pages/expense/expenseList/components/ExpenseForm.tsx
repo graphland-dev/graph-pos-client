@@ -15,9 +15,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { ErrorMessage } from "@hookform/error-message";
 import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { getAccountBalance } from "@/_app/common/utils/getBalance";
-import { Account } from "@/_app/graphql-models/graphql";
+import { Account, ExpenseCategorysWithPagination } from "@/_app/graphql-models/graphql";
+import { ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "../../expenseCategory/utils/query";
 
 interface IExpenseFormProps {
   onSubmissionDone: () => void;
@@ -51,6 +52,7 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
       amount: 0.0,
       date: new Date().toISOString(),
       accountId: "",
+      expenseCategory: "",
     },
   });
 
@@ -59,10 +61,27 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
     label: `${item?.name} [${item?.referenceNumber}]`,
   }));
 
+    const { data } = useQuery<{
+      accounting__expenseCategorys: ExpenseCategorysWithPagination;
+    }>(ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST, {
+      variables: {
+        where: {
+          limit: 10,
+          page: 1,
+        },
+      },
+    });
+  
+  const expenseCategoryList = data?.accounting__expenseCategorys?.nodes?.map((item) => ({
+    value: item._id,
+    label: item.name,
+  }))
+
   useEffect(() => {
     console.log(formData);
     setValue("purpose", formData?.["purpose"]);
-    setValue("accountId", formData?.accounts.label);
+    setValue("accountId", formData?.accountId?._id);
+    setValue("accountId", formData?.expenseCategory?._id);
     setValue("amount", formData?.["amount"]);
     setValue("note", formData?.["note"]);
     setValue("voucherNo", formData?.["voucherNo"]);
@@ -71,9 +90,10 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   }, [formData]);
 
   const onSubmit = (data: any) => {
+    console.log(data);
     createMutation({
       variables: {
-        body: data,
+        body: {...data, expenseCategory: data?.expenseCategory},
       },
       onCompleted: (res) => {
         console.log(res);
@@ -97,18 +117,19 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
         >
           <Input placeholder="purpose" {...register("purpose")} />
         </Input.Wrapper>
-
-        <Select
-          searchable
-          withAsterisk
-          onChange={(fromAccountId) =>
-            setValue("accountId", fromAccountId || "")
-          }
-          label="Select account"
-          placeholder="Select Account"
-          data={accountListForDrop || [] }
-          value={watch("accountId")}
-        />
+        <Input.Wrapper>
+          <Select
+            searchable
+            withAsterisk
+            onChange={(fromAccountId) =>
+              setValue("accountId", fromAccountId || "")
+            }
+            label="Select account"
+            placeholder="Select Account"
+            data={accountListForDrop || []}
+            value={watch("accountId")}
+          />
+        </Input.Wrapper>
 
         {watch("accountId") && (
           <Badge p={"md"}>
@@ -116,17 +137,18 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
             {getAccountBalance(accounts || [], watch("accountId"))}
           </Badge>
         )}
-        <Select
-          searchable
-          withAsterisk
-          onChange={(fromAccountId) =>
-            setValue("accountId", fromAccountId || "")
-          }
-          label="Select account"
-          placeholder="Select Account"
-          data={accountListForDrop || []}
-          value={watch("accountId")}
-        />
+        <Input.Wrapper label="Select Expense Category">
+          <Select
+            searchable
+            withAsterisk
+            onChange={(fromExpenseCategoryId) =>
+              setValue("expenseCategory", fromExpenseCategoryId || "")
+            }
+            placeholder="Select Expense Category"
+            data={expenseCategoryList || []}
+            value={watch("expenseCategory")}
+          />
+        </Input.Wrapper>
 
         <Input.Wrapper
           withAsterisk
@@ -193,4 +215,5 @@ const expenseListValidationSchema = yup.object({
   checkNo: yup.string().optional().label("Check Number"),
   date: yup.string().required().label("Data"),
   accountId: yup.string().required().label("Bank Name"),
+  expenseCategory: yup.string().required().label("Expense Category"),
 });
