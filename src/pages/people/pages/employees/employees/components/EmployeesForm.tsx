@@ -154,7 +154,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       });
     }
   };
-
+  console.log(watch("departmentId"));
   return (
     <div>
       <Title order={4}>

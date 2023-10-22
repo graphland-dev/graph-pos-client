@@ -7,13 +7,16 @@ query Setup__vats {
       totalCount
     }
     nodes {
-      _id
-      createdAt
+      code
+      name
+      note
+      percentage
       updatedAt
+      createdAt
+      _id
     }
   }
 }
-
 `
 
 export const SETTINGS_VAT_CREATE_MUTATION = gql `
@@ -21,5 +24,17 @@ export const SETTINGS_VAT_CREATE_MUTATION = gql `
   setup__createVat(body: $body) {
     _id
   }
+}
+`
+
+export const SETTINGS_VAT_UPDATE_MUTATION = gql `
+  mutation Setup__updateVat($where: CommonFindDocumentDto!, $body: UpdateVatInput!) {
+  setup__updateVat(where: $where, body: $body)
+}
+
+`
+export const SETTING_VAT_REMOVE_MUTATION = gql`
+ mutation Setup__removeVat($where: CommonFindDocumentDto!) {
+  setup__removeVat(where: $where)
 }
 `
