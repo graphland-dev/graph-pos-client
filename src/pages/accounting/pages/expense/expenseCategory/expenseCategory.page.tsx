@@ -39,7 +39,7 @@ const ExpenseCategoryPage = () => {
   });
 
 
-  console.log(data);
+ 
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
