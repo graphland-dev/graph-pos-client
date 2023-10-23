@@ -1,3 +1,4 @@
+import { Notify } from '@/_app/common/Notification/Notify';
 import {
 	CreateProductPurchaseInput,
 	Product,
@@ -8,15 +9,16 @@ import {
 	SuppliersWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/suppliers.query';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import {
 	ActionIcon,
-	Anchor,
 	Button,
 	Flex,
+	Group,
 	Input,
 	Paper,
+	Skeleton,
 	Space,
 	Table,
 	Text,
@@ -24,22 +26,46 @@ import {
 	Title,
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
-import { IconPlus, IconSquareCheckFilled, IconX } from '@tabler/icons-react';
+import {
+	IconMinus,
+	IconPlus,
+	IconSquareCheckFilled,
+	IconX,
+} from '@tabler/icons-react';
+import classNames from 'classnames';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { calculateTaxAmount, getTotalTaxAmount } from './utils/helpers';
-import { PURCHASE_PRODUCT_LIST } from './utils/products.query';
+import {
+	CREATE_INVENTORY_PRODUCT_PURCHASE,
+	PURCHASE_PRODUCT_LIST,
+} from './utils/products.query';
 
 const PurchasesList = () => {
-	const [supplierId, setSupplierId] = useState<string>();
+	const [productPage, onChangeProductPage] = useState(1);
+	const [supplierPage, onChangeSupplierPage] = useState(1);
 
-	const { data } = useQuery<{
+	const { data, loading: isFetchingSuppliers } = useQuery<{
 		people__suppliers: SuppliersWithPagination;
-	}>(PEOPLE_SUPPLIERS_QUERY);
+	}>(PEOPLE_SUPPLIERS_QUERY, {
+		variables: {
+			where: {
+				page: supplierPage,
+				limit: 6,
+			},
+		},
+	});
 
-	const { data: productsData } = useQuery<{
+	const { data: productsData, loading: isFetchingProducts } = useQuery<{
 		inventory__products: ProductsWithPagination;
-	}>(PURCHASE_PRODUCT_LIST);
+	}>(PURCHASE_PRODUCT_LIST, {
+		variables: {
+			where: {
+				page: productPage,
+				limit: 2,
+			},
+		},
+	});
 
 	const {
 		register,
@@ -47,6 +73,7 @@ const PurchasesList = () => {
 		formState: { errors },
 		control,
 		watch,
+		handleSubmit,
 	} = useForm<CreateProductPurchaseInput>({
 		defaultValues: {
 			purchaseDate: new Date(),
@@ -54,6 +81,7 @@ const PurchasesList = () => {
 			note: '',
 			products: [],
 			costs: [],
+			supplierId: '',
 		},
 	});
 
@@ -63,6 +91,15 @@ const PurchasesList = () => {
 		remove: removeProduct,
 	} = useFieldArray({
 		name: 'products',
+		control,
+	});
+
+	const {
+		append: appendCosts,
+		fields: costsFields,
+		remove: removeCosts,
+	} = useFieldArray({
+		name: 'costs',
 		control,
 	});
 
@@ -95,18 +132,41 @@ const PurchasesList = () => {
 		}
 	}
 
+	const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
+		CREATE_INVENTORY_PRODUCT_PURCHASE,
+		Notify({
+			sucTitle: 'Inventory product added to purchase',
+		})
+	);
+
+	const onSubmit = (v: any) => {
+		createPurchaseProduct({
+			variables: {
+				body: {
+					...v,
+					// TAX
+					taxRate: 10,
+					taxAmount: 27.5,
+
+					// Prices
+					costAmount: 100,
+					subTotal: 375, // products.netAmount + costs.amount
+					netTotal: 475, // subTotal + costAmount + taxAmount
+				},
+			},
+		});
+	};
+
 	return (
 		<Paper radius={10} p={10}>
-			<form>
+			<form onSubmit={handleSubmit(onSubmit)}>
 				<Flex justify={'space-between'} align={'center'}>
 					<Title order={3}>Select supplier</Title>
 					<Button variant='light' leftIcon={<IconPlus />}>
 						Add new
 					</Button>
 				</Flex>
-
 				<Space h={'md'} />
-
 				<div className='grid grid-cols-3 gap-3'>
 					{data?.people__suppliers?.nodes?.map(
 						(supplier: Supplier, idx: number) => (
@@ -115,9 +175,9 @@ const PurchasesList = () => {
 								p={10}
 								withBorder
 								className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
-								onClick={() => setSupplierId(supplier?._id)}
+								onClick={() => setValue('supplierId', supplier?._id)}
 							>
-								{supplierId === supplier?._id && (
+								{watch('supplierId') === supplier?._id && (
 									<IconSquareCheckFilled
 										size={20}
 										className='absolute top-3 right-3'
@@ -133,15 +193,40 @@ const PurchasesList = () => {
 					)}
 				</div>
 
-				<Space h={'md'} />
+				{isFetchingSuppliers && (
+					<div className='grid grid-cols-3 gap-3'>
+						{new Array(6).fill(6).map((_, idx) => (
+							<Skeleton key={idx} h={90} radius={'sm'} />
+						))}
+					</div>
+				)}
 
+				<Space h={'md'} />
+				<Group position='left'>
+					<Button
+						variant='subtle'
+						size='xs'
+						disabled={supplierPage === 1}
+						onClick={() => onChangeSupplierPage(supplierPage - 1)}
+					>
+						Load Previous
+					</Button>{' '}
+					<Button
+						variant='subtle'
+						disabled={!data?.people__suppliers?.meta?.hasNextPage}
+						size='xs'
+						onClick={() => onChangeSupplierPage(supplierPage + 1)}
+					>
+						Load Next
+					</Button>
+				</Group>
+				<Space h={'md'} />
 				<Flex justify={'space-between'} align={'center'} mt={'lg'}>
 					<Title order={4}>Select product</Title>
 					<Button variant='light' leftIcon={<IconPlus />}>
 						Add new
 					</Button>
 				</Flex>
-
 				<Space h={'md'} />
 
 				<div className='grid grid-cols-3 gap-3'>
@@ -173,13 +258,36 @@ const PurchasesList = () => {
 						)
 					)}
 				</div>
+
+				{isFetchingProducts && (
+					<div className='grid grid-cols-3 gap-3'>
+						{new Array(6).fill(6).map((_, idx) => (
+							<Skeleton key={idx} h={90} radius={'sm'} />
+						))}
+					</div>
+				)}
+
 				<Space h={10} />
-				<Anchor>Load More</Anchor>
-
+				<Group position='left'>
+					<Button
+						variant='subtle'
+						size='xs'
+						disabled={productPage === 1}
+						onClick={() => onChangeProductPage(productPage - 1)}
+					>
+						Load Previous
+					</Button>{' '}
+					<Button
+						variant='subtle'
+						disabled={!productsData?.inventory__products?.meta?.hasNextPage}
+						size='xs'
+						onClick={() => onChangeProductPage(productPage + 1)}
+					>
+						Load More
+					</Button>
+				</Group>
 				<Space h={50} />
-
 				{/* <pre>{JSON.stringify(watch(`products`), undefined, 2)}</pre> */}
-
 				{Boolean(productFields?.length) && (
 					<>
 						{' '}
@@ -260,7 +368,6 @@ const PurchasesList = () => {
 						<Space h={50} />
 					</>
 				)}
-
 				<Input.Wrapper
 					label='Purchase order date'
 					error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
@@ -270,9 +377,7 @@ const PurchasesList = () => {
 						placeholder='Pick a date'
 					/>
 				</Input.Wrapper>
-
 				<Space h={'sm'} />
-
 				<Input.Wrapper
 					label='Purchase date'
 					error={<ErrorMessage errors={errors} name={`purchaseDate`} />}
@@ -282,90 +387,100 @@ const PurchasesList = () => {
 						placeholder='Pick a date'
 					/>
 				</Input.Wrapper>
-
 				<Space h={'sm'} />
-
 				<Input.Wrapper
 					label='Note'
 					error={<ErrorMessage errors={errors} name={`note`} />}
 				>
 					<Textarea {...register('note')} placeholder='Write note' />
 				</Input.Wrapper>
-
 				<Space h={'xl'} />
+				{costsFields?.map((_, idx) => (
+					<div
+						key={idx}
+						className={classNames(
+							'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
+							{
+								'bg-gray-100': true,
+								//  colorScheme != "dark",
+								// 'bg-gray-800': colorScheme == 'dark',
+							}
+						)}
+					>
+						<ActionIcon
+							color='red'
+							size={'sm'}
+							radius={100}
+							variant='filled'
+							className='absolute -top-2 -right-1'
+							onClick={() => removeCosts(idx)}
+						>
+							<IconMinus size={16} />
+						</ActionIcon>
+						<Input.Wrapper
+							label='Cost name'
+							withAsterisk
+							error={
+								<ErrorMessage errors={errors} name={`costs.${idx}.name`} />
+							}
+						>
+							<Input
+								size='xs'
+								placeholder='Write cost name'
+								{...register(`costs.${idx}.name`)}
+							/>
+						</Input.Wrapper>
 
-				{/* {fields?.map((_, idx) => (
-          <div
-            key={idx}
-            className={classNames(
-              "relative p-2 mt-5 mb-2 rounded-sm bg-gray-100",
-              {
-                "bg-gray-100": colorScheme != "dark",
-                // 'bg-gray-800': colorScheme == 'dark',
-              }
-            )}
-          >
-            <ActionIcon
-              color="red"
-              size={"sm"}
-              radius={100}
-              variant="filled"
-              className="absolute -top-2 -right-1"
-              onClick={() => remove(idx)}
-            >
-              <IconMinus size={16} />
-            </ActionIcon>
-            <Input.Wrapper
-              label="Opportunity name"
-              withAsterisk
-              error={
-                <ErrorMessage
-                  errors={errors}
-                  name={`opportunities.${idx}.name`}
-                />
-              }
-            >
-              <Input
-                size="xs"
-                placeholder="Write opportunity name"
-                {...register(`opportunities.${idx}.name`)}
-              />
-            </Input.Wrapper>
-
-            <Space h={"xs"} />
-            <Input.Wrapper
-              label="Opportunity amount"
-              withAsterisk
-              error={
-                <ErrorMessage
-                  errors={errors}
-                  name={`opportunities.${idx}.amount`}
-                />
-              }
-            >
-              <Input
-                size="xs"
-                type="number"
-                placeholder="Write opportunity amount"
-                {...register(`opportunities.${idx}.amount`, {
-                  valueAsNumber: true,
-                })}
-              />
-            </Input.Wrapper>
-          </div>
-        ))} */}
-
-				{/* <Button
-          variant="subtle"
-          onClick={() =>
-            append({
-              amount: "",
-              name: "",
-            })
-          }
-        >
-          Add new
-        </Button> */}
+						<Space h={'xs'} />
+						<Input.Wrapper
+							label='Cost amount'
+							withAsterisk
+							error={
+								<ErrorMessage errors={errors} name={`costs.${idx}.amount`} />
+							}
+						>
+							<Input
+								size='xs'
+								type='number'
+								placeholder='Write cost amount'
+								{...register(`costs.${idx}.amount`, {
+									valueAsNumber: true,
+								})}
+							/>
+						</Input.Wrapper>
+						<Space h={'xs'} />
+						<Input.Wrapper
+							label='Note'
+							error={
+								<ErrorMessage errors={errors} name={`costs.${idx}.note`} />
+							}
+						>
+							<Input
+								size='xs'
+								placeholder='Write cost note'
+								{...register(`costs.${idx}.note`, {
+									valueAsNumber: true,
+								})}
+							/>
+						</Input.Wrapper>
+					</div>
+				))}
+				<Button
+					variant='subtle'
+					onClick={() =>
+						appendCosts({
+							amount: 0,
+							note: '',
+							name: '',
+						})
+					}
+				>
+					Add new
+				</Button>
+				<Space h={20} />
+				<Button type='submit' loading={creatingPurchase} fullWidth>
+					Submit
+				</Button>
 			</form>
 		</Paper>
 	);
