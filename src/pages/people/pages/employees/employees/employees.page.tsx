@@ -1,3 +1,4 @@
+import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
   Employee,
@@ -17,7 +18,6 @@ import {
   PEOPLE_EMPLOYEES_QUERY_LIST,
   PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN,
 } from "./utils/query";
-import { confirmModal } from "@/_app/common/confirm/confirm";
 import ViewEmployeeDetails from "./components/ViewEmployeeDetails";
 
 interface IState {
@@ -40,7 +40,6 @@ const Employees = () => {
   });
 
   const [viewDetails, setViewDetails] = useState<Employee | null>(null);
- 
 
   const { data, loading, refetch } = useQuery<{
     people__employees: EmployeesWithPagination;
@@ -135,13 +134,9 @@ const Employees = () => {
         onClose={() => setState({ viewModal: false })}
         position="right"
         size={"80%"}
+        withCloseButton={false}
       >
-        <ViewEmployeeDetails
-          
-          viewDetails={viewDetails}
-          refetch={refetch}
-         
-        />
+        <ViewEmployeeDetails employeeDetails={viewDetails} refetch={refetch} />
       </Drawer>
       <DataTable
         columns={columns}
@@ -170,7 +165,10 @@ const Employees = () => {
               Delete
             </Menu.Item>
             <Menu.Item
-              onClick={() => { setState({ viewModal: true }); setViewDetails(row)}}
+              onClick={() => {
+                setState({ viewModal: true });
+                setViewDetails(row);
+              }}
               icon={<IconEye size={18} />}
             >
               View
