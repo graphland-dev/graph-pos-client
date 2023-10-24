@@ -38,3 +38,19 @@ export const CREATE_INVENTORY_PRODUCT_PURCHASE = gql`
 		}
 	}
 `;
+
+export const PURCHASE__PRODUCT_CREATE = gql`
+	mutation Inventory__createProduct($body: CreateProductInput!) {
+		inventory__createProduct(body: $body) {
+			_id
+		}
+	}
+`;
+
+export const PURCHASE__SUPPLIER_CREATE = gql`
+	mutation Mutation($body: CreateSupplierInput!) {
+		people__createSupplier(body: $body) {
+			_id
+		}
+	}
+`;
