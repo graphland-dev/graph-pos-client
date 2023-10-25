@@ -32,6 +32,10 @@ export const inventoryNavlinks: AppNavLink[] = [
     children: [
       {
         label: "Purchases List",
+        href: "",
+      },
+      {
+        label: "Purchases List",
         href: "purchases-list",
       },
       {

@@ -6,8 +6,9 @@ import Barcode from "./pages/products/barcode/Barcode.page";
 import ProductEditPage from "./pages/products/product-edit/ProductEdit.page";
 import ProductCategoryPage from "./pages/products/products-category/productsCategory.page";
 import ProductListPage from "./pages/products/products-list/productsList.page";
-import PurchasesList from "./pages/purchases/purchases-list/purchasesList.page";
 import Return from "./pages/purchases/return/return.page";
+import CreatePurchasePage from "./pages/purchases/create-purchase/create-purchase.page";
+import PurchaseListPage from "./pages/purchases/purchase-list/purchase-list.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -51,8 +52,12 @@ export const inventoryModuleRouter: RouteObject[] = [
         path: "purchases",
         children: [
           {
-            path: "purchases-list",
-            element: <PurchasesList />,
+            path: "",
+            element: <PurchaseListPage />,
+          },
+          {
+            path: "create",
+            element: <CreatePurchasePage />,
           },
           {
             path: "return",
