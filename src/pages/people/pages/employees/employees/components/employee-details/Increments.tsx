@@ -3,12 +3,12 @@ import DataTable from "@/_app/common/data-table/DataTable";
 import {
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
-  MatchOperator,
+  MatchOperator
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
-import { Menu } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconTrash } from "@tabler/icons-react";
+import { Button, Drawer, Menu } from "@mantine/core";
+import { useDisclosure, useSetState } from "@mantine/hooks";
+import { IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import React, { useMemo } from "react";
 // import {
@@ -21,6 +21,7 @@ import {
   INCREMENTS_QUERY,
   INCREMENT_DELETE_MUTATION,
 } from "../../../increments/utils/increment.query";
+import EmployeeIncrementsForm from "./employee_details_form/EmployeeIncrementsForm";
 
 interface IState {
   refetching: boolean;
@@ -31,7 +32,7 @@ interface IIncrementsDetailsProps {
 }
 
 const EmployeeIncrementsPage: React.FC<IIncrementsDetailsProps> = ({ id }) => {
-  // const [openedDrawer, drawerHandler] = useDisclosure();
+  const [openedDrawer, drawerHandler] = useDisclosure();
   const [state, setState] = useSetState<IState>({
     refetching: false,
   });
@@ -42,7 +43,19 @@ const EmployeeIncrementsPage: React.FC<IIncrementsDetailsProps> = ({ id }) => {
     refetch,
   } = useQuery<{
     people__employeeIncrements: EmployeeIncrementsWithPagination;
-  }>(INCREMENTS_QUERY);
+  }>(INCREMENTS_QUERY, {
+    variables: {
+      where: {
+        filters: [
+          {
+            key: "employee",
+            operator: "eq",
+            value: id,
+          },
+        ],
+      },
+    },
+  });
 
   const [deleteIncrementMutation] = useMutation(INCREMENT_DELETE_MUTATION, {
     onCompleted: () => handleRefetch({}),
@@ -118,33 +131,33 @@ const EmployeeIncrementsPage: React.FC<IIncrementsDetailsProps> = ({ id }) => {
         )}
         ActionArea={
           <>
-            {/* <Button
+            <Button
               leftIcon={<IconPlus size={16} />}
               onClick={drawerHandler.open}
               size="sm"
             >
               Add new
-            </Button> */}
+            </Button>
           </>
         }
         loading={fetchingIncrements || state.refetching}
       />
 
-      {/* <Drawer
+      <Drawer
         opened={openedDrawer}
         onClose={drawerHandler.close}
         position="right"
         title="Create increment"
         withCloseButton={true}
       >
-        <IncrementForm
-          employees={data?.people__employees?.nodes as Employee[]}
+        <EmployeeIncrementsForm
+          employeeId={id}
           onFormSubmitted={() => {
             refetch();
             drawerHandler.close();
           }}
         />
-      </Drawer> */}
+      </Drawer>
     </div>
   );
 };

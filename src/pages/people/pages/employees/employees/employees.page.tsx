@@ -130,6 +130,8 @@ const Employees = () => {
         />
       </Drawer>
       <Drawer
+        padding={0}
+        m={0}
         opened={state.viewModal}
         onClose={() => setState({ viewModal: false })}
         position="right"

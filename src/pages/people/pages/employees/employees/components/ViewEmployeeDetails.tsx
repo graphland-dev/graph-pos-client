@@ -21,9 +21,6 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
   refetch
 }) => {
   const [activeTab, setActiveTab] = useState<number>(0);
-
- 
-
   return (
     <ViewDashboardLayout
       TopSection={
