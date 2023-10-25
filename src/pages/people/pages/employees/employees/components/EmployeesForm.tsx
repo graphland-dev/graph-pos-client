@@ -27,7 +27,7 @@ import {
 
 interface IEmployeesFormProps {
   onSubmissionDone: () => void;
-  operationType: "create" | "update";
+  operationType: "create" | "update" | "View";
   operationId?: string | null;
   formData?: any;
   departments: EmployeeDepartment[];

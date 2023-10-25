@@ -1,3 +1,4 @@
+import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
   Employee,
@@ -10,16 +11,17 @@ import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import EmployeesForm from "./components/EmployeesForm";
 import {
   PEOPLE_EMPLOYEES_DELETE_MUTATION,
   PEOPLE_EMPLOYEES_QUERY_LIST,
   PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN,
 } from "./utils/query";
-import { confirmModal } from "@/_app/common/confirm/confirm";
+import ViewEmployeeDetails from "./components/ViewEmployeeDetails";
 
 interface IState {
+  viewModal: boolean;
   modalOpened: boolean;
   operationType: "create" | "update";
   operationId?: string | null;
@@ -30,11 +32,14 @@ interface IState {
 const Employees = () => {
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
+    viewModal: false,
     operationType: "create",
     operationId: null,
     operationPayload: {},
     refetching: false,
   });
+
+  const [viewDetails, setViewDetails] = useState<Employee | null>(null);
 
   const { data, loading, refetch } = useQuery<{
     people__employees: EmployeesWithPagination;
@@ -124,6 +129,15 @@ const Employees = () => {
           formData={state.operationPayload}
         />
       </Drawer>
+      <Drawer
+        opened={state.viewModal}
+        onClose={() => setState({ viewModal: false })}
+        position="right"
+        size={"80%"}
+        withCloseButton={false}
+      >
+        <ViewEmployeeDetails employeeDetails={viewDetails} refetch={refetch} />
+      </Drawer>
       <DataTable
         columns={columns}
         data={data?.people__employees?.nodes ?? []}
@@ -151,7 +165,10 @@ const Employees = () => {
               Delete
             </Menu.Item>
             <Menu.Item
-              // onClick={() => handleDeleteAccount(row._id)}
+              onClick={() => {
+                setState({ viewModal: true });
+                setViewDetails(row);
+              }}
               icon={<IconEye size={18} />}
             >
               View

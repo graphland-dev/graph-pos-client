@@ -1,10 +1,11 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
+
+import { reportNavlinks } from "./report.navlinks";
 import BalanceShit from "./pages/balance-shit/balanceShit.page";
+import SummeryReport from "./pages/summary-report/summaryReport.page";
 import ExpenseReport from "./pages/expense-report/expenseReport.page";
 import LossProfitReport from "./pages/loss-profit-report/lossProfitReport.page";
-import SummeryReport from "./pages/summary-report/summaryReport.page";
-import { reportNavlinks } from "./report.navlinks";
 
 export const reportsModuleRouter: RouteObject[] = [
   {
@@ -17,10 +18,6 @@ export const reportsModuleRouter: RouteObject[] = [
       />
     ),
     children: [
-      // {
-      //   path: "",
-      //   element: <Navigate to={"/reports/balance-shit"} />,
-      // },
       {
         path: "reports",
       },
