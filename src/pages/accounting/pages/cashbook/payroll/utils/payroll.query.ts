@@ -9,8 +9,8 @@ export const CREATE_PAYROLL_MUTATION = gql`
 `;
 
 export const PAYROLL_QUERY = gql`
-	query Query {
-		accounting__payrolls {
+	query Accounting__payrolls($where: CommonPaginationDto) {
+		accounting__payrolls(where: $where) {
 			nodes {
 				_id
 				employee {

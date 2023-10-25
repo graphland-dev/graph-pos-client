@@ -8,6 +8,7 @@ import {
 } from "@tabler/icons-react";
 import { useState } from "react";
 import BasicInfo from "./employee-details/BasicInfo";
+import Increments from "./employee-details/Increments";
 import Payrolls from "./employee-details/Payrolls";
 
 interface IEmployeesDetailsFormProps {
@@ -17,8 +18,11 @@ interface IEmployeesDetailsFormProps {
 
 const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
   employeeDetails,
+  refetch
 }) => {
   const [activeTab, setActiveTab] = useState<number>(0);
+
+ 
 
   return (
     <ViewDashboardLayout
@@ -53,11 +57,11 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
         </>
       }
     >
-      {activeTab === 0 && <BasicInfo />}
-      {activeTab === 1 && <>payrolls Infor</>}
-      {activeTab === 2 && <Payrolls />}
-
-      <pre>{JSON.stringify(employeeDetails, null, 2)}</pre>
+      {activeTab === 0 && (
+        <BasicInfo employeeDetails={employeeDetails} refetch={refetch} />
+      )}
+      {activeTab === 1 && <Payrolls id={employeeDetails?._id} />}
+      {activeTab === 2 && <Increments id={employeeDetails?._id} />}
     </ViewDashboardLayout>
   );
 };
