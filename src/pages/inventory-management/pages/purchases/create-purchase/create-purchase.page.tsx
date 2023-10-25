@@ -359,7 +359,9 @@ const CreatePurchasePage = () => {
       <Paper radius={10} p={10}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex justify={"space-between"} align={"center"}>
-            <Title order={3}>Select supplier</Title>
+            <Title order={4}>
+              Select supplier <span className="text-red-500">*</span>
+            </Title>
             <Button
               variant="light"
               leftIcon={<IconPlus />}
@@ -424,7 +426,9 @@ const CreatePurchasePage = () => {
           </Group>
           <Space h={"md"} />
           <Flex justify={"space-between"} align={"center"} mt={"lg"}>
-            <Title order={4}>Select product</Title>
+            <Title order={4}>
+              Select product <span className="text-red-500">*</span>
+            </Title>
             <Button
               variant="light"
               leftIcon={<IconPlus />}
