@@ -78,7 +78,7 @@ const Increments: React.FC<IIncrementsDetailsProps> = ({id}) => {
           </div>
         </Paper>
         
-        <pre>{JSON.stringify(incrementsData, null, 2)}</pre>
+        {/* <pre>{JSON.stringify(incrementsData, null, 2)}</pre> */}
       </div>
     );
 }

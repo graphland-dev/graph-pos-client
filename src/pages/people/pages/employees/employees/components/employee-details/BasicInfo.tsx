@@ -100,7 +100,7 @@ const BasicInfo: React.FC<IEmployeesDetailsProps> = ({
           <Text>Name:{employeeDetails?.name}</Text> */}
         </div>
       </Paper>
-      <pre>{JSON.stringify(employeeDetails, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(employeeDetails, null, 2)}</pre> */}
     </>
   );
 };

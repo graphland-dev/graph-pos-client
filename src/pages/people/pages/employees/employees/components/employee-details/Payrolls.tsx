@@ -74,7 +74,7 @@ const Payrolls: React.FC<IPayrollDetailsProps>= ({id}) => {
         </div>
       </Paper>
       
-      <pre>{JSON.stringify(payRolls, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(payRolls, null, 2)}</pre> */}
     </div>
   );
 };
