@@ -1,5 +1,5 @@
 import ViewDashboardLayout from "@/_app/common/layouts/ViewDashboard";
-import { Employee } from "@/_app/graphql-models/graphql";
+import { Employee, EmployeeDepartment } from "@/_app/graphql-models/graphql";
 import { NavLink, Paper, Text, Title } from "@mantine/core";
 import {
   IconChartArrowsVertical,
@@ -7,18 +7,20 @@ import {
   IconUserBolt,
 } from "@tabler/icons-react";
 import { useState } from "react";
-import BasicInfo from "./employee-details/BasicInfo";
-import Increments from "./employee-details/Increments";
-import Payrolls from "./employee-details/Payrolls";
+import EmployeeDetailsBasicInfo from "./employee-details/EmployeeDetailsBasicInfo";
+import EmployeeDetailsIncrements from "./employee-details/EmployeeDetailsIncrements";
+import EmployeeDetailsPayrolls from "./employee-details/EmployeeDetailsPayrolls";
 
 interface IEmployeesDetailsFormProps {
   employeeDetails: Employee | null;
+  departments: EmployeeDepartment[] | null;
   refetch: (v: any) => void;
 }
 
 const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
   employeeDetails,
-  refetch
+  departments,
+  refetch,
 }) => {
   const [activeTab, setActiveTab] = useState<number>(0);
   return (
@@ -55,10 +57,18 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
       }
     >
       {activeTab === 0 && (
-        <BasicInfo employeeDetails={employeeDetails} refetch={refetch} />
+        <EmployeeDetailsBasicInfo
+          employeeDetails={employeeDetails}
+          departments={departments || []}
+          refetch={refetch}
+        />
       )}
-      {activeTab === 1 && <Payrolls id={employeeDetails?._id} />}
-      {activeTab === 2 && <Increments id={employeeDetails?._id} />}
+      {activeTab === 1 && (
+        <EmployeeDetailsPayrolls employeeDetails={employeeDetails} />
+      )}
+      {activeTab === 2 && (
+        <EmployeeDetailsIncrements id={employeeDetails?._id} />
+      )}
     </ViewDashboardLayout>
   );
 };

@@ -11,7 +11,7 @@ import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import EmployeesForm from "./components/EmployeesForm";
 import {
   PEOPLE_EMPLOYEES_DELETE_MUTATION,
@@ -19,6 +19,7 @@ import {
   PEOPLE_EMPLOYEE_DEPARTMENT_LIST_DROPDOWN,
 } from "./utils/query";
 import ViewEmployeeDetails from "./components/ViewEmployeeDetails";
+import { Subject } from "rxjs";
 
 interface IState {
   viewModal: boolean;
@@ -29,6 +30,7 @@ interface IState {
   refetching: boolean;
 }
 
+export const employeeListRefetchSubject = new Subject<boolean>();
 const Employees = () => {
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
@@ -108,6 +110,14 @@ const Employees = () => {
     []
   );
 
+  useEffect(() => {
+    employeeListRefetchSubject.subscribe((refetched) => {
+      if (refetched) {
+        handleRefetch({});
+      }
+    });
+  }, []);
+
   return (
     <>
       <Drawer
@@ -135,10 +145,15 @@ const Employees = () => {
         opened={state.viewModal}
         onClose={() => setState({ viewModal: false })}
         position="right"
-        size={"80%"}
-        withCloseButton={false}
+        size={"95%"}
       >
-        <ViewEmployeeDetails employeeDetails={viewDetails} refetch={refetch} />
+        <ViewEmployeeDetails
+          employeeDetails={viewDetails}
+          refetch={refetch}
+          departments={
+            employeeDepartments?.people__employeeDepartments?.nodes || []
+          }
+        />
       </Drawer>
       <DataTable
         columns={columns}

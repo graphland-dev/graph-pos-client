@@ -1,12 +1,27 @@
 import { Notify } from "@/_app/common/Notification/Notify";
-import { getAccountBalance } from "@/_app/common/utils/getBalance";
-import { Account, Month_Name } from "@/_app/graphql-models/graphql";
+import {
+  getAccountBalance,
+  getAccountDetails,
+} from "@/_app/common/utils/getBalance";
+import { Account, Employee, Month_Name } from "@/_app/graphql-models/graphql";
 import { CREATE_PAYROLL_MUTATION } from "@/pages/accounting/pages/cashbook/payroll/utils/payroll.query";
 import { getSelectInputData } from "@/pages/inventory-management/pages/products/product-edit/components/AssignmentForm";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ActionIcon, Badge, Button, Input, Select, Space, useMantineColorScheme } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Box,
+  Button,
+  Flex,
+  Input,
+  Paper,
+  Select,
+  Space,
+  Text,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import classNames from "classnames";
@@ -14,12 +29,11 @@ import { useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
 
 interface IPayrollsDetailsProps {
-  employeeId: string | undefined;
+  employeeDetails: Employee | null;
+  currentSalary: number | undefined;
   onFormSubmitted: () => void;
   accounts: Account[];
 }
-
-
 
 interface IPayrollForm {
   accountId: string;
@@ -32,8 +46,11 @@ interface IOpportunities {
   name: string;
 }
 
-const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, accounts, onFormSubmitted }) => {
-  console.log(employeeId);
+const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({
+  employeeDetails,
+  accounts,
+  onFormSubmitted,
+}) => {
   const { colorScheme } = useMantineColorScheme();
 
   const {
@@ -42,7 +59,7 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
     formState: { errors },
     setValue,
     watch,
-    control
+    control,
   } = useForm({
     defaultValues: {
       accountId: "",
@@ -71,7 +88,6 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
     control,
   });
 
-
   const [createPayroll, { loading: creating }] = useMutation(
     CREATE_PAYROLL_MUTATION,
     Notify({
@@ -88,7 +104,7 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
       variables: {
         body: {
           accountId: values.accountId,
-          employeeId: employeeId,
+          employeeId: employeeDetails?._id,
           opportunities: values.opportunities,
           salaryDate: values.salaryDate,
           salaryMonth: values.salaryMonth,
@@ -97,8 +113,31 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
     });
   };
 
+  //-------------------------------------------------------------
+  // ------------ Utilities
+  //-------------------------------------------------------------
 
- 
+  const getTotalOpportunityAmount = () => {
+    return watch("opportunities")?.reduce(
+      (total, current) => total + current?.amount,
+      0
+    );
+  };
+
+  const totalSalary = () => {
+    const salary = employeeDetails?.salary || 0;
+    const opportunity = getTotalOpportunityAmount() || 0;
+    return salary + opportunity;
+  };
+
+  const getRemainingAmount = () => {
+    const salary = employeeDetails?.salary || 0;
+    const opportunity = getTotalOpportunityAmount() || 0;
+    const accountBalance =
+      getAccountBalance(accounts || [], watch("accountId")) || 0;
+    return accountBalance - (salary + opportunity);
+  };
+
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -230,15 +269,15 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
         </Button>
         <Space h={"sm"} />
 
-        {/* <Paper withBorder p={"sm"} mb={"xl"}>
+        <Paper withBorder p={"sm"} mb={"xl"}>
           <Flex justify={"space-between"}>
             <Box>
               <Text fw={"bold"}>Base Salary</Text>
               <Text fw={"bold"}>Opportunity</Text>
             </Box>
             <Box>
-              <Text>{getEmployeeSalaryAmount(watch("employeeId"))} BDT</Text>
-              <Text>{getTotalOpportunityAmount()} BDT</Text>
+              <Text>{employeeDetails?.salary || 0} BDT</Text>
+              <Text>{getTotalOpportunityAmount()}</Text>
             </Box>
           </Flex>
           <hr />
@@ -259,12 +298,10 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({ employeeId, acc
             <Text fw={"bold"}>Remaining Balance</Text>
             <Text>{getRemainingAmount()} BDT</Text>
           </Flex>
-        </Paper> */}
+        </Paper>
 
         <Button
-          disabled={
-            !watch("accountId")
-          }
+          disabled={!watch("accountId")}
           type="submit"
           loading={creating}
           fullWidth
@@ -342,4 +379,3 @@ export const MonthData = [
     value: "DECEMBER",
   },
 ];
-

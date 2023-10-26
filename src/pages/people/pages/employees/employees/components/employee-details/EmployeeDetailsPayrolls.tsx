@@ -1,7 +1,17 @@
-
 import DataTable from "@/_app/common/data-table/DataTable";
-import { Account, AccountsWithPagination, MatchOperator, Payroll, PayrollsWithPagination } from "@/_app/graphql-models/graphql";
-import { PAYROLL_ACCOUNTS_QUERY, PAYROLL_QUERY, REMOVE_PAYROLL_MUTATION } from "@/pages/accounting/pages/cashbook/payroll/utils/payroll.query";
+import {
+  Account,
+  AccountsWithPagination,
+  Employee,
+  MatchOperator,
+  Payroll,
+  PayrollsWithPagination,
+} from "@/_app/graphql-models/graphql";
+import {
+  PAYROLL_ACCOUNTS_QUERY,
+  PAYROLL_QUERY,
+  REMOVE_PAYROLL_MUTATION,
+} from "@/pages/accounting/pages/cashbook/payroll/utils/payroll.query";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
@@ -13,23 +23,22 @@ import EmployeePayrollsForm from "./employee_details_form/EmployeePayrollsForm";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 
 interface IPayrollDetailsProps {
-  id: string | undefined;
+  employeeDetails: Employee | null;
 }
 
 interface IState {
   refetching: boolean;
-  
 }
 
- 
-const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
+const EmployeeDetailsPayrolls: React.FC<IPayrollDetailsProps> = ({
+  employeeDetails,
+}) => {
   const [openedDrawer, drawerHandler] = useDisclosure();
   const [state, setState] = useSetState<IState>({ refetching: false });
-  
 
   const { data: payRoll_accounts } = useQuery<{
-      accounting__accounts: AccountsWithPagination;
-    }>(PAYROLL_ACCOUNTS_QUERY);
+    accounting__accounts: AccountsWithPagination;
+  }>(PAYROLL_ACCOUNTS_QUERY);
 
   const {
     data: payRolls,
@@ -58,19 +67,15 @@ const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
     });
   };
 
-   const handleRefetch = (variables: any) => {
-     setState({ refetching: true });
-     refetch(variables).finally(() => {
-       setState({ refetching: false });
-     });
-   };
+  const handleRefetch = (variables: any) => {
+    setState({ refetching: true });
+    refetch(variables).finally(() => {
+      setState({ refetching: false });
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
-      {
-        accessorKey: "employee.name",
-        header: "Employee",
-      },
       {
         accessorKey: "account.name",
         header: "Account",
@@ -78,6 +83,12 @@ const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
       {
         accessorKey: "amount",
         header: "Amount",
+      },
+      {
+        accessorKey: "salaryMonth",
+        accessorFn: (row: Payroll) =>
+          `${row?.salaryMonth} - ${dayjs(row?.salaryDate).format("YYYY")}`,
+        header: "Month",
       },
       {
         accessorFn: (row: Payroll) =>
@@ -100,7 +111,7 @@ const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
           {
             key: "employee",
             operator: MatchOperator.Eq,
-            value: id,
+            value: employeeDetails?._id,
           },
         ]}
         RowActionMenu={(row: Payroll) => (
@@ -136,24 +147,25 @@ const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
         withCloseButton={true}
       >
         <EmployeePayrollsForm
-          employeeId={id}
+          employeeDetails={employeeDetails}
           accounts={payRoll_accounts?.accounting__accounts?.nodes as Account[]}
           onFormSubmitted={() => {
             refetch();
             drawerHandler.close();
           }}
+          currentSalary={undefined}
         />
       </Drawer>
       {/* <Paper shadow="md" p={"lg"}>
-        <div className="flex  items-center gap-4 justify-between">
-          <div className="flex  items-center gap-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
             <IconCurrencyTaka size={24} />
             <Title order={3}>Payroll Information</Title>
           </div>
           <Button>Add Info</Button>
         </div>
         <Divider my="sm" />
-        <div className="flex flex-col gap-3 w-5/12">
+        <div className="flex flex-col w-5/12 gap-3">
           {payRollsData?.map((payRoll) => (
             <>
               <div className="flex justify-between ">
@@ -191,4 +203,4 @@ const Payrolls: React.FC<IPayrollDetailsProps> = ({ id }) => {
   );
 };
 
-export default Payrolls;
+export default EmployeeDetailsPayrolls;

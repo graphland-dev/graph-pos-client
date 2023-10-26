@@ -3,7 +3,7 @@ import DataTable from "@/_app/common/data-table/DataTable";
 import {
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
-  MatchOperator
+  MatchOperator,
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
@@ -31,7 +31,9 @@ interface IIncrementsDetailsProps {
   id: string | undefined;
 }
 
-const EmployeeIncrementsPage: React.FC<IIncrementsDetailsProps> = ({ id }) => {
+const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
+  id,
+}) => {
   const [openedDrawer, drawerHandler] = useDisclosure();
   const [state, setState] = useSetState<IState>({
     refetching: false,
@@ -162,4 +164,4 @@ const EmployeeIncrementsPage: React.FC<IIncrementsDetailsProps> = ({ id }) => {
   );
 };
 
-export default EmployeeIncrementsPage;
+export default EmployeeDetailsIncrements;
