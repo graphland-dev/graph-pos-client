@@ -2,18 +2,19 @@ import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
 import {
 	MatchOperator,
-	Product,
 	ProductPurchase,
 	ProductPurchasesWithPagination,
+	PurchaseProductItemReference,
 } from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Menu } from '@mantine/core';
+import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
 import { IconFileInfo, IconPlus, IconTrash } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import { MRT_ColumnDef } from 'mantine-react-table';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import PurchaseItemsShowCase from './components/PurchaseItemsShowCase';
 import {
 	Inventory__Remove_Product_Purchase,
 	Inventory__product_Purchases_Query,
@@ -21,11 +22,14 @@ import {
 
 interface IState {
 	refetching: boolean;
+	openDrawer: boolean;
 }
 
 const PurchaseListPage = () => {
+	const [products, setProducts] = useState<PurchaseProductItemReference[]>();
 	const [state, setState] = useSetState<IState>({
 		refetching: false,
+		openDrawer: false,
 	});
 
 	const { data, loading, refetch } = useQuery<{
@@ -96,10 +100,24 @@ const PurchaseListPage = () => {
 			// 		);
 			// 	},
 			// },
-			// {
-			// 	accessorKey: 'category.name',
-			// 	header: 'Category',
-			// },
+			{
+				accessorKey: 'dueAmount',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${originalRow?.dueAmount} BDT`,
+				header: 'Due Amount',
+			},
+			{
+				accessorKey: 'paidAmount',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${originalRow?.paidAmount} BDT`,
+				header: 'Paid Amount',
+			},
+			{
+				accessorKey: 'netTotal',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${originalRow?.netTotal} BDT`,
+				header: 'Net Total',
+			},
 			// {
 			// 	accessorKey: 'price',
 			// 	header: 'Price',
@@ -110,23 +128,40 @@ const PurchaseListPage = () => {
 
 	return (
 		<>
+			<Drawer
+				onClose={() =>
+					setState({
+						openDrawer: false,
+					})
+				}
+				title='Product items in purchase'
+				opened={state.openDrawer}
+			>
+				<PurchaseItemsShowCase items={products!} />
+			</Drawer>
 			<DataTable
 				columns={columns}
 				data={data?.inventory__productPurchases.nodes ?? []}
 				refetch={handleRefetch}
 				totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
-				RowActionMenu={(row: Product) => (
+				RowActionMenu={(row: ProductPurchase) => (
 					<>
 						<Menu.Item
-							component={Link}
-							to={`/inventory-management/products/${row?._id}`}
 							icon={<IconFileInfo size={18} />}
+							onClick={() => {
+								setProducts(row?.products);
+								setState({
+									openDrawer: true,
+								});
+							}}
+							color='yellow'
 						>
 							View
 						</Menu.Item>
 						<Menu.Item
 							onClick={() => handleDeleteAccount(row._id)}
 							icon={<IconTrash size={18} />}
+							color='red'
 						>
 							Delete
 						</Menu.Item>
