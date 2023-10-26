@@ -73,7 +73,7 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
   return (
     <div>
       <Title order={4}>
-        <span className="capitalize">{"Create transaction"}</span>
+        <span className="capitalize">{"Create Adjustment"}</span>
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">

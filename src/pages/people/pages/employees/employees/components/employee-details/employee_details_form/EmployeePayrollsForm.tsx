@@ -4,6 +4,8 @@ import {
   getAccountDetails,
 } from "@/_app/common/utils/getBalance";
 import { Account, Employee, Month_Name } from "@/_app/graphql-models/graphql";
+import { CREATE_PAYROLL_MUTATION } from "@/pages/accounting/pages/cashbook/payroll/utils/payroll.query";
+import { getSelectInputData } from "@/pages/inventory-management/pages/products/product-edit/components/AssignmentForm";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,22 +25,34 @@ import {
 import { DateInput } from "@mantine/dates";
 import { IconMinus, IconPlus } from "@tabler/icons-react";
 import classNames from "classnames";
-import React from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
-import { CREATE_PAYROLL_MUTATION } from "../utils/payroll.query";
 
-interface IIncrementFormProps {
-  employees: Employee[];
-  accounts: Account[];
+interface IPayrollsDetailsProps {
+  employeeDetails: Employee | null;
+  currentSalary: number | undefined;
   onFormSubmitted: () => void;
+  accounts: Account[];
 }
-const PayrollForm: React.FC<IIncrementFormProps> = ({
-  employees,
-  onFormSubmitted,
+
+interface IPayrollForm {
+  accountId: string;
+  opportunities?: IOpportunities[] | null | undefined;
+  salaryDate: Date;
+  salaryMonth: string;
+}
+interface IOpportunities {
+  amount: number;
+  name: string;
+}
+
+const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({
+  employeeDetails,
   accounts,
+  onFormSubmitted,
 }) => {
   const { colorScheme } = useMantineColorScheme();
+
   const {
     register,
     handleSubmit,
@@ -49,7 +63,6 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
   } = useForm({
     defaultValues: {
       accountId: "",
-      employeeId: "",
       opportunities: [
         {
           name: "Internet Bill",
@@ -85,12 +98,13 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
     })
   );
 
-  const onSubmit = (values: IPAYROLLFORM) => {
+  const onSubmit = (values: IPayrollForm) => {
+    console.log(values);
     createPayroll({
       variables: {
         body: {
           accountId: values.accountId,
-          employeeId: values.employeeId,
+          employeeId: employeeDetails?._id,
           opportunities: values.opportunities,
           salaryDate: values.salaryDate,
           salaryMonth: values.salaryMonth,
@@ -99,17 +113,9 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
     });
   };
 
-  // Utility functions
-  const getEmployeeSalaryAmount = (empoyeeId: string) => {
-    const employee = employees.find((e) => e._id === empoyeeId);
-    return employee?.salary;
-  };
-
-  const totalSalary = () => {
-    const salary = getEmployeeSalaryAmount(watch("employeeId")) || 0;
-    const opportunity = getTotalOpportunityAmount() || 0;
-    return salary + opportunity;
-  };
+  //-------------------------------------------------------------
+  // ------------ Utilities
+  //-------------------------------------------------------------
 
   const getTotalOpportunityAmount = () => {
     return watch("opportunities")?.reduce(
@@ -118,41 +124,23 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
     );
   };
 
-  const getRemainingAmount = () => {
-    const salary = getEmployeeSalaryAmount(watch("employeeId")) || 0;
+  const totalSalary = () => {
+    const salary = employeeDetails?.salary || 0;
     const opportunity = getTotalOpportunityAmount() || 0;
+    return salary + opportunity;
+  };
 
+  const getRemainingAmount = () => {
+    const salary = employeeDetails?.salary || 0;
+    const opportunity = getTotalOpportunityAmount() || 0;
     const accountBalance =
       getAccountBalance(accounts || [], watch("accountId")) || 0;
-
     return accountBalance - (salary + opportunity);
   };
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input.Wrapper
-          withAsterisk
-          label="Select employee"
-          error={<ErrorMessage errors={errors} name="employeeId" />}
-        >
-          <Select
-            searchable
-            withAsterisk
-            placeholder="Pick employee"
-            disabled={!employees?.length}
-            onChange={(e) => setValue("employeeId", e!)}
-            data={getSelectInputData(employees as Employee[])}
-          />
-        </Input.Wrapper>
-        <Space h={"sm"} />
-        {watch("employeeId") && (
-          <Badge p={"md"}>
-            Salary Amount: {getEmployeeSalaryAmount(watch("employeeId"))}
-          </Badge>
-        )}
-
-        <Space h={"sm"} />
         <Input.Wrapper
           withAsterisk
           label="Select account"
@@ -162,7 +150,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
             searchable
             withAsterisk
             placeholder="Pick account"
-            disabled={!employees?.length}
+            // disabled={!employees?.length}
             onChange={(e) => setValue("accountId", e!)}
             data={getSelectInputData(accounts as Account[])}
           />
@@ -288,8 +276,8 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
               <Text fw={"bold"}>Opportunity</Text>
             </Box>
             <Box>
-              <Text>{getEmployeeSalaryAmount(watch("employeeId"))} BDT</Text>
-              <Text>{getTotalOpportunityAmount()} BDT</Text>
+              <Text>{employeeDetails?.salary || 0} BDT</Text>
+              <Text>{getTotalOpportunityAmount()}</Text>
             </Box>
           </Flex>
           <hr />
@@ -313,11 +301,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
         </Paper>
 
         <Button
-          disabled={
-            !watch("accountId") ||
-            !watch("employeeId") ||
-            getRemainingAmount() < 0
-          }
+          disabled={!watch("accountId")}
           type="submit"
           loading={creating}
           fullWidth
@@ -329,11 +313,10 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
   );
 };
 
-export default PayrollForm;
+export default EmployeePayrollsForm;
 
 const formValidationSchema = Yup.object().shape({
   accountId: Yup.string().required().label("Account"),
-  employeeId: Yup.string().required().label("Employee"),
   opportunities: Yup.array()
     .of(
       Yup.object().shape({
@@ -345,36 +328,6 @@ const formValidationSchema = Yup.object().shape({
   salaryDate: Yup.date().required().label("Salary date"),
   salaryMonth: Yup.string().required().label("Salary month"),
 });
-
-interface IPAYROLLFORM {
-  accountId: string;
-  employeeId: string;
-  opportunities?: IOpportunities[] | null | undefined;
-  salaryDate: Date;
-  salaryMonth: string;
-}
-
-interface IOpportunities {
-  amount: number;
-  name: string;
-}
-
-const getSelectInputData = (payload: Employee[] | Account[]) => {
-  const data: ISelectInputData[] = [];
-  payload?.map((item) =>
-    data.push({
-      label: item.name,
-      value: item._id,
-    })
-  );
-
-  return data;
-};
-
-export interface ISelectInputData {
-  label: string;
-  value: string;
-}
 
 export const MonthData = [
   {

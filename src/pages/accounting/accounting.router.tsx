@@ -1,5 +1,5 @@
 import DashboardLayout from '@/_app/common/layouts/DashboardLayout';
-import { RouteObject } from 'react-router-dom';
+import { Navigate, RouteObject } from 'react-router-dom';
 import { accountingNavlinks } from './accounting.navlinks';
 import AssetsPage from './pages/asset-management/assets/assets.page';
 import TypesPage from './pages/asset-management/types/types.page';
@@ -15,88 +15,92 @@ import Loans from './pages/load-manegment/loans/loans.page';
 import Payments from './pages/load-manegment/payments/payments.page';
 import PayrollPage from './pages/cashbook/payroll/payroll.page';
 export const accountingModuleRouter: RouteObject[] = [
-	{
-		path: '',
-		element: (
-			<DashboardLayout
-				navlinks={accountingNavlinks}
-				title='Accounting'
-				path='accounting'
-			/>
-		),
-		children: [
-			{
-				path: 'cashbook',
-				children: [
-					{
-						path: 'accounts',
-						element: <AccountsPage />,
-					},
-					{
-						path: 'adjustments',
-						element: <AdjustmentPage />,
-					},
-					{
-						path: 'invoice-generator',
-						element: <InvoiceGenerator />,
-					},
-					{
-						path: 'transfers',
-						element: <TransferPage />,
-					},
-					{
-						path: 'statements',
-						element: <StatementPage />,
-					},
-					{
-						path: 'payroll',
-						element: <PayrollPage />,
-					},
-				],
-			},
-			{
-				path: 'expense',
-				children: [
-					{
-						path: 'expense-list',
-						element: <ExpenseListPage />,
-					},
-					{
-						path: 'expense-category',
-						element: <ExpenseCategoryPage />,
-					},
-				],
-			},
-			{
-				path: 'load-management',
-				children: [
-					{
-						path: 'authorities',
-						element: <Authorities />,
-					},
-					{
-						path: 'loans',
-						element: <Loans />,
-					},
-					{
-						path: 'payments',
-						element: <Payments />,
-					},
-				],
-			},
-			{
-				path: 'asset-management',
-				children: [
-					{
-						path: 'types',
-						element: <TypesPage />,
-					},
-					{
-						path: 'assets',
-						element: <AssetsPage />,
-					},
-				],
-			},
-		],
-	},
+  {
+    path: "",
+    element: (
+      <DashboardLayout
+        navlinks={accountingNavlinks}
+        title="Accounting"
+        path="accounting"
+      />
+    ),
+    children: [
+      {
+        path: "",
+        element: <Navigate to={"/accounting/cashbook/accounts"} />,
+      },
+      {
+        path: "cashbook",
+        children: [
+          {
+            path: "accounts",
+            element: <AccountsPage />,
+          },
+          {
+            path: "adjustments",
+            element: <AdjustmentPage />,
+          },
+          {
+            path: "invoice-generator",
+            element: <InvoiceGenerator />,
+          },
+          {
+            path: "transfers",
+            element: <TransferPage />,
+          },
+          {
+            path: "statements",
+            element: <StatementPage />,
+          },
+          {
+            path: "payroll",
+            element: <PayrollPage />,
+          },
+        ],
+      },
+      {
+        path: "expense",
+        children: [
+          {
+            path: "expense-list",
+            element: <ExpenseListPage />,
+          },
+          {
+            path: "expense-category",
+            element: <ExpenseCategoryPage />,
+          },
+        ],
+      },
+      {
+        path: "load-management",
+        children: [
+          {
+            path: "authorities",
+            element: <Authorities />,
+          },
+          {
+            path: "loans",
+            element: <Loans />,
+          },
+          {
+            path: "payments",
+            element: <Payments />,
+          },
+        ],
+      },
+      {
+        path: "asset-management",
+        children: [
+          {
+            path: "types",
+            element: <TypesPage />,
+          },
+          {
+            path: "assets",
+            element: <AssetsPage />,
+          },
+        ],
+      },
+    ],
+  },
 ];

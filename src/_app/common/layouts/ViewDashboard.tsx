@@ -14,6 +14,7 @@ const ViewDashboardLayout: React.FC<PropsWithChildren<Prop>> = ({
   //   const { pathname } = useLocation();
   return (
     <AppShell
+      m={0}
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
       navbar={
