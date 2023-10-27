@@ -11,7 +11,7 @@ const ViewDashboardLayout: React.FC<PropsWithChildren<Prop>> = ({
   TopSection,
   NavSection,
 }) => {
-  //   const { pathname } = useLocation();
+  
   return (
     <AppShell
       m={0}

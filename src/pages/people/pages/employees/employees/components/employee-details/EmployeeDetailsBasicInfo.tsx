@@ -4,6 +4,7 @@ import { useSetState } from "@mantine/hooks";
 import { IconBrandBadoo, IconNote } from "@tabler/icons-react";
 import { employeeListRefetchSubject } from "../../employees.page";
 import EmployeesForm from "../EmployeesForm";
+import dayjs from "dayjs";
 
 interface IEmployeesDetailsProps {
   employeeDetails: Employee | null;
@@ -79,12 +80,30 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
             </Title>
             <Text>{employeeDetails?.name}</Text>
           </div>
+          <div className="flex justify-between ">
+            <Title color="gray" order={4}>
+              Contact number:
+            </Title>
+            <Text>{employeeDetails?.contactNumber}</Text>
+          </div>
+          <div className="flex justify-between ">
+            <Title color="gray" order={4}>
+              Religion:
+            </Title>
+            <Text>{employeeDetails?.religion}</Text>
+          </div>
 
           <div className="flex justify-between ">
             <Title color="gray" order={4}>
               Department name:
             </Title>
             <Text>{employeeDetails?.department?.name}</Text>
+          </div>
+          <div className="flex justify-between ">
+            <Title color="gray" order={4}>
+              Gender:
+            </Title>
+            <Text>{employeeDetails?.gender}</Text>
           </div>
           <div className="flex justify-between">
             <Title color="gray" order={4}>
@@ -115,11 +134,48 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
             </Title>
             <Text>{employeeDetails?.designation}</Text>
           </div>
+          <div className="flex justify-between ">
+            <Title color="gray" order={4}>
+              Date Of Birth:
+            </Title>
+            <Text>
+              {dayjs(employeeDetails?.dateOfBirth).format(
+                "MMMM D, YYYY h:mm A"
+              )}
+              
+            </Text>
+          </div>
+          <div className="flex justify-between ">
+            <Title color="gray" order={4}>
+              Blood Group:
+            </Title>
+            <Text>{employeeDetails?.bloodGroup}</Text>
+          </div>
           <div className="flex justify-between">
             <Title color="gray" order={4}>
               Starting Salary:
             </Title>
             <Text>{employeeDetails?.startingSalary}</Text>
+          </div>
+          <div className="flex justify-between">
+            <Title color="gray" order={4}>
+              Appointment Date:
+            </Title>
+            <Text>
+              {dayjs(employeeDetails?.appointmentDate).format(
+                "MMMM D, YYYY h:mm A"
+              )}
+            </Text>
+          </div>
+          <div className="flex justify-between">
+            <Title color="gray" order={4}>
+              Joining Date:
+            </Title>
+            <Text>
+              {dayjs(employeeDetails?.joiningDate).format(
+                "MMMM D, YYYY h:mm A"
+              )}
+            </Text>
           </div>
         </div>
       </Paper>

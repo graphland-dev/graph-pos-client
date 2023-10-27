@@ -47,7 +47,6 @@ const EmployeeDetailsPayrolls: React.FC<IPayrollDetailsProps> = ({
   } = useQuery<{
     accounting__payrolls: PayrollsWithPagination;
   }>(PAYROLL_QUERY);
-  // console.log(payRolls);
   const [deletePayrollMutation] = useMutation(REMOVE_PAYROLL_MUTATION, {
     onCompleted: () => handleRefetch({}),
   });
@@ -156,49 +155,6 @@ const EmployeeDetailsPayrolls: React.FC<IPayrollDetailsProps> = ({
           currentSalary={undefined}
         />
       </Drawer>
-      {/* <Paper shadow="md" p={"lg"}>
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <IconCurrencyTaka size={24} />
-            <Title order={3}>Payroll Information</Title>
-          </div>
-          <Button>Add Info</Button>
-        </div>
-        <Divider my="sm" />
-        <div className="flex flex-col w-5/12 gap-3">
-          {payRollsData?.map((payRoll) => (
-            <>
-              <div className="flex justify-between ">
-                <Title color="gray" order={4}>
-                  Name:
-                </Title>
-                <Text>{payRoll?.employee.name}</Text>
-              </div>
-
-              <div className="flex justify-between ">
-                <Title color="gray" order={4}>
-                  Department name:
-                </Title>
-                <Text>{payRoll?.account?.name}</Text>
-              </div>
-              <div className="flex justify-between">
-                <Title color="gray" order={4}>
-                  Salary:
-                </Title>
-                <Text>{payRoll?.salaryMonth}</Text>
-              </div>
-              <div className="flex justify-between">
-                <Title color="gray" order={4}>
-                  Address:
-                </Title>
-                <Text>{payRoll?.employee?.salary}</Text>
-              </div>
-            </>
-          ))}
-        </div>
-      </Paper> */}
-
-      {/* <pre>{JSON.stringify(payRolls, null, 2)}</pre> */}
     </div>
   );
 };

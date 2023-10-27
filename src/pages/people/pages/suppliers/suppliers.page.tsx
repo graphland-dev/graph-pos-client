@@ -1,35 +1,40 @@
 import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
 import {
-	MatchOperator,
-	Supplier,
-	SuppliersWithPagination,
+  MatchOperator,
+  Supplier,
+  SuppliersWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
-import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
+import { IconEye, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
 import { MRT_ColumnDef } from 'mantine-react-table';
-import { useMemo } from 'react';
-import SuppliersCreateFrom from './components/SuppliersCreateFrom';
+import { useMemo, useState } from 'react';
+import ViewSupplierDetails from './components/supplier_details/ViewSupplierDetails';
 import {
-	PEOPLE_REMOVE_SUPPLIERS,
-	PEOPLE_SUPPLIERS_QUERY,
+  PEOPLE_REMOVE_SUPPLIERS,
+  PEOPLE_SUPPLIERS_QUERY,
 } from './utils/suppliers.query';
+import SuppliersCreateFrom from './components/SuppliersCreateFrom';
 
 interface IState {
-	refetching: boolean;
-	action: 'CREATE' | 'EDIT';
-	selectedSuppliers: Supplier | null;
+  refetching: boolean;
+  action: "CREATE" | "EDIT";
+  selectedSuppliers: Supplier | null;
+  viewModal: boolean;
 }
 
 const SuppliersPage = () => {
 	const [openedDrawer, drawerHandler] = useDisclosure();
 	const [state, setState] = useSetState<IState>({
-		refetching: false,
-		action: 'CREATE',
-		selectedSuppliers: null,
-	});
+    refetching: false,
+    action: "CREATE",
+    selectedSuppliers: null,
+    viewModal: false,
+  });
+
+	const [supplierViewDetails, setSupplierViewDetails] = useState<Supplier | null>(null);
 
 	const {
 		data,
@@ -91,71 +96,94 @@ const SuppliersPage = () => {
 		[]
 	);
 	return (
-		<div>
-			<DataTable
-				columns={columns}
-				data={data?.people__suppliers?.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={data?.people__suppliers?.meta?.totalCount ?? 100}
-				RowActionMenu={(row: Supplier) => (
-					<>
-						<Menu.Item
-							onClick={() => {
-								drawerHandler.open();
-								setState({
-									selectedSuppliers: row,
-									action: 'EDIT',
-								});
-							}}
-							icon={<IconPencil size={18} />}
-						>
-							Edit
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => handleDeleteIncrement(row._id)}
-							icon={<IconTrash size={18} />}
-						>
-							Delete
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							onClick={() => {
-								drawerHandler.open();
-								setState({
-									action: 'CREATE',
-								});
-							}}
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={fetchingPeople || state.refetching}
-			/>
+    <div>
+      <DataTable
+        columns={columns}
+        data={data?.people__suppliers?.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.people__suppliers?.meta?.totalCount ?? 100}
+        RowActionMenu={(row: Supplier) => (
+          <>
+            <Menu.Item
+              onClick={() => {
+                drawerHandler.open();
+                setState({
+                  selectedSuppliers: row,
+                  action: "EDIT",
+                });
+              }}
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteIncrement(row._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => {
+                setState({ viewModal: true });
+                setSupplierViewDetails(row);
+              }}
+              icon={<IconEye size={18} />}
+            >
+              View
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() => {
+                drawerHandler.open();
+                setState({
+                  action: "CREATE",
+                });
+              }}
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={fetchingPeople || state.refetching}
+      />
 
-			<Drawer
-				opened={openedDrawer}
-				onClose={drawerHandler.close}
-				position='right'
-				title='Create client'
-				withCloseButton={true}
-			>
-				<SuppliersCreateFrom
-					action={state.action}
-					formData={state.selectedSuppliers!}
-					onFormSubmitted={() => {
-						refetch();
-						drawerHandler.close();
-					}}
-				/>
-			</Drawer>
-		</div>
-	);
+      <Drawer
+        opened={openedDrawer}
+        onClose={drawerHandler.close}
+        position="right"
+        title="Create client"
+        withCloseButton={true}
+      >
+        <SuppliersCreateFrom
+          action={state.action}
+          formData={state.selectedSuppliers!}
+          onFormSubmitted={() => {
+            refetch();
+            drawerHandler.close();
+          }}
+        />
+      </Drawer>
+      <Drawer
+        padding={0}
+        m={0}
+        opened={state.viewModal}
+        onClose={() => setState({ viewModal: false })}
+        position="right"
+        size={"95%"}
+      >
+        <ViewSupplierDetails
+          supplierDetails={supplierViewDetails}
+            refetch={refetch}
+          
+        />
+      </Drawer>
+    </div>
+  );
 };
 
 export default SuppliersPage;
