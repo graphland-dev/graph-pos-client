@@ -1,779 +1,791 @@
-import { Notify } from "@/_app/common/Notification/Notify";
+import { Notify } from '@/_app/common/Notification/Notify';
 import {
-  CreateProductPurchaseInput,
-  Product,
-  ProductTaxType,
-  ProductsWithPagination,
-  PurchaseProductItemInput,
-  Supplier,
-  SuppliersWithPagination,
-  Vat,
-  VatsWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/people/pages/suppliers/utils/suppliers.query";
-import { SETTINGS_VAT_QUERY } from "@/pages/settings/pages/vat/utils/query";
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+	CreateProductPurchaseInput,
+	Product,
+	ProductTaxType,
+	ProductsWithPagination,
+	PurchaseProductItemInput,
+	Supplier,
+	SuppliersWithPagination,
+	Vat,
+	VatsWithPagination,
+} from '@/_app/graphql-models/graphql';
+import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/suppliers.query';
+import { SETTINGS_VAT_QUERY } from '@/pages/settings/pages/vat/utils/query';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
-  ActionIcon,
-  Box,
-  Button,
-  Drawer,
-  Flex,
-  Group,
-  Input,
-  NumberInput,
-  Paper,
-  Select,
-  Skeleton,
-  Space,
-  Table,
-  Text,
-  Textarea,
-  Title,
-} from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { useDisclosure } from "@mantine/hooks";
+	ActionIcon,
+	Box,
+	Button,
+	Drawer,
+	Flex,
+	Group,
+	Input,
+	NumberInput,
+	Paper,
+	Select,
+	Skeleton,
+	Space,
+	Table,
+	Text,
+	Textarea,
+	Title,
+} from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import { useDisclosure } from '@mantine/hooks';
 import {
-  IconMinus,
-  IconPlus,
-  IconSquareCheckFilled,
-  IconX,
-} from "@tabler/icons-react";
-import classNames from "classnames";
-import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import * as Yup from "yup";
+	IconMinus,
+	IconPlus,
+	IconSquareCheckFilled,
+	IconX,
+} from '@tabler/icons-react';
+import classNames from 'classnames';
+import { useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 import {
-  calculateTaxAmount,
-  getTotalCostAmount,
-  getTotalProductsPrice,
-  getTotalTaxAmount,
-  getVatProfileSelectInputData,
-} from "./utils/helpers";
+	calculateTaxAmount,
+	getTotalCostAmount,
+	getTotalProductsPrice,
+	getTotalTaxAmount,
+	getVatProfileSelectInputData,
+} from './utils/helpers';
 
 import {
-  CREATE_INVENTORY_PRODUCT_PURCHASE,
-  PURCHASE_PRODUCT_LIST,
-  PURCHASE__PRODUCT_CREATE,
-  PURCHASE__SUPPLIER_CREATE,
-} from "./utils/products.query";
+	CREATE_INVENTORY_PRODUCT_PURCHASE,
+	PURCHASE_PRODUCT_LIST,
+	PURCHASE__PRODUCT_CREATE,
+	PURCHASE__SUPPLIER_CREATE,
+} from './utils/products.query';
+import { Schema_Validation } from './utils/validation';
 
 const CreatePurchasePage = () => {
-  const [productPage, onChangeProductPage] = useState(1);
-  const [supplierPage, onChangeSupplierPage] = useState(1);
-  const [openCreateProduct, createProductDrawerHandler] = useDisclosure();
-  const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
+	const [productPage, onChangeProductPage] = useState(1);
+	const [supplierPage, onChangeSupplierPage] = useState(1);
+	const [openCreateProduct, createProductDrawerHandler] = useDisclosure();
+	const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
 
-  const {
-    data,
-    loading: isFetchingSuppliers,
-    refetch: refetchSuppliers,
-  } = useQuery<{
-    people__suppliers: SuppliersWithPagination;
-  }>(PEOPLE_SUPPLIERS_QUERY, {
-    variables: {
-      where: {
-        page: supplierPage,
-        limit: 6,
-      },
-    },
-  });
+	const {
+		data,
+		loading: isFetchingSuppliers,
+		refetch: refetchSuppliers,
+	} = useQuery<{
+		people__suppliers: SuppliersWithPagination;
+	}>(PEOPLE_SUPPLIERS_QUERY, {
+		variables: {
+			where: {
+				page: supplierPage,
+				limit: 6,
+			},
+		},
+	});
 
-  const {
-    data: productsData,
-    loading: isFetchingProducts,
-    refetch: refetchProducts,
-  } = useQuery<{
-    inventory__products: ProductsWithPagination;
-  }>(PURCHASE_PRODUCT_LIST, {
-    variables: {
-      where: {
-        page: productPage,
-        limit: 12,
-      },
-    },
-  });
+	const {
+		data: productsData,
+		loading: isFetchingProducts,
+		refetch: refetchProducts,
+	} = useQuery<{
+		inventory__products: ProductsWithPagination;
+	}>(PURCHASE_PRODUCT_LIST, {
+		variables: {
+			where: {
+				page: productPage,
+				limit: 12,
+			},
+		},
+	});
 
-  const [createProduct, { loading: creatingProduct }] = useMutation(
-    PURCHASE__PRODUCT_CREATE,
-    Notify({
-      sucTitle: "Purchase product created successfully!",
-      onSuccess() {
-        refetchProducts();
-        createProductDrawerHandler.close();
-      },
-    })
-  );
+	const [createProduct, { loading: creatingProduct }] = useMutation(
+		PURCHASE__PRODUCT_CREATE,
+		Notify({
+			sucTitle: 'Purchase product created successfully!',
+			onSuccess() {
+				refetchProducts();
+				createProductDrawerHandler.close();
+			},
+		})
+	);
 
-  const [createSupplier, { loading: creatingSupplier }] = useMutation(
-    PURCHASE__SUPPLIER_CREATE,
-    Notify({
-      sucTitle: "Purchase supplier created successfully!",
-      onSuccess() {
-        refetchSuppliers();
-        createSupplierDrawerHandler.close();
-      },
-    })
-  );
+	const [createSupplier, { loading: creatingSupplier }] = useMutation(
+		PURCHASE__SUPPLIER_CREATE,
+		Notify({
+			sucTitle: 'Purchase supplier created successfully!',
+			onSuccess() {
+				refetchSuppliers();
+				createSupplierDrawerHandler.close();
+			},
+		})
+	);
 
-  const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
-    setup__vats: VatsWithPagination;
-  }>(SETTINGS_VAT_QUERY, {
-    variables: {
-      where: { limit: -1 },
-    },
-  });
+	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
+		setup__vats: VatsWithPagination;
+	}>(SETTINGS_VAT_QUERY, {
+		variables: {
+			where: { limit: -1 },
+		},
+	});
 
-  const {
-    register,
-    setValue,
-    formState: { errors },
-    control,
-    watch,
-    handleSubmit,
-  } = useForm<CreateProductPurchaseInput>({
-    defaultValues: {
-      purchaseDate: new Date(),
-      purchaseOrderDate: new Date(),
-      note: "",
-      products: [],
-      costs: [],
-      supplierId: "",
-      taxRate: 0,
-    },
-  });
+	const {
+		register,
+		setValue,
+		formState: { errors },
+		control,
+		watch,
+		handleSubmit,
+	} = useForm<CreateProductPurchaseInput>({
+		defaultValues: {
+			purchaseDate: new Date(),
+			purchaseOrderDate: new Date(),
+			note: '',
+			products: [],
+			costs: [],
+			supplierId: '',
+			taxRate: 0,
+		},
 
-  const {
-    append: appendProduct,
-    fields: productFields,
-    remove: removeProduct,
-  } = useFieldArray({
-    name: "products",
-    control,
-  });
+		// @ts-ignore
+		resolver: yupResolver(Schema_Validation),
+	});
 
-  const {
-    append: appendCosts,
-    fields: costsFields,
-    remove: removeCosts,
-  } = useFieldArray({
-    name: "costs",
-    control,
-  });
+	const {
+		append: appendProduct,
+		fields: productFields,
+		remove: removeProduct,
+	} = useFieldArray({
+		name: 'products',
+		control,
+	});
 
-  //
-  function handleAddProductToList(product: Product) {
-    const price = product?.price || 0;
-    const percentage = product.vat?.percentage || 0;
+	const {
+		append: appendCosts,
+		fields: costsFields,
+		remove: removeCosts,
+	} = useFieldArray({
+		name: 'costs',
+		control,
+	});
 
-    // Check the product is already exits in productsFields
-    const locationIndex = productFields.findIndex(
-      (p) => p?.referenceId === product?._id
-    );
-    if (locationIndex == -1) {
-      appendProduct({
-        name: product.name,
-        referenceId: product._id,
-        quantity: 1,
-        subAmount: price,
-        unitPrice: price,
-        netAmount: 0,
-        taxAmount: (price * percentage) / 100,
-        taxRate: product.vat?.percentage || 0,
-        taxType: ProductTaxType.Inclusive,
-      });
-    } else {
-      setValue(
-        `products.${locationIndex}.quantity`,
-        watch(`products.${locationIndex}.quantity`) + 1
-      );
-    }
-  }
+	//
+	function handleAddProductToList(product: Product) {
+		const price = product?.price || 0;
+		const percentage = product.vat?.percentage || 0;
 
-  const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
-    CREATE_INVENTORY_PRODUCT_PURCHASE,
-    Notify({
-      sucTitle: "Inventory product added to purchase",
-    })
-  );
+		// Check the product is already exits in productsFields
+		const locationIndex = productFields.findIndex(
+			(p) => p?.referenceId === product?._id
+		);
+		if (locationIndex == -1) {
+			appendProduct({
+				name: product.name,
+				referenceId: product._id,
+				quantity: 1,
+				subAmount: price,
+				unitPrice: price,
+				netAmount: 0,
+				taxAmount: (price * percentage) / 100,
+				taxRate: product.vat?.percentage || 0,
+				taxType: ProductTaxType.Inclusive,
+			});
+		} else {
+			setValue(
+				`products.${locationIndex}.quantity`,
+				watch(`products.${locationIndex}.quantity`) + 1
+			);
+		}
+	}
 
-  const onSubmit = (v: any) => {
-    createPurchaseProduct({
-      variables: {
-        body: {
-          ...v,
-          taxAmount:
-            ((getTotalProductsPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
-            100,
+	const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
+		CREATE_INVENTORY_PRODUCT_PURCHASE,
+		Notify({
+			sucTitle: 'Inventory product added to purchase',
+		})
+	);
 
-          // Prices
-          costAmount: getTotalCostAmount(watch("costs")!),
-          subTotal:
-            getTotalProductsPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!), // products.netAmount + costs.amount
-          netTotal:
-            getTotalProductsPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!) +
-            ((getTotalProductsPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
-              100, // subTotal + taxAmount
-        },
-      },
-    });
-  };
+	const onSubmit = (v: any) => {
+		createPurchaseProduct({
+			variables: {
+				body: {
+					...v,
+					taxAmount:
+						((getTotalProductsPrice(watch('products')!) +
+							getTotalCostAmount(watch('costs')!)) *
+							watch('taxRate')) /
+						100,
 
-  const {
-    handleSubmit: handleCreateProductForm,
-    register: registerCreateProductForm,
-    formState: { errors: createProductErrors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      code: "",
-    },
-    resolver: yupResolver(
-      Yup.object().shape({
-        name: Yup.string().required().label("Name"),
-        code: Yup.string().required().label("Code"),
-      })
-    ),
-  });
+					// Prices
+					costAmount: getTotalCostAmount(watch('costs')!),
+					subTotal:
+						getTotalProductsPrice(watch('products')!) +
+						getTotalCostAmount(watch('costs')!), // products.netAmount + costs.amount
+					netTotal:
+						getTotalProductsPrice(watch('products')!) +
+						getTotalCostAmount(watch('costs')!) +
+						((getTotalProductsPrice(watch('products')!) +
+							getTotalCostAmount(watch('costs')!)) *
+							watch('taxRate')) /
+							100, // subTotal + taxAmount
+				},
+			},
+		});
+	};
 
-  const createProductFormSubmit = (values: any) => {
-    createProduct({
-      variables: {
-        body: values,
-      },
-    });
-  };
+	const {
+		handleSubmit: handleCreateProductForm,
+		register: registerCreateProductForm,
+		formState: { errors: createProductErrors },
+	} = useForm({
+		defaultValues: {
+			name: '',
+			code: '',
+		},
+		resolver: yupResolver(
+			Yup.object().shape({
+				name: Yup.string().required().label('Name'),
+				code: Yup.string().required().label('Code'),
+			})
+		),
+	});
 
-  const {
-    handleSubmit: handleCreateSupplierForm,
-    register: registerCreateSupplierForm,
-    formState: { errors: createSupplierErrors },
-  } = useForm({
-    defaultValues: {
-      name: "",
-      contactNumber: "",
-    },
-    resolver: yupResolver(
-      Yup.object().shape({
-        name: Yup.string().required().label("Name"),
-        contactNumber: Yup.string().required().label("Contact number"),
-      })
-    ),
-  });
+	const createProductFormSubmit = (values: any) => {
+		createProduct({
+			variables: {
+				body: values,
+			},
+		});
+	};
 
-  const createSupplierFormSubmit = (values: any) => {
-    createSupplier({
-      variables: {
-        body: values,
-      },
-    });
-  };
+	const {
+		handleSubmit: handleCreateSupplierForm,
+		register: registerCreateSupplierForm,
+		formState: { errors: createSupplierErrors },
+	} = useForm({
+		defaultValues: {
+			name: '',
+			contactNumber: '',
+		},
+		resolver: yupResolver(
+			Yup.object().shape({
+				name: Yup.string().required().label('Name'),
+				contactNumber: Yup.string().required().label('Contact number'),
+			})
+		),
+	});
 
-  return (
-    <>
-      <Drawer
-        title="Create a supplier"
-        opened={openCreateSupplier}
-        onClose={() => createSupplierDrawerHandler.close()}
-        closeOnEscape
-        closeOnClickOutside
-        withCloseButton
-      >
-        <form onSubmit={handleCreateSupplierForm(createSupplierFormSubmit)}>
-          <Input.Wrapper
-            label="Supplier name"
-            error={<ErrorMessage errors={createSupplierErrors} name="name" />}
-          >
-            <Input
-              placeholder="Write supplier name"
-              {...registerCreateSupplierForm("name")}
-            />
-          </Input.Wrapper>
+	const createSupplierFormSubmit = (values: any) => {
+		createSupplier({
+			variables: {
+				body: values,
+			},
+		});
+	};
 
-          <Space h={"sm"} />
+	return (
+		<>
+			<Drawer
+				title='Create a supplier'
+				opened={openCreateSupplier}
+				onClose={() => createSupplierDrawerHandler.close()}
+				closeOnEscape
+				closeOnClickOutside
+				withCloseButton
+			>
+				<form onSubmit={handleCreateSupplierForm(createSupplierFormSubmit)}>
+					<Input.Wrapper
+						label='Supplier name'
+						error={<ErrorMessage errors={createSupplierErrors} name='name' />}
+					>
+						<Input
+							placeholder='Write supplier name'
+							{...registerCreateSupplierForm('name')}
+						/>
+					</Input.Wrapper>
 
-          <Input.Wrapper
-            label="Supplier contact number"
-            error={
-              <ErrorMessage
-                errors={createSupplierErrors}
-                name="contactNumber"
-              />
-            }
-          >
-            <Input
-              placeholder="Write supplier contact number"
-              {...registerCreateSupplierForm("contactNumber")}
-            />
-          </Input.Wrapper>
+					<Space h={'sm'} />
 
-          <Space h={"sm"} />
+					<Input.Wrapper
+						label='Supplier contact number'
+						error={
+							<ErrorMessage
+								errors={createSupplierErrors}
+								name='contactNumber'
+							/>
+						}
+					>
+						<Input
+							placeholder='Write supplier contact number'
+							{...registerCreateSupplierForm('contactNumber')}
+						/>
+					</Input.Wrapper>
 
-          <Button type="submit" loading={creatingSupplier}>
-            Save
-          </Button>
-        </form>
-      </Drawer>
-      <Drawer
-        title="Create a product"
-        opened={openCreateProduct}
-        onClose={() => createProductDrawerHandler.close()}
-        closeOnEscape
-        closeOnClickOutside
-        withCloseButton
-      >
-        <form onSubmit={handleCreateProductForm(createProductFormSubmit)}>
-          <Input.Wrapper
-            label="Product name"
-            error={<ErrorMessage errors={createProductErrors} name="name" />}
-          >
-            <Input
-              placeholder="Write product name"
-              {...registerCreateProductForm("name")}
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Product code"
-            error={<ErrorMessage errors={createProductErrors} name="code" />}
-          >
-            <Input
-              placeholder="Write product code"
-              {...registerCreateProductForm("code")}
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Button type="submit" loading={creatingProduct}>
-            Save
-          </Button>
-        </form>
-      </Drawer>
-      <Paper radius={10} p={10}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex justify={"space-between"} align={"center"}>
-            <Title order={4}>
-              Select supplier <span className="text-red-500">*</span>
-            </Title>
-            <Button
-              variant="light"
-              leftIcon={<IconPlus />}
-              onClick={() => createSupplierDrawerHandler.open()}
-            >
-              Add new
-            </Button>
-          </Flex>
-          <Space h={"md"} />
-          <div className="grid grid-cols-3 gap-3">
-            {data?.people__suppliers?.nodes?.map(
-              (supplier: Supplier, idx: number) => (
-                <Paper
-                  key={idx}
-                  p={10}
-                  withBorder
-                  className="relative cursor-pointer hover:bg-slate-100 hover:duration-200"
-                  onClick={() => setValue("supplierId", supplier?._id)}
-                >
-                  {watch("supplierId") === supplier?._id && (
-                    <IconSquareCheckFilled
-                      size={20}
-                      className="absolute top-3 right-3"
-                    />
-                  )}
-                  <Text size={"md"} fw={700}>
-                    Name: {supplier?.name}
-                  </Text>
-                  <Text size={"sm"}>Company name: {supplier?.companyName}</Text>
-                  <Text size={"sm"}>Company email: {supplier?.email}</Text>
-                </Paper>
-              )
-            )}
-          </div>
+					<Space h={'sm'} />
 
-          {isFetchingSuppliers && (
-            <div className="grid grid-cols-3 gap-3">
-              {new Array(6).fill(6).map((_, idx) => (
-                <Skeleton key={idx} h={90} radius={"sm"} />
-              ))}
-            </div>
-          )}
+					<Button type='submit' loading={creatingSupplier}>
+						Save
+					</Button>
+				</form>
+			</Drawer>
+			<Drawer
+				title='Create a product'
+				opened={openCreateProduct}
+				onClose={() => createProductDrawerHandler.close()}
+				closeOnEscape
+				closeOnClickOutside
+				withCloseButton
+			>
+				<form onSubmit={handleCreateProductForm(createProductFormSubmit)}>
+					<Input.Wrapper
+						label='Product name'
+						error={<ErrorMessage errors={createProductErrors} name='name' />}
+					>
+						<Input
+							placeholder='Write product name'
+							{...registerCreateProductForm('name')}
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Product code'
+						error={<ErrorMessage errors={createProductErrors} name='code' />}
+					>
+						<Input
+							placeholder='Write product code'
+							{...registerCreateProductForm('code')}
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Button type='submit' loading={creatingProduct}>
+						Save
+					</Button>
+				</form>
+			</Drawer>
+			<Paper radius={10} p={10}>
+				<form onSubmit={handleSubmit(onSubmit)}>
+					<Flex justify={'space-between'} align={'center'}>
+						<div>
+							<Title order={4}>
+								Select supplier <span className='text-red-500'>*</span>
+							</Title>
+							<Text color='red'>{errors?.supplierId?.message}</Text>
+						</div>
 
-          <Space h={"md"} />
-          <Group position="left">
-            <Button
-              variant="subtle"
-              size="xs"
-              disabled={supplierPage === 1}
-              onClick={() => onChangeSupplierPage(supplierPage - 1)}
-            >
-              Load Previous
-            </Button>{" "}
-            <Button
-              variant="subtle"
-              disabled={!data?.people__suppliers?.meta?.hasNextPage}
-              size="xs"
-              onClick={() => onChangeSupplierPage(supplierPage + 1)}
-            >
-              Load Next
-            </Button>
-          </Group>
-          <Space h={"md"} />
-          <Flex justify={"space-between"} align={"center"} mt={"lg"}>
-            <Title order={4}>
-              Select product <span className="text-red-500">*</span>
-            </Title>
-            <Button
-              variant="light"
-              leftIcon={<IconPlus />}
-              onClick={() => createProductDrawerHandler.open()}
-            >
-              Add new
-            </Button>
-          </Flex>
-          <Space h={"md"} />
+						<Button
+							variant='light'
+							leftIcon={<IconPlus />}
+							onClick={() => createSupplierDrawerHandler.open()}
+						>
+							Add new
+						</Button>
+					</Flex>
+					<Space h={'md'} />
+					<div className='grid grid-cols-3 gap-3'>
+						{data?.people__suppliers?.nodes?.map(
+							(supplier: Supplier, idx: number) => (
+								<Paper
+									key={idx}
+									p={10}
+									withBorder
+									className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
+									onClick={() => setValue('supplierId', supplier?._id)}
+								>
+									{watch('supplierId') === supplier?._id && (
+										<IconSquareCheckFilled
+											size={20}
+											className='absolute top-3 right-3'
+										/>
+									)}
+									<Text size={'md'} fw={700}>
+										Name: {supplier?.name}
+									</Text>
+									<Text size={'sm'}>Company name: {supplier?.companyName}</Text>
+									<Text size={'sm'}>Company email: {supplier?.email}</Text>
+								</Paper>
+							)
+						)}
+					</div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {productsData?.inventory__products?.nodes?.map(
-              (product: Product, idx: number) => (
-                <Paper
-                  key={idx}
-                  p={10}
-                  withBorder
-                  className="relative cursor-pointer hover:bg-slate-100 hover:duration-200"
-                  onClick={() => {
-                    handleAddProductToList(product);
-                  }}
-                >
-                  {productFields.findIndex(
-                    (p) => p.referenceId === product?._id
-                  ) != -1 && (
-                    <IconSquareCheckFilled
-                      size={20}
-                      className="absolute top-3 right-3"
-                    />
-                  )}
-                  <Text size={"md"} fw={700}>
-                    Name: {product?.name}
-                  </Text>
-                  <Text size={"sm"}>Product price: {product?.price}</Text>
-                  <Text size={"sm"}>Product Code: {product?.code}</Text>
-                </Paper>
-              )
-            )}
-          </div>
+					{isFetchingSuppliers && (
+						<div className='grid grid-cols-3 gap-3'>
+							{new Array(6).fill(6).map((_, idx) => (
+								<Skeleton key={idx} h={90} radius={'sm'} />
+							))}
+						</div>
+					)}
 
-          {isFetchingProducts && (
-            <div className="grid grid-cols-3 gap-3">
-              {new Array(6).fill(6).map((_, idx) => (
-                <Skeleton key={idx} h={90} radius={"sm"} />
-              ))}
-            </div>
-          )}
+					<Space h={'md'} />
+					<Group position='left'>
+						<Button
+							variant='subtle'
+							size='xs'
+							disabled={supplierPage === 1}
+							onClick={() => onChangeSupplierPage(supplierPage - 1)}
+						>
+							Load Previous
+						</Button>{' '}
+						<Button
+							variant='subtle'
+							disabled={!data?.people__suppliers?.meta?.hasNextPage}
+							size='xs'
+							onClick={() => onChangeSupplierPage(supplierPage + 1)}
+						>
+							Load Next
+						</Button>
+					</Group>
+					<Space h={'md'} />
+					<Flex justify={'space-between'} align={'center'} mt={'lg'}>
+						<div>
+							<Title order={4}>
+								Select product <span className='text-red-500'>*</span>
+							</Title>
 
-          <Space h={10} />
-          <Group position="left">
-            <Button
-              variant="subtle"
-              size="xs"
-              disabled={productPage === 1}
-              onClick={() => onChangeProductPage(productPage - 1)}
-            >
-              Load Previous
-            </Button>{" "}
-            <Button
-              variant="subtle"
-              disabled={!productsData?.inventory__products?.meta?.hasNextPage}
-              size="xs"
-              onClick={() => onChangeProductPage(productPage + 1)}
-            >
-              Load More
-            </Button>
-          </Group>
-          <Space h={50} />
-          {/* <pre>{JSON.stringify(watch(`products`), undefined, 2)}</pre> */}
-          {Boolean(productFields?.length) && (
-            <>
-              {" "}
-              <Table withBorder withColumnBorders>
-                <thead className="bg-slate-300">
-                  <tr className="!p-2 rounded-md">
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Unit cost</th>
-                    <th>Tax %</th>
-                    <th>Tax Amount</th>
-                    <th>Total cost</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+							<Text color='red'>{errors?.supplierId?.message}</Text>
+						</div>
+						<Button
+							variant='light'
+							leftIcon={<IconPlus />}
+							onClick={() => createProductDrawerHandler.open()}
+						>
+							Add new
+						</Button>
+					</Flex>
+					<Space h={'md'} />
 
-                <tbody>
-                  {productFields?.map(
-                    (product: PurchaseProductItemInput, idx: number) => (
-                      <tr key={idx}>
-                        <td className="font-medium">{product?.name}</td>
-                        <td className="font-medium">
-                          <NumberInput
-                            w={65}
-                            // {...register(`products.${idx}.quantity`, {
-                            // 	valueAsNumber: true,
-                            // })}
-                            onChange={(v) =>
-                              setValue(
-                                `products.${idx}.quantity`,
-                                parseInt(v as string)
-                              )
-                            }
-                            min={1}
-                            defaultValue={watch(`products.${idx}.quantity`)}
-                          />
-                        </td>
-                        <td className="font-medium">
-                          <NumberInput
-                            w={65}
-                            // {...register(`products.${idx}.unitPrice`, {
-                            // 	valueAsNumber: true,
-                            // })}
-                            onChange={(v) =>
-                              setValue(
-                                `products.${idx}.unitPrice`,
-                                parseInt(v as string)
-                              )
-                            }
-                            min={1}
-                            defaultValue={watch(`products.${idx}.unitPrice`)}
-                          />
-                        </td>
-                        <td className="font-medium text-center">
-                          {watch(`products.${idx}.quantity`) *
-                            watch(`products.${idx}.unitPrice`)}
-                        </td>
-                        <td className="font-medium">{product?.taxRate || 0}</td>
-                        <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`))}
-                        </td>
-                        <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`)) +
-                            watch(`products.${idx}.quantity`) *
-                              watch(`products.${idx}.unitPrice`)}
-                        </td>
-                        <td className="font-medium">
-                          <ActionIcon
-                            variant="filled"
-                            color="red"
-                            size={"sm"}
-                            onClick={() => {
-                              removeProduct(idx);
-                            }}
-                          >
-                            <IconX size={14} />
-                          </ActionIcon>
-                        </td>
-                      </tr>
-                    )
-                  )}
+					<div className='grid grid-cols-3 gap-3'>
+						{productsData?.inventory__products?.nodes?.map(
+							(product: Product, idx: number) => (
+								<Paper
+									key={idx}
+									p={10}
+									withBorder
+									className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
+									onClick={() => {
+										handleAddProductToList(product);
+									}}
+								>
+									{productFields.findIndex(
+										(p) => p.referenceId === product?._id
+									) != -1 && (
+										<IconSquareCheckFilled
+											size={20}
+											className='absolute top-3 right-3'
+										/>
+									)}
+									<Text size={'md'} fw={700}>
+										Name: {product?.name}
+									</Text>
+									<Text size={'sm'}>Product price: {product?.price}</Text>
+									<Text size={'sm'}>Product Code: {product?.code}</Text>
+								</Paper>
+							)
+						)}
+					</div>
 
-                  <tr className="bg-green-50">
-                    <td colSpan={5} className="font-semibold text-right">
-                      Total
-                    </td>
-                    <td>{getTotalTaxAmount(watch("products") || [])}</td>
-                    <td>
-                      {getTotalProductsPrice(watch("products")!) +
-                        getTotalCostAmount(watch("costs")!)}
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </Table>
-              <Space h={50} />
-            </>
-          )}
-          <Input.Wrapper
-            label="Purchase order date"
-            error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseOrderDate", d!)}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Purchase date"
-            error={<ErrorMessage errors={errors} name={`purchaseDate`} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseDate", d!)}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Note"
-            error={<ErrorMessage errors={errors} name={`note`} />}
-          >
-            <Textarea {...register("note")} placeholder="Write note" />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Select VAT profile"
-            error={<ErrorMessage errors={errors} name={`taxRate`} />}
-          >
-            <Select
-              data={getVatProfileSelectInputData(
-                vatProfile?.setup__vats?.nodes as Vat[]
-              )}
-              onChange={(v) => setValue("taxRate", parseInt(v!))}
-              placeholder="Write note"
-              disabled={vatProfileLoading}
-            />
-          </Input.Wrapper>
-          <Space h={"xl"} />
-          {costsFields?.map((_, idx) => (
-            <div
-              key={idx}
-              className={classNames(
-                "relative p-2 mt-5 mb-2 rounded-sm bg-gray-100",
-                {
-                  "bg-gray-100": true,
-                  //  colorScheme != "dark",
-                  // 'bg-gray-800': colorScheme == 'dark',
-                }
-              )}
-            >
-              <ActionIcon
-                color="red"
-                size={"sm"}
-                radius={100}
-                variant="filled"
-                className="absolute -top-2 -right-1"
-                onClick={() => removeCosts(idx)}
-              >
-                <IconMinus size={16} />
-              </ActionIcon>
-              <Input.Wrapper
-                label="Cost name"
-                withAsterisk
-                error={
-                  <ErrorMessage errors={errors} name={`costs.${idx}.name`} />
-                }
-              >
-                <Input
-                  size="xs"
-                  placeholder="Write cost name"
-                  {...register(`costs.${idx}.name`)}
-                />
-              </Input.Wrapper>
+					{isFetchingProducts && (
+						<div className='grid grid-cols-3 gap-3'>
+							{new Array(6).fill(6).map((_, idx) => (
+								<Skeleton key={idx} h={90} radius={'sm'} />
+							))}
+						</div>
+					)}
 
-              <Space h={"xs"} />
-              <Input.Wrapper
-                label="Cost amount"
-                withAsterisk
-                error={
-                  <ErrorMessage errors={errors} name={`costs.${idx}.amount`} />
-                }
-              >
-                <NumberInput
-                  size="xs"
-                  placeholder="Write cost amount"
-                  // {...register(`costs.${idx}.amount`, {
-                  // 	valueAsNumber: true,
-                  // })}
-                  onChange={(v) =>
-                    setValue(`costs.${idx}.amount`, parseInt(v as string))
-                  }
-                  min={0}
-                />
-              </Input.Wrapper>
-              <Space h={"xs"} />
-              <Input.Wrapper
-                label="Note"
-                error={
-                  <ErrorMessage errors={errors} name={`costs.${idx}.note`} />
-                }
-              >
-                <Input
-                  size="xs"
-                  placeholder="Write cost note"
-                  {...register(`costs.${idx}.note`)}
-                />
-              </Input.Wrapper>
-            </div>
-          ))}
-          <Button
-            variant="subtle"
-            onClick={() =>
-              appendCosts({
-                amount: 0,
-                note: "",
-                name: "",
-              })
-            }
-          >
-            Add new
-          </Button>
-          <Space h={50} />
+					<Space h={10} />
+					<Group position='left'>
+						<Button
+							variant='subtle'
+							size='xs'
+							disabled={productPage === 1}
+							onClick={() => onChangeProductPage(productPage - 1)}
+						>
+							Load Previous
+						</Button>{' '}
+						<Button
+							variant='subtle'
+							disabled={!productsData?.inventory__products?.meta?.hasNextPage}
+							size='xs'
+							onClick={() => onChangeProductPage(productPage + 1)}
+						>
+							Load More
+						</Button>
+					</Group>
+					<Space h={50} />
+					{/* <pre>{JSON.stringify(watch(`products`), undefined, 2)}</pre> */}
+					{Boolean(productFields?.length) && (
+						<>
+							{' '}
+							<Table withBorder withColumnBorders>
+								<thead className='bg-slate-300'>
+									<tr className='!p-2 rounded-md'>
+										<th>Name</th>
+										<th>Quantity</th>
+										<th>Unit Price</th>
+										<th>Unit cost</th>
+										<th>Tax %</th>
+										<th>Tax Amount</th>
+										<th>Total cost</th>
+										<th>Action</th>
+									</tr>
+								</thead>
 
-          <Paper withBorder p={"sm"} mb={"xl"}>
-            <Flex justify={"space-between"}>
-              <Box>
-                <Text fw={"bold"}>Tax rate</Text>
-                <Text fw={"bold"}>Tax amount</Text>
-              </Box>
-              <Box>
-                <Text>{watch("taxRate")} %</Text>
-                <Text>
-                  {((getTotalProductsPrice(watch("products")!) +
-                    getTotalCostAmount(watch("costs")!)) *
-                    watch("taxRate")) /
-                    100}
-                  BDT
-                </Text>
-              </Box>
-            </Flex>
-            <hr />
-            <Flex justify={"space-between"}>
-              <Text fw={"bold"}>Cost Amount</Text>
-              <Text>{getTotalCostAmount(watch("costs")!)} BDT</Text>
-            </Flex>
-            <Flex justify={"space-between"}>
-              <Text fw={"bold"}>Sub total</Text>
-              <Text>
-                {getTotalProductsPrice(watch("products")!) +
-                  getTotalCostAmount(watch("costs")!)}{" "}
-                BDT
-              </Text>
-            </Flex>
-            <Flex justify={"space-between"}>
-              <Text fw={"bold"}>Net total</Text>
-              <Text>
-                {getTotalProductsPrice(watch("products")!) +
-                  getTotalCostAmount(watch("costs")!) +
-                  ((getTotalProductsPrice(watch("products")!) +
-                    getTotalCostAmount(watch("costs")!)) *
-                    watch("taxRate")) /
-                    100}{" "}
-                BDT
-              </Text>
-            </Flex>
-          </Paper>
-          <Space h={10} />
-          <Button type="submit" loading={creatingPurchase} fullWidth>
-            Submit
-          </Button>
-        </form>
-      </Paper>
-    </>
-  );
+								<tbody>
+									{productFields?.map(
+										(product: PurchaseProductItemInput, idx: number) => (
+											<tr key={idx}>
+												<td className='font-medium'>{product?.name}</td>
+												<td className='font-medium'>
+													<NumberInput
+														w={65}
+														// {...register(`products.${idx}.quantity`, {
+														// 	valueAsNumber: true,
+														// })}
+														onChange={(v) =>
+															setValue(
+																`products.${idx}.quantity`,
+																parseInt(v as string)
+															)
+														}
+														min={1}
+														defaultValue={watch(`products.${idx}.quantity`)}
+													/>
+												</td>
+												<td className='font-medium'>
+													<NumberInput
+														w={65}
+														// {...register(`products.${idx}.unitPrice`, {
+														// 	valueAsNumber: true,
+														// })}
+														onChange={(v) =>
+															setValue(
+																`products.${idx}.unitPrice`,
+																parseInt(v as string)
+															)
+														}
+														min={1}
+														defaultValue={watch(`products.${idx}.unitPrice`)}
+													/>
+												</td>
+												<td className='font-medium text-center'>
+													{watch(`products.${idx}.quantity`) *
+														watch(`products.${idx}.unitPrice`)}
+												</td>
+												<td className='font-medium'>{product?.taxRate || 0}</td>
+												<td className='font-medium'>
+													{calculateTaxAmount(watch(`products.${idx}`))}
+												</td>
+												<td className='font-medium'>
+													{calculateTaxAmount(watch(`products.${idx}`)) +
+														watch(`products.${idx}.quantity`) *
+															watch(`products.${idx}.unitPrice`)}
+												</td>
+												<td className='font-medium'>
+													<ActionIcon
+														variant='filled'
+														color='red'
+														size={'sm'}
+														onClick={() => {
+															removeProduct(idx);
+														}}
+													>
+														<IconX size={14} />
+													</ActionIcon>
+												</td>
+											</tr>
+										)
+									)}
+
+									<tr className='bg-green-50'>
+										<td colSpan={5} className='font-semibold text-right'>
+											Total
+										</td>
+										<td>{getTotalTaxAmount(watch('products') || [])}</td>
+										<td>
+											{getTotalProductsPrice(watch('products')!) +
+												getTotalCostAmount(watch('costs')!)}
+										</td>
+										<td></td>
+									</tr>
+								</tbody>
+							</Table>
+							<Space h={50} />
+						</>
+					)}
+					<Input.Wrapper
+						label='Purchase order date'
+						error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
+					>
+						<DateInput
+							onChange={(d) => setValue('purchaseOrderDate', d!)}
+							placeholder='Pick a date'
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Purchase date'
+						error={<ErrorMessage errors={errors} name={`purchaseDate`} />}
+					>
+						<DateInput
+							onChange={(d) => setValue('purchaseDate', d!)}
+							placeholder='Pick a date'
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Note'
+						error={<ErrorMessage errors={errors} name={`note`} />}
+					>
+						<Textarea {...register('note')} placeholder='Write note' />
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Select VAT profile'
+						error={<ErrorMessage errors={errors} name={`taxRate`} />}
+					>
+						<Select
+							data={getVatProfileSelectInputData(
+								vatProfile?.setup__vats?.nodes as Vat[]
+							)}
+							onChange={(v) => setValue('taxRate', parseInt(v!))}
+							placeholder='Write note'
+							disabled={vatProfileLoading}
+						/>
+					</Input.Wrapper>
+					<Space h={'xl'} />
+					{costsFields?.map((_, idx) => (
+						<div
+							key={idx}
+							className={classNames(
+								'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
+								{
+									'bg-gray-100': true,
+									//  colorScheme != "dark",
+									// 'bg-gray-800': colorScheme == 'dark',
+								}
+							)}
+						>
+							<ActionIcon
+								color='red'
+								size={'sm'}
+								radius={100}
+								variant='filled'
+								className='absolute -top-2 -right-1'
+								onClick={() => removeCosts(idx)}
+							>
+								<IconMinus size={16} />
+							</ActionIcon>
+							<Input.Wrapper
+								label='Cost name'
+								withAsterisk
+								error={
+									<ErrorMessage errors={errors} name={`costs.${idx}.name`} />
+								}
+							>
+								<Input
+									size='xs'
+									placeholder='Write cost name'
+									{...register(`costs.${idx}.name`)}
+								/>
+							</Input.Wrapper>
+
+							<Space h={'xs'} />
+							<Input.Wrapper
+								label='Cost amount'
+								withAsterisk
+								error={
+									<ErrorMessage errors={errors} name={`costs.${idx}.amount`} />
+								}
+							>
+								<NumberInput
+									size='xs'
+									placeholder='Write cost amount'
+									// {...register(`costs.${idx}.amount`, {
+									// 	valueAsNumber: true,
+									// })}
+									onChange={(v) =>
+										setValue(`costs.${idx}.amount`, parseInt(v as string))
+									}
+									min={0}
+								/>
+							</Input.Wrapper>
+							<Space h={'xs'} />
+							<Input.Wrapper
+								label='Note'
+								error={
+									<ErrorMessage errors={errors} name={`costs.${idx}.note`} />
+								}
+							>
+								<Input
+									size='xs'
+									placeholder='Write cost note'
+									{...register(`costs.${idx}.note`)}
+								/>
+							</Input.Wrapper>
+						</div>
+					))}
+					<Button
+						variant='subtle'
+						onClick={() =>
+							appendCosts({
+								amount: 0,
+								note: '',
+								name: '',
+							})
+						}
+					>
+						Add new
+					</Button>
+					<Space h={50} />
+
+					<Paper withBorder p={'sm'} mb={'xl'}>
+						<Flex justify={'space-between'}>
+							<Box>
+								<Text fw={'bold'}>Tax rate</Text>
+								<Text fw={'bold'}>Tax amount</Text>
+							</Box>
+							<Box>
+								<Text>{watch('taxRate')} %</Text>
+								<Text>
+									{((getTotalProductsPrice(watch('products')!) +
+										getTotalCostAmount(watch('costs')!)) *
+										watch('taxRate')) /
+										100}
+									BDT
+								</Text>
+							</Box>
+						</Flex>
+						<hr />
+						<Flex justify={'space-between'}>
+							<Text fw={'bold'}>Cost Amount</Text>
+							<Text>{getTotalCostAmount(watch('costs')!)} BDT</Text>
+						</Flex>
+						<Flex justify={'space-between'}>
+							<Text fw={'bold'}>Sub total</Text>
+							<Text>
+								{getTotalProductsPrice(watch('products')!) +
+									getTotalCostAmount(watch('costs')!)}{' '}
+								BDT
+							</Text>
+						</Flex>
+						<Flex justify={'space-between'}>
+							<Text fw={'bold'}>Net total</Text>
+							<Text>
+								{getTotalProductsPrice(watch('products')!) +
+									getTotalCostAmount(watch('costs')!) +
+									((getTotalProductsPrice(watch('products')!) +
+										getTotalCostAmount(watch('costs')!)) *
+										watch('taxRate')) /
+										100}{' '}
+								BDT
+							</Text>
+						</Flex>
+					</Paper>
+					<Space h={10} />
+					<Button type='submit' loading={creatingPurchase} fullWidth>
+						Submit
+					</Button>
+				</form>
+			</Paper>
+		</>
+	);
 };
 
 export default CreatePurchasePage;
