@@ -635,21 +635,25 @@ const CreatePurchasePage = () => {
 								</Text>
 							</Box>
 						</Flex>
-						<hr />
+
 						<Flex justify={'space-between'}>
 							<Text fw={'bold'}>Cost Amount</Text>
 							<Text>{getTotalCostAmount(watch('costs')!)} BDT</Text>
 						</Flex>
+
+						<hr />
+
 						<Flex justify={'space-between'}>
-							<Text fw={'bold'}>Sub total</Text>
+							<Text fw={'bold'}>Sub total (Product + Cost)</Text>
 							<Text>
 								{getTotalProductsPrice(watch('products')!) +
 									getTotalCostAmount(watch('costs')!)}{' '}
 								BDT
 							</Text>
 						</Flex>
+
 						<Flex justify={'space-between'}>
-							<Text fw={'bold'}>Net total</Text>
+							<Text fw={'bold'}>Net total (Sub total + Tax amount)</Text>
 							<Text>
 								{getTotalProductsPrice(watch('products')!) +
 									getTotalCostAmount(watch('costs')!) +

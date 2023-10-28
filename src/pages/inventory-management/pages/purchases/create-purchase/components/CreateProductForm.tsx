@@ -41,11 +41,13 @@ const CreateProductForm: React.FC<ICreateProductFormProps> = ({
 			name: '',
 			code: '',
 			vatId: '',
+			price: 0,
 		},
 		resolver: yupResolver(
 			Yup.object().shape({
 				name: Yup.string().required().label('Name'),
 				code: Yup.string().required().label('Code'),
+				price: Yup.number().required().label('Price'),
 				vatId: Yup.string().required().label('Vat profile'),
 			})
 		),
@@ -78,6 +80,15 @@ const CreateProductForm: React.FC<ICreateProductFormProps> = ({
 				<Input
 					placeholder='Write product code'
 					{...registerCreateProductForm('code')}
+				/>
+			</Input.Wrapper>
+			<Input.Wrapper
+				label='Product price'
+				error={<ErrorMessage errors={createProductErrors} name='price' />}
+			>
+				<Input
+					placeholder='Product price'
+					{...registerCreateProductForm('price')}
 				/>
 			</Input.Wrapper>
 			<Space h={'sm'} />
