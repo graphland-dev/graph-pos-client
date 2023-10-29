@@ -8,23 +8,31 @@ import {
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/suppliers.query';
 import { useQuery } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Flex, Space, Text, Title } from '@mantine/core';
+import {
+	ActionIcon,
+	Flex,
+	NumberInput,
+	Space,
+	Table,
+	Text,
+	Title,
+} from '@mantine/core';
+import { IconX } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useFieldArray, useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import SuppliersCardList from '../../purchases/create-purchase/components/SuppliersCardList';
-import {
-	ICreatePurchaseFormState,
-	Schema_Validation,
-} from '../../purchases/create-purchase/utils/validation';
 import PurchaseCardList from './components/PurchaseCardList';
 import { Inventory__Product_Purchases } from './utils/query';
+import {
+	IPurchasePaymentFormState,
+	Purchase_Payment_Schema_Validation,
+} from './utils/validation';
 
 const SupplierPayment = () => {
 	const { supplierId, purchaseId: purId } = useParams();
 
 	// const [supplierId, setSupplierId] = useState<string>();
-	const [purchaseId, setPurchaseId] = useState<string>();
 	const [supplierPage, onChangeSupplierPage] = useState(1);
 	const [purchasePage, onChangePurchasePage] = useState(1);
 
@@ -32,10 +40,10 @@ const SupplierPayment = () => {
 		// register,
 		setValue,
 		formState: { errors },
-		// control,
+		control,
 		watch,
 		handleSubmit,
-	} = useForm<ICreatePurchaseFormState>({
+	} = useForm<IPurchasePaymentFormState>({
 		// defaultValues: {
 		//   purchaseDate: new Date(),
 		//   purchaseOrderDate: new Date(),
@@ -45,8 +53,17 @@ const SupplierPayment = () => {
 		//   supplierId: "",
 		//   taxRate: 0,
 		// },
-		resolver: yupResolver(Schema_Validation),
+		resolver: yupResolver(Purchase_Payment_Schema_Validation),
 		mode: 'onChange',
+	});
+
+	const {
+		append: appendItems,
+		fields: itemsFields,
+		remove: removeItem,
+	} = useFieldArray({
+		name: 'items',
+		control,
 	});
 
 	const {
@@ -91,10 +108,16 @@ const SupplierPayment = () => {
 
 	useEffect(() => {
 		setValue('supplierId', supplierId!);
-		setPurchaseId(purId);
+		setValue(`items`, [
+			{
+				purchaseId: purId!,
+				amount: 0,
+			},
+		]);
 	}, [supplierId, purId]);
 
 	console.log(purchases);
+
 	const onSubmit = (v: any) => {
 		console.log(v);
 		// createPurchaseProduct({
@@ -162,14 +185,6 @@ const SupplierPayment = () => {
 						</Title>
 						<Text color='red'>{errors?.supplierId?.message}</Text>
 					</div>
-
-					{/* <Button
-						variant='light'
-						leftIcon={<IconPlus />}
-						onClick={() => createSupplierDrawerHandler.open()}
-					>
-						Add new
-					</Button> */}
 				</Flex>
 
 				<Space h={'md'} />
@@ -187,6 +202,65 @@ const SupplierPayment = () => {
 					watch={watch}
 					setValue={setValue}
 				/>
+
+				<Space h={40} />
+
+				<Title order={4}>Items</Title>
+				<Space h={'md'} />
+
+				<Table withBorder withColumnBorders>
+					<thead className='bg-slate-300'>
+						<tr className='!p-2 rounded-md'>
+							<th>Purchase ID</th>
+							<th>Due Amount</th>
+							<th>Pay Amount</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{itemsFields?.map((item: any, idx: number) => (
+							<tr key={idx}>
+								<td className='font-medium'>{item?.purchaseId}</td>
+								<td className='font-medium'>{item?.amount}</td>
+								<td className='font-medium'>
+									<NumberInput
+										w={100}
+										onChange={(v) =>
+											setValue(`items.${idx}.amount`, parseInt(v as string))
+										}
+										min={1}
+										value={watch(`items.${idx}.amount`)}
+									/>
+								</td>
+								<td className='font-medium'>
+									<ActionIcon
+										variant='filled'
+										color='red'
+										size={'sm'}
+										onClick={() => {
+											removeItem(idx);
+										}}
+									>
+										<IconX size={14} />
+									</ActionIcon>
+								</td>
+							</tr>
+						))}
+
+						{/* <tr className='bg-green-50'>
+							<td colSpan={5} className='font-semibold text-right'>
+								Total
+							</td>
+							<td>{getTotalTaxAmount(watch('products') || [])}</td>
+							<td>
+								{getTotalProductsPrice(watch('products')!) +
+									getTotalCostAmount(watch('costs')!)}
+							</td>
+							<td></td>
+						</tr> */}
+					</tbody>
+				</Table>
 			</form>
 		</div>
 	);

@@ -314,6 +314,9 @@ const CreatePurchasePage = () => {
 
 					<Space h={50} />
 
+					<Title order={4}>Items</Title>
+					<Space h={'md'} />
+
 					{Boolean(productFields?.length) && (
 						<>
 							<Table withBorder withColumnBorders>

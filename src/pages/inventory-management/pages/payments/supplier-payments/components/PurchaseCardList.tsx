@@ -13,7 +13,7 @@ const PurchaseCardList: React.FC<{
 	onChangePurchasePage: (state: number) => void;
 }> = ({
 	purchases,
-	setValue,
+	// setValue,
 	watch,
 	isFetchingPurchases,
 	hasNextPage,
