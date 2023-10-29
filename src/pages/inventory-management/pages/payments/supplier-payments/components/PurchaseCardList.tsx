@@ -32,7 +32,7 @@ const PurchaseCardList: React.FC<{
 						className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
 						onClick={() => onAddItem(purchase)}
 					>
-						{watch(`items.${idx}.purchaseId`) === purchase?._id && (
+						{watch(`items.${idx}._id`) === purchase?._id && (
 							<IconSquareCheckFilled
 								size={20}
 								className='absolute top-3 right-3'

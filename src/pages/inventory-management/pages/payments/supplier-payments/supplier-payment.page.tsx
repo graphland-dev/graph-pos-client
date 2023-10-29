@@ -1,3 +1,4 @@
+import { Notify } from '@/_app/common/Notification/Notify';
 import { ACCOUNTS_LIST_DROPDOWN } from '@/_app/common/common-gql';
 import { getAccountBalance } from '@/_app/common/utils/getBalance';
 import {
@@ -9,7 +10,8 @@ import {
 	SuppliersWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/suppliers.query';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	ActionIcon,
@@ -37,7 +39,10 @@ import {
 	getTotalDuesAmount,
 	getTotalPaidAmount,
 } from './utils/helpers';
-import { Inventory__Product_Purchases } from './utils/query';
+import {
+	Accounting__Create_Purchase_Payment,
+	Inventory__Product_Purchases,
+} from './utils/query';
 import {
 	IPurchasePaymentFormState,
 	Purchase_Payment_Schema_Validation,
@@ -112,13 +117,20 @@ const SupplierPayment = () => {
 					},
 					{
 						key: 'dueAmount',
-						operator: 'gt',
+						operator: MatchOperator.Gt,
 						value: '0',
 					},
 				],
 			},
 		},
 	});
+
+	const [createPayment, { loading: creatingPayment }] = useMutation(
+		Accounting__Create_Purchase_Payment,
+		Notify({
+			sucTitle: 'Payment created successfully!',
+		})
+	);
 
 	useEffect(() => {
 		setValue('supplierId', supplierId!);
@@ -131,31 +143,22 @@ const SupplierPayment = () => {
 
 	const onSubmit = (v: any) => {
 		console.log(v);
-		// createPurchaseProduct({
-		// 	variables: {
-		// 		body: {
-		// 			...v,
-		// 			taxAmount:
-		// 				((getTotalProductsPrice(watch('products')!) +
-		// 					getTotalCostAmount(watch('costs')!)) *
-		// 					watch('taxRate')) /
-		// 				100,
 
-		// 			// Prices
-		// 			costAmount: getTotalCostAmount(watch('costs')!),
-		// 			subTotal:
-		// 				getTotalProductsPrice(watch('products')!) +
-		// 				getTotalCostAmount(watch('costs')!), // products.netAmount + costs.amount
-		// 			netTotal:
-		// 				getTotalProductsPrice(watch('products')!) +
-		// 				getTotalCostAmount(watch('costs')!) +
-		// 				((getTotalProductsPrice(watch('products')!) +
-		// 					getTotalCostAmount(watch('costs')!)) *
-		// 					watch('taxRate')) /
-		// 					100, // subTotal + taxAmount
-		// 		},
-		// 	},
-		// });
+		createPayment({
+			variables: {
+				body: {
+					supplierId: v?.supplierId,
+					accountId: v?.accountId,
+					items: v?.items?.map((item: any) => ({
+						purchaseId: item?._id,
+						amount: item?.amount,
+					})),
+					checkNo: v?.checkNo,
+					receptNo: v?.receptNo,
+					note: v?.note,
+				},
+			},
+		});
 	};
 
 	const { data: accountData } = useQuery<{
@@ -310,19 +313,28 @@ const SupplierPayment = () => {
 
 				<Space h={'sm'} />
 
-				<Input.Wrapper label='Check no'>
+				<Input.Wrapper
+					label='Check no'
+					error={<ErrorMessage errors={errors} name='checkNo' />}
+				>
 					<Input placeholder='Write check no' {...register('checkNo')} />
 				</Input.Wrapper>
 
 				<Space h={'sm'} />
 
-				<Input.Wrapper label='Recept no'>
+				<Input.Wrapper
+					label='Recept no'
+					error={<ErrorMessage errors={errors} name='receptNo' />}
+				>
 					<Input placeholder='Write recept no' {...register('receptNo')} />
 				</Input.Wrapper>
 
 				<Space h={'sm'} />
 
-				<Input.Wrapper label='Recept no'>
+				<Input.Wrapper
+					label='Note'
+					error={<ErrorMessage errors={errors} name='note' />}
+				>
 					<Textarea placeholder='Write note' {...register('note')} />
 				</Input.Wrapper>
 
@@ -352,7 +364,7 @@ const SupplierPayment = () => {
 
 				<Space h={10} />
 
-				<Button type='submit' fullWidth>
+				<Button type='submit' fullWidth loading={creatingPayment}>
 					Save
 				</Button>
 			</form>
