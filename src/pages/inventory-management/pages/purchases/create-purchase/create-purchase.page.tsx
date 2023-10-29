@@ -21,12 +21,10 @@ import {
 	Button,
 	Drawer,
 	Flex,
-	Group,
 	Input,
 	NumberInput,
 	Paper,
 	Select,
-	Skeleton,
 	Space,
 	Table,
 	Text,
@@ -35,12 +33,7 @@ import {
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
-import {
-	IconMinus,
-	IconPlus,
-	IconSquareCheckFilled,
-	IconX,
-} from '@tabler/icons-react';
+import { IconMinus, IconPlus, IconX } from '@tabler/icons-react';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -52,8 +45,11 @@ import {
 	getVatProfileSelectInputData,
 } from './utils/helpers';
 
+import { useNavigate } from 'react-router-dom';
 import CreateProductForm from './components/CreateProductForm';
 import CreateSupplierForm from './components/CreateSupplierForm';
+import ProductsCardList from './components/ProductsCardList';
+import SuppliersCardList from './components/SuppliersCardList';
 import {
 	CREATE_INVENTORY_PRODUCT_PURCHASE,
 	PURCHASE_PRODUCT_LIST,
@@ -68,6 +64,8 @@ const CreatePurchasePage = () => {
 	const [supplierPage, onChangeSupplierPage] = useState(1);
 	const [openCreateProduct, createProductDrawerHandler] = useDisclosure();
 	const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
+
+	const navigate = useNavigate();
 
 	const {
 		data,
@@ -154,7 +152,6 @@ const CreatePurchasePage = () => {
 		control,
 	});
 
-	//
 	function handleAddProductToList(product: Product) {
 		const price = product?.price || 0;
 		const percentage = product.vat?.percentage || 0;
@@ -187,6 +184,13 @@ const CreatePurchasePage = () => {
 		CREATE_INVENTORY_PRODUCT_PURCHASE,
 		Notify({
 			sucTitle: 'Inventory product added to purchase',
+			onSuccess(res) {
+				navigate(
+					`/inventory-management/payments/supplier-payments/${watch(
+						'supplierId'
+					)}/${res?.inventory__createProductPurchase?._id}`
+				);
+			},
 		})
 	);
 
@@ -267,59 +271,16 @@ const CreatePurchasePage = () => {
 						</Button>
 					</Flex>
 					<Space h={'md'} />
-					<div className='grid grid-cols-3 gap-3'>
-						{data?.people__suppliers?.nodes?.map(
-							(supplier: Supplier, idx: number) => (
-								<Paper
-									key={idx}
-									p={10}
-									withBorder
-									className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
-									onClick={() => setValue('supplierId', supplier?._id)}
-								>
-									{watch('supplierId') === supplier?._id && (
-										<IconSquareCheckFilled
-											size={20}
-											className='absolute top-3 right-3'
-										/>
-									)}
-									<Text size={'md'} fw={700}>
-										Name: {supplier?.name}
-									</Text>
-									<Text size={'sm'}>Company name: {supplier?.companyName}</Text>
-									<Text size={'sm'}>Company email: {supplier?.email}</Text>
-								</Paper>
-							)
-						)}
-					</div>
+					<SuppliersCardList
+						isFetchingSuppliers={isFetchingSuppliers}
+						setValue={setValue}
+						suppliers={data?.people__suppliers?.nodes as Supplier[]}
+						watch={watch}
+						hasNextPage={data?.people__suppliers?.meta?.hasNextPage as boolean}
+						supplierPage={supplierPage}
+						onChangeSupplierPage={onChangeSupplierPage}
+					/>
 
-					{isFetchingSuppliers && (
-						<div className='grid grid-cols-3 gap-3'>
-							{new Array(6).fill(6).map((_, idx) => (
-								<Skeleton key={idx} h={90} radius={'sm'} />
-							))}
-						</div>
-					)}
-
-					<Space h={'md'} />
-					<Group position='left'>
-						<Button
-							variant='subtle'
-							size='xs'
-							disabled={supplierPage === 1}
-							onClick={() => onChangeSupplierPage(supplierPage - 1)}
-						>
-							Load Previous
-						</Button>{' '}
-						<Button
-							variant='subtle'
-							disabled={!data?.people__suppliers?.meta?.hasNextPage}
-							size='xs'
-							onClick={() => onChangeSupplierPage(supplierPage + 1)}
-						>
-							Load Next
-						</Button>
-					</Group>
 					<Space h={'md'} />
 					<Flex justify={'space-between'} align={'center'} mt={'lg'}>
 						<div>
@@ -339,63 +300,18 @@ const CreatePurchasePage = () => {
 					<Space h={'md'} />
 
 					{/* Product List to select */}
-					<div className='grid grid-cols-3 gap-3'>
-						{productsData?.inventory__products?.nodes?.map(
-							(product: Product, idx: number) => (
-								<Paper
-									key={idx}
-									p={10}
-									withBorder
-									className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
-									onClick={() => {
-										handleAddProductToList(product);
-									}}
-								>
-									{productFields.findIndex(
-										(p) => p.referenceId === product?._id
-									) != -1 && (
-										<IconSquareCheckFilled
-											size={20}
-											className='absolute top-3 right-3'
-										/>
-									)}
-									<Text size={'md'} fw={700}>
-										Name: {product?.name}
-									</Text>
-									<Text size={'sm'}>Product price: {product?.price}</Text>
-									<Text size={'sm'}>Product Code: {product?.code}</Text>
-								</Paper>
-							)
-						)}
-					</div>
+					<ProductsCardList
+						isFetchingProducts={isFetchingProducts}
+						handleAddProductToList={handleAddProductToList}
+						productFields={productFields}
+						products={productsData?.inventory__products?.nodes as Product[]}
+						hasNextPage={
+							productsData?.inventory__products?.meta?.hasNextPage as boolean
+						}
+						onChangeProductPage={onChangeProductPage}
+						productPage={productPage}
+					/>
 
-					{isFetchingProducts && (
-						<div className='grid grid-cols-3 gap-3'>
-							{new Array(6).fill(6).map((_, idx) => (
-								<Skeleton key={idx} h={90} radius={'sm'} />
-							))}
-						</div>
-					)}
-
-					<Space h={10} />
-					<Group position='left'>
-						<Button
-							variant='subtle'
-							size='xs'
-							disabled={productPage === 1}
-							onClick={() => onChangeProductPage(productPage - 1)}
-						>
-							Load Previous
-						</Button>{' '}
-						<Button
-							variant='subtle'
-							disabled={!productsData?.inventory__products?.meta?.hasNextPage}
-							size='xs'
-							onClick={() => onChangeProductPage(productPage + 1)}
-						>
-							Load More
-						</Button>
-					</Group>
 					<Space h={50} />
 
 					{Boolean(productFields?.length) && (
@@ -528,11 +444,32 @@ const CreatePurchasePage = () => {
 								vatProfile?.setup__vats?.nodes as Vat[]
 							)}
 							onChange={(v) => setValue('taxRate', parseInt(v!))}
-							placeholder='Write note'
+							placeholder='Select vat profile'
 							disabled={vatProfileLoading}
 						/>
 					</Input.Wrapper>
+
 					<Space h={'xl'} />
+
+					<Flex justify={'space-between'} align={'center'}>
+						<Title order={4}>Extra cost</Title>
+						<Button
+							variant='light'
+							leftIcon={<IconPlus />}
+							onClick={() =>
+								appendCosts({
+									amount: 0,
+									note: '',
+									name: '',
+								})
+							}
+						>
+							Add new
+						</Button>
+					</Flex>
+
+					<Space h={'md'} />
+
 					{costsFields?.map((_, idx) => (
 						<div
 							key={idx}
@@ -604,18 +541,7 @@ const CreatePurchasePage = () => {
 							</Input.Wrapper>
 						</div>
 					))}
-					<Button
-						variant='subtle'
-						onClick={() =>
-							appendCosts({
-								amount: 0,
-								note: '',
-								name: '',
-							})
-						}
-					>
-						Add new
-					</Button>
+
 					<Space h={50} />
 
 					<Paper withBorder p={'sm'} mb={'xl'}>
@@ -655,12 +581,14 @@ const CreatePurchasePage = () => {
 						<Flex justify={'space-between'}>
 							<Text fw={'bold'}>Net total (Sub total + Tax amount)</Text>
 							<Text>
-								{getTotalProductsPrice(watch('products')!) +
+								{(
+									getTotalProductsPrice(watch('products')!) +
 									getTotalCostAmount(watch('costs')!) +
 									((getTotalProductsPrice(watch('products')!) +
 										getTotalCostAmount(watch('costs')!)) *
 										watch('taxRate')) /
-										100}{' '}
+										100
+								).toFixed(2) || 0}{' '}
 								BDT
 							</Text>
 						</Flex>
