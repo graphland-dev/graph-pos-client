@@ -11,14 +11,15 @@ const PurchaseCardList: React.FC<{
 	hasNextPage: boolean;
 	purchasePage: number;
 	onChangePurchasePage: (state: number) => void;
+	onAddItem: (state: any) => void;
 }> = ({
 	purchases,
-	// setValue,
 	watch,
 	isFetchingPurchases,
 	hasNextPage,
 	purchasePage,
 	onChangePurchasePage,
+	onAddItem,
 }) => {
 	return (
 		<div>
@@ -29,9 +30,9 @@ const PurchaseCardList: React.FC<{
 						p={10}
 						withBorder
 						className='relative cursor-pointer hover:bg-slate-100 hover:duration-200'
-						// onClick={() => setValue('supplierId', purchase?._id)}
+						onClick={() => onAddItem(purchase)}
 					>
-						{watch('supplierId') === purchase?._id && (
+						{watch(`items.${idx}.purchaseId`) === purchase?._id && (
 							<IconSquareCheckFilled
 								size={20}
 								className='absolute top-3 right-3'
