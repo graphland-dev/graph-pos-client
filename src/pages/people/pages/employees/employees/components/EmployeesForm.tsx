@@ -93,7 +93,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
     setValue("religion", formData?.religion);
     setValue("isActive", formData?.isActive);
 
-    console.log(formData);
+    // console.log(formData);
   }, [formData]);
 
   const employeeDepartmentForDrop = departments?.map((item) => ({
@@ -154,7 +154,7 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
       });
     }
   };
-  console.log(watch("departmentId"));
+
   return (
     <div>
       <Title order={4}>

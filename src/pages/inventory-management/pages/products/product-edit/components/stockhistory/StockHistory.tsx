@@ -71,7 +71,7 @@ const StockHistory = () => {
   );
 
   const handleDeleteStock = (_id: string) => {
-    console.log(_id);
+    // console.log(_id);
     confirmModal({
       title: "Sure to delete account?",
       description: "Be careful!! Once you deleted, it can not be undone",

@@ -20,7 +20,7 @@ interface IState {
 const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
 }) => {
-    console.log(supplierDetails);
+    // console.log(supplierDetails);
 
      const [openedDrawer, drawerHandler] = useDisclosure();
     const [state, setState] = useSetState<IState>({ refetching: false });

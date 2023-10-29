@@ -1,3 +1,11 @@
+import { getAccountBalance } from "@/_app/common/utils/getBalance";
+import {
+  Account,
+  ExpenseCategory,
+  ExpenseCategorysWithPagination,
+} from "@/_app/graphql-models/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Badge,
@@ -9,15 +17,10 @@ import {
   Title,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
-import React from "react";
-import * as yup from "yup";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
+import * as yup from "yup";
 import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
-import { useMutation, useQuery } from "@apollo/client";
-import { getAccountBalance } from "@/_app/common/utils/getBalance";
-import { Account, ExpenseCategorysWithPagination } from "@/_app/graphql-models/graphql";
 import { ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "../../expenseCategory/utils/query";
 
 interface IExpenseFormProps {
@@ -50,9 +53,10 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
       purpose: "",
       note: "",
       amount: 0.0,
+      voucherNo: "",
+      checkNo: "",
       date: new Date().toISOString(),
       accountId: "",
-      expenseCategory: "",
     },
   });
 
@@ -61,39 +65,41 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
     label: `${item?.name} [${item?.referenceNumber}]`,
   }));
 
-    const { data } = useQuery<{
-      accounting__expenseCategorys: ExpenseCategorysWithPagination;
-    }>(ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST, {
-      variables: {
-        where: {
-          limit: 10,
-          page: 1,
-        },
+  const { data } = useQuery<{
+    accounting__expenseCategorys: ExpenseCategorysWithPagination;
+  }>(ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST, {
+    variables: {
+      where: {
+        limit: 10,
+        page: 1,
       },
-    });
-  
-  const expenseCategoryList = data?.accounting__expenseCategorys?.nodes?.map((item) => ({
-    value: item._id,
-    label: item.name,
-  }))
+    },
+  });
+
+  const expenseCategoryList = data?.accounting__expenseCategorys?.nodes?.map(
+    (item: ExpenseCategory) => ({
+      value: item._id,
+      label: item.name,
+    })
+  );
 
   useEffect(() => {
-    console.log(formData);
     setValue("purpose", formData?.["purpose"]);
-    setValue("accountId", formData?.accountId?._id);
-    setValue("accountId", formData?.expenseCategory?._id);
+    setValue("accountId", formData?.["account"]?._id);
+    setValue("categoryId", formData?.category);
     setValue("amount", formData?.["amount"]);
     setValue("note", formData?.["note"]);
     setValue("voucherNo", formData?.["voucherNo"]);
     setValue("checkNo", formData?.["checkNo"]);
     setValue("date", formData?.["date"] || new Date().toISOString());
   }, [formData]);
+        
 
   const onSubmit = (data: any) => {
-    console.log(data);
+   
     createMutation({
       variables: {
-        body: {...data, expenseCategory: data?.expenseCategory},
+        body: { ...data, categoryId: data.categoryId },
       },
       onCompleted: (res) => {
         console.log(res);
@@ -106,7 +112,7 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   return (
     <div>
       <Title order={4}>
-        <span className="capitalize">{operationType}</span> Account
+        <span className="capitalize">{operationType}</span> Expense
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -141,12 +147,14 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           <Select
             searchable
             withAsterisk
-            onChange={(fromExpenseCategoryId) =>
-              setValue("expenseCategory", fromExpenseCategoryId || "")
+            onChange={(formCategoryId) =>
+              setValue("categoryId", formCategoryId || "", {
+                shouldValidate: true,
+              })
             }
-            placeholder="Select Expense Category"
+            placeholder="Expense Category"
             data={expenseCategoryList || []}
-            value={watch("expenseCategory")}
+            value={watch("categoryId")}
           />
         </Input.Wrapper>
 
@@ -155,7 +163,7 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           error={<ErrorMessage name={"amount"} errors={errors} />}
           label="Amount"
         >
-          <Input placeholder="amount" {...register("amount")} />
+          <Input type="number" placeholder="amount" {...register("amount")} />
         </Input.Wrapper>
         <Textarea
           label="Note"
@@ -175,7 +183,6 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           <Input placeholder="Check Number" {...register("checkNo")} />
         </Input.Wrapper>
         <DateTimePicker
-          withAsterisk
           {...register("date")}
           value={new Date(watch("date"))}
           className="w-full"
@@ -215,5 +222,5 @@ const expenseListValidationSchema = yup.object({
   checkNo: yup.string().optional().label("Check Number"),
   date: yup.string().required().label("Data"),
   accountId: yup.string().required().label("Bank Name"),
-  expenseCategory: yup.string().required().label("Expense Category"),
+  categoryId: yup.string().optional().label("Expense Category"),
 });
