@@ -17,7 +17,6 @@ import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	ActionIcon,
-	Box,
 	Button,
 	Drawer,
 	Flex,
@@ -49,6 +48,7 @@ import { useNavigate } from 'react-router-dom';
 import CreateProductForm from './components/CreateProductForm';
 import CreateSupplierForm from './components/CreateSupplierForm';
 import ProductsCardList from './components/ProductsCardList';
+import SummaryCard from './components/SummaryCard';
 import SuppliersCardList from './components/SuppliersCardList';
 import {
 	CREATE_INVENTORY_PRODUCT_PURCHASE,
@@ -544,55 +544,7 @@ const CreatePurchasePage = () => {
 
 					<Space h={50} />
 
-					<Paper withBorder p={'sm'} mb={'xl'}>
-						<Flex justify={'space-between'}>
-							<Box>
-								<Text fw={'bold'}>Tax rate</Text>
-								<Text fw={'bold'}>Tax amount</Text>
-							</Box>
-							<Box>
-								<Text>{watch('taxRate') || 0} %</Text>
-								<Text>
-									{((getTotalProductsPrice(watch('products')!) +
-										getTotalCostAmount(watch('costs')!)) *
-										watch('taxRate')) /
-										100 || 0}{' '}
-									BDT
-								</Text>
-							</Box>
-						</Flex>
-
-						<Flex justify={'space-between'}>
-							<Text fw={'bold'}>Cost Amount</Text>
-							<Text>{getTotalCostAmount(watch('costs')!)} BDT</Text>
-						</Flex>
-
-						<hr />
-
-						<Flex justify={'space-between'}>
-							<Text fw={'bold'}>Sub total (Product + Cost)</Text>
-							<Text>
-								{getTotalProductsPrice(watch('products')!) +
-									getTotalCostAmount(watch('costs')!)}{' '}
-								BDT
-							</Text>
-						</Flex>
-
-						<Flex justify={'space-between'}>
-							<Text fw={'bold'}>Net total (Sub total + Tax amount)</Text>
-							<Text>
-								{(
-									getTotalProductsPrice(watch('products')!) +
-									getTotalCostAmount(watch('costs')!) +
-									((getTotalProductsPrice(watch('products')!) +
-										getTotalCostAmount(watch('costs')!)) *
-										watch('taxRate')) /
-										100
-								).toFixed(2) || 0}{' '}
-								BDT
-							</Text>
-						</Flex>
-					</Paper>
+					<SummaryCard watch={watch} />
 					<Space h={10} />
 					<Button type='submit' loading={creatingPurchase} fullWidth>
 						Submit

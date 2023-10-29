@@ -1,4 +1,6 @@
 import {
+	MatchOperator,
+	ProductPurchasesWithPagination,
 	Supplier,
 	SuppliersWithPagination,
 } from '@/_app/graphql-models/graphql';
@@ -6,31 +8,22 @@ import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/people/pages/suppliers/utils/sup
 import { useQuery } from '@apollo/client';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Flex, Space, Text, Title } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
 import SuppliersCardList from '../../purchases/create-purchase/components/SuppliersCardList';
 import {
 	ICreatePurchaseFormState,
 	Schema_Validation,
 } from '../../purchases/create-purchase/utils/validation';
+import { Inventory__Product_Purchases } from '../utils/query';
 
 const SupplierPayment = () => {
-	const [supplierPage, onChangeSupplierPage] = useState(1);
+	const { supplierId, purchaseId: purId } = useParams();
 
-	const {
-		data,
-		loading: isFetchingSuppliers,
-		// refetch: refetchSuppliers,
-	} = useQuery<{
-		people__suppliers: SuppliersWithPagination;
-	}>(PEOPLE_SUPPLIERS_QUERY, {
-		variables: {
-			where: {
-				page: supplierPage,
-				limit: 6,
-			},
-		},
-	});
+	// const [supplierId, setSupplierId] = useState<string>();
+	const [purchaseId, setPurchaseId] = useState<string>();
+	const [supplierPage, onChangeSupplierPage] = useState(1);
 
 	const {
 		// register,
@@ -53,6 +46,52 @@ const SupplierPayment = () => {
 		mode: 'onChange',
 	});
 
+	const {
+		data,
+		loading: isFetchingSuppliers,
+		// refetch: refetchSuppliers,
+	} = useQuery<{
+		people__suppliers: SuppliersWithPagination;
+	}>(PEOPLE_SUPPLIERS_QUERY, {
+		variables: {
+			where: {
+				page: supplierPage,
+				limit: 6,
+			},
+		},
+	});
+
+	const {
+		data: purchases,
+		// loading: isFetchingPurchases,
+		// refetch: refetchSuppliers,
+	} = useQuery<{
+		people__suppliers: ProductPurchasesWithPagination;
+	}>(Inventory__Product_Purchases, {
+		variables: {
+			where: {
+				filters: [
+					{
+						key: 'supplier',
+						operator: MatchOperator.Eq,
+						value: watch('supplierId'),
+					},
+					{
+						key: 'dueAmount',
+						operator: 'gt',
+						value: '0',
+					},
+				],
+			},
+		},
+	});
+
+	useEffect(() => {
+		setValue('supplierId', supplierId!);
+		setPurchaseId(purId);
+	}, [supplierId, purId]);
+
+	console.log(purchases);
 	const onSubmit = (v: any) => {
 		console.log(v);
 		// createPurchaseProduct({
