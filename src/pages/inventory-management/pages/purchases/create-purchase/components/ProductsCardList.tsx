@@ -46,7 +46,7 @@ const ProductsCardList: React.FC<IProductCardListProps> = ({
 						<Text size={'md'} fw={700}>
 							Name: {product?.name}
 						</Text>
-						<Text size={'sm'}>Product price: {product?.price}</Text>
+						<Text size={'sm'}>Product price: {product?.price} BDT</Text>
 						<Text size={'sm'}>Product Code: {product?.code}</Text>
 					</Paper>
 				))}

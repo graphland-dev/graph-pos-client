@@ -1,5 +1,6 @@
 import {
 	MatchOperator,
+	ProductPurchase,
 	ProductPurchasesWithPagination,
 	Supplier,
 	SuppliersWithPagination,
@@ -16,7 +17,8 @@ import {
 	ICreatePurchaseFormState,
 	Schema_Validation,
 } from '../../purchases/create-purchase/utils/validation';
-import { Inventory__Product_Purchases } from '../utils/query';
+import PurchaseCardList from './components/PurchaseCardList';
+import { Inventory__Product_Purchases } from './utils/query';
 
 const SupplierPayment = () => {
 	const { supplierId, purchaseId: purId } = useParams();
@@ -24,6 +26,7 @@ const SupplierPayment = () => {
 	// const [supplierId, setSupplierId] = useState<string>();
 	const [purchaseId, setPurchaseId] = useState<string>();
 	const [supplierPage, onChangeSupplierPage] = useState(1);
+	const [purchasePage, onChangePurchasePage] = useState(1);
 
 	const {
 		// register,
@@ -63,10 +66,10 @@ const SupplierPayment = () => {
 
 	const {
 		data: purchases,
-		// loading: isFetchingPurchases,
+		loading: isFetchingPurchases,
 		// refetch: refetchSuppliers,
 	} = useQuery<{
-		people__suppliers: ProductPurchasesWithPagination;
+		inventory__productPurchases: ProductPurchasesWithPagination;
 	}>(Inventory__Product_Purchases, {
 		variables: {
 			where: {
@@ -152,6 +155,38 @@ const SupplierPayment = () => {
 				/>
 
 				<Space h={'md'} />
+				<Flex justify={'space-between'} align={'center'}>
+					<div>
+						<Title order={4}>
+							Select purchases to pay <span className='text-red-500'>*</span>
+						</Title>
+						<Text color='red'>{errors?.supplierId?.message}</Text>
+					</div>
+
+					{/* <Button
+						variant='light'
+						leftIcon={<IconPlus />}
+						onClick={() => createSupplierDrawerHandler.open()}
+					>
+						Add new
+					</Button> */}
+				</Flex>
+
+				<Space h={'md'} />
+
+				<PurchaseCardList
+					hasNextPage={
+						purchases?.inventory__productPurchases?.meta?.hasNextPage as boolean
+					}
+					isFetchingPurchases={isFetchingPurchases}
+					onChangePurchasePage={onChangePurchasePage}
+					purchasePage={purchasePage}
+					purchases={
+						purchases?.inventory__productPurchases?.nodes as ProductPurchase[]
+					}
+					watch={watch}
+					setValue={setValue}
+				/>
 			</form>
 		</div>
 	);
