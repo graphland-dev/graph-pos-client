@@ -1,12 +1,9 @@
-import {
-  Generate_Barcode_Type,
-  ProductsWithPagination,
-} from "@/_app/graphql-models/graphql";
+import { ProductsWithPagination } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
-  Button,
   Checkbox,
   Input,
+  NumberInput,
   Paper,
   Select,
   Space,
@@ -14,88 +11,54 @@ import {
   TextInput,
   Title,
 } from "@mantine/core";
+import Barcode from "react-jsbarcode";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.query";
 // import JsBarcode from "jsbarcode";
+import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IconPlus } from "@tabler/icons-react";
-import JsBarcode from "jsbarcode";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 
-const Barcode = () => {
+const BarcodePage = () => {
   const {
-    // register,
     setValue,
-    getValues,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm({
     resolver: yupResolver(barcodeValidationSchema),
     defaultValues: {
-      barcodeId: "",
-      barcodeType: "",
       productCode: "",
+      barcodeType: Generate_Barcode_Type.Code128,
+      quantity: 30,
     },
   });
-
-  const [tableData, setTableData] = useState([
-    {
-      Product: "Item 1",
-      Quantity: 1,
-      Code: "Code",
-    },
-  ]);
-
-  const [codeMatchData, setCodeMatchData] = useState({});
-  const [barcodeQuantity, setBarcodeQuantity] = useState(0);
-
-  const quantityData = [];
-
-  for (let i = 0; i < barcodeQuantity; i++) {
-    quantityData.push(i);
-  }
 
   const { data } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
-      where: {
-        limit: 10,
-        page: 1,
-      },
+      where: { limit: -1 },
     },
   });
 
-  const productId = data?.inventory__products.nodes?.map((item) => ({
-    value: item?._id,
+  const productsDropdownData = data?.inventory__products.nodes?.map((item) => ({
+    value: item?.code,
     label: `${item?.name}`,
   }));
 
-  // const productShortId = productId?.slice(0, 5)
-
-  // const productCode = data?.inventory__products?.nodes?.filter(
-  //   (item: any) => console.log(item)
-  // );
-
-  const bareCodeGenerate = () => {
-    const barcodeType = getValues("barcodeType");
-    const barcodeId = getValues("barcodeId");
-    // const productCode = getValues("productCode");
-
-    JsBarcode("#barcode", barcodeId, {
-      format: barcodeType,
-      lineColor: "#0aa",
-      width: 2,
-      height: 40,
-      // displayValue: productId.slice(0, 5),
-    });
-  };
+  // const bareCodeGenerate = () => {
+  //   JsBarcode("#barcode", "Rayhan", {
+  //     format: watch("barcodeType")!,
+  //     lineColor: "#0aa",
+  //     width: 2,
+  //     height: 40,
+  //   });
+  // };
 
   const onSubmit = () => {
-    bareCodeGenerate();
+    // bareCodeGenerate();
   };
 
   return (
@@ -108,23 +71,17 @@ const Barcode = () => {
             <Input.Wrapper
               label="Select Product"
               withAsterisk
-              error={<ErrorMessage name={"barcodeId"} errors={errors} />}
+              error={<ErrorMessage name={"productCode"} errors={errors} />}
             >
               <Select
                 searchable
                 withAsterisk
-                onChange={(fromBarcodeId) => {
-                  setValue("barcodeId", fromBarcodeId || "");
-                  // console.log(fromBarcodeId);
-                  const matchData = data?.inventory__products?.nodes?.find(
-                    (item: any) => item._id === fromBarcodeId
-                  );
-                  setCodeMatchData(matchData);
-                  // console.log(matchData);
+                onChange={(productCode) => {
+                  setValue("productCode", productCode || "");
                 }}
                 placeholder="Select Product"
-                data={productId || []}
-                value={watch("barcodeId")}
+                data={productsDropdownData || []}
+                value={watch("productCode")}
               />
             </Input.Wrapper>
 
@@ -149,14 +106,14 @@ const Barcode = () => {
                     label: "CodeBar",
                     value: Generate_Barcode_Type?.CodeBar,
                   },
-                  {
-                    label: "Msi",
-                    value: Generate_Barcode_Type?.Msi,
-                  },
-                  {
-                    label: "PharmaCode",
-                    value: Generate_Barcode_Type?.PharmaCode,
-                  },
+                  // {
+                  //   label: "Msi",
+                  //   value: Generate_Barcode_Type?.Msi,
+                  // },
+                  // {
+                  //   label: "PharmaCode",
+                  //   value: Generate_Barcode_Type?.PharmaCode,
+                  // },
                 ]}
               />
             </Input.Wrapper>
@@ -164,77 +121,69 @@ const Barcode = () => {
           <Table withBorder withColumnBorders>
             <thead>
               <tr>
-                <th className="w-6/12">Product Id</th>
+                <th className="w-6/12">Product Code</th>
                 <th>Quantity</th>
-                <th>Code</th>
               </tr>
             </thead>
 
             <tbody>
-              {tableData?.map((td, idx) => (
-                <tr key={idx}>
-                  <td>
-                    <TextInput
-                      placeholder="Product Id"
-                      defaultValue={td?.Product}
-                      value={watch("barcodeId")}
-                    />
-                  </td>
-                  <td>
-                    <Input
-                      type="number"
-                      placeholder="Quantity"
-                      onChange={(e: any) => {
-                        setBarcodeQuantity(e.target.value);
-                      }}
-                      defaultValue={td?.Quantity}
-                    />
-                  </td>
-                  <td>
-                    <TextInput
-                      placeholder="Code"
-                      defaultValue={td?.Code}
-                      value={codeMatchData?.code}
-                    />
-                  </td>
-                </tr>
-              ))}
+              <tr>
+                <td>
+                  <TextInput
+                    placeholder="Product Id"
+                    value={watch("productCode")}
+                  />
+                </td>
+                <td>
+                  <NumberInput
+                    type="number"
+                    placeholder="Quantity"
+                    value={watch("quantity")}
+                    onChange={(value: any) => {
+                      setValue("quantity", parseInt(value));
+                    }}
+                  />
+                </td>
+              </tr>
             </tbody>
           </Table>
           <Checkbox
             name="withCode"
             defaultChecked
-            label="Generate barcode with code"
+            label="Generate barcode with price"
           />
-          <div>
+          {/* <div>
             <Button
               onClick={bareCodeGenerate}
               leftIcon={<IconPlus size={16} />}
               type="submit"
             >
-              Generate Barcode
+              Generate Barcode(s)
             </Button>
-          </div>
+          </div> */}
         </form>
         <Space h={"xl"} />
         <div className="grid grid-cols-3 gap-5">
-          {quantityData?.map((item: any) => (
-            <Paper p={"lg"} shadow="md" key={item._id}>
-              <svg id="barcode"></svg>
+          {new Array(watch("quantity")).fill(null)?.map((_, key) => (
+            <Paper p={"lg"} shadow="xs" key={key} className="text-center">
+              {watch("productCode") ? (
+                <Barcode
+                  value={watch("productCode")!}
+                  options={{ format: watch("barcodeType") }}
+                />
+              ) : null}
             </Paper>
           ))}
         </div>
-
-        <pre>{JSON.stringify(data, null, 2)}</pre>
       </Paper>
     </>
   );
 };
 
-export default Barcode;
+export default BarcodePage;
 
 const barcodeValidationSchema = yup.object({
-  barcodeId: yup.string().required().label("Product"),
   barcodeType: yup.string().required().label("Barcode Type"),
   productCode: yup.string().optional().label("Code"),
+  quantity: yup.number().required().label("Quantity"),
 });
