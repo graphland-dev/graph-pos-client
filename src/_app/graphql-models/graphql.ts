@@ -1230,7 +1230,14 @@ export enum User_Gender {
   NonBinary = 'NON_BINARY',
   Other = 'OTHER',
   PreferNotToSay = 'PREFER_NOT_TO_SAY'
-}
+};
+
+export enum Generate_Barcode_Type{
+  Code128 = "code128",
+  CodeBar = "code39",
+  Msi = "mis",
+  PharmaCode ="pharmacode"
+};
 
 export type Unit = {
   __typename?: 'Unit';

@@ -81,7 +81,7 @@ const ExpenseCategoryForm: React.FC<IExpenseCategoryFormProps> = ({
   return (
     <div>
       <Title order={4}>
-        <span className="capitalize">{operationType}</span> Account
+        <span className="capitalize">{operationType}</span> Expense
       </Title>
       <Space h={"lg"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
