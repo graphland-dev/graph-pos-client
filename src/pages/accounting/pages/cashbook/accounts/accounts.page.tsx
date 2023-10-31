@@ -1,6 +1,10 @@
 import { confirmModal } from '@/_app/common/confirm/confirm';
 import DataTable from '@/_app/common/data-table/DataTable';
-import { Account, MatchOperator } from '@/_app/graphql-models/graphql';
+import {
+	Account,
+	AccountsWithPagination,
+	MatchOperator,
+} from '@/_app/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
