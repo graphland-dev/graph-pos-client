@@ -42,7 +42,7 @@ const StockAddForm: React.FC<IStockAddFormProps> = ({ operationType, onSubmissio
     );
   
   const onSubmit = (data: any) => {
-    console.log(data);
+  
      createMutation({
        variables: {
          body: {

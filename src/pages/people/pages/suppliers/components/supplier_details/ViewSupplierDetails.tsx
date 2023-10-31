@@ -12,7 +12,7 @@ interface ISupplierDetailsFormProps {
 }
 
 const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({ supplierDetails, refetch }) => {
-  console.log({ supplierDetails });
+  // console.log({ supplierDetails });
    const [activeTab, setActiveTab] = useState<number>(0);
   return (
     <div>
