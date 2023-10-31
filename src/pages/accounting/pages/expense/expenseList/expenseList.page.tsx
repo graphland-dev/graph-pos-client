@@ -39,14 +39,7 @@ const ExpenseListPage = () => {
 
   const { data, loading, refetch } = useQuery<{
     accounting__expenses: ExpensesWithPagination;
-  }>(ACCOUNTING_EXPENSE_QUERY_LIST, {
-    variables: {
-      where: {
-        limit: 10,
-        page: 1,
-      },
-    },
-  });
+  }>(ACCOUNTING_EXPENSE_QUERY_LIST);
 
   const { data: accountData, refetch: refetchAccounts } = useQuery<{
     accounting__accounts: AccountsWithPagination;
