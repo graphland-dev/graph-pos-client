@@ -41,7 +41,7 @@ const BarcodePage = () => {
   });
 
 
-   const printRef = useRef();
+   const printRef = useRef<HTMLDivElement | null>(null);
    const handlePrint = useReactToPrint({
      content: () => printRef.current!,
    });
