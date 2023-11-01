@@ -1,7 +1,9 @@
 import { ProductsWithPagination } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
+  Button,
   Checkbox,
+  Flex,
   Input,
   NumberInput,
   Paper,
@@ -19,6 +21,9 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { IconPrinter } from "@tabler/icons-react";
+import { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 
 const BarcodePage = () => {
   const {
@@ -35,6 +40,12 @@ const BarcodePage = () => {
     },
   });
 
+
+   const printRef = useRef();
+   const handlePrint = useReactToPrint({
+     content: () => printRef.current!,
+   });
+
   const { data } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
@@ -48,14 +59,8 @@ const BarcodePage = () => {
     label: `${item?.name}`,
   }));
 
-  // const bareCodeGenerate = () => {
-  //   JsBarcode("#barcode", "Rayhan", {
-  //     format: watch("barcodeType")!,
-  //     lineColor: "#0aa",
-  //     width: 2,
-  //     height: 40,
-  //   });
-  // };
+
+  
 
   const onSubmit = () => {
     // bareCodeGenerate();
@@ -106,14 +111,6 @@ const BarcodePage = () => {
                     label: "CodeBar",
                     value: Generate_Barcode_Type?.CodeBar,
                   },
-                  // {
-                  //   label: "Msi",
-                  //   value: Generate_Barcode_Type?.Msi,
-                  // },
-                  // {
-                  //   label: "PharmaCode",
-                  //   value: Generate_Barcode_Type?.PharmaCode,
-                  // },
                 ]}
               />
             </Input.Wrapper>
@@ -147,11 +144,22 @@ const BarcodePage = () => {
               </tr>
             </tbody>
           </Table>
-          <Checkbox
-            name="withCode"
-            defaultChecked
-            label="Generate barcode with price"
-          />
+
+          <Flex justify={"space-between"}>
+            <Checkbox
+              name="withCode"
+              
+              label="Generate barcode with price"
+            />
+            <div>
+              <Button
+                onClick={handlePrint}
+                leftIcon={<IconPrinter size={16} />}
+              >
+                Print
+              </Button>
+            </div>
+          </Flex>
           {/* <div>
             <Button
               onClick={bareCodeGenerate}
@@ -162,9 +170,10 @@ const BarcodePage = () => {
             </Button>
           </div> */}
         </form>
+        
         <Space h={"xl"} />
-        <div className="grid grid-cols-3 gap-5">
-          {new Array(watch("quantity")).fill(null)?.map((_, key) => (
+        <div ref={printRef} className="grid grid-cols-3 gap-5">
+          {new Array(watch("quantity")).fill(1)?.map((_, key) => (
             <Paper p={"lg"} shadow="xs" key={key} className="text-center">
               {watch("productCode") ? (
                 <Barcode
