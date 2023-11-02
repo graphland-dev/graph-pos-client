@@ -59,8 +59,13 @@ const BarcodePage = () => {
     label: `${item?.name}`,
   }));
 
+ 
 
-  
+
+
+
+
+
 
   const onSubmit = () => {
     // bareCodeGenerate();
@@ -146,11 +151,16 @@ const BarcodePage = () => {
           </Table>
 
           <Flex justify={"space-between"}>
-            <Checkbox
-              name="withCode"
-              
-              label="Generate barcode with price"
-            />
+            <div className="flex flex-col gap-3">
+              <Checkbox
+                name="price"
+                label="Generate barcode with price"
+              />
+              <Checkbox
+                name="productName"
+                label="Generate barcode with product name"
+              />
+            </div>
             <div>
               <Button
                 onClick={handlePrint}
@@ -170,7 +180,7 @@ const BarcodePage = () => {
             </Button>
           </div> */}
         </form>
-        
+
         <Space h={"xl"} />
         <div ref={printRef} className="grid grid-cols-3 gap-5">
           {new Array(watch("quantity")).fill(1)?.map((_, key) => (
