@@ -7,13 +7,11 @@ import {
   IconForklift,
   IconFriends,
   IconHome,
-  IconLoadBalancer,
-  IconReport,
-  IconShoppingCart,
+  IconLoadBalancer, IconReport, IconSettingsCheck, IconShoppingCart,
   IconTableShare,
   IconUsersGroup,
   IconVectorTriangle,
-  IconWallet,
+  IconWallet
 } from "@tabler/icons-react";
 
 export const spotlightItems: SpotlightAction[] = [
@@ -168,10 +166,10 @@ export const spotlightItems: SpotlightAction[] = [
 
   //purchases
   {
-    title: "Inventory-Management > Purchases > Purchases-List",
+    title: "Inventory-Management > Purchases",
     description: "Get full information about current system status",
     onTrigger: () => {
-      window.location.href = "inventory-management/purchases/purchases-list";
+      window.location.href = "/inventory-management/purchases";
     },
     icon: <IconShoppingCart size="1.2rem" />,
   },
@@ -265,7 +263,7 @@ export const spotlightItems: SpotlightAction[] = [
     title: "Report > Reports > Balance-shit",
     description: "Get full information about current system status",
     onTrigger: () => {
-      window.location.href = "/reports/reports/balance-shit";
+      window.location.href = "/reports/balance-shit";
     },
     icon: <IconReport size="1.2rem" />,
   },
@@ -273,7 +271,7 @@ export const spotlightItems: SpotlightAction[] = [
     title: "Report > Reports > Summary-Report",
     description: "Get full information about current system status",
     onTrigger: () => {
-      window.location.href = "/reports/reports/summary-report";
+      window.location.href = "/reports/summary-report";
     },
     icon: <IconReport size="1.2rem" />,
   },
@@ -281,8 +279,50 @@ export const spotlightItems: SpotlightAction[] = [
     title: "Report > Reports > Expense-Report",
     description: "Get full information about current system status",
     onTrigger: () => {
-      window.location.href = "/reports/reports/expense-report";
+      window.location.href = "/reports/expense-report";
     },
     icon: <IconReport size="1.2rem" />,
+  },
+  {
+    title: "Report > Reports > Loss-Profit-Report",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/reports/loss-profit-report";
+    },
+    icon: <IconReport size="1.2rem" />,
+  },
+
+  //SETTINGS
+  // {
+  //   title: "Settings",
+  //   description: "Get full information about current system status",
+  //   onTrigger: () => {
+  //     window.location.href = "/settings";
+  //   },
+  //   icon: <IconSettingsCheck size="1.2rem" />,
+  // },
+  {
+    title: "Settings > Vat-Profile",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/settings";
+    },
+    icon: <IconSettingsCheck size="1.2rem" />,
+  },
+  {
+    title: "Settings > Units",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/settings/units";
+    },
+    icon: <IconSettingsCheck size="1.2rem" />,
+  },
+  {
+    title: "Settings > Brands",
+    description: "Get full information about current system status",
+    onTrigger: () => {
+      window.location.href = "/settings/brands";
+    },
+    icon: <IconSettingsCheck size="1.2rem" />,
   },
 ];

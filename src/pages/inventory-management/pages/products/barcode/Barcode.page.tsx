@@ -1,4 +1,7 @@
-import { ProductsWithPagination } from "@/_app/graphql-models/graphql";
+import {
+  MatchOperator,
+  ProductsWithPagination,
+} from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
   Button,
@@ -10,6 +13,7 @@ import {
   Select,
   Space,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -19,11 +23,11 @@ import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.qu
 import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
 import { IconPrinter } from "@tabler/icons-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
+import * as yup from "yup";
 
 const BarcodePage = () => {
   const {
@@ -37,20 +41,35 @@ const BarcodePage = () => {
       productCode: "",
       barcodeType: Generate_Barcode_Type.Code128,
       quantity: 30,
+      barcodeProductName: "",
+      barcodePrice: 0.0,
     },
   });
 
+  const [isShowProductPrice, setIsShowProductPrice] = useState(false);
+  const [barcodeProductName, setBarcodeProductName] = useState(false);
 
-   const printRef = useRef<HTMLDivElement | null>(null);
-   const handlePrint = useReactToPrint({
-     content: () => printRef.current!,
-   });
+  // const [price, setPrice] = useState(0)
+
+  const printRef = useRef<HTMLDivElement | null>(null);
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current!,
+  });
 
   const { data } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
-      where: { limit: -1 },
+      where: {
+        limit: -1,
+        filters: [
+          {
+            key: "price",
+            operator: MatchOperator.Gt,
+            value: "0",
+          },
+        ],
+      },
     },
   });
 
@@ -59,8 +78,9 @@ const BarcodePage = () => {
     label: `${item?.name}`,
   }));
 
-
-  
+  const getProductByCode = (code: string) => {
+    return data?.inventory__products.nodes?.find((p) => p.code === code);
+  };
 
   const onSubmit = () => {
     // bareCodeGenerate();
@@ -146,11 +166,23 @@ const BarcodePage = () => {
           </Table>
 
           <Flex justify={"space-between"}>
-            <Checkbox
-              name="withCode"
-              
-              label="Generate barcode with price"
-            />
+            <div className="flex flex-col gap-3">
+              <Checkbox
+                value={watch("barcodePrice")}
+                onChange={(event) =>
+                  setIsShowProductPrice(event.target.checked)
+                }
+                name="barcodePrice"
+                label="Generate barcode with price"
+              />
+              <Checkbox
+                onChange={(event) =>
+                  setBarcodeProductName(event.target.checked)
+                }
+                name="barcodeProductName"
+                label="Generate barcode with product name"
+              />
+            </div>
             <div>
               <Button
                 onClick={handlePrint}
@@ -170,17 +202,25 @@ const BarcodePage = () => {
             </Button>
           </div> */}
         </form>
-        
+
         <Space h={"xl"} />
         <div ref={printRef} className="grid grid-cols-3 gap-5">
           {new Array(watch("quantity")).fill(1)?.map((_, key) => (
             <Paper p={"lg"} shadow="xs" key={key} className="text-center">
+              {barcodeProductName && <Text>{watch("barcodeProductName")}</Text>}
               {watch("productCode") ? (
                 <Barcode
                   value={watch("productCode")!}
-                  options={{ format: watch("barcodeType") }}
+                  options={{
+                    format: watch("barcodeType"),
+                  }}
                 />
               ) : null}
+              {isShowProductPrice && (
+                <Text>
+                  BDT {getProductByCode(watch("productCode")!)?.price}
+                </Text>
+              )}
             </Paper>
           ))}
         </div>
@@ -195,4 +235,6 @@ const barcodeValidationSchema = yup.object({
   barcodeType: yup.string().required().label("Barcode Type"),
   productCode: yup.string().optional().label("Code"),
   quantity: yup.number().required().label("Quantity"),
+  barcodePrice: yup.number().required().label("Price"),
+  barcodeProductName: yup.string().required().label("Product"),
 });

@@ -156,7 +156,7 @@ const SuppliersPage = () => {
         opened={openedDrawer}
         onClose={drawerHandler.close}
         position="right"
-        title="Create client"
+        title="Create Supplier"
         withCloseButton={true}
       >
         <SuppliersCreateFrom
