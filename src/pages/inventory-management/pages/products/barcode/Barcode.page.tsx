@@ -1,5 +1,6 @@
 import {
   MatchOperator,
+  Product,
   ProductsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
@@ -46,7 +47,7 @@ const BarcodePage = () => {
     },
   });
 
-  const [barcodePrice, setBarcodePrice] = useState(false);
+  const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [barcodeProductName, setBarcodeProductName] = useState(false);
 
   // const [price, setPrice] = useState(0)
@@ -77,6 +78,10 @@ const BarcodePage = () => {
     value: item?.code,
     label: `${item?.name}`,
   }));
+
+  const getProductByCode = (code: string) => {
+    return data?.inventory__products.nodes?.find((p) => p.code === code);
+  };
 
   const onSubmit = () => {
     // bareCodeGenerate();
@@ -165,7 +170,9 @@ const BarcodePage = () => {
             <div className="flex flex-col gap-3">
               <Checkbox
                 value={watch("barcodePrice")}
-                onChange={(event) => setBarcodePrice(event.target.checked)}
+                onChange={(event) =>
+                  setIsShowProductPrice(event.target.checked)
+                }
                 name="barcodePrice"
                 label="Generate barcode with price"
               />
@@ -210,7 +217,11 @@ const BarcodePage = () => {
                   }}
                 />
               ) : null}
-              {barcodePrice && <Text>{watch("barcodePrice")}</Text>}
+              {isShowProductPrice && (
+                <Text>
+                  BDT {getProductByCode(watch("productCode")!)?.price}
+                </Text>
+              )}
             </Paper>
           ))}
         </div>
