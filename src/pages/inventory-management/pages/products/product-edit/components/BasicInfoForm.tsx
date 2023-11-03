@@ -87,7 +87,7 @@ const BasicInfoForm = () => {
 					label='Code'
 					error={<ErrorMessage errors={errors} name='code' />}
 				>
-					<Input placeholder='Write product code' {...register('code')} />
+					<Input type='number' placeholder='Write product code' {...register('code')} />
 				</Input.Wrapper>
 				<Space h={'sm'} />
 				<Input.Wrapper
