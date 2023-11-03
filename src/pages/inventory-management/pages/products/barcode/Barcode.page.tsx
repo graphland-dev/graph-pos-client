@@ -1,6 +1,5 @@
 import {
   MatchOperator,
-  Product,
   ProductsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
@@ -24,11 +23,11 @@ import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.qu
 import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
 import { IconPrinter } from "@tabler/icons-react";
 import { useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
+import * as yup from "yup";
 
 const BarcodePage = () => {
   const {
