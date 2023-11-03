@@ -10,6 +10,7 @@ import {
   Select,
   Space,
   Table,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
@@ -22,7 +23,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { IconPrinter } from "@tabler/icons-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
 
 const BarcodePage = () => {
@@ -37,8 +38,15 @@ const BarcodePage = () => {
       productCode: "",
       barcodeType: Generate_Barcode_Type.Code128,
       quantity: 30,
+      barcodeProductName: "",
+      barcodePrice: 0.0,
     },
   });
+
+  const [barcodePrice, setBarcodePrice] = useState(false)
+  const [barcodeProductName, setBarcodeProductName] = useState(false)
+
+  // const [price, setPrice] = useState(0)
 
 
    const printRef = useRef<HTMLDivElement | null>(null);
@@ -54,17 +62,14 @@ const BarcodePage = () => {
     },
   });
 
+
+
   const productsDropdownData = data?.inventory__products.nodes?.map((item) => ({
     value: item?.code,
     label: `${item?.name}`,
   }));
 
  
-
-
-
-
-
 
 
   const onSubmit = () => {
@@ -153,11 +158,16 @@ const BarcodePage = () => {
           <Flex justify={"space-between"}>
             <div className="flex flex-col gap-3">
               <Checkbox
-                name="price"
+                value={watch("barcodePrice")}
+                onChange={(event) => setBarcodePrice(event.target.checked)}
+                name="barcodePrice"
                 label="Generate barcode with price"
               />
               <Checkbox
-                name="productName"
+                onChange={(event) =>
+                  setBarcodeProductName(event.target.checked)
+                }
+                name="barcodeProductName"
                 label="Generate barcode with product name"
               />
             </div>
@@ -185,12 +195,16 @@ const BarcodePage = () => {
         <div ref={printRef} className="grid grid-cols-3 gap-5">
           {new Array(watch("quantity")).fill(1)?.map((_, key) => (
             <Paper p={"lg"} shadow="xs" key={key} className="text-center">
+              {barcodeProductName && <Text>{watch("barcodeProductName")}</Text>}
               {watch("productCode") ? (
                 <Barcode
                   value={watch("productCode")!}
-                  options={{ format: watch("barcodeType") }}
+                  options={{
+                    format: watch("barcodeType"),
+                  }}
                 />
               ) : null}
+              {barcodePrice && <Text>{watch("barcodePrice")}</Text>}
             </Paper>
           ))}
         </div>
@@ -205,4 +219,6 @@ const barcodeValidationSchema = yup.object({
   barcodeType: yup.string().required().label("Barcode Type"),
   productCode: yup.string().optional().label("Code"),
   quantity: yup.number().required().label("Quantity"),
+  barcodePrice: yup.number().required().label("Price"),
+  barcodeProductName: yup.string().required().label("Product"),
 });
