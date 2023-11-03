@@ -1,4 +1,7 @@
-import { ProductsWithPagination } from "@/_app/graphql-models/graphql";
+import {
+  MatchOperator,
+  ProductsWithPagination,
+} from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
   Button,
@@ -43,34 +46,37 @@ const BarcodePage = () => {
     },
   });
 
-  const [barcodePrice, setBarcodePrice] = useState(false)
-  const [barcodeProductName, setBarcodeProductName] = useState(false)
+  const [barcodePrice, setBarcodePrice] = useState(false);
+  const [barcodeProductName, setBarcodeProductName] = useState(false);
 
   // const [price, setPrice] = useState(0)
 
-
-   const printRef = useRef<HTMLDivElement | null>(null);
-   const handlePrint = useReactToPrint({
-     content: () => printRef.current!,
-   });
+  const printRef = useRef<HTMLDivElement | null>(null);
+  const handlePrint = useReactToPrint({
+    content: () => printRef.current!,
+  });
 
   const { data } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
-      where: { limit: -1 },
+      where: {
+        limit: -1,
+        filters: [
+          {
+            key: "price",
+            operator: MatchOperator.Gt,
+            value: "0",
+          },
+        ],
+      },
     },
   });
-
-
 
   const productsDropdownData = data?.inventory__products.nodes?.map((item) => ({
     value: item?.code,
     label: `${item?.name}`,
   }));
-
- 
-
 
   const onSubmit = () => {
     // bareCodeGenerate();
