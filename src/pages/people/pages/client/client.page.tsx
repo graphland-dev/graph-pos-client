@@ -16,6 +16,7 @@ import {
 	PEOPLE_CLIENTS_QUERY,
 	PEOPLE_REMOVE_CLIENT,
 } from './utils/client.query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
 	refetching: boolean;
@@ -87,71 +88,72 @@ const ClientPage = () => {
 		[]
 	);
 	return (
-		<div>
-			<DataTable
-				columns={columns}
-				data={data?.people__clients?.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={data?.people__clients?.meta?.totalCount ?? 100}
-				RowActionMenu={(row: Client) => (
-					<>
-						<Menu.Item
-							onClick={() => {
-								drawerHandler.open();
-								setState({
-									selectedClient: row,
-									action: 'EDIT',
-								});
-							}}
-							icon={<IconPencil size={18} />}
-						>
-							Edit
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => handleDeleteIncrement(row._id)}
-							icon={<IconTrash size={18} />}
-						>
-							Delete
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							onClick={() => {
-								drawerHandler.open();
-								setState({
-									action: 'CREATE',
-								});
-							}}
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={fetchingPeople || state.refetching}
-			/>
+    <div>
+      <PageTitle title="client" />
+      <DataTable
+        columns={columns}
+        data={data?.people__clients?.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.people__clients?.meta?.totalCount ?? 100}
+        RowActionMenu={(row: Client) => (
+          <>
+            <Menu.Item
+              onClick={() => {
+                drawerHandler.open();
+                setState({
+                  selectedClient: row,
+                  action: "EDIT",
+                });
+              }}
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteIncrement(row._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() => {
+                drawerHandler.open();
+                setState({
+                  action: "CREATE",
+                });
+              }}
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={fetchingPeople || state.refetching}
+      />
 
-			<Drawer
-				opened={openedDrawer}
-				onClose={drawerHandler.close}
-				position='right'
-				title='Create client'
-				withCloseButton={true}
-			>
-				<ClientCreateFrom
-					action={state.action}
-					formData={state.selectedClient!}
-					onFormSubmitted={() => {
-						refetch();
-						drawerHandler.close();
-					}}
-				/>
-			</Drawer>
-		</div>
-	);
+      <Drawer
+        opened={openedDrawer}
+        onClose={drawerHandler.close}
+        position="right"
+        title="Create client"
+        withCloseButton={true}
+      >
+        <ClientCreateFrom
+          action={state.action}
+          formData={state.selectedClient!}
+          onFormSubmitted={() => {
+            refetch();
+            drawerHandler.close();
+          }}
+        />
+      </Drawer>
+    </div>
+  );
 };
 
 export default ClientPage;

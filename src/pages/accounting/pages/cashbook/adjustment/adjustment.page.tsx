@@ -21,6 +21,7 @@ import {
   ACCOUNT_REMOVE_TRANSACTION,
 } from "./utils/query";
 import dayjs from "dayjs";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -115,6 +116,7 @@ const AdjustmentPage = () => {
 
   return (
     <>
+      <PageTitle title="adjustment" />
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}

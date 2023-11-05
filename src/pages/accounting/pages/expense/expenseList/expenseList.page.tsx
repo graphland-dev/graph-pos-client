@@ -19,6 +19,7 @@ import { useSetState } from "@mantine/hooks";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -116,6 +117,7 @@ const ExpenseListPage = () => {
 
   return (
     <>
+      <PageTitle title="expense-list" />
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}

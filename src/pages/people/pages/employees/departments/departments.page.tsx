@@ -23,6 +23,7 @@ import {
   GET_EMPLOYEE_DEPARTMENT,
   REMOVE_EMPLOYEE_DEPARTMENT,
 } from "./utils/query";
+import PageTitle from "@/_app/common/PageTitle";
 
 const Departments = () => {
   const [openedDrawer, drawerHandler] = useDisclosure();
@@ -51,6 +52,7 @@ const Departments = () => {
 
   return (
     <div>
+      <PageTitle title="employee-department" />
       <Flex justify={"space-between"} align={"center"}>
         <Title order={2}>Employee Departments</Title>
         <Flex gap={"md"}>

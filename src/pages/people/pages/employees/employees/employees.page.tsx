@@ -20,6 +20,7 @@ import {
 } from "./utils/query";
 import ViewEmployeeDetails from "./components/ViewEmployeeDetails";
 import { Subject } from "rxjs";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   viewModal: boolean;
@@ -120,6 +121,7 @@ const Employees = () => {
 
   return (
     <>
+      <PageTitle title="employees" />
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}

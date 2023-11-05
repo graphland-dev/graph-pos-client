@@ -24,36 +24,38 @@ const RootApp = () => {
   useHotkeys([["mod+J", () => toggleColorScheme()]]);
 
   return (
-    <ColorSchemeProvider
-      colorScheme={colorScheme}
-      toggleColorScheme={toggleColorScheme}
-    >
-      <MantineProvider
-        withNormalizeCSS
-        withGlobalStyles
-        theme={{
-          colorScheme,
-          globalStyles: (theme) => ({
-            body: {
-              backgroundColor:
-                theme.colorScheme === "dark"
-                  ? theme.colors.gray[9]
-                  : theme.colors.gray[0],
-            },
-          }),
-        }}
+    <>
+      <ColorSchemeProvider
+        colorScheme={colorScheme}
+        toggleColorScheme={toggleColorScheme}
       >
-        <SpotlightProvider
-          shortcut={["mod + P", "mod + K"]}
-          actions={spotlightItems}
+        <MantineProvider
+          withNormalizeCSS
+          withGlobalStyles
+          theme={{
+            colorScheme,
+            globalStyles: (theme) => ({
+              body: {
+                backgroundColor:
+                  theme.colorScheme === "dark"
+                    ? theme.colors.gray[9]
+                    : theme.colors.gray[0],
+              },
+            }),
+          }}
         >
-          <ModalsProvider>
-            <Notifications position="top-right" />
-            <RouterProvider router={rootRouter} />
-          </ModalsProvider>
-        </SpotlightProvider>
-      </MantineProvider>
-    </ColorSchemeProvider>
+          <SpotlightProvider
+            shortcut={["mod + P", "mod + K"]}
+            actions={spotlightItems}
+          >
+            <ModalsProvider>
+              <Notifications position="top-right" />
+              <RouterProvider router={rootRouter} />
+            </ModalsProvider>
+          </SpotlightProvider>
+        </MantineProvider>
+      </ColorSchemeProvider>
+    </>
   );
 };
 

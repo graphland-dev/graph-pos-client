@@ -19,6 +19,7 @@ import {
 	Inventory__Remove_Product_Purchase,
 	Inventory__product_Purchases_Query,
 } from './utils/query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
 	refetching: boolean;
@@ -127,62 +128,63 @@ const PurchaseListPage = () => {
 	);
 
 	return (
-		<>
-			<Drawer
-				onClose={() =>
-					setState({
-						openDrawer: false,
-					})
-				}
-				title='Product items in purchase'
-				opened={state.openDrawer}
-			>
-				<PurchaseItemsShowCase items={products!} />
-			</Drawer>
-			<DataTable
-				columns={columns}
-				data={data?.inventory__productPurchases.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
-				RowActionMenu={(row: ProductPurchase) => (
-					<>
-						<Menu.Item
-							icon={<IconFileInfo size={18} />}
-							onClick={() => {
-								setProducts(row?.products);
-								setState({
-									openDrawer: true,
-								});
-							}}
-							color='yellow'
-						>
-							View
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => handleDeleteAccount(row._id)}
-							icon={<IconTrash size={18} />}
-							color='red'
-						>
-							Delete
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							component={Link}
-							to='/inventory-management/purchases/create'
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={loading || state.refetching}
-			/>
-		</>
-	);
+    <>
+      <PageTitle title="purchase-list" />
+      <Drawer
+        onClose={() =>
+          setState({
+            openDrawer: false,
+          })
+        }
+        title="Product items in purchase"
+        opened={state.openDrawer}
+      >
+        <PurchaseItemsShowCase items={products!} />
+      </Drawer>
+      <DataTable
+        columns={columns}
+        data={data?.inventory__productPurchases.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
+        RowActionMenu={(row: ProductPurchase) => (
+          <>
+            <Menu.Item
+              icon={<IconFileInfo size={18} />}
+              onClick={() => {
+                setProducts(row?.products);
+                setState({
+                  openDrawer: true,
+                });
+              }}
+              color="yellow"
+            >
+              View
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteAccount(row._id)}
+              icon={<IconTrash size={18} />}
+              color="red"
+            >
+              Delete
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              component={Link}
+              to="/inventory-management/purchases/create"
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={loading || state.refetching}
+      />
+    </>
+  );
 };
 
 export default PurchaseListPage;

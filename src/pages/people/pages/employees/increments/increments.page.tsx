@@ -20,6 +20,7 @@ import {
   INCREMENT_EMPLOYEE_QUERY,
 } from "./utils/increment.query";
 import dayjs from "dayjs";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   refetching: boolean;
@@ -94,6 +95,7 @@ const Increments = () => {
   );
   return (
     <div>
+      <PageTitle title="employee-increment" />
       <DataTable
         columns={columns}
         data={increments?.people__employeeIncrements.nodes ?? []}

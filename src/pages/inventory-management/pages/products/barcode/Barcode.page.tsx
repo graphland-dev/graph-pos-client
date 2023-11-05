@@ -28,6 +28,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import * as yup from "yup";
+import PageTitle from "@/_app/common/PageTitle";
 
 const BarcodePage = () => {
   const {
@@ -88,6 +89,7 @@ const BarcodePage = () => {
 
   return (
     <>
+      <PageTitle title="barcode" />
       <Paper p={"xl"}>
         <Title order={3}>Generate Barcode</Title>
         <Space h="" />

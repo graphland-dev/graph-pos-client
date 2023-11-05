@@ -9,6 +9,7 @@ import { ACCOUNTING_EXPENSE_CATEGORY_DELETE_MUTATION, ACCOUNTING_EXPENSE_CATEGOR
 import ExpenseCategoryForm from "./components/ExpenseCategoryForm";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { confirmModal } from "@/_app/common/confirm/confirm";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -83,6 +84,7 @@ const ExpenseCategoryPage = () => {
 
   return (
     <>
+      <PageTitle title="expense-category" />
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}
