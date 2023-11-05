@@ -10,6 +10,7 @@ import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import { ACCOUNTING_STATEMENTS_QUERY_LIST } from "./ulits/query";
 import dayjs from "dayjs";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -89,6 +90,7 @@ const StatementPage = () => {
   );
   return (
     <>
+      <PageTitle title="statements" />
       <DataTable
         columns={columns}
         data={data?.accounting__transactions?.nodes ?? []}

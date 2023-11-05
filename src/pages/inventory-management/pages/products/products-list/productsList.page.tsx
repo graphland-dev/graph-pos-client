@@ -18,6 +18,7 @@ import {
   INVENTORY_PRODUCT_CREATE,
   INVENTORY_PRODUCT_REMOVE,
 } from "./utils/product.query";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   refetching: boolean;
@@ -112,6 +113,7 @@ const ProductListPage = () => {
 
   return (
     <>
+      <PageTitle title="product-list" />
       <DataTable
         columns={columns}
         data={data?.inventory__products.nodes ?? []}

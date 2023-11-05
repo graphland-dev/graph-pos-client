@@ -28,6 +28,7 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import * as yup from "yup";
+import PageTitle from "@/_app/common/PageTitle";
 
 const BarcodePage = () => {
   const {
@@ -47,7 +48,7 @@ const BarcodePage = () => {
   });
 
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
-  const [barcodeProductName, setBarcodeProductName] = useState(false);
+  const [isShowProductName, setIsShowProductName] = useState(false);
 
   // const [price, setPrice] = useState(0)
 
@@ -88,6 +89,7 @@ const BarcodePage = () => {
 
   return (
     <>
+      <PageTitle title="barcode" />
       <Paper p={"xl"}>
         <Title order={3}>Generate Barcode</Title>
         <Space h="" />
@@ -130,6 +132,10 @@ const BarcodePage = () => {
                   {
                     label: "CodeBar",
                     value: Generate_Barcode_Type?.CodeBar,
+                  },
+                  {
+                    label: "PharmaCode",
+                    value: Generate_Barcode_Type?.PharmaCode,
                   },
                 ]}
               />
@@ -176,9 +182,7 @@ const BarcodePage = () => {
                 label="Generate barcode with price"
               />
               <Checkbox
-                onChange={(event) =>
-                  setBarcodeProductName(event.target.checked)
-                }
+                onChange={(event) => setIsShowProductName(event.target.checked)}
                 name="barcodeProductName"
                 label="Generate barcode with product name"
               />
@@ -192,22 +196,15 @@ const BarcodePage = () => {
               </Button>
             </div>
           </Flex>
-          {/* <div>
-            <Button
-              onClick={bareCodeGenerate}
-              leftIcon={<IconPlus size={16} />}
-              type="submit"
-            >
-              Generate Barcode(s)
-            </Button>
-          </div> */}
         </form>
 
         <Space h={"xl"} />
         <div ref={printRef} className="grid grid-cols-3 gap-5">
           {new Array(watch("quantity")).fill(1)?.map((_, key) => (
             <Paper p={"lg"} shadow="xs" key={key} className="text-center">
-              {barcodeProductName && <Text>{watch("barcodeProductName")}</Text>}
+              {isShowProductName && (
+                <Text>{getProductByCode(watch("productCode")!)?.name}</Text>
+              )}
               {watch("productCode") ? (
                 <Barcode
                   value={watch("productCode")!}

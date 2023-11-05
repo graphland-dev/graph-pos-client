@@ -9,6 +9,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { SETTING_BRAND_DELETE_MUTATION, SETTING_BRAND_QUERY } from "./utils/query";
 import { Brand, BrandsWithPagination, MatchOperator } from "@/_app/graphql-models/graphql";
 import { confirmModal } from "@/_app/common/confirm/confirm";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -85,69 +86,70 @@ const BrandPage = () => {
   };
 
 
-  return <>
-    <Drawer
-      opened={state.modalOpened}
-      onClose={() => setState({ modalOpened: false })}
-      position="right"
-      size={"md"}
-    >
-      <BrandsForm
-        onSubmissionDone={() => {
-          handleRefetch({});
-          setState({ modalOpened: false });
-        }}
-
-        operationType={state.operationType}
-        operationId={state.operationId}
-        formData={state.operationPayload}
+  return (
+    <>
+      <PageTitle title="setting-brand" />
+      <Drawer
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
+        position="right"
+        size={"md"}
+      >
+        <BrandsForm
+          onSubmissionDone={() => {
+            handleRefetch({});
+            setState({ modalOpened: false });
+          }}
+          operationType={state.operationType}
+          operationId={state.operationId}
+          formData={state.operationPayload}
+        />
+      </Drawer>
+      <DataTable
+        columns={columns}
+        data={data?.setup__brands?.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.setup__brands?.meta?.totalCount ?? 10}
+        RowActionMenu={(row: Brand) => (
+          <>
+            <Menu.Item
+              onClick={() =>
+                setState({
+                  modalOpened: true,
+                  operationType: "update",
+                  operationId: row._id,
+                  operationPayload: row,
+                })
+              }
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteEmployee(row._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() =>
+                setState({ modalOpened: true, operationPayload: "create" })
+              }
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={loading || state.refetching}
       />
-    </Drawer>
-    <DataTable
-      columns={columns}
-      data={data?.setup__brands?.nodes ?? []}
-      refetch={handleRefetch}
-      totalCount={data?.setup__brands?.meta?.totalCount ?? 10}
-      RowActionMenu={(row: Brand) => (
-        <>
-          <Menu.Item
-            onClick={() =>
-              setState({
-                modalOpened: true,
-                operationType: "update",
-                operationId: row._id,
-                operationPayload: row,
-              })
-            }
-            icon={<IconPencil size={18} />}
-          >
-            Edit
-          </Menu.Item>
-          <Menu.Item
-            onClick={() => handleDeleteEmployee(row._id)}
-            icon={<IconTrash size={18} />}
-          >
-            Delete
-          </Menu.Item>
-
-        </>
-      )}
-      ActionArea={
-        <>
-          <Button
-            leftIcon={<IconPlus size={16} />}
-            onClick={() =>
-              setState({ modalOpened: true, operationPayload: "create" })
-            }
-            size="sm"
-          >
-            Add new
-          </Button>
-        </>
-      }
-      loading={loading || state.refetching}
-    />
-  </>;
+    </>
+  );
 };
 
 export default BrandPage;

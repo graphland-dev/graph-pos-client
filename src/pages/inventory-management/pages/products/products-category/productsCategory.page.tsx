@@ -16,6 +16,7 @@ import {
 	INVENTORY_PRODUCT_CATEGORIES_QUERY,
 	INVENTORY_PRODUCT_CATEGORY_REMOVE,
 } from './utils/category.query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
 	modalOpened: boolean;
@@ -92,67 +93,68 @@ const ProductCategoryPage = () => {
 	);
 
 	return (
-		<>
-			<Drawer
-				opened={state.modalOpened}
-				onClose={() => setState({ modalOpened: false })}
-				position='right'
-			>
-				<CreateAndUpdateCategoryForm
-					onSubmissionDone={() => {
-						handleRefetch({});
-						setState({ modalOpened: false });
-					}}
-					operationType={state.operationType}
-					operationId={state.operationId}
-					formData={state.operationPayload}
-				/>
-			</Drawer>
-			<DataTable
-				columns={columns}
-				data={data?.inventory__productCategories.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={data?.inventory__productCategories.meta?.totalCount ?? 10}
-				RowActionMenu={(row: ProductCategory) => (
-					<>
-						<Menu.Item
-							onClick={() =>
-								setState({
-									modalOpened: true,
-									operationType: 'update',
-									operationId: row._id,
-									operationPayload: row,
-								})
-							}
-							icon={<IconPencil size={18} />}
-						>
-							Edit
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => handleDeleteAccount(row._id)}
-							icon={<IconTrash size={18} />}
-						>
-							Delete
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							onClick={() =>
-								setState({ modalOpened: true, operationType: 'create' })
-							}
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={loading || state.refetching}
-			/>
-		</>
-	);
+    <>
+      <PageTitle title="product-category" />
+      <Drawer
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
+        position="right"
+      >
+        <CreateAndUpdateCategoryForm
+          onSubmissionDone={() => {
+            handleRefetch({});
+            setState({ modalOpened: false });
+          }}
+          operationType={state.operationType}
+          operationId={state.operationId}
+          formData={state.operationPayload}
+        />
+      </Drawer>
+      <DataTable
+        columns={columns}
+        data={data?.inventory__productCategories.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.inventory__productCategories.meta?.totalCount ?? 10}
+        RowActionMenu={(row: ProductCategory) => (
+          <>
+            <Menu.Item
+              onClick={() =>
+                setState({
+                  modalOpened: true,
+                  operationType: "update",
+                  operationId: row._id,
+                  operationPayload: row,
+                })
+              }
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteAccount(row._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() =>
+                setState({ modalOpened: true, operationType: "create" })
+              }
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={loading || state.refetching}
+      />
+    </>
+  );
 };
 
 export default ProductCategoryPage;

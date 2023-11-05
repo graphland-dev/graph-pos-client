@@ -25,6 +25,7 @@ import {
 	PAYROLL_QUERY,
 	REMOVE_PAYROLL_MUTATION,
 } from './utils/payroll.query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
 	refetching: boolean;
@@ -106,77 +107,78 @@ const PayrollPage = () => {
 		[]
 	);
 	return (
-		<div>
-			<DataTable
-				columns={columns}
-				data={payRolls?.accounting__payrolls.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={payRolls?.accounting__payrolls.meta?.totalCount ?? 100}
-				RowActionMenu={(row: Payroll) => (
-					<>
-						<Menu.Item
-							onClick={() => {
-								handleDeleteIncrement(row._id);
-							}}
-							icon={<IconTrash size={18} />}
-						>
-							Delete
-						</Menu.Item>
-						<Menu.Item
-							icon={<IconListDetails size={18} />}
-							onClick={() => {
-								setState({
-									payRollRow: row,
-								});
-								detailsDrawerHandler.open();
-							}}
-						>
-							Details
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							onClick={drawerHandler.open}
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={fetchingPayrolls || state.refetching}
-			/>
+    <div>
+      <PageTitle title="payroll" />
+      <DataTable
+        columns={columns}
+        data={payRolls?.accounting__payrolls.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={payRolls?.accounting__payrolls.meta?.totalCount ?? 100}
+        RowActionMenu={(row: Payroll) => (
+          <>
+            <Menu.Item
+              onClick={() => {
+                handleDeleteIncrement(row._id);
+              }}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+            <Menu.Item
+              icon={<IconListDetails size={18} />}
+              onClick={() => {
+                setState({
+                  payRollRow: row,
+                });
+                detailsDrawerHandler.open();
+              }}
+            >
+              Details
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={drawerHandler.open}
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={fetchingPayrolls || state.refetching}
+      />
 
-			<Drawer
-				opened={openedDetailsDrawer}
-				onClose={detailsDrawerHandler.close}
-				position='right'
-				title='Payroll details'
-				withCloseButton={true}
-			>
-				<PayrollDetails payRollRow={state?.payRollRow as Payroll} />
-			</Drawer>
+      <Drawer
+        opened={openedDetailsDrawer}
+        onClose={detailsDrawerHandler.close}
+        position="right"
+        title="Payroll details"
+        withCloseButton={true}
+      >
+        <PayrollDetails payRollRow={state?.payRollRow as Payroll} />
+      </Drawer>
 
-			<Drawer
-				opened={openedDrawer}
-				onClose={drawerHandler.close}
-				position='right'
-				title='Create payroll'
-				withCloseButton={true}
-			>
-				<PayrollForm
-					employees={data?.people__employees?.nodes as Employee[]}
-					accounts={payRoll_accounts?.accounting__accounts?.nodes as Account[]}
-					onFormSubmitted={() => {
-						refetch();
-						drawerHandler.close();
-					}}
-				/>
-			</Drawer>
-		</div>
-	);
+      <Drawer
+        opened={openedDrawer}
+        onClose={drawerHandler.close}
+        position="right"
+        title="Create payroll"
+        withCloseButton={true}
+      >
+        <PayrollForm
+          employees={data?.people__employees?.nodes as Employee[]}
+          accounts={payRoll_accounts?.accounting__accounts?.nodes as Account[]}
+          onFormSubmitted={() => {
+            refetch();
+            drawerHandler.close();
+          }}
+        />
+      </Drawer>
+    </div>
+  );
 };
 
 export default PayrollPage;

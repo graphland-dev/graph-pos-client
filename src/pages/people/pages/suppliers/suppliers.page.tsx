@@ -17,6 +17,7 @@ import {
   PEOPLE_SUPPLIERS_QUERY,
 } from './utils/suppliers.query';
 import SuppliersCreateFrom from './components/SuppliersCreateFrom';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
   refetching: boolean;
@@ -97,6 +98,7 @@ const SuppliersPage = () => {
 	);
 	return (
     <div>
+      <PageTitle title="suppliers" />
       <DataTable
         columns={columns}
         data={data?.people__suppliers?.nodes ?? []}
@@ -178,8 +180,7 @@ const SuppliersPage = () => {
       >
         <ViewSupplierDetails
           supplierDetails={supplierViewDetails}
-            refetch={refetch}
-          
+          refetch={refetch}
         />
       </Drawer>
     </div>

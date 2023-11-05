@@ -17,6 +17,7 @@ import {
 	ACCOUNTING_ACCOUNTS_LIST,
 	ACCOUNTING_ACCOUNT_DELETE_MUTATION,
 } from './utils/query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
 	modalOpened: boolean;
@@ -107,67 +108,68 @@ const AccountsPage = () => {
 	);
 
 	return (
-		<>
-			<Drawer
-				opened={state.modalOpened}
-				onClose={() => setState({ modalOpened: false })}
-				position='right'
-			>
-				<AccountForm
-					onSubmissionDone={() => {
-						handleRefetch({});
-						setState({ modalOpened: false });
-					}}
-					operationType={state.operationType}
-					operationId={state.operationId}
-					formData={state.operationPayload}
-				/>
-			</Drawer>
-			<DataTable
-				columns={columns}
-				data={data?.accounting__accounts.nodes ?? []}
-				refetch={handleRefetch}
-				totalCount={data?.accounting__accounts.meta?.totalCount ?? 10}
-				RowActionMenu={(row: Account) => (
-					<>
-						<Menu.Item
-							onClick={() =>
-								setState({
-									modalOpened: true,
-									operationType: 'update',
-									operationId: row._id,
-									operationPayload: row,
-								})
-							}
-							icon={<IconPencil size={18} />}
-						>
-							Edit
-						</Menu.Item>
-						<Menu.Item
-							onClick={() => handleDeleteAccount(row._id)}
-							icon={<IconTrash size={18} />}
-						>
-							Delete
-						</Menu.Item>
-					</>
-				)}
-				ActionArea={
-					<>
-						<Button
-							leftIcon={<IconPlus size={16} />}
-							onClick={() =>
-								setState({ modalOpened: true, operationType: 'create' })
-							}
-							size='sm'
-						>
-							Add new
-						</Button>
-					</>
-				}
-				loading={loading || state.refetching}
-			/>
-		</>
-	);
+    <>
+      <PageTitle title='accounts'/>
+      <Drawer
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
+        position="right"
+      >
+        <AccountForm
+          onSubmissionDone={() => {
+            handleRefetch({});
+            setState({ modalOpened: false });
+          }}
+          operationType={state.operationType}
+          operationId={state.operationId}
+          formData={state.operationPayload}
+        />
+      </Drawer>
+      <DataTable
+        columns={columns}
+        data={data?.accounting__accounts.nodes ?? []}
+        refetch={handleRefetch}
+        totalCount={data?.accounting__accounts.meta?.totalCount ?? 10}
+        RowActionMenu={(row: Account) => (
+          <>
+            <Menu.Item
+              onClick={() =>
+                setState({
+                  modalOpened: true,
+                  operationType: "update",
+                  operationId: row._id,
+                  operationPayload: row,
+                })
+              }
+              icon={<IconPencil size={18} />}
+            >
+              Edit
+            </Menu.Item>
+            <Menu.Item
+              onClick={() => handleDeleteAccount(row._id)}
+              icon={<IconTrash size={18} />}
+            >
+              Delete
+            </Menu.Item>
+          </>
+        )}
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              onClick={() =>
+                setState({ modalOpened: true, operationType: "create" })
+              }
+              size="sm"
+            >
+              Add new
+            </Button>
+          </>
+        }
+        loading={loading || state.refetching}
+      />
+    </>
+  );
 };
 
 export default AccountsPage;

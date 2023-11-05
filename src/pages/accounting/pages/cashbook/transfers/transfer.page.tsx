@@ -19,6 +19,7 @@ import {
   ACCOUNTING_TRANSFER_QUERY_LIST,
 } from "./ulits/query";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -113,6 +114,7 @@ const TransferPage = () => {
   );
   return (
     <>
+      <PageTitle title="transfer" />
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}
