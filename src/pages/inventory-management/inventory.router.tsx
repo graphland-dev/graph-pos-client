@@ -2,6 +2,7 @@ import DashboardLayout from '@/_app/common/layouts/DashboardLayout';
 import { Navigate, RouteObject } from 'react-router-dom';
 import { inventoryNavlinks } from './inventory.navlinks';
 import SupplierPayment from './pages/payments/supplier-payments/supplier-payment.page';
+import POSPage from './pages/pos/pos.page';
 import Barcode from './pages/products/barcode/Barcode.page';
 import ProductEditPage from './pages/products/product-edit/ProductEdit.page';
 import ProductCategoryPage from './pages/products/products-category/productsCategory.page';
@@ -71,6 +72,15 @@ export const inventoryModuleRouter: RouteObject[] = [
 					{
 						path: 'supplier-payments/:supplierId/:purchaseId',
 						element: <SupplierPayment />,
+					},
+				],
+			},
+			{
+				path: 'pos',
+				children: [
+					{
+						path: 'create-sale',
+						element: <POSPage />,
 					},
 				],
 			},

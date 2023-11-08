@@ -2,6 +2,7 @@ import { AppNavLink } from '@/_app/models/AppNavLink.type';
 import {
 	IconBrandProducthunt,
 	IconCoin,
+	IconReplace,
 	IconShoppingCart,
 } from '@tabler/icons-react';
 
@@ -24,6 +25,11 @@ export const inventoryNavlinks: AppNavLink[] = [
 				href: 'barcode',
 			},
 		],
+	},
+	{
+		label: 'POS',
+		icon: <IconReplace />,
+		href: 'pos/create-sale',
 	},
 	{
 		label: 'Purchases',
