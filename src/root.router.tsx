@@ -19,11 +19,7 @@ export const rootRouter = createBrowserRouter([
   },
   {
     path: "/select-tenant",
-    element: (
-      <AuthGuardedWrapper>
-        <SelectOrganization />
-      </AuthGuardedWrapper>
-    ),
+    element: <SelectOrganization />,
   },
   {
     path: "/auth",
