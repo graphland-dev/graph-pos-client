@@ -1,13 +1,16 @@
 import { Menu, Text } from "@mantine/core";
+import { IconArrowDown } from "@tabler/icons-react";
+import { useParams } from "react-router-dom";
 
 const TenantDropdown = () => {
-  //   const [tenant, setTenant] = useState(null);
+  const params = useParams<{ tenant: string }>();
 
   return (
     <Menu shadow="md" width={200}>
       <Menu.Target>
-        <div className="flex">
-          <Text>tenant</Text>
+        <div className="flex items-center cursor-pointer">
+          <Text>{params.tenant}</Text>
+          <IconArrowDown size={15} />
         </div>
       </Menu.Target>
 

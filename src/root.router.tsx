@@ -10,6 +10,7 @@ import { settingModuleRouter } from "./pages/(tenant)/settings/settings.route";
 import { authRouter } from "./pages/auth/auth.router";
 import SelectOrganization from "./pages/select-organization.page";
 import TenantResolver from "./pages/(tenant)/tenant-resolver";
+import { AuthGuardedWrapper } from "./_app/common/components/AuthGuardedWrapper";
 
 export const rootRouter = createBrowserRouter([
   {
@@ -18,7 +19,11 @@ export const rootRouter = createBrowserRouter([
   },
   {
     path: "/select-tenant",
-    element: <SelectOrganization />,
+    element: (
+      <AuthGuardedWrapper>
+        <SelectOrganization />
+      </AuthGuardedWrapper>
+    ),
   },
   {
     path: "/auth",
@@ -26,7 +31,11 @@ export const rootRouter = createBrowserRouter([
   },
   {
     path: "/:tenant",
-    element: <TenantResolver />,
+    element: (
+      <AuthGuardedWrapper>
+        <TenantResolver />
+      </AuthGuardedWrapper>
+    ),
     children: [
       {
         path: "",

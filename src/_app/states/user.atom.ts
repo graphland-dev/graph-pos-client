@@ -1,8 +1,9 @@
 import { atom } from "jotai";
-import { RolePermission, User } from "../graphql-models/graphql";
+import { RolePermission, Tenant, User } from "../graphql-models/graphql";
 
 export const userAtom = atom<User | null>(null);
 export const userPermissionsAtom = atom<RolePermission[] | null>(null);
+export const userTenantsAtom = atom<Tenant[] | null>(null);
 
 // interface ICanParams {
 //   collectionName: string;

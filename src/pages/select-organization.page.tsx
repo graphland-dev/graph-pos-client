@@ -1,6 +1,6 @@
 import { TenantsWithPagination } from "@/_app/graphql-models/graphql";
 import { gql, useQuery } from "@apollo/client";
-import { Text, Title } from "@mantine/core";
+import { Title } from "@mantine/core";
 import { Link } from "react-router-dom";
 
 const MY_TENANTS = gql`

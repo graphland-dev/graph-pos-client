@@ -1,7 +1,6 @@
 import {
   ColorScheme,
   ColorSchemeProvider,
-  LoadingOverlay,
   MantineProvider,
 } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
@@ -9,37 +8,12 @@ import { SpotlightProvider } from "@mantine/spotlight";
 
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
+import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { spotlightItems } from "./_app/configs/spotlight-items";
 import { rootRouter } from "./root.router";
-import { gql, useQuery } from "@apollo/client";
-import { User } from "./_app/graphql-models/graphql";
-import { useAtom } from "jotai";
-import { userAtom } from "./_app/states/user.atom";
-import { useEffect } from "react";
-
-const ME_QUERY = gql`
-  query Identity__me {
-    identity__me {
-      _id
-      email
-      name
-      memberships {
-        tenant
-        roles
-      }
-    }
-  }
-`;
 
 const RootApp = () => {
-  const [, setGlobalUser] = useAtom(userAtom);
-  const { loading } = useQuery<{ identity__me: User }>(ME_QUERY, {
-    onCompleted(data) {
-      setGlobalUser(data?.identity__me);
-    },
-  });
-
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
     key: "graph-erp-color-scheme",
     defaultValue: "light",
@@ -87,7 +61,6 @@ const RootApp = () => {
           >
             <ModalsProvider>
               <Notifications position="top-right" />
-              <LoadingOverlay visible={loading} opacity={1} overlayBlur={100} />
               <RouterProvider router={rootRouter} />
             </ModalsProvider>
           </SpotlightProvider>
