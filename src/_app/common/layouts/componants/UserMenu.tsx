@@ -1,9 +1,24 @@
 import { userAtom } from "@/_app/states/user.atom";
 import { Avatar, Menu } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
 import { useAtom } from "jotai";
 
 const UserMenu = () => {
   const [currentUser] = useAtom(userAtom);
+  function handleLogout(): void {
+    openConfirmModal({
+      title: "Sure to Logout?",
+      labels: {
+        cancel: "Cancel",
+        confirm: "Logout",
+      },
+      onConfirm: () => {
+        localStorage.removeItem("erp:accessToken");
+        window.location.href = "/auth/login";
+      },
+    });
+  }
+
   return (
     <>
       <Menu shadow="md" width={200}>
@@ -14,7 +29,9 @@ const UserMenu = () => {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>Application</Menu.Label>
+          <Menu.Label>{currentUser?.name}</Menu.Label>
+          <Menu.Item>Settings</Menu.Item>
+          <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
         </Menu.Dropdown>
       </Menu>
     </>

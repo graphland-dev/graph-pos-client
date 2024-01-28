@@ -2,18 +2,22 @@ import { Header, UnstyledButton, useMantineColorScheme } from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { IconSearch } from "@tabler/icons-react";
 import classnames from "classnames";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
 import TenantDropdown from "./TenantDropdown";
 
 const CommonHeader = () => {
   const { colorScheme } = useMantineColorScheme();
+  const params = useParams<{ tenant: string }>();
 
   return (
     <Header height={45} className="flex items-center justify-between px-10">
       <div className="flex items-center gap-2">
-        <Link className="no-underline" to={"/"}>
+        <Link
+          className="no-underline"
+          to={params?.tenant ? `/${params.tenant}/` : "/"}
+        >
           Graph ERP
         </Link>
       </div>

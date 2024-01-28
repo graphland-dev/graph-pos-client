@@ -20,7 +20,6 @@ const SelectOrganization = () => {
   const { data } = useQuery<{ identity__myTenants: TenantsWithPagination }>(
     MY_TENANTS,
     {
-      fetchPolicy: "network-only",
       onError() {
         window.location.href = "/auth/login";
       },
