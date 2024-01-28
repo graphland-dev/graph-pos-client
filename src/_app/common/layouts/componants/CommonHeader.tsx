@@ -1,13 +1,15 @@
 import { Header, UnstyledButton, useMantineColorScheme } from "@mantine/core";
+import { spotlight } from "@mantine/spotlight";
 import { IconSearch } from "@tabler/icons-react";
 import classnames from "classnames";
 import { Link } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
-import { spotlight } from "@mantine/spotlight";
+import TenantDropdown from "./TenantDropdown";
 
 const CommonHeader = () => {
   const { colorScheme } = useMantineColorScheme();
+
   return (
     <Header height={45} className="flex items-center justify-between px-10">
       <div className="flex items-center gap-2">
@@ -15,6 +17,8 @@ const CommonHeader = () => {
           Graph ERP
         </Link>
       </div>
+
+      <TenantDropdown />
 
       <div className="flex items-center gap-4">
         <UnstyledButton

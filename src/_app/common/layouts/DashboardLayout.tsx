@@ -1,7 +1,7 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
 import { AppShell, NavLink, Navbar, ScrollArea, Title } from "@mantine/core";
 import React from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import CommonHeader from "./componants/CommonHeader";
 
 interface Prop {
@@ -12,6 +12,13 @@ interface Prop {
 
 const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const { pathname } = useLocation();
+  const params = useParams<{ tenant: string }>();
+
+  const linkWithTenant = (link: string) => {
+    if (params.tenant) return `/${params.tenant}/${link}`;
+    return `/${link}`;
+  };
+
   return (
     <AppShell
       navbarOffsetBreakpoint="sm"
@@ -30,7 +37,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                 key={index}
                 label={item.label}
                 component={Link}
-                to={`/${path}/${item?.href}`}
+                to={linkWithTenant(`${path}/${item?.href}`)}
                 icon={item.icon}
                 active={pathname.includes(item?.href as string)}
               >
@@ -43,9 +50,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                       px={"xs"}
                       py={2}
                       active={pathname.startsWith(
-                        `/${path}/${item?.href}/${_item.href}`
+                        linkWithTenant(`${path}/${item?.href}/${_item.href}`)
                       )}
-                      to={`/${path}/${item?.href}/${_item.href}`}
+                      to={linkWithTenant(`${path}/${item?.href}/${_item.href}`)}
                     />
                   ))}
               </NavLink>

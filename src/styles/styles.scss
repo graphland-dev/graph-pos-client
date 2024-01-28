@@ -1,7 +1,21 @@
-// @tailwind base;
+@layer tailwind {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
 
-// .mantine-AppShell-main{
-//     margin: 0;
-// }
+@layer base {
+  :root {
+    --neutral-primary: #000;
+    --neutral-secondary: #fff;
+    --neutral-muted: #000;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --neutral-primary: red;
+      --neutral-secondary: green;
+      --neutral-muted: orange;
+    }
+  }
+}
