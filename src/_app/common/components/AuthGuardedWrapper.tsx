@@ -35,6 +35,9 @@ const GET_USER_QUERIES = gql`
         _id
         name
         uid
+        address
+        businessPhoneNumber
+        description
         createdAt
       }
     }

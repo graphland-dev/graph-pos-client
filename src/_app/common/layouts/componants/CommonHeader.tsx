@@ -22,8 +22,6 @@ const CommonHeader = () => {
         </Link>
       </div>
 
-      <TenantDropdown />
-
       <div className="flex items-center gap-4">
         <UnstyledButton
           onClick={() => spotlight.open()}
@@ -51,7 +49,9 @@ const CommonHeader = () => {
             ⌘ + k
           </div>
         </UnstyledButton>
+
         <ThemeSwitcher />
+        <TenantDropdown />
         <UserMenu />
       </div>
     </Header>
