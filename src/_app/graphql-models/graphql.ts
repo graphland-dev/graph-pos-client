@@ -1491,6 +1491,7 @@ export type User = {
   email?: Maybe<Scalars['String']['output']>;
   memberships?: Maybe<Array<UserTenant>>;
   name?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   systemRoles?: Maybe<Array<Scalars['String']['output']>>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
