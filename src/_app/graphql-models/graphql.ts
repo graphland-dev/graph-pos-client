@@ -257,6 +257,9 @@ export type CreateSupplierInput = {
 };
 
 export type CreateTenantInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  businessPhoneNumber?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
   /** Tenant name */
   name: Scalars['String']['input'];
   /** Tenant UID */
@@ -320,6 +323,7 @@ export type Employee = {
   religion?: Maybe<Scalars['String']['output']>;
   salary?: Maybe<Scalars['Float']['output']>;
   startingSalary?: Maybe<Scalars['Float']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -329,6 +333,7 @@ export type EmployeeDepartment = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -346,6 +351,7 @@ export type EmployeeIncrement = {
   date?: Maybe<Scalars['DateTime']['output']>;
   employee: Employee;
   note: Scalars['String']['output'];
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -460,6 +466,11 @@ export type Mutation = {
   identity__createTenant: CommonMutationResponse;
   identity__createUser: CommonMutationResponse;
   identity__login: LoginResponseDto;
+  identity__updateCurrentTenant: Scalars['Boolean']['output'];
+  identity__updateMe?: Maybe<Scalars['Boolean']['output']>;
+  identity__updateMyPassword?: Maybe<Scalars['Boolean']['output']>;
+  identity__updateRole: Scalars['Boolean']['output'];
+  identity__updateTenant: CommonMutationResponse;
   inventory__createProduct: CommonMutationResponse;
   inventory__createProductCategory: CommonMutationResponse;
   inventory__createProductPurchase: CommonMutationResponse;
@@ -599,6 +610,33 @@ export type MutationIdentity__CreateUserArgs = {
 
 export type MutationIdentity__LoginArgs = {
   input: LoginInput;
+};
+
+
+export type MutationIdentity__UpdateCurrentTenantArgs = {
+  input: UpdateTenantInput;
+};
+
+
+export type MutationIdentity__UpdateMeArgs = {
+  input: UpdateMeInput;
+};
+
+
+export type MutationIdentity__UpdateMyPasswordArgs = {
+  input: UpdateMyPasswordInput;
+};
+
+
+export type MutationIdentity__UpdateRoleArgs = {
+  body: UpdateRoleInput;
+  where: CommonFindDocumentDto;
+};
+
+
+export type MutationIdentity__UpdateTenantArgs = {
+  input: UpdateTenantInput;
+  where?: InputMaybe<CommonFindDocumentDto>;
 };
 
 
@@ -1299,7 +1337,10 @@ export type SuppliersWithPagination = {
 export type Tenant = {
   __typename?: 'Tenant';
   _id: Scalars['ID']['output'];
+  address?: Maybe<Scalars['String']['output']>;
+  businessPhoneNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   uid?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1432,6 +1473,17 @@ export type UpdateExpenseCategoryInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateMeInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateMyPasswordInput = {
+  confirmNewPassword: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+  password: Scalars['String']['input'];
+};
+
 export type UpdateProductCategoryInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1453,11 +1505,25 @@ export type UpdateProductInput = {
   vatId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateRoleInput = {
+  name?: InputMaybe<Scalars['String']['input']>;
+  permissions?: InputMaybe<Array<RolePermissionInput>>;
+  tenantId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type UpdateSupplierInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   companyName?: InputMaybe<Scalars['String']['input']>;
   contactNumber?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type UpdateTenantInput = {
+  address?: InputMaybe<Scalars['String']['input']>;
+  businessPhoneNumber?: InputMaybe<Scalars['String']['input']>;
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** Tenant name */
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -1491,8 +1557,8 @@ export type User = {
   email?: Maybe<Scalars['String']['output']>;
   memberships?: Maybe<Array<UserTenant>>;
   name?: Maybe<Scalars['String']['output']>;
-  description?: Maybe<Scalars['String']['output']>;
   systemRoles?: Maybe<Array<Scalars['String']['output']>>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1547,12 +1613,12 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
-export type Identity__LoginMutationVariables = Exact<{
-  input: LoginInput;
+export type Get_User_QueriesQueryVariables = Exact<{
+  tenant: Scalars['String']['input'];
 }>;
 
 
-export type Identity__LoginMutation = { __typename?: 'Mutation', identity__login: { __typename?: 'LoginResponseDto', accessToken: string } };
+export type Get_User_QueriesQuery = { __typename?: 'Query', identity__me?: { __typename?: 'User', _id: string, email?: string | null, name?: string | null, memberships?: Array<{ __typename?: 'UserTenant', tenant?: string | null, roles?: Array<string> | null }> | null } | null, identity__myPermissions?: Array<{ __typename?: 'RolePermission', collectionName: string, actions: Array<string> }> | null, identity__myTenants: { __typename?: 'TenantsWithPagination', nodes?: Array<{ __typename?: 'Tenant', _id: string, name: string, uid?: string | null, address?: string | null, businessPhoneNumber?: string | null, description?: string | null, createdAt?: any | null }> | null } };
 
 export type Setup__BrandsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -1581,9 +1647,23 @@ export type Setup__RemoveBrandMutationVariables = Exact<{
 
 export type Setup__RemoveBrandMutation = { __typename?: 'Mutation', setup__removeBrand: boolean };
 
+export type Identity__LoginMutationVariables = Exact<{
+  input: LoginInput;
+}>;
 
-export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;
+
+export type Identity__LoginMutation = { __typename?: 'Mutation', identity__login: { __typename?: 'LoginResponseDto', accessToken: string } };
+
+export type Identity__MyTenantsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type Identity__MyTenantsQuery = { __typename?: 'Query', identity__myTenants: { __typename?: 'TenantsWithPagination', nodes?: Array<{ __typename?: 'Tenant', _id: string, name: string, uid?: string | null, createdAt?: any | null }> | null } };
+
+
+export const Get_User_QueriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GET_USER_QUERIES"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myPermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"collectionName"}},{"kind":"Field","name":{"kind":"Name","value":"actions"}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Get_User_QueriesQuery, Get_User_QueriesQueryVariables>;
 export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
 export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;
 export const Setup__UpdateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__updateBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__updateBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}]}]}}]} as unknown as DocumentNode<Setup__UpdateBrandMutation, Setup__UpdateBrandMutationVariables>;
 export const Setup__RemoveBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__removeBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__removeBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<Setup__RemoveBrandMutation, Setup__RemoveBrandMutationVariables>;
+export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;
+export const Identity__MyTenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Identity__MyTenantsQuery, Identity__MyTenantsQueryVariables>;

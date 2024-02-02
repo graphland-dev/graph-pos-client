@@ -66,7 +66,8 @@ export const AuthGuardedWrapper: React.FC<PropsWithChildren> = ({
       setUserPermissions(data?.identity__myPermissions);
       setUserTenants(data?.identity__myTenants?.nodes || []);
     },
-    onError: () => {
+    onError: (error) => {
+      console.log(error);
       window.location.href = "/auth/login";
     },
   });

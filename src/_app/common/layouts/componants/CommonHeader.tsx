@@ -18,7 +18,7 @@ const CommonHeader = () => {
           className="no-underline"
           to={params?.tenant ? `/${params.tenant}/` : "/"}
         >
-          Graph ERP
+          Graph360
         </Link>
       </div>
 

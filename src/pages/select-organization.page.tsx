@@ -31,8 +31,9 @@ const SelectOrganization = () => {
       <LoadingOverlay visible={!data} overlayBlur={1000} />
       <Title order={2}>Select Organization</Title>
       <div className="grid grid-cols-4 gap-4 mt-4">
-        {data?.identity__myTenants.nodes?.map((tenant) => (
+        {data?.identity__myTenants.nodes?.map((tenant, idx) => (
           <Link
+            key={idx}
             className="p-5 text-xl border-2 rounded-md text-neutral-primary border-neutral-primary"
             to={`/${tenant.uid}`}
           >
