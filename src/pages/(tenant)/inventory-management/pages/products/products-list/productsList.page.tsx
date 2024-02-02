@@ -12,7 +12,7 @@ import { useSetState } from "@mantine/hooks";
 import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   INVENTORY_PRODUCTS_LIST_QUERY,
   INVENTORY_PRODUCT_CREATE,
@@ -26,6 +26,7 @@ interface IState {
 
 const ProductListPage = () => {
   const navigate = useNavigate();
+  const params = useParams<{ tenant: string }>();
 
   const [state, setState] = useSetState<IState>({
     refetching: false,
@@ -123,7 +124,7 @@ const ProductListPage = () => {
           <>
             <Menu.Item
               component={Link}
-              to={`/inventory-management/products/${row?._id}`}
+              to={`/${params.tenant}/inventory-management/products/${row?._id}`}
               icon={<IconFileInfo size={18} />}
             >
               View

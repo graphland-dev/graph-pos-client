@@ -39,6 +39,7 @@ export const rootRouter = createBrowserRouter([
         element: <ModulesPage />,
       },
       {
+        // ✅
         path: "accounting",
         children: accountingModuleRouter,
       },
