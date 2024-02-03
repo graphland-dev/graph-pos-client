@@ -1,197 +1,302 @@
+import { Role } from '@/_app/graphql-models/graphql';
+import { useQuery } from '@apollo/client';
 import {
+	Accordion,
 	Button,
 	Checkbox,
 	Flex,
 	Group,
-	Paper,
+	Skeleton,
 	Space,
 	Title,
 } from '@mantine/core';
+import { useEffect } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { CURRENT__TENANT__ROLES } from './utils/query.gql';
+
+const appCollectionPermissions = [
+	{
+		name: 'Accounting',
+		collections: [
+			'accounting__Account',
+			'accounting__Expense',
+			'accounting__ExpenseCategory',
+			'accounting__Payroll',
+			'accounting__Transaction',
+			'accounting__Transfer',
+		],
+	},
+	{
+		name: 'People',
+		collections: [
+			'people__Client',
+			'people__Employee',
+			'people__EmployeeDepartment',
+			'people__EmployeeIncrement',
+			'people__Supplier',
+		],
+	},
+	{
+		name: 'Inventory',
+		collections: [
+			'inventory__Product',
+			'inventory__ProductCategory',
+			'inventory__ProductPurchase',
+			'inventory__ProductStock',
+		],
+	},
+	{
+		name: 'Setup',
+		collections: ['setup__Brand', 'setup__Unit', 'setup__Vat'],
+	},
+];
+
+interface IFormPayload {
+	roles: {
+		name: string;
+		permissions: {
+			collection: string;
+			actions: string[];
+		}[];
+	}[];
+}
 
 const RolesPage = () => {
+	const { data, loading } = useQuery(CURRENT__TENANT__ROLES);
+
+	const { control, setValue, watch, handleSubmit } = useForm<IFormPayload>({
+		defaultValues: {
+			roles: [],
+		},
+	});
+
+	const { fields } = useFieldArray({
+		name: 'roles',
+		control,
+	});
+
+	useEffect(() => {
+		setValue(
+			'roles',
+			data?.identity__currentTenantRoles?.map((role: Role) => ({
+				name: role.name,
+				permissions: role.permissions,
+			}))
+		);
+	}, [data?.identity__currentTenantRoles]);
+
+	const handlePermissionChange = (
+		roleIndex: number,
+		collection: string,
+		checked: boolean,
+		actionName: string
+	) => {
+		const rolePermissions = watch(`roles.${roleIndex}.permissions`);
+		const collectionIndex = rolePermissions.findIndex(
+			(permission) => permission.collection === collection
+		);
+		if (checked) {
+			setValue(
+				`roles.${roleIndex}.permissions`,
+				rolePermissions.map((permission, index) => {
+					if (index === collectionIndex) {
+						return {
+							...permission,
+							actions: [...permission.actions, actionName],
+						};
+					}
+					return permission;
+				})
+			);
+		} else {
+			setValue(
+				`roles.${roleIndex}.permissions`,
+				rolePermissions.map((permission, index) => {
+					if (index === collectionIndex) {
+						return {
+							...permission,
+							actions: [],
+						};
+					}
+					return permission;
+				})
+			);
+		}
+	};
+
+	// const [] = useMutation();
+
+	const onSubmitForm = (values: any) => {
+		console.log(values);
+	};
+
+	// console.log(watch('roles'));
 	return (
-		<div className='lg:w-8/12'>
-			<Paper p={20} radius={10}>
-				<Flex justify={'space-between'} align={'center'}>
-					<Title order={2}>Admin</Title>
+		<div>
+			<Flex>
+				<Title order={2} fw={700}>
+					Roles Management
+				</Title>
+			</Flex>
 
-					<Group position='right'>
-						<Button variant='subtle' color='teal'>
-							Clone
-						</Button>
-						<Button variant='light' color='red'>
-							Delete
-						</Button>
-					</Group>
-				</Flex>
+			<Space h={'lg'} />
 
-				<Space h={'xl'} />
+			{loading && (
+				<>
+					{new Array(12).fill(12).map(() => (
+						<Skeleton h={80} radius={5} my={10} />
+					))}
+				</>
+			)}
 
-				<form>
-					<div>
-						<Title order={3}>Accounting Module</Title>
-						<Space h={'xs'} />
+			<form onSubmit={handleSubmit(onSubmitForm)}>
+				<Accordion defaultValue='customization' variant='contained'>
+					{fields.map((role, roleIndex) => (
+						<Accordion.Item value={role?.id} key={roleIndex}>
+							<Accordion.Control>
+								<Flex justify={'space-between'} align={'center'}>
+									<Title order={4}>{role?.name} Module</Title>
+									<Group position='right'>
+										<Button variant='subtle' color='teal'>
+											Clone
+										</Button>
+										<Button variant='light' color='red'>
+											Delete
+										</Button>
+									</Group>
+								</Flex>
+							</Accordion.Control>
+							<Space h={'xs'} />
+							<Accordion.Panel>
+								<div>
+									{appCollectionPermissions.map((collection) => (
+										<div>
+											<Title order={5}>{collection.name}</Title>
 
-						<div>
-							<Title order={5}>Account</Title>
-							<Space h={'sm'} />
+											<Space h={'xs'} />
 
-							<Flex gap={20}>
-								<Checkbox radius={0} color='teal' label='*' value='*' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='create'
-									value='create'
-								/>
-								<Checkbox radius={0} color='teal' label='read' value='read' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='update'
-									value='update'
-								/>
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='delete'
-									value='delete'
-								/>
-							</Flex>
-						</div>
+											{collection.collections.map((collectionName) => (
+												<div>
+													{/* {collectionName} */}
+													<Flex gap={10} my={10}>
+														<Checkbox
+															label='*'
+															value={'*'}
+															onChange={(e) => {
+																handlePermissionChange(
+																	roleIndex,
+																	collectionName,
+																	e.target.checked,
+																	'*'
+																);
+															}}
+															color='teal'
+															radius={0}
+														/>
+														<Checkbox
+															label='Read'
+															value={'read'}
+															checked={watch(`roles.${roleIndex}.permissions`)
+																.find(
+																	(permission) =>
+																		permission.collection === collectionName
+																)
+																?.actions.includes('read')}
+															onChange={(e) => {
+																handlePermissionChange(
+																	roleIndex,
+																	collectionName,
+																	e.target.checked,
+																	'read'
+																);
+															}}
+															color='teal'
+															radius={0}
+														/>
+														<Checkbox
+															label='Create'
+															value={'create'}
+															checked={watch(`roles.${roleIndex}.permissions`)
+																.find(
+																	(permission) =>
+																		permission.collection === collectionName
+																)
+																?.actions.includes('create')}
+															onChange={(e) => {
+																handlePermissionChange(
+																	roleIndex,
+																	collectionName,
+																	e.target.checked,
+																	'create'
+																);
+															}}
+															color='teal'
+															radius={0}
+														/>
+														<Checkbox
+															label='Update'
+															value={'update'}
+															checked={
+																watch(`roles.${roleIndex}.permissions`)
+																	.find(
+																		(permission) =>
+																			permission.collection === collectionName
+																	)
+																	?.actions.includes('update') ||
+																watch(`roles.${roleIndex}.permissions`)
+																	.find(
+																		(permission) =>
+																			permission.collection === collectionName
+																	)
+																	?.actions.includes('*')
+															}
+															onChange={(e) => {
+																handlePermissionChange(
+																	roleIndex,
+																	collectionName,
+																	e.target.checked,
+																	'update'
+																);
+															}}
+															color='teal'
+															radius={0}
+														/>
 
-						<Space h={20} />
+														<Checkbox
+															label='Delete'
+															value={'delete'}
+															checked={watch(`roles.${roleIndex}.permissions`)
+																.find(
+																	(permission) =>
+																		permission.collection === collectionName
+																)
+																?.actions.includes('delete')}
+															onChange={(e) => {
+																handlePermissionChange(
+																	roleIndex,
+																	collectionName,
+																	e.target.checked,
+																	'delete'
+																);
+															}}
+															color='teal'
+															radius={0}
+														/>
+													</Flex>
+												</div>
+											))}
+										</div>
+									))}
+								</div>
+							</Accordion.Panel>
+						</Accordion.Item>
+					))}
+				</Accordion>
 
-						<div>
-							<Title order={5}>Expense</Title>
-							<Space h={'sm'} />
+				<Space h={'md'} />
 
-							<Flex gap={20}>
-								<Checkbox radius={0} color='teal' label='*' value='*' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='create'
-									value='create'
-								/>
-								<Checkbox radius={0} color='teal' label='read' value='read' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='update'
-									value='update'
-								/>
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='delete'
-									value='delete'
-								/>
-							</Flex>
-						</div>
-					</div>
-
-					<Space h={40} />
-
-					<div>
-						<Title order={3}>Organization Module</Title>
-						<Space h={'xs'} />
-
-						<div>
-							<Title order={5}>User</Title>
-							<Space h={'sm'} />
-
-							<Flex gap={20}>
-								<Checkbox radius={0} color='teal' label='*' value='*' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='create'
-									value='create'
-								/>
-								<Checkbox radius={0} color='teal' label='read' value='read' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='update'
-									value='update'
-								/>
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='delete'
-									value='delete'
-								/>
-							</Flex>
-						</div>
-
-						<Space h={20} />
-
-						<div>
-							<Title order={5}>Role/Permission</Title>
-							<Space h={'sm'} />
-
-							<Flex gap={20}>
-								<Checkbox radius={0} color='teal' label='*' value='*' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='create'
-									value='create'
-								/>
-								<Checkbox radius={0} color='teal' label='read' value='read' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='update'
-									value='update'
-								/>
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='delete'
-									value='delete'
-								/>
-							</Flex>
-						</div>
-					</div>
-
-					<Space h={40} />
-
-					<div>
-						<Title order={3}>People Module</Title>
-						<Space h={'xs'} />
-
-						<div>
-							<Title order={5}>Employee</Title>
-							<Space h={'sm'} />
-
-							<Flex gap={20}>
-								<Checkbox radius={0} color='teal' label='*' value='*' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='create'
-									value='create'
-								/>
-								<Checkbox radius={0} color='teal' label='read' value='read' />
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='update'
-									value='update'
-								/>
-								<Checkbox
-									radius={0}
-									color='teal'
-									label='delete'
-									value='delete'
-								/>
-							</Flex>
-						</div>
-					</div>
-				</form>
-			</Paper>
+				<Button type='submit'>Save</Button>
+			</form>
 		</div>
 	);
 };
