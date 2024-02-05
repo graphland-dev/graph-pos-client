@@ -8,13 +8,14 @@ import { SpotlightProvider } from "@mantine/spotlight";
 
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
+import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { spotlightItems } from "./_app/configs/spotlight-items";
 import { rootRouter } from "./root.router";
 
 const RootApp = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "mantine-color-scheme",
+    key: "graph-erp-color-scheme",
     defaultValue: "light",
     getInitialValueInEffect: true,
   });
@@ -22,6 +23,16 @@ const RootApp = () => {
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   useHotkeys([["mod+J", () => toggleColorScheme()]]);
+
+  useEffect(() => {
+    if (colorScheme === "dark") {
+      document.querySelector("html")?.setAttribute("data-color-scheme", "dark");
+    } else {
+      document
+        .querySelector("html")
+        ?.setAttribute("data-color-scheme", "light");
+    }
+  }, [colorScheme]);
 
   return (
     <>

@@ -1,7 +1,29 @@
-// @tailwind base;
+@layer tailwind {
+  @tailwind base;
+}
 @tailwind components;
 @tailwind utilities;
 
-// .mantine-AppShell-main{
-//     margin: 0;
+// @layer base {
+
 // }
+
+:root {
+  --neutral-primary: #1f2937;
+  --neutral-secondary: #4b5563;
+  --neutral-muted: #9ca3af;
+}
+
+//   @media (prefers-color-scheme: dark) {
+//     :root {
+//       --neutral-primary: #d1d5db;
+//       --neutral-secondary: #d1d5db;
+//       --neutral-muted: #9ca3af;
+//     }
+//   }
+
+html[data-color-scheme="dark"] {
+  --neutral-primary: #d1d5db;
+  --neutral-secondary: #d1d5db;
+  --neutral-muted: #9ca3af;
+}

@@ -1,16 +1,45 @@
-import { Avatar, Menu } from "@mantine/core";
+import { userAtom } from "@/_app/states/user.atom";
+import { Avatar, Image, Menu } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
+import { useAtom } from "jotai";
+import { Link } from "react-router-dom";
 
 const UserMenu = () => {
-  return (
-    <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <Avatar title="R" size={"sm"} color="blue" variant="filled" />
-      </Menu.Target>
+  const [currentUser] = useAtom(userAtom);
+  function handleLogout(): void {
+    openConfirmModal({
+      title: "Sure to Logout?",
+      labels: {
+        cancel: "Cancel",
+        confirm: "Logout",
+      },
+      onConfirm: () => {
+        localStorage.removeItem("erp:accessToken");
+        window.location.href = "/auth/login";
+      },
+    });
+  }
 
-      <Menu.Dropdown>
-        <Menu.Label>Application</Menu.Label>
-      </Menu.Dropdown>
-    </Menu>
+  return (
+    <>
+      <Menu shadow="md" width={200}>
+        <Menu.Target>
+          <Avatar size={32.8} variant="gradient" className="cursor-pointer">
+            <Image
+              src={`https://api.dicebear.com/7.x/initials/svg?seed=${currentUser?.name}`}
+            />
+          </Avatar>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Label>{currentUser?.name || "No Name"}</Menu.Label>
+          <Menu.Item component={Link} to={"/auth/my-profile"}>
+            Profile Settings
+          </Menu.Item>
+          <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    </>
   );
 };
 

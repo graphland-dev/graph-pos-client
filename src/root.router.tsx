@@ -1,37 +1,74 @@
-import { createBrowserRouter } from "react-router-dom";
+import { Navigate, createBrowserRouter } from "react-router-dom";
 import NotFoundPage from "./pages/_404.page";
 
-import { inventoryModuleRouter } from "./pages/inventory-management/inventory.router";
-import ModulesPage from "./pages/modules.page";
-import { reportsModuleRouter } from "./pages/reports/report.router";
-import { peopleModuleRouter } from "./pages/people/people.route";
-import { accountingModuleRouter } from "./pages/accounting/accounting.router";
-import { settingModuleRouter } from "./pages/settings/settings.route";
+import { AuthGuardedWrapper } from "./_app/common/components/AuthGuardedWrapper";
+import { accountingModuleRouter } from "./pages/(tenant)/accounting/accounting.router";
+import { inventoryModuleRouter } from "./pages/(tenant)/inventory-management/inventory.router";
+import ModulesPage from "./pages/(tenant)/modules.page";
+import { peopleModuleRouter } from "./pages/(tenant)/people/people.route";
+import { reportsModuleRouter } from "./pages/(tenant)/reports/report.router";
+import { settingModuleRouter } from "./pages/(tenant)/settings/settings.route";
+import TenantResolver from "./pages/(tenant)/tenant-resolver";
+import { tenantSettingRouter } from "./pages/(tenant)/tenant-settings/tenant-settings.route";
+import { authRouter } from "./pages/auth/auth.router";
+import SelectOrganization from "./pages/select-organization.page";
+import TestPage from "./pages/test.page";
 
 export const rootRouter = createBrowserRouter([
   {
-    path: "",
-    element: <ModulesPage />,
+    path: "/",
+    element: <Navigate to="/select-tenant" />,
   },
   {
-    path: "accounting",
-    children: accountingModuleRouter,
+    path: "/test",
+    element: <TestPage />,
   },
   {
-    path: "inventory-Management",
-    children: inventoryModuleRouter,
+    path: "/select-tenant",
+    element: <SelectOrganization />,
   },
   {
-    path: "people",
-    children: peopleModuleRouter,
+    path: "/auth",
+    children: authRouter,
   },
   {
-    path: "reports",
-    children: reportsModuleRouter,
-  },
-  {
-    path: "settings",
-    children: settingModuleRouter,
+    path: "/:tenant",
+    element: (
+      <AuthGuardedWrapper>
+        <TenantResolver />
+      </AuthGuardedWrapper>
+    ),
+    children: [
+      {
+        path: "",
+        element: <ModulesPage />,
+      },
+      {
+        // ✅
+        path: "accounting",
+        children: accountingModuleRouter,
+      },
+      {
+        path: "inventory-Management",
+        children: inventoryModuleRouter,
+      },
+      {
+        path: "people",
+        children: peopleModuleRouter,
+      },
+      {
+        path: "reports",
+        children: reportsModuleRouter,
+      },
+      {
+        path: "settings",
+        children: settingModuleRouter,
+      },
+      {
+        path: "tenant-settings",
+        children: tenantSettingRouter,
+      },
+    ],
   },
   {
     path: "*",
