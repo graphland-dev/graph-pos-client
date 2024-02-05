@@ -58,6 +58,11 @@ export type AccountsWithPagination = {
   nodes?: Maybe<Array<Account>>;
 };
 
+export type AddUserToTenantInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type Brand = {
   __typename?: 'Brand';
   _id: Scalars['ID']['output'];
@@ -462,9 +467,11 @@ export type Mutation = {
   accounting__updateExpenseCategory: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   identity__BootstrapRoles: Scalars['Boolean']['output'];
+  identity__addUserToCurrentTenant: Scalars['Boolean']['output'];
   identity__createRole: CommonMutationResponse;
   identity__createTenant: CommonMutationResponse;
   identity__createUser: CommonMutationResponse;
+  identity__currentTenantUsers?: Maybe<UsersWithPagination>;
   identity__login: LoginResponseDto;
   identity__updateCurrentTenant: Scalars['Boolean']['output'];
   identity__updateMe?: Maybe<Scalars['Boolean']['output']>;
@@ -593,6 +600,11 @@ export type MutationAccounting__UpdateTransactionArgs = {
 };
 
 
+export type MutationIdentity__AddUserToCurrentTenantArgs = {
+  input: AddUserToTenantInput;
+};
+
+
 export type MutationIdentity__CreateRoleArgs = {
   body: CreateRoleInput;
 };
@@ -605,6 +617,11 @@ export type MutationIdentity__CreateTenantArgs = {
 
 export type MutationIdentity__CreateUserArgs = {
   input: CreateUserInput;
+};
+
+
+export type MutationIdentity__CurrentTenantUsersArgs = {
+  input?: InputMaybe<CommonPaginationDto>;
 };
 
 
@@ -1063,6 +1080,7 @@ export type Query = {
   accounting__transactions: TransactionsWithPagination;
   accounting__transfer: Transfer;
   accounting__transfers: TransfersWithPagination;
+  identity__currentTenantRoles: Array<Role>;
   identity__me?: Maybe<User>;
   identity__myPermissions?: Maybe<Array<RolePermission>>;
   identity__myTenants: TenantsWithPagination;
