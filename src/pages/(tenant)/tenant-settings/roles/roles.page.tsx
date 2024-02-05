@@ -13,7 +13,7 @@ import {
 } from "@mantine/core";
 import RolePermissionForm from "./components/RolePermissionForm";
 import { CURRENT__TENANT__ROLES } from "./utils/query.gql";
-
+//
 const RolesPage = () => {
   const { data, loading } = useQuery<{ identity__currentTenantRoles: Role[] }>(
     CURRENT__TENANT__ROLES
