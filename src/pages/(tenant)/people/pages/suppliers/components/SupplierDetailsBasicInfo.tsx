@@ -1,5 +1,4 @@
 import { Notify } from '@/_app/common/Notification/Notify';
-import { removeTypeNameFromPayload } from '@/_app/common/utils/removeTypeName';
 import {
 	MatchOperator,
 	ServerFileReference,
@@ -264,13 +263,13 @@ const SupplierDetailsBasicInfo: React.FC<ISupplierDetailsProps> = ({
 													body: {
 														attachments:
 															[
-																...removeTypeNameFromPayload(
-																	supplierDetails?.attachments?.map((att) => ({
+																...(supplierDetails?.attachments?.map(
+																	(att) => ({
 																		meta: att?.meta,
 																		path: att?.path,
 																		provider: att?.provider,
-																	})) as ServerFileReference[]
-																),
+																	})
+																) as ServerFileReference[]),
 																...(res?.data as ServerFileReference[]),
 															] ?? [],
 													},
