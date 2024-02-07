@@ -16,6 +16,11 @@ export const PEOPLE_SUPPLIERS_QUERY = gql`
 				contactNumber
 				email
 				address
+				attachments {
+					meta
+					path
+					provider
+				}
 				createdAt
 				updatedAt
 			}
@@ -47,20 +52,19 @@ export const PEOPLE_REMOVE_SUPPLIERS = gql`
 
 export const SUPPLIER_DETAILS_PURCHASE_QUERY = gql`
 	query Inventory__productPurchases($where: CommonPaginationDto) {
-  inventory__productPurchases(where: $where) {
-    nodes {
-      _id
-      purchaseDate
-      taxAmount
-      subTotal
-      costAmount
-      netTotal
-      createdAt
-    }
-    meta {
-      totalCount
-    }
-  }
-}
-
+		inventory__productPurchases(where: $where) {
+			nodes {
+				_id
+				purchaseDate
+				taxAmount
+				subTotal
+				costAmount
+				netTotal
+				createdAt
+			}
+			meta {
+				totalCount
+			}
+		}
+	}
 `;
