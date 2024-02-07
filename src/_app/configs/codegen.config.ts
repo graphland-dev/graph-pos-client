@@ -1,8 +1,13 @@
 import { CodegenConfig } from "@graphql-codegen/cli";
 
+import dotenv from "dotenv";
+
+dotenv.config({
+  path: [".env", ".env.local", ".env.development", ".env.development.local"],
+});
+
 const config: CodegenConfig = {
-  // schema: `https://graph-erp-api.graphland.dev/graphql`,
-  schema: `http://localhost:4001/graphql`,
+  schema: `${process.env.VITE_API_URL}/graphql` as string,
   documents: ["src/**/*.tsx"],
   ignoreNoDocuments: true, // for better experience with the watcher
   generates: {
