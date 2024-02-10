@@ -1,4 +1,5 @@
 import { Notify } from '@/_app/common/Notification/Notify';
+import AttachmentUploadArea from '@/_app/common/components/AttachmentUploadArea';
 import { Client, MatchOperator } from '@/_app/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
@@ -146,6 +147,14 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
 					Save
 				</Button>
 			</form>
+			{action === 'EDIT' && (
+				<AttachmentUploadArea
+					details={formData!}
+					updateAttachmentsMutation={updateClient}
+					updating={updating}
+					folder='Graphland__Client__Documents'
+				/>
+			)}
 		</div>
 	);
 };
