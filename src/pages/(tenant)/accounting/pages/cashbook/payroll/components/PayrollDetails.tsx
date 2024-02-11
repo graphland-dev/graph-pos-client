@@ -1,3 +1,4 @@
+import AttachmentUploadArea from '@/_app/common/components/AttachmentUploadArea';
 import { Payroll } from '@/_app/graphql-models/graphql';
 import { Paper, Space, Table, Text, Title } from '@mantine/core';
 
@@ -30,6 +31,16 @@ const PayrollDetails: React.FC<{ payRollRow: Payroll }> = ({ payRollRow }) => {
 					))}
 				</tbody>
 			</Table>
+
+			<Space h={'md'} />
+
+			<AttachmentUploadArea
+				details={payRollRow}
+				folder='Graphland__Payroll__Attachments'
+				updateAttachmentsMutation={() => {}}
+				updating={false}
+				isGridStyle={true}
+			/>
 		</div>
 	);
 };

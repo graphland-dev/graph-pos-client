@@ -1,7 +1,9 @@
 import {
 	Client,
 	Employee,
+	EmployeeDepartment,
 	MatchOperator,
+	Payroll,
 	ServerFileReference,
 	Supplier,
 } from '@/_app/graphql-models/graphql';
@@ -29,9 +31,10 @@ import {
 import { useState } from 'react';
 
 interface IAttachmentUploadProps {
-	details: Supplier | Employee | Client | null;
+	details: Supplier | Employee | Client | EmployeeDepartment | Payroll | null;
 	updateAttachmentsMutation: (input: any) => void;
 	updating: boolean;
+	isGridStyle?: boolean;
 	folder: string;
 }
 
@@ -40,6 +43,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
 	updating,
 	updateAttachmentsMutation,
 	folder,
+	isGridStyle,
 }) => {
 	// attachments state
 	const [attachments, setAttachments] = useState<File[] | null>([]);
@@ -52,11 +56,11 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
 			<div className='flex items-center justify-between gap-4'>
 				<div className='flex items-center gap-4'>
 					<IconFiles size={24} />
-					<Title order={3}>Document Attachments</Title>
+					<Title order={isGridStyle ? 4 : 3}>Document Attachments</Title>
 				</div>
 			</div>
 			<Divider my='sm' />
-			<div className='grid grid-cols-2 gap-3'>
+			<div className={isGridStyle ? 'grid gap-8' : 'grid grid-cols-2 gap-3'}>
 				<div>
 					{details?.attachments?.length ? (
 						<>
@@ -126,7 +130,12 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
 						</div>
 					)}{' '}
 				</div>
-				<div className='border-l-[2px] border-solid  pl-5'>
+
+				{isGridStyle && <Divider h={1} />}
+
+				<div
+					className={isGridStyle ? 'pl-5' : 'border-l-[2px] border-solid  pl-5'}
+				>
 					<Input.Wrapper size='md' label='Upload attachments'>
 						<Dropzone
 							onDrop={(files) => {
