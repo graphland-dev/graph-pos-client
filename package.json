@@ -32,6 +32,7 @@
     "mantine-react-table": "^1.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-file-icon": "^1.4.0",
     "react-helmet": "^6.1.0",
     "react-hook-form": "^7.46.2",
     "react-jsbarcode": "^0.4.2",

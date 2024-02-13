@@ -197,6 +197,7 @@ export type CreateExpenseInput = {
 
 export type CreatePayrollInput = {
   accountId: Scalars['String']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   employeeId: Scalars['String']['input'];
   opportunities: Array<PayrollOpportunityInput>;
   salaryDate: Scalars['DateTime']['input'];
@@ -890,7 +891,6 @@ export type PayrollOpportunity = {
 
 export type PayrollOpportunityInput = {
   amount: Scalars['Float']['input'];
-  attachments?: InputMaybe<Array<ServerFileInput>>;
   name: Scalars['String']['input'];
 };
 

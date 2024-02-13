@@ -1,9 +1,15 @@
 import { Notify } from "@/_app/common/Notification/Notify";
+import Attachments from "@/_app/common/components/Attachments";
 import {
   getAccountBalance,
   getAccountDetails,
 } from "@/_app/common/utils/getBalance";
-import { Account, Employee, Month_Name } from "@/_app/graphql-models/graphql";
+import {
+  Account,
+  Employee,
+  Month_Name,
+  ServerFileReference,
+} from "@/_app/graphql-models/graphql";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -39,6 +45,9 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
   accounts,
 }) => {
   const { colorScheme } = useMantineColorScheme();
+  const [uploadedfiles, setUploadedFiles] = React.useState<
+    ServerFileReference[]
+  >([]);
   const {
     register,
     handleSubmit,
@@ -94,6 +103,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
           opportunities: values.opportunities,
           salaryDate: values.salaryDate,
           salaryMonth: values.salaryMonth,
+          attachments: uploadedfiles || [],
         },
       },
     });
@@ -280,6 +290,16 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
           Add new
         </Button>
         <Space h={"sm"} />
+
+        <Attachments
+          attachments={[]}
+          enableUploader
+          onUploadDone={(files) => {
+            setUploadedFiles(files);
+            console.log(files);
+          }}
+          folder={"Graphland__Payroll__Attachments"}
+        />
 
         <Paper withBorder p={"sm"} mb={"xl"}>
           <Flex justify={"space-between"}>

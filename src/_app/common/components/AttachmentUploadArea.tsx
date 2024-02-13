@@ -7,7 +7,7 @@ import {
   ServerFileReference,
   Supplier,
 } from "@/_app/graphql-models/graphql";
-import { useUploadFile } from "@/_app/hooks/use-upload-file";
+import { useServerFile } from "@/_app/hooks/use-upload-file";
 import {
   ActionIcon,
   Button,
@@ -49,7 +49,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
   const [attachments, setAttachments] = useState<File[] | null>([]);
 
   // upload file
-  const { uploadFile, uploading } = useUploadFile();
+  const { uploadFile, uploading } = useServerFile();
 
   return (
     <Paper shadow="md" p={"lg"}>

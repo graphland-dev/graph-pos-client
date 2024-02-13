@@ -9,6 +9,6 @@ export const getFileUrl = (file: ServerFileReference) => {
 
   if (provider === ServerFileProvider.S3) {
     const meta = JSON.parse(file?.meta || "{}");
-    return `https://${meta.bucket}.${meta.region}.amazonaws.com/${path}`;
+    return `https://${meta.bucket}.s3.${meta.region}.amazonaws.com/${path}`;
   }
 };

@@ -1,27 +1,37 @@
-import axios from 'axios';
-import { useState } from 'react';
+import axios from "axios";
+import { useState } from "react";
 
-export const useUploadFile = () => {
-	const [uploading, setUploading] = useState<boolean>(false);
+export const useServerFile = () => {
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [deleting, setDeleting] = useState<boolean>(false);
 
-	const uploadFile = async (body: { files: File[]; folder: string }) => {
-		setUploading(true);
+  const uploadFile = async (body: { files: File[]; folder: string }) => {
+    setUploading(true);
 
-		const fd = new FormData();
+    const fd = new FormData();
 
-		fd.append('folder', body.folder);
+    fd.append("folder", body.folder);
 
-		body?.files?.map((file: File) => fd.append('files', file));
+    body?.files?.map((file: File) => fd.append("files", file));
 
-		return axios
-			.post(`${import.meta.env.VITE_API_URL}/storage`, fd)
-			.finally(() => setUploading(false));
-	};
+    return axios
+      .post(`${import.meta.env.VITE_API_URL}/storage`, fd)
+      .finally(() => setUploading(false));
+  };
 
-	return {
-		uploadFile,
-		uploading,
-	};
+  const deleteFiles = async (keys: string[]) => {
+    setDeleting(true);
+    return axios
+      .post(`${import.meta.env.VITE_API_URL}/storage/delete`, { keys })
+      .finally(() => setDeleting(false));
+  };
+
+  return {
+    uploadFile,
+    uploading,
+    deleting,
+    deleteFiles,
+  };
 };
 
 // export const useUploadVideo = () => {
