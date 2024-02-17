@@ -1,7 +1,8 @@
-import AttachmentUploadArea from '@/_app/common/components/AttachmentUploadArea';
+import Attachments from '@/_app/common/components/Attachments';
 import {
 	EmployeeDepartment,
 	MatchOperator,
+	ServerFileReference,
 } from '@/_app/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
@@ -57,6 +58,10 @@ const DepartmentForm: React.FC<IDepartmentFormProps> = ({
 		resolver: yupResolver(validationSchema),
 	});
 
+	const [uploadedfiles, setUploadedFiles] = React.useState<
+      ServerFileReference[]
+    >([]);
+
 	useEffect(() => {
 		setValue('name', formData?.name);
 		setValue('note', formData?.note);
@@ -108,40 +113,50 @@ const DepartmentForm: React.FC<IDepartmentFormProps> = ({
 	};
 
 	return (
-		<div>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				<Input.Wrapper
-					label='Department name'
-					error={<ErrorMessage errors={errors} name='name' />}
-				>
-					<Input placeholder='Enter department name' {...register('name')} />
-				</Input.Wrapper>
-				<Space h={'sm'} />
-				<Input.Wrapper
-					label='Note'
-					error={<ErrorMessage errors={errors} name='note' />}
-				>
-					<Textarea placeholder='Write note ...' {...register('note')} />
-				</Input.Wrapper>
-				<Space h={'sm'} />
-				<Button fullWidth type='submit' loading={creating || updating}>
-					Save
-				</Button>
-			</form>
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input.Wrapper
+          label="Department name"
+          error={<ErrorMessage errors={errors} name="name" />}
+        >
+          <Input placeholder="Enter department name" {...register("name")} />
+        </Input.Wrapper>
+        <Space h={"sm"} />
+        <Input.Wrapper
+          label="Note"
+          error={<ErrorMessage errors={errors} name="note" />}
+        >
+          <Textarea placeholder="Write note ..." {...register("note")} />
+        </Input.Wrapper>
+        <Space h={"sm"} />
+        {action === "EDIT" && (
+          <>
+            {/* <AttachmentUploadArea
+            details={formData}
+            folder="Graphland__Department__Attachments"
+            updateAttachmentsMutation={updateDepartment}
+            updating={updating}
+            isGridStyle={true}
+          /> */}
+            <Attachments
+              attachments={uploadedfiles}
+              enableUploader
+              onUploadDone={(files) => {
+                setUploadedFiles(files);
+                console.log(files);
+              }}
+              folder={"Graphland__Department__Attachments"}
+            />
+          </>
+        )}
+        <Button fullWidth type="submit" loading={creating || updating}>
+          Save
+        </Button>
+      </form>
 
-			<Space h={'md'} />
-
-			{action === 'EDIT' && (
-				<AttachmentUploadArea
-					details={formData}
-					folder='Graphland__Department__Attachments'
-					updateAttachmentsMutation={updateDepartment}
-					updating={updating}
-					isGridStyle={true}
-				/>
-			)}
-		</div>
-	);
+      <Space h={"md"} />
+    </div>
+  );
 };
 
 export default DepartmentForm;
