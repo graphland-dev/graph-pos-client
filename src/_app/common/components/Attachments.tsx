@@ -96,6 +96,11 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
     return JSON.parse(file?.meta || "{}")?.mimetype?.split("/")[1] || "file";
   };
 
+  const getFileIconStyle = (file: ServerFileReference) => {
+    const styles = defaultStyles as any;
+    return styles[fileExtension(file)];
+  };
+
   return (
     <div className="relative">
       <LoadingOverlay visible={uploading || deleting} />
@@ -135,11 +140,11 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
             {uploadedFiles.map((file, idx) => (
               <Paper withBorder p={"sm"} key={idx}>
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex gap-1">
                     <div className="flex-none w-6 mr-2">
                       <FileIcon
                         extension={fileExtension(file)}
-                        {...defaultStyles[fileExtension(file)]}
+                        {...getFileIconStyle(file)}
                       />
                     </div>
                     <p className="line-clamp-1">
@@ -167,7 +172,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
               <div className="flex-none w-6 mr-2">
                 <FileIcon
                   extension={fileExtension(file)}
-                  {...defaultStyles[fileExtension(file)]}
+                  {...getFileIconStyle(file)}
                 />
               </div>
               <Text className="line-clamp-1">
