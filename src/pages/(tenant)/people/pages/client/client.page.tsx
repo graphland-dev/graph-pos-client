@@ -12,7 +12,7 @@ import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
-import ClientCreateFrom from "./components/ClientCreateFrom";
+import ClientCreateForm from "./components/ClientCreateFrom";
 import {
   PEOPLE_CLIENTS_QUERY,
   PEOPLE_REMOVE_CLIENT,
@@ -144,7 +144,7 @@ const ClientPage = () => {
         withCloseButton={true}
         size={"60%"}
       >
-        <ClientCreateFrom
+        <ClientCreateForm
           action={state.action}
           formData={state.selectedClient!}
           onFormSubmitted={() => {
