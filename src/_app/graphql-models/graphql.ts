@@ -39,6 +39,7 @@ export enum Accounting_Transaction_Type {
 export type Account = {
   __typename?: 'Account';
   _id: Scalars['ID']['output'];
+  attachments?: Maybe<Array<ServerFileReference>>;
   brunchName?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   creditAmount?: Maybe<Scalars['Float']['output']>;
@@ -58,6 +59,11 @@ export type AccountsWithPagination = {
   nodes?: Maybe<Array<Account>>;
 };
 
+export type AddUserToTenantInput = {
+  email?: InputMaybe<Scalars['String']['input']>;
+  roles?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
 export type Brand = {
   __typename?: 'Brand';
   _id: Scalars['ID']['output'];
@@ -65,6 +71,7 @@ export type Brand = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -78,10 +85,12 @@ export type Client = {
   __typename?: 'Client';
   _id: Scalars['ID']['output'];
   address?: Maybe<Scalars['String']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   contactNumber: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -114,6 +123,7 @@ export type CommonPaginationDto = {
 };
 
 export type CreateAccountInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   brunchName?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
@@ -130,18 +140,21 @@ export type CreateBrandInput = {
 
 export type CreateClientInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   contactNumber: Scalars['String']['input'];
   email?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
 };
 
 export type CreateEmployeeDepartmentInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   name: Scalars['String']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type CreateEmployeeIncrementInput = {
   amount: Scalars['Float']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   employeeId: Scalars['ID']['input'];
   note: Scalars['String']['input'];
@@ -150,6 +163,7 @@ export type CreateEmployeeIncrementInput = {
 export type CreateEmployeeInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   appointmentDate?: InputMaybe<Scalars['DateTime']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
   contactNumber?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
@@ -165,12 +179,14 @@ export type CreateEmployeeInput = {
 };
 
 export type CreateExpenseCategoryInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   name: Scalars['String']['input'];
 };
 
 export type CreateExpenseInput = {
   accountId: Scalars['ID']['input'];
   amount: Scalars['Float']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   categoryId?: InputMaybe<Scalars['ID']['input']>;
   checkNo?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
@@ -181,6 +197,7 @@ export type CreateExpenseInput = {
 
 export type CreatePayrollInput = {
   accountId: Scalars['String']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   employeeId: Scalars['String']['input'];
   opportunities: Array<PayrollOpportunityInput>;
   salaryDate: Scalars['DateTime']['input'];
@@ -200,10 +217,12 @@ export type CreateProductInput = {
   discountAmount?: InputMaybe<Scalars['Float']['input']>;
   discountMode?: InputMaybe<ProductDiscountMode>;
   discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  gallery?: InputMaybe<Array<ServerFileInput>>;
   modelName?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+  thumbnail?: InputMaybe<ServerFileInput>;
   unitId?: InputMaybe<Scalars['String']['input']>;
   vatId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -235,6 +254,7 @@ export type CreateProductStockInput = {
 
 export type CreatePurchasePaymentInput = {
   accountId: Scalars['String']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   checkNo?: InputMaybe<Scalars['String']['input']>;
   items: Array<PurchasePaymentReferenceInput>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -250,6 +270,7 @@ export type CreateRoleInput = {
 
 export type CreateSupplierInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   companyName?: InputMaybe<Scalars['String']['input']>;
   contactNumber: Scalars['String']['input'];
   email?: InputMaybe<Scalars['String']['input']>;
@@ -269,6 +290,7 @@ export type CreateTenantInput = {
 export type CreateTransactionInput = {
   accountId: Scalars['String']['input'];
   amount: Scalars['Float']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -278,6 +300,7 @@ export type CreateTransactionInput = {
 
 export type CreateTransferInput = {
   amount: Scalars['Float']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   fromAccountId: Scalars['ID']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
@@ -291,6 +314,7 @@ export type CreateUnitInput = {
 };
 
 export type CreateUserInput = {
+  avatar?: InputMaybe<ServerFileInput>;
   email: Scalars['String']['input'];
   name: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -309,6 +333,7 @@ export type Employee = {
   _id: Scalars['ID']['output'];
   address?: Maybe<Scalars['String']['output']>;
   appointmentDate?: Maybe<Scalars['DateTime']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   bloodGroup?: Maybe<Scalars['String']['output']>;
   contactNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -330,6 +355,7 @@ export type Employee = {
 export type EmployeeDepartment = {
   __typename?: 'EmployeeDepartment';
   _id: Scalars['ID']['output'];
+  attachments?: Maybe<Array<ServerFileReference>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
@@ -347,6 +373,7 @@ export type EmployeeIncrement = {
   __typename?: 'EmployeeIncrement';
   _id: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
+  attachments?: Maybe<Array<ServerFileReference>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date?: Maybe<Scalars['DateTime']['output']>;
   employee: Employee;
@@ -372,6 +399,7 @@ export type Expense = {
   _id: Scalars['ID']['output'];
   account?: Maybe<Account>;
   amount?: Maybe<Scalars['Float']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   category?: Maybe<Scalars['ID']['output']>;
   checkNo?: Maybe<Scalars['String']['output']>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
@@ -387,6 +415,7 @@ export type Expense = {
 export type ExpenseCategory = {
   __typename?: 'ExpenseCategory';
   _id: Scalars['ID']['output'];
+  attachments?: Maybe<Array<ServerFileReference>>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['ID']['output'];
   tenant?: Maybe<Scalars['String']['output']>;
@@ -462,6 +491,7 @@ export type Mutation = {
   accounting__updateExpenseCategory: Scalars['Boolean']['output'];
   accounting__updateTransaction: Scalars['Boolean']['output'];
   identity__BootstrapRoles: Scalars['Boolean']['output'];
+  identity__addUserToCurrentTenant: Scalars['Boolean']['output'];
   identity__createRole: CommonMutationResponse;
   identity__createTenant: CommonMutationResponse;
   identity__createUser: CommonMutationResponse;
@@ -590,6 +620,11 @@ export type MutationAccounting__UpdateExpenseCategoryArgs = {
 export type MutationAccounting__UpdateTransactionArgs = {
   body?: InputMaybe<UpdateTransactionInput>;
   where?: InputMaybe<CommonFindDocumentDto>;
+};
+
+
+export type MutationIdentity__AddUserToCurrentTenantArgs = {
+  input: AddUserToTenantInput;
 };
 
 
@@ -837,6 +872,7 @@ export type Payroll = {
   _id: Scalars['ID']['output'];
   account: Account;
   amount?: Maybe<Scalars['Float']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   employee: Employee;
@@ -879,6 +915,7 @@ export type Product = {
   discountAmount?: Maybe<Scalars['Float']['output']>;
   discountMode?: Maybe<ProductDiscountMode>;
   discountPercentage?: Maybe<Scalars['Float']['output']>;
+  gallery?: Maybe<Array<ServerFileReference>>;
   modelName?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
@@ -886,6 +923,8 @@ export type Product = {
   stockInQuantity: Scalars['Int']['output'];
   stockOutQuantity: Scalars['Int']['output'];
   taxType?: Maybe<ProductTaxType>;
+  tenant?: Maybe<Scalars['String']['output']>;
+  thumbnail?: Maybe<ServerFileReference>;
   unit?: Maybe<Unit>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
   vat?: Maybe<Vat>;
@@ -898,6 +937,7 @@ export type ProductCategory = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -932,6 +972,7 @@ export type ProductPurchase = {
   supplier?: Maybe<Supplier>;
   taxAmount: Scalars['Float']['output'];
   taxRate: Scalars['Float']['output'];
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -997,6 +1038,7 @@ export type PurchasePayment = {
   __typename?: 'PurchasePayment';
   _id: Scalars['ID']['output'];
   account: Account;
+  attachments?: Maybe<Array<ServerFileReference>>;
   checkNo?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   items: Array<PurchasePaymentReference>;
@@ -1004,6 +1046,7 @@ export type PurchasePayment = {
   paidAmount: Scalars['Float']['output'];
   receptNo?: Maybe<Scalars['String']['output']>;
   supplier: Supplier;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1015,6 +1058,7 @@ export type PurchasePaymentReference = {
 
 export type PurchasePaymentReferenceInput = {
   amount: Scalars['Float']['input'];
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   purchaseId: Scalars['String']['input'];
 };
 
@@ -1063,6 +1107,8 @@ export type Query = {
   accounting__transactions: TransactionsWithPagination;
   accounting__transfer: Transfer;
   accounting__transfers: TransfersWithPagination;
+  identity__currentTenantRoles: Array<Role>;
+  identity__currentTenantUsers?: Maybe<UsersWithPagination>;
   identity__me?: Maybe<User>;
   identity__myPermissions?: Maybe<Array<RolePermission>>;
   identity__myTenants: TenantsWithPagination;
@@ -1152,6 +1198,11 @@ export type QueryAccounting__TransferArgs = {
 
 export type QueryAccounting__TransfersArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryIdentity__CurrentTenantUsersArgs = {
+  input?: InputMaybe<CommonPaginationDto>;
 };
 
 
@@ -1311,6 +1362,25 @@ export type RolesWithPagination = {
   nodes?: Maybe<Array<Role>>;
 };
 
+export type ServerFileInput = {
+  meta?: InputMaybe<Scalars['String']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  provider?: InputMaybe<ServerFileProvider>;
+};
+
+export enum ServerFileProvider {
+  Cloudinary = 'CLOUDINARY',
+  Direct = 'DIRECT',
+  S3 = 'S3'
+}
+
+export type ServerFileReference = {
+  __typename?: 'ServerFileReference';
+  meta?: Maybe<Scalars['String']['output']>;
+  path?: Maybe<Scalars['String']['output']>;
+  provider?: Maybe<ServerFileProvider>;
+};
+
 export enum SortType {
   Asc = 'ASC',
   Desc = 'DESC'
@@ -1320,11 +1390,13 @@ export type Supplier = {
   __typename?: 'Supplier';
   _id: Scalars['ID']['output'];
   address?: Maybe<Scalars['String']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   companyName?: Maybe<Scalars['String']['output']>;
   contactNumber: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1341,6 +1413,7 @@ export type Tenant = {
   businessPhoneNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
+  logo?: Maybe<ServerFileReference>;
   name: Scalars['String']['output'];
   uid?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1357,6 +1430,7 @@ export type Transaction = {
   _id: Scalars['ID']['output'];
   account?: Maybe<Account>;
   amount?: Maybe<Scalars['Float']['output']>;
+  attachments?: Maybe<Array<ServerFileReference>>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date?: Maybe<Scalars['DateTime']['output']>;
@@ -1378,6 +1452,7 @@ export type Transfer = {
   __typename?: 'Transfer';
   _id: Scalars['ID']['output'];
   amount: Scalars['Float']['output'];
+  attachments?: Maybe<Array<ServerFileReference>>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date?: Maybe<Scalars['DateTime']['output']>;
@@ -1409,6 +1484,7 @@ export type Unit = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
@@ -1419,6 +1495,7 @@ export type UnitsWithPagination = {
 };
 
 export type UpdateAccountInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   brunchName?: InputMaybe<Scalars['String']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -1435,18 +1512,21 @@ export type UpdateBrandInput = {
 
 export type UpdateClientInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   contactNumber?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEmployeeDepartmentInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateEmployeeIncrementInput = {
   amount?: InputMaybe<Scalars['Float']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   employeeId?: InputMaybe<Scalars['ID']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -1455,6 +1535,7 @@ export type UpdateEmployeeIncrementInput = {
 export type UpdateEmployeeInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   appointmentDate?: InputMaybe<Scalars['DateTime']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   bloodGroup?: InputMaybe<Scalars['String']['input']>;
   contactNumber?: InputMaybe<Scalars['String']['input']>;
   dateOfBirth?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1470,10 +1551,12 @@ export type UpdateEmployeeInput = {
 };
 
 export type UpdateExpenseCategoryInput = {
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type UpdateMeInput = {
+  avatar?: InputMaybe<ServerFileInput>;
   email?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1497,10 +1580,12 @@ export type UpdateProductInput = {
   discountAmount?: InputMaybe<Scalars['Float']['input']>;
   discountMode?: InputMaybe<ProductDiscountMode>;
   discountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  gallery?: InputMaybe<Array<ServerFileInput>>;
   modelName?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
+  thumbnail?: InputMaybe<ServerFileInput>;
   unitId?: InputMaybe<Scalars['String']['input']>;
   vatId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1513,6 +1598,7 @@ export type UpdateRoleInput = {
 
 export type UpdateSupplierInput = {
   address?: InputMaybe<Scalars['String']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   companyName?: InputMaybe<Scalars['String']['input']>;
   contactNumber?: InputMaybe<Scalars['String']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
@@ -1523,6 +1609,7 @@ export type UpdateTenantInput = {
   address?: InputMaybe<Scalars['String']['input']>;
   businessPhoneNumber?: InputMaybe<Scalars['String']['input']>;
   description?: InputMaybe<Scalars['String']['input']>;
+  logo?: InputMaybe<ServerFileInput>;
   /** Tenant name */
   name?: InputMaybe<Scalars['String']['input']>;
 };
@@ -1530,6 +1617,7 @@ export type UpdateTenantInput = {
 export type UpdateTransactionInput = {
   accountId?: InputMaybe<Scalars['String']['input']>;
   amount?: InputMaybe<Scalars['Float']['input']>;
+  attachments?: InputMaybe<Array<ServerFileInput>>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
   isActive?: InputMaybe<Scalars['Boolean']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
@@ -1553,6 +1641,7 @@ export type UpdateVatInput = {
 export type User = {
   __typename?: 'User';
   _id: Scalars['ID']['output'];
+  avatar?: Maybe<ServerFileReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   memberships?: Maybe<Array<UserTenant>>;
@@ -1587,6 +1676,7 @@ export type Vat = {
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
   percentage: Scalars['Float']['output'];
+  tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 

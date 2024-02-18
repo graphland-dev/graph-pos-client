@@ -1,22 +1,30 @@
 import ViewDashboardLayout from "@/_app/common/layouts/ViewDashboard";
 import { Supplier } from "@/_app/graphql-models/graphql";
 import { NavLink, Paper, Text, Title } from "@mantine/core";
-import { IconShoppingCart, IconTruckReturn, IconUserBolt } from "@tabler/icons-react";
+import {
+	IconPaperclip,
+  IconShoppingCart,
+  IconTruckReturn,
+  IconUserBolt,
+} from "@tabler/icons-react";
 import { useState } from "react";
 import SupplierDetailsBasicInfo from "../SupplierDetailsBasicInfo";
 import SupplierDetailsPurchase from "./SupplierDetailsPurchase";
+import SupplierDetailsDocuments from "./SupplierDetailsDocuments";
 
 interface ISupplierDetailsFormProps {
   supplierDetails: Supplier | null;
-  refetch: (v: any) => void;
+  refetch: () => void;
 }
 
-const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({ supplierDetails, refetch }) => {
+const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({
+  supplierDetails,
+  refetch,
+}) => {
   // console.log({ supplierDetails });
-   const [activeTab, setActiveTab] = useState<number>(0);
+  const [activeTab, setActiveTab] = useState<number>(0);
   return (
     <div>
-      
       <ViewDashboardLayout
         TopSection={
           <Paper shadow="sm" p={"sm"} withBorder>
@@ -44,13 +52,19 @@ const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({ supplierDeta
               onClick={() => setActiveTab(2)}
               active={activeTab === 2}
             />
+            <NavLink
+              label={"Documents"}
+              icon={<IconPaperclip size={16} />}
+              onClick={() => setActiveTab(3)}
+              active={activeTab === 3}
+            />
           </>
         }
       >
         {activeTab === 0 && (
           <SupplierDetailsBasicInfo
             supplierDetails={supplierDetails}
-            refetch={refetch}
+            // refetch={() => refetch()}
           />
         )}
         {activeTab === 1 && (
@@ -62,13 +76,18 @@ const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({ supplierDeta
         {activeTab === 2 && (
           <SupplierDetailsBasicInfo
             supplierDetails={supplierDetails}
-            refetch={refetch}
+            // refetch={() => refetch()}
+          />
+        )}
+        {activeTab === 3 && (
+          <SupplierDetailsDocuments
+            supplierDetails={supplierDetails}
+            refetch={() => refetch()}
           />
         )}
       </ViewDashboardLayout>
-     
     </div>
   );
-}
+};
 
-export default ViewSupplierDetails
+export default ViewSupplierDetails;

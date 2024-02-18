@@ -11,6 +11,11 @@ export const PEOPLE_CLIENTS_QUERY = gql`
 				address
 				createdAt
 				updatedAt
+				attachments {
+					meta
+					path
+					provider
+				}
 			}
 			meta {
 				totalCount

@@ -10,11 +10,13 @@ import { useState } from "react";
 import EmployeeDetailsBasicInfo from "./employee-details/EmployeeDetailsBasicInfo";
 import EmployeeDetailsIncrements from "./employee-details/EmployeeDetailsIncrements";
 import EmployeeDetailsPayrolls from "./employee-details/EmployeeDetailsPayrolls";
+import { IconPaperclip } from "@tabler/icons-react";
+import EmployeeDetailsDocuments from "./employee-details/EmployeeDetailsDocuments";
 
 interface IEmployeesDetailsFormProps {
   employeeDetails: Employee | null;
   departments: EmployeeDepartment[] | null;
-  refetch: (v: any) => void;
+  refetch: () => void;
 }
 
 const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
@@ -53,6 +55,12 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
             onClick={() => setActiveTab(2)}
             active={activeTab === 2}
           />
+          <NavLink
+            label={"Documents"}
+            icon={<IconPaperclip size={16} />}
+            onClick={() => setActiveTab(3)}
+            active={activeTab === 3}
+          />
         </>
       }
     >
@@ -60,7 +68,7 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
         <EmployeeDetailsBasicInfo
           employeeDetails={employeeDetails}
           departments={departments || []}
-          refetch={refetch}
+         
         />
       )}
       {activeTab === 1 && (
@@ -68,6 +76,9 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
       )}
       {activeTab === 2 && (
         <EmployeeDetailsIncrements id={employeeDetails?._id} />
+      )}
+      {activeTab === 3 && (
+        <EmployeeDetailsDocuments id={employeeDetails?._id} refetch={refetch} />
       )}
     </ViewDashboardLayout>
   );

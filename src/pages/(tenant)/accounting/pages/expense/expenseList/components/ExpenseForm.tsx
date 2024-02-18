@@ -1,8 +1,10 @@
+import Attachments from "@/_app/common/components/Attachments";
 import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import {
   Account,
   ExpenseCategory,
   ExpenseCategorysWithPagination,
+  ServerFileReference,
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
@@ -20,8 +22,8 @@ import { DateTimePicker } from "@mantine/dates";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
-import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
 import { ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "../../expenseCategory/utils/query";
+import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
 
 interface IExpenseFormProps {
   onSubmissionDone: () => void;
@@ -37,6 +39,11 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   formData,
   accounts,
 }) => {
+
+    const [uploadedfiles, setUploadedFiles] = React.useState<
+      ServerFileReference[]
+    >([]);
+
   const [createMutation, { loading: creating }] = useMutation(
     ACCOUNTING_EXPENSE_CREATE_MUTATION
   );
@@ -93,10 +100,8 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
     setValue("checkNo", formData?.["checkNo"]);
     setValue("date", formData?.["date"] || new Date().toISOString());
   }, [formData]);
-        
 
   const onSubmit = (data: any) => {
-   
     createMutation({
       variables: {
         body: { ...data, categoryId: data.categoryId },
@@ -197,6 +202,16 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           mx="auto"
         />
 
+        <Attachments
+          attachments={uploadedfiles}
+          enableUploader
+          onUploadDone={(files) => {
+            setUploadedFiles(files);
+            console.log(files);
+          }}
+          folder={"Graphland__Expense__Document"}
+        />
+
         <Button
           disabled={
             getAccountBalance(accounts || [], watch("accountId")) <
@@ -208,6 +223,16 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           Save
         </Button>
       </form>
+
+      <Space h={"sm"} />
+
+      {/* <AttachmentUploadArea
+				details={formData}
+				folder='Graphland__Expense__Document'
+				updating={creating}
+				updateAttachmentsMutation={createMutation}
+				isGridStyle={true}
+			/> */}
     </div>
   );
 };
