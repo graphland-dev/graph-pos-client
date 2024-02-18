@@ -3,7 +3,6 @@ import { Flex, Image, Menu, UnstyledButton } from "@mantine/core";
 import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
 import { useAtom } from "jotai";
 import { Link, useParams } from "react-router-dom";
-import { getFileUrl } from "../../utils/getFileUrl";
 
 const TenantDropdown = () => {
   const params = useParams<{ tenant: string }>();
