@@ -43,7 +43,8 @@ const SuppliersPage = () => {
 		loading: fetchingPeople,
 	} = useQuery<{
 		people__suppliers: SuppliersWithPagination;
-	}>(PEOPLE_SUPPLIERS_QUERY);
+  }>(PEOPLE_SUPPLIERS_QUERY);
+  
 
 	const [deleteClientMutation] = useMutation(PEOPLE_REMOVE_SUPPLIERS, {
 		onCompleted: () => handleRefetch({}),
