@@ -1,19 +1,15 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import AttachmentUploadArea from '@/_app/common/components/AttachmentUploadArea';
 import { Employee, EmployeeDepartment } from '@/_app/graphql-models/graphql';
-import { useMutation } from '@apollo/client';
 import { Divider, Drawer, Paper, Text, Title } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
 import { IconBrandBadoo, IconNote } from '@tabler/icons-react';
 import dayjs from 'dayjs';
 import { employeeListRefetchSubject } from '../../employees.page';
-import { PEOPLE_EMPLOYEES_UPDATE_MUTATION } from '../../utils/query';
 import EmployeesForm from '../EmployeesForm';
 
 interface IEmployeesDetailsProps {
 	employeeDetails: Employee | null;
 	departments: EmployeeDepartment[] | null;
-	refetch: () => void;
+	
 }
 
 interface IState {
@@ -28,7 +24,7 @@ interface IState {
 const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 	employeeDetails,
 	departments,
-	refetch,
+	
 }) => {
 	const [state, setState] = useSetState<IState>({
 		modalOpened: false,
@@ -39,16 +35,16 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 		refetching: false,
 	});
 
-	// update suppliers
-	const [updateEmployeeWithAttachments, { loading }] = useMutation(
-		PEOPLE_EMPLOYEES_UPDATE_MUTATION,
-		Notify({
-			sucTitle: 'Attachments saved successfully!',
-			onSuccess() {
-				refetch();
-			},
-		})
-	);
+	
+	// const [updateEmployeeWithAttachments, { loading }] = useMutation(
+	// 	PEOPLE_EMPLOYEES_UPDATE_MUTATION,
+	// 	Notify({
+	// 		sucTitle: 'Attachments saved successfully!',
+	// 		onSuccess() {
+	// 			refetch();
+	// 		},
+	// 	})
+	// );
 
 	return (
 		<>
@@ -196,12 +192,12 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 			</Paper>
 
 			{/* attachments upload area */}
-			<AttachmentUploadArea
+			{/* <AttachmentUploadArea
 				details={employeeDetails}
 				updateAttachmentsMutation={updateEmployeeWithAttachments}
 				updating={loading}
 				folder='Graphland__Employee__Documents'
-			/>
+			/> */}
 		</>
 	);
 };

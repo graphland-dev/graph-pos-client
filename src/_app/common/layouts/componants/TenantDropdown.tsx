@@ -3,6 +3,7 @@ import { Flex, Image, Menu, UnstyledButton } from "@mantine/core";
 import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
 import { useAtom } from "jotai";
 import { Link, useParams } from "react-router-dom";
+import { getFileUrl } from "../../utils/getFileUrl";
 
 const TenantDropdown = () => {
   const params = useParams<{ tenant: string }>();
@@ -20,6 +21,11 @@ const TenantDropdown = () => {
   return (
     <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-green-200/70">
       <Flex gap={"xs"} align={"center"}>
+        {/* <Image
+          className="my-[32px]"
+          h={542}
+          src={getFileUrl(tenant.)}
+        /> */}
         <Image
           src="https://freelogopng.com/images/all_img/1657952440google-logo-png-transparent.png"
           width={20}

@@ -1,31 +1,17 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import AttachmentUploadArea from '@/_app/common/components/AttachmentUploadArea';
 import { Supplier } from '@/_app/graphql-models/graphql';
-import { useMutation } from '@apollo/client';
 import { Divider, Paper, Text, Title } from '@mantine/core';
 import { IconBrandBadoo, IconNote } from '@tabler/icons-react';
 import dayjs from 'dayjs';
-import { PEOPLE_UPDATE_SUPPLIERS } from '../utils/suppliers.query';
 
 interface ISupplierDetailsProps {
 	supplierDetails: Supplier | null;
-	refetch: () => void;
+	
 }
 
 const SupplierDetailsBasicInfo: React.FC<ISupplierDetailsProps> = ({
-	supplierDetails,
-	refetch,
+	supplierDetails
 }) => {
-	// update suppliers
-	const [updateSupplierWithAttachments, { loading }] = useMutation(
-		PEOPLE_UPDATE_SUPPLIERS,
-		Notify({
-			sucTitle: 'Attachments saved successfully!',
-			onSuccess() {
-				refetch();
-			},
-		})
-	);
+
 
 	return (
 		<>
@@ -106,13 +92,7 @@ const SupplierDetailsBasicInfo: React.FC<ISupplierDetailsProps> = ({
 				</div>
 			</Paper>
 
-			{/* attachments upload area */}
-			<AttachmentUploadArea
-				details={supplierDetails}
-				updateAttachmentsMutation={updateSupplierWithAttachments}
-				updating={loading}
-				folder='Graphland__Suppliers__Documents'
-			/>
+			
 		</>
 	);
 };
