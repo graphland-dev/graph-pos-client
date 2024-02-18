@@ -178,12 +178,21 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
               <Text className="line-clamp-1">
                 {JSON.parse(file?.meta || "{}")?.originalname}
               </Text>
-              <UnstyledButton
-                onClick={() => handleDownloadFile(file)}
-                className="pl-2"
-              >
-                <IconExternalLink size={24} />
-              </UnstyledButton>
+
+              <Flex align={"center"}>
+                <UnstyledButton
+                  onClick={() => handleDeleteFile(file)}
+                  className="pl-2"
+                >
+                  <IconTrash size={24} />
+                </UnstyledButton>
+                <UnstyledButton
+                  onClick={() => handleDownloadFile(file)}
+                  className="pl-2"
+                >
+                  <IconExternalLink size={24} />
+                </UnstyledButton>
+              </Flex>
             </div>
           </Paper>
         ))}

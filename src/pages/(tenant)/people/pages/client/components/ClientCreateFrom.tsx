@@ -1,9 +1,9 @@
 import { Notify } from "@/_app/common/Notification/Notify";
 import Attachments from "@/_app/common/components/Attachments";
 import {
-	Client,
-	MatchOperator,
-	ServerFileReference,
+  Client,
+  MatchOperator,
+  ServerFileReference,
 } from "@/_app/graphql-models/graphql";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
@@ -13,15 +13,14 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import {
-	PEOPLE_CREATE_CLIENT,
-	PEOPLE_UPDATE_CLIENT,
+  PEOPLE_CREATE_CLIENT,
+  PEOPLE_UPDATE_CLIENT,
 } from "../utils/client.query";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
-
   formData?: Client;
-
   action: "CREATE" | "EDIT";
 }
 
@@ -48,7 +47,7 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
 
   const [uploadedfiles, setUploadedFiles] = React.useState<
     ServerFileReference[]
-  >([]);
+  >(formData?.attachments || []);
 
   useEffect(() => {
     setValue("name", formData?.name as string);
@@ -61,10 +60,6 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
     PEOPLE_CREATE_CLIENT,
     Notify({
       sucTitle: "Client successfully created!",
-      onSuccess() {
-        reset();
-        onFormSubmitted();
-      },
     })
   );
 
@@ -72,27 +67,24 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
     PEOPLE_UPDATE_CLIENT,
     Notify({
       sucTitle: "Client successfully updated!",
-      onSuccess() {
-        reset();
-        onFormSubmitted();
-      },
     })
   );
 
-  const onSubmit = (values: ICLIENTCREATEFORM) => {
+  const onSubmit = async (values: ICLIENTCREATEFORM) => {
     if (action === "CREATE") {
-      createClient({
+      await createClient({
         variables: {
           body: {
             name: values.name,
             email: values.email,
             contactNumber: values.contactNumber,
             address: values.address,
+            attachments: uploadedfiles || [],
           },
         },
       });
     } else {
-      updateClient({
+      await updateClient({
         variables: {
           where: {
             key: "_id",
@@ -105,9 +97,13 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
             email: values.email,
             contactNumber: values.contactNumber,
             address: values.address,
+            attachments: uploadedfiles || [],
           },
         },
       });
+
+      reset();
+      onFormSubmitted();
     }
   };
   return (
@@ -151,25 +147,31 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
 
         <Space h={"sm"} />
 
-        {action === "EDIT" && (
-          <>
-            {/* <AttachmentUploadArea
-            details={formData!}
-            updateAttachmentsMutation={updateClient}
-            updating={updating}
-            folder="Graphland__Client__Documents"
-          /> */}
-            <Attachments
-              attachments={uploadedfiles}
-              enableUploader
-              onUploadDone={(files) => {
-                setUploadedFiles(files);
-                console.log(files);
-              }}
-              folder={"Graphland__Client__Documents"}
-            />
-          </>
-        )}
+        <div className="my-6">
+          <Attachments
+            attachments={uploadedfiles}
+            enableUploader
+            onUploadDone={(files) => {
+              if (action === "EDIT") {
+                updateClient({
+                  variables: {
+                    where: {
+                      key: "_id",
+                      operator: MatchOperator.Eq,
+                      value: formData?._id,
+                    },
+                    body: {
+                      attachments: files,
+                    },
+                  },
+                });
+              }
+
+              setUploadedFiles(files);
+            }}
+            folder={FOLDER__NAME.CLIENT_ATTACHMENTS}
+          />
+        </div>
 
         <Button type="submit" loading={creating || updating} fullWidth>
           Save
