@@ -24,7 +24,7 @@ interface IClientFormProps {
   action: "CREATE" | "EDIT";
 }
 
-const ClientCreateFrom: React.FC<IClientFormProps> = ({
+const ClientCreateForm: React.FC<IClientFormProps> = ({
   onFormSubmitted,
   action,
   formData,
@@ -83,6 +83,8 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
           },
         },
       });
+      reset();
+      onFormSubmitted();
     } else {
       await updateClient({
         variables: {
@@ -167,7 +169,13 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
                 });
               }
 
-              setUploadedFiles(files);
+              setUploadedFiles(
+                files.map((file) => ({
+                  meta: file.meta,
+                  path: file.path,
+                  provider: file.provider,
+                }))
+              );
             }}
             folder={FOLDER__NAME.CLIENT_ATTACHMENTS}
           />
@@ -181,7 +189,7 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
   );
 };
 
-export default ClientCreateFrom;
+export default ClientCreateForm;
 
 export const formValidationSchema = Yup.object().shape({
   name: Yup.string().required().label("Name"),
