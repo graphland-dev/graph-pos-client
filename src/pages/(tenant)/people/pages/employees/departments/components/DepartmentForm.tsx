@@ -80,7 +80,6 @@ const DepartmentForm: React.FC<IDepartmentFormProps> = ({
       onCompleted: () => {
         reset();
         onFormSubmitted();
-        drawerHandler.close();
       },
     }
   );
@@ -95,28 +94,19 @@ const DepartmentForm: React.FC<IDepartmentFormProps> = ({
     }
   );
 
-  const onSubmit = (v: IFormPayload) => {
+  const onSubmit = (payload: IFormPayload) => {
     if (action === "CREATE") {
       createDepartment({
         variables: {
-          body: v,
+          body: { ...payload, attachments: uploadedFiles || [] },
         },
       });
     } else {
       updateDepartment({
         variables: {
           body: {
-            name: v.name,
-            note: v.note,
-            attachments:
-              [
-                ...attachments,
-                ...(uploadedFiles?.map((att) => ({
-                  meta: att?.meta,
-                  path: att?.path,
-                  provider: att?.provider,
-                })) as ServerFileReference[]),
-              ] ?? [],
+            name: payload.name,
+            note: payload.note,
           },
           where: {
             key: "_id",
@@ -155,11 +145,28 @@ const DepartmentForm: React.FC<IDepartmentFormProps> = ({
             isGridStyle={true}
           /> */}
             <Attachments
-              attachments={uploadedFiles}
+              attachments={formData.attachments || []}
               enableUploader
               onUploadDone={(files) => {
+                if (action === "EDIT") {
+                  return updateDepartment({
+                    variables: {
+                      where: {
+                        key: "_id",
+                        operator: MatchOperator.Eq,
+                        value: formData?._id,
+                      },
+                      body: {
+                        attachments: files?.map((att) => ({
+                          meta: att?.meta,
+                          path: att?.path,
+                          provider: att?.provider,
+                        })),
+                      },
+                    },
+                  });
+                }
                 setUploadedFiles(files);
-                console.log(files);
               }}
               folder={FOLDER__NAME.EMPLOYEE_ATTACHMENTS}
             />
