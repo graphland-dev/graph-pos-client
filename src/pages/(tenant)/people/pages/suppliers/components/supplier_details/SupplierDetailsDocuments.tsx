@@ -6,8 +6,6 @@ import {
   Supplier,
 } from "@/_app/graphql-models/graphql";
 import { useMutation } from "@apollo/client";
-import { Button, Flex } from "@mantine/core";
-import { IconUpload } from "@tabler/icons-react";
 import React from "react";
 import { PEOPLE_UPDATE_SUPPLIERS } from "../../utils/suppliers.query";
 
@@ -22,9 +20,10 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
 }) => {
   const [uploadedfiles, setUploadedFiles] = React.useState<
     ServerFileReference[]
-  >([]);
+  >(supplierDetails?.attachments || []);
+
   // update suppliers
-  const [updateAttachmentsMutation, { loading }] = useMutation(
+  const [updateAttachmentsMutation] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
     Notify({
       sucTitle: "Attachments saved successfully!",
@@ -35,7 +34,6 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   );
 
   const handleUpload = () => {
-    console.log(uploadedfiles);
     updateAttachmentsMutation({
       variables: {
         where: {
@@ -44,14 +42,18 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
           value: supplierDetails?._id,
         },
         body: {
-          attachments:
-            [
-              ...uploadedfiles?.map((att) => ({
-                meta: att?.meta,
-                path: att?.path,
-                provider: att?.provider,
-              })) as ServerFileReference[],
-            ] ?? [],
+          attachments: [
+            ...uploadedfiles.map((file) => ({
+              path: file.path,
+              provider: file.provider,
+              meta: file.meta,
+            })),
+            ...(supplierDetails?.attachments?.map((file) => ({
+              path: file.path,
+              provider: file.provider,
+              meta: file.meta,
+            })) || []),
+          ],
         },
       },
     });
@@ -60,26 +62,14 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   return (
     <div>
       <Attachments
-        attachments={uploadedfiles}
+        attachments={uploadedfiles || []}
         enableUploader
         onUploadDone={(files) => {
-          setUploadedFiles(files);
-          console.log(files);
+          setUploadedFiles([...files, ...uploadedfiles]);
+          handleUpload();
         }}
         folder={"Graphland__Payroll__Attachments"}
       />
-      {uploadedfiles.length > 0 && (
-        <Flex justify={"end"} mt={"md"}>
-          <Button
-            color="yellow.8"
-            onClick={handleUpload}
-            loading={loading}
-            leftIcon={<IconUpload size={20} />}
-          >
-            Upload
-          </Button>
-        </Flex>
-      )}
     </div>
   );
 };

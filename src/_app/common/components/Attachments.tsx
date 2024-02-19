@@ -10,12 +10,12 @@ import {
   UnstyledButton,
   rem,
 } from "@mantine/core";
-import { Dropzone } from "@mantine/dropzone";
+import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
+import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconExternalLink, IconTrash, IconUpload } from "@tabler/icons-react";
 import React, { useState } from "react";
 import { getFileUrl } from "../utils/getFileUrl";
-import { openConfirmModal } from "@mantine/modals";
 
 interface IAttachmentUploadProps {
   attachments: ServerFileReference[];
@@ -30,7 +30,9 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
   onUploadDone,
   enableUploader,
 }) => {
-  const [uploadedFiles, setUploadedFiles] = useState<ServerFileReference[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<ServerFileReference[]>(
+    attachments || []
+  );
   const { uploadFile, deleteFiles, uploading, deleting } = useServerFile();
 
   const handleUploadFiles = (files: File[]) => {
@@ -55,9 +57,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
     window.open(getFileUrl(file));
   };
 
-  function handleDeleteFile(sFile: ServerFileReference) {
-    if (!sFile) return;
-
+  function handleDeleteFile(index: number) {
     openConfirmModal({
       title: "Sure to delete this file?",
       labels: {
@@ -65,6 +65,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
         cancel: "No, keep",
       },
       onConfirm: () => {
+        const sFile = uploadedFiles[index];
         deleteFiles([sFile.path as string])
           .then(() => {
             showNotification({
@@ -72,14 +73,8 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
               message: "",
               color: "green",
             });
-            setUploadedFiles((prev) => {
-              const index = prev.findIndex((f) => f.path === sFile.path);
-              if (index > -1) {
-                prev.splice(index, 1);
-              }
-              onUploadDone?.(prev);
-              return [...prev];
-            });
+            setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
+            onUploadDone?.(uploadedFiles.filter((_, i) => i !== index));
           })
           .catch(() => {
             showNotification({
@@ -110,7 +105,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
       </Text>
 
       {enableUploader && (
-        <div className="p-5 border border-yellow-400 border-dashed">
+        <div>
           <Dropzone
             onDrop={(files) => {
               handleUploadFiles(files);
@@ -118,6 +113,18 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
             onReject={(files) => console.log("rejected files", files)}
             maxSize={5 * 1024 ** 2}
             className="flex items-center justify-center"
+            accept={[
+              "image/*",
+              MIME_TYPES.pdf,
+              MIME_TYPES.doc,
+              MIME_TYPES.docx,
+              MIME_TYPES.xls,
+              MIME_TYPES.xlsx,
+              MIME_TYPES.ppt,
+              MIME_TYPES.pptx,
+              MIME_TYPES.csv,
+              MIME_TYPES.zip,
+            ]}
           >
             <Flex direction={"column"} gap={"sm"} align={"center"}>
               <IconUpload
@@ -136,7 +143,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
           </Dropzone>
 
           {/* Future Upload */}
-          <Flex direction={"column"} gap={"sm"} mt={"lg"}>
+          {/* <Flex direction={"column"} gap={"sm"} mt={"lg"}>
             {uploadedFiles.map((file, idx) => (
               <Paper withBorder p={"sm"} key={idx}>
                 <div className="flex items-center justify-between">
@@ -161,12 +168,12 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
                 </div>
               </Paper>
             ))}
-          </Flex>
+          </Flex> */}
         </div>
       )}
 
       <Flex direction={"column"} gap={"sm"} mt={"lg"}>
-        {attachments?.map((file, idx) => (
+        {uploadedFiles?.map((file, idx) => (
           <Paper withBorder p={"sm"} key={idx}>
             <div className="flex items-center justify-between">
               <div className="flex-none w-6 mr-2">
@@ -181,7 +188,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
 
               <Flex align={"center"}>
                 <UnstyledButton
-                  onClick={() => handleDeleteFile(file)}
+                  onClick={() => handleDeleteFile(idx)}
                   className="pl-2"
                 >
                   <IconTrash size={24} />

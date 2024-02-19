@@ -5,6 +5,7 @@ import {
   MatchOperator,
   ServerFileReference,
 } from "@/_app/graphql-models/graphql";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,7 +17,6 @@ import {
   PEOPLE_CREATE_CLIENT,
   PEOPLE_UPDATE_CLIENT,
 } from "../utils/client.query";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
@@ -47,7 +47,7 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
 
   const [uploadedfiles, setUploadedFiles] = React.useState<
     ServerFileReference[]
-  >(formData?.attachments || []);
+  >([]);
 
   useEffect(() => {
     setValue("name", formData?.name as string);
@@ -83,6 +83,8 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
           },
         },
       });
+      reset();
+      onFormSubmitted();
     } else {
       await updateClient({
         variables: {
@@ -91,17 +93,14 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
             operator: MatchOperator.Eq,
             value: formData?._id,
           },
-
           body: {
             name: values.name,
             email: values.email,
             contactNumber: values.contactNumber,
             address: values.address,
-            attachments: uploadedfiles || [],
           },
         },
       });
-
       reset();
       onFormSubmitted();
     }
@@ -149,11 +148,11 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
 
         <div className="my-6">
           <Attachments
-            attachments={uploadedfiles}
+            attachments={formData?.attachments || []}
             enableUploader
             onUploadDone={(files) => {
               if (action === "EDIT") {
-                updateClient({
+                return updateClient({
                   variables: {
                     where: {
                       key: "_id",
@@ -161,13 +160,22 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
                       value: formData?._id,
                     },
                     body: {
-                      attachments: files,
+                      attachments: files.map((file) => ({
+                        path: file.path,
+                        provider: file.provider,
+                        meta: file.meta,
+                      })),
                     },
                   },
                 });
               }
-
-              setUploadedFiles(files);
+              setUploadedFiles(
+                files.map((file) => ({
+                  path: file.path,
+                  provider: file.provider,
+                  meta: file.meta,
+                }))
+              );
             }}
             folder={FOLDER__NAME.CLIENT_ATTACHMENTS}
           />

@@ -2,7 +2,7 @@ import ViewDashboardLayout from "@/_app/common/layouts/ViewDashboard";
 import { Supplier } from "@/_app/graphql-models/graphql";
 import { NavLink, Paper, Text, Title } from "@mantine/core";
 import {
-	IconPaperclip,
+  IconPaperclip,
   IconShoppingCart,
   IconTruckReturn,
   IconUserBolt,

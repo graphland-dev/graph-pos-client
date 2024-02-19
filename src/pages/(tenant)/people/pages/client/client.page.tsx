@@ -140,7 +140,7 @@ const ClientPage = () => {
         opened={openedDrawer}
         onClose={drawerHandler.close}
         position="right"
-        title="Create client"
+        title={state.action === "CREATE" ? "Create new client" : "Edit client"}
         withCloseButton={true}
         size={"60%"}
       >
