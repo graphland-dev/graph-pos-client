@@ -24,7 +24,7 @@ interface IClientFormProps {
   action: "CREATE" | "EDIT";
 }
 
-const ClientCreateFrom: React.FC<IClientFormProps> = ({
+const ClientCreateForm: React.FC<IClientFormProps> = ({
   onFormSubmitted,
   action,
   formData,
@@ -189,7 +189,7 @@ const ClientCreateFrom: React.FC<IClientFormProps> = ({
   );
 };
 
-export default ClientCreateFrom;
+export default ClientCreateForm;
 
 export const formValidationSchema = Yup.object().shape({
   name: Yup.string().required().label("Name"),

@@ -5,6 +5,7 @@ import {
   ServerFileReference,
   Supplier,
 } from "@/_app/graphql-models/graphql";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 import { useMutation } from "@apollo/client";
 import React from "react";
 import { PEOPLE_UPDATE_SUPPLIERS } from "../../utils/suppliers.query";
@@ -18,10 +19,14 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
   refetch,
 }) => {
-  const [uploadedfiles, setUploadedFiles] = React.useState<
-    ServerFileReference[]
-  >(supplierDetails?.attachments || []);
+  const attachments =
+    supplierDetails?.attachments?.map((file) => ({
+      meta: file.meta,
+      path: file.path,
+      provider: file.provider,
+    })) ?? [];
 
+  // console.log(attachments);
   // update suppliers
   const [updateAttachmentsMutation] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
@@ -33,7 +38,7 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
     })
   );
 
-  const handleUpload = () => {
+  const handleUpload = (files: ServerFileReference[]) => {
     updateAttachmentsMutation({
       variables: {
         where: {
@@ -42,18 +47,15 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
           value: supplierDetails?._id,
         },
         body: {
-          attachments: [
-            ...uploadedfiles.map((file) => ({
-              path: file.path,
-              provider: file.provider,
-              meta: file.meta,
-            })),
-            ...(supplierDetails?.attachments?.map((file) => ({
-              path: file.path,
-              provider: file.provider,
-              meta: file.meta,
-            })) || []),
-          ],
+          attachments:
+            [
+              ...attachments,
+              ...(files?.map((att) => ({
+                meta: att?.meta,
+                path: att?.path,
+                provider: att?.provider,
+              })) as ServerFileReference[]),
+            ] ?? [],
         },
       },
     });
@@ -62,14 +64,25 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   return (
     <div>
       <Attachments
-        attachments={uploadedfiles || []}
+        attachments={attachments}
         enableUploader
         onUploadDone={(files) => {
-          setUploadedFiles([...files, ...uploadedfiles]);
-          handleUpload();
+          handleUpload(files);
         }}
-        folder={"Graphland__Payroll__Attachments"}
+        folder={FOLDER__NAME.SUPPLIER_ATTACHMENTS}
       />
+      {/* {uploadedfiles.length > 0 && (
+        <Flex justify={"end"} mt={"md"}>
+          <Button
+            color="yellow.8"
+            onClick={handleUpload}
+            loading={loading}
+            leftIcon={<IconUpload size={20} />}
+          >
+            Upload
+          </Button>
+        </Flex>
+      )} */}
     </div>
   );
 };
