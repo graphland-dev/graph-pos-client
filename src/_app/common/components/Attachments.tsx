@@ -21,6 +21,7 @@ interface IAttachmentUploadProps {
   attachments: ServerFileReference[];
   enableUploader?: boolean;
   folder: string;
+  title?: string;
   onUploadDone?: (files: ServerFileReference[]) => void;
 }
 
@@ -29,6 +30,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
   folder,
   onUploadDone,
   enableUploader,
+  title = "Attachments",
 }) => {
   const [uploadedFiles, setUploadedFiles] = useState<ServerFileReference[]>(
     attachments || []
@@ -41,8 +43,8 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
       folder,
     })
       .then((res) => {
-        onUploadDone?.(res.data);
         setUploadedFiles((prev) => [...prev, ...res.data]);
+        onUploadDone?.([...uploadedFiles, ...res.data]);
       })
       .catch(() => {
         showNotification({
@@ -101,7 +103,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
       <LoadingOverlay visible={uploading || deleting} />
       {/* List */}
       <Text fw={"bold"} my={"md"}>
-        Attachments
+        {title}
       </Text>
 
       {enableUploader && (
@@ -176,15 +178,17 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
         {uploadedFiles?.map((file, idx) => (
           <Paper withBorder p={"sm"} key={idx}>
             <div className="flex items-center justify-between">
-              <div className="flex-none w-6 mr-2">
-                <FileIcon
-                  extension={fileExtension(file)}
-                  {...getFileIconStyle(file)}
-                />
-              </div>
-              <Text className="line-clamp-1">
-                {JSON.parse(file?.meta || "{}")?.originalname}
-              </Text>
+              <Flex align={"center"}>
+                <div className="flex-none w-6 mr-2">
+                  <FileIcon
+                    extension={fileExtension(file)}
+                    {...getFileIconStyle(file)}
+                  />
+                </div>
+                <Text className="line-clamp-1">
+                  {JSON.parse(file?.meta || "{}")?.originalname}
+                </Text>
+              </Flex>
 
               <Flex align={"center"}>
                 <UnstyledButton

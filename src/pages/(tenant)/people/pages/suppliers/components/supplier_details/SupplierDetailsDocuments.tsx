@@ -47,15 +47,11 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
           value: supplierDetails?._id,
         },
         body: {
-          attachments:
-            [
-              ...attachments,
-              ...(files?.map((att) => ({
-                meta: att?.meta,
-                path: att?.path,
-                provider: att?.provider,
-              })) as ServerFileReference[]),
-            ] ?? [],
+          attachments: files?.map((att) => ({
+            meta: att?.meta,
+            path: att?.path,
+            provider: att?.provider,
+          })),
         },
       },
     });
@@ -64,9 +60,11 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   return (
     <div>
       <Attachments
+        title="Documents"
         attachments={attachments}
         enableUploader
         onUploadDone={(files) => {
+          console.log(files);
           handleUpload(files);
         }}
         folder={FOLDER__NAME.SUPPLIER_ATTACHMENTS}
