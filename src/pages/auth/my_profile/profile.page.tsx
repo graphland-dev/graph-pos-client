@@ -51,11 +51,6 @@ const MyProfilePage = () => {
   // prefill form with previous values
   useEffect(() => {
     setValue("name", user?.name as string);
-    // setProfileLogo({
-    //   meta: user?.avatar?.meta,
-    //   path: user?.avatar?.path || null,
-    //   provider: user?.avatar?.provider,
-    // });
   }, [user]);
 
   // update mutation
@@ -113,7 +108,7 @@ const MyProfilePage = () => {
               maxSize={3 * 1024 ** 2}
               className="flex items-center justify-center group p-0 m-0 h-[100px] w-[100px] rounded-full"
             >
-              {!profileLogo?.path ? (
+              {!profileLogo?.path && !user?.avatar?.path ? (
                 <IconUpload
                   style={{
                     width: rem(52),
@@ -128,7 +123,13 @@ const MyProfilePage = () => {
                     width="100px"
                     fit="cover"
                     className="rounded-full overflow-hidden"
-                    src={profileLogo?.path ? getFileUrl(profileLogo) : ""}
+                    src={
+                      profileLogo?.path
+                        ? getFileUrl(profileLogo)
+                        : user?.avatar?.path
+                        ? getFileUrl(user?.avatar)
+                        : ""
+                    }
                   />
 
                   <FaCamera
@@ -148,25 +149,6 @@ const MyProfilePage = () => {
                 </div>
               )}
             </Dropzone>
-            {/* <Dropzone
-              onDrop={(files) => console.log("accepted files", files)}
-              onReject={(files) => console.log("rejected files", files)}
-              maxSize={5 * 1024 ** 2}
-              accept={IMAGE_MIME_TYPE}
-              w={100}
-              h={100}
-              disabled
-              radius={100}
-              className="flex items-center justify-center"
-            >
-              <IconUpload
-                style={{
-                  width: rem(52),
-                  height: rem(52),
-                }}
-                stroke={1.5}
-              />
-            </Dropzone> */}
 
             <Text fw={500}>Profile Photo</Text>
           </Flex>

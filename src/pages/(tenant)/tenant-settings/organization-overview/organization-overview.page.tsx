@@ -37,7 +37,7 @@ const OrganizationOverviewPage: React.FC = () => {
   const [tenants] = useAtom(userTenantsAtom);
   const tenant = tenants?.find((t) => t.uid === params.tenant);
   const file = tenant?.logo;
-  console.log(tenant);
+
 
   const { uploadFile, uploading } = useServerFile();
   const [organizationLogo, setOrganizationLogo] = useState({ path: null });
@@ -150,113 +150,6 @@ const OrganizationOverviewPage: React.FC = () => {
                 </div>
               )}
             </Dropzone>
-            {/* <Dropzone
-              onDrop={async (files) => {
-                await uploadFile({
-                  files,
-                  folder: "organization",
-                }).then((res) => {
-                  res?.data?.length > 0 && setOrganizationLogo(res.data[0]);
-                });
-                // result === true && onChange(files[0]);
-              }}
-              loading={uploading}
-              maxSize={3 * 1024 ** 2}
-              className={clsx(
-                "flex items-center justify-center group p-0 m-0 h-[200px] w-[200px] rounded-full"
-              )}
-            >
-              {!file?.path ? (
-                <IconPhoto
-                  style={{
-                    width: rem(52),
-                    height: rem(52),
-                    color: "var(--mantine-color-blue-6)",
-                  }}
-                  stroke={1.5}
-                />
-              ) : (
-                <div className="relative">
-                  <Image
-                    className={clsx(
-                      "w-[200px] h-[200px] rounded-full object-cover"
-                    )}
-                    src={getFileUrl(file)}
-                  />
-
-                  <FaCamera
-                    size={55}
-                    color="white"
-                    className="absolute shadow-xl opacity-0 group-hover:opacity-100"
-                    style={{
-                      transform: "translate(-50%, -50%)",
-                      top: "50%",
-                      left: "50%",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      transition: "all 0.5s ease-in-out",
-                    }}
-                  />
-                </div>
-              )}
-            </Dropzone>  */}
-            {/*
-            <Dropzone
-              onDrop={async (files) => {
-                const result = await useServerFile({
-                  file: files[0],
-                  folder,
-                });
-                onChange(result.data);
-              }}
-              loading={uploading}
-              maxSize={3 * 1024 ** 2}
-              className={clsx(
-                "flex items-center justify-center group p-0 m-0 h-[200px] w-[200px] rounded-full",
-                {
-                  " h-[100px] w-[100px] ": isLogo,
-                }
-              )}
-            >
-              {!file?.path ? (
-                <IconPhoto
-                  style={{
-                    width: rem(isLogo ? 33 : 52),
-                    height: rem(isLogo ? 33 : 52),
-                    color: "var(--mantine-color-blue-6)",
-                  }}
-                  stroke={1.5}
-                />
-              ) : (
-                <div className="relative">
-                  <Image
-                    className={clsx(
-                      "w-[200px] h-[200px] rounded-full object-cover",
-                      {
-                        " h-[100px] w-[100px] ": isLogo,
-                      }
-                    )}
-                    src={getFileUrl(file)}
-                  />
-
-                  <FaCamera
-                    size={isLogo ? 33 : 55}
-                    color="white"
-                    className="absolute shadow-xl opacity-0 group-hover:opacity-100"
-                    style={{
-                      transform: "translate(-50%, -50%)",
-                      top: "50%",
-                      left: "50%",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      transition: "all 0.5s ease-in-out",
-                    }}
-                  />
-                </div>
-              )}
-            </Dropzone> */}
 
             <Text fw={500}>Organization Logo</Text>
           </Flex>

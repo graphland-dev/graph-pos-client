@@ -24,6 +24,11 @@ const GET_USER_QUERIES = gql`
         tenant
         roles
       }
+      avatar {
+        meta
+        path
+        provider
+      }
     }
     identity__myPermissions(tenant: $tenant) {
       collectionName
