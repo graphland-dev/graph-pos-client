@@ -30,6 +30,7 @@ import { useServerFile } from "@/_app/hooks/use-upload-file";
 import { useEffect, useState } from "react";
 import { userTenantsAtom } from "@/_app/states/user.atom";
 import { Notify } from "@/_app/common/Notification/Notify";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 
 const OrganizationOverviewPage: React.FC = () => {
   const params = useParams<{ tenant: string }>();
@@ -39,8 +40,7 @@ const OrganizationOverviewPage: React.FC = () => {
   console.log(tenant);
 
   const { uploadFile, uploading } = useServerFile();
-  const [organizationLogo, setOrganizationLogo] = useState({});
-  // console.log(organizationLogo);
+  const [organizationLogo, setOrganizationLogo] = useState({ path: null });
 
   // form initiated
   const {
@@ -73,11 +73,13 @@ const OrganizationOverviewPage: React.FC = () => {
     updateOrganizationInfo({
       variables: {
         input: {
-          ...values,
           logo: organizationLogo,
-        }
+          address: values?.address,
+          businessPhoneNumber: values?.businessPhoneNumber,
+          description: values?.description,
+          name: values?.name,
+        },
       },
-      
     });
   };
 
@@ -91,6 +93,64 @@ const OrganizationOverviewPage: React.FC = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex align={"center"} gap={20}>
             <Dropzone
+              onDrop={async (files) => {
+                const res = await uploadFile({
+                  files,
+                  folder: FOLDER__NAME.USER__AVATAR,
+                });
+                if (res.data.length > 0) {
+                  setOrganizationLogo(res.data[0]);
+                }
+              }}
+              loading={uploading}
+              maxSize={3 * 1024 ** 2}
+              className={clsx(
+                "flex items-center justify-center group p-0 m-0 h-[200px] w-[200px] rounded-full"
+              )}
+            >
+              {!organizationLogo?.path && !file?.path ? (
+                <IconPhoto
+                  style={{
+                    width: rem(80),
+                    height: rem(80),
+                    color: "var(--mantine-color-blue-6)",
+                  }}
+                  stroke={1.5}
+                />
+              ) : (
+                <div className="relative w-[200px] h-[200px]">
+                  <Image
+                    height="200px"
+                    width="200px"
+                    fit="cover"
+                    className="rounded-full overflow-hidden"
+                    src={
+                      organizationLogo?.path
+                        ? getFileUrl(organizationLogo)
+                        : file?.path
+                        ? getFileUrl(file)
+                        : ""
+                    }
+                  />
+
+                  <FaCamera
+                    size={rem(55)}
+                    color="white"
+                    className="absolute shadow-xl opacity-0 group-hover:opacity-100"
+                    style={{
+                      transform: "translate(-50%, -50%)",
+                      top: "50%",
+                      left: "50%",
+                      borderRadius: "5px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      transition: "all 0.5s ease-in-out",
+                    }}
+                  />
+                </div>
+              )}
+            </Dropzone>
+            {/* <Dropzone
               onDrop={async (files) => {
                 await uploadFile({
                   files,
@@ -140,7 +200,7 @@ const OrganizationOverviewPage: React.FC = () => {
                   />
                 </div>
               )}
-            </Dropzone>
+            </Dropzone>  */}
             {/*
             <Dropzone
               onDrop={async (files) => {

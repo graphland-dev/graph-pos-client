@@ -1,4 +1,7 @@
 import { Notify } from "@/_app/common/Notification/Notify";
+import { getFileUrl } from "@/_app/common/utils/getFileUrl";
+import { useServerFile } from "@/_app/hooks/use-upload-file";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 import { userAtom } from "@/_app/states/user.atom";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
@@ -6,6 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
   Flex,
+  Image,
   Input,
   Paper,
   Space,
@@ -16,8 +20,9 @@ import {
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { IconArrowLeft, IconUpload } from "@tabler/icons-react";
 import { useAtom } from "jotai";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { FaCamera } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
   IProfileFormType,
@@ -28,6 +33,10 @@ import { UPDATE_PROFILE_MUTATION } from "./utils/query.gql";
 const MyProfilePage = () => {
   const navigate = useNavigate();
   const [user] = useAtom(userAtom);
+  const [profileLogo, setProfileLogo] = useState({
+    path: null,
+  });
+  const { uploadFile, uploading } = useServerFile();
 
   // form initiated
   const {
@@ -42,6 +51,11 @@ const MyProfilePage = () => {
   // prefill form with previous values
   useEffect(() => {
     setValue("name", user?.name as string);
+    // setProfileLogo({
+    //   meta: user?.avatar?.meta,
+    //   path: user?.avatar?.path || null,
+    //   provider: user?.avatar?.provider,
+    // });
   }, [user]);
 
   // update mutation
@@ -59,6 +73,7 @@ const MyProfilePage = () => {
         input: {
           name: values?.name,
           email: user?.email,
+          avatar: profileLogo,
         },
       },
     });
@@ -84,6 +99,56 @@ const MyProfilePage = () => {
         <form onSubmit={handleSubmit(onSubmit)}>
           <Flex align={"center"} gap={20}>
             <Dropzone
+              onDrop={async (files) => {
+                const res = await uploadFile({
+                  files,
+                  folder: FOLDER__NAME.USER__AVATAR,
+                });
+                if (res.data.length > 0) {
+                  setProfileLogo(res.data[0]);
+                }
+              }}
+              accept={IMAGE_MIME_TYPE}
+              loading={uploading}
+              maxSize={3 * 1024 ** 2}
+              className="flex items-center justify-center group p-0 m-0 h-[100px] w-[100px] rounded-full"
+            >
+              {!profileLogo?.path ? (
+                <IconUpload
+                  style={{
+                    width: rem(52),
+                    height: rem(52),
+                  }}
+                  stroke={1.5}
+                />
+              ) : (
+                <div className="relative w-[100px] h-[100px]">
+                  <Image
+                    height="100px"
+                    width="100px"
+                    fit="cover"
+                    className="rounded-full overflow-hidden"
+                    src={profileLogo?.path ? getFileUrl(profileLogo) : ""}
+                  />
+
+                  <FaCamera
+                    size={rem(55)}
+                    color="white"
+                    className="absolute shadow-xl opacity-0 group-hover:opacity-100"
+                    style={{
+                      transform: "translate(-50%, -50%)",
+                      top: "50%",
+                      left: "50%",
+                      borderRadius: "5px",
+                      fontSize: "12px",
+                      fontWeight: "bold",
+                      transition: "all 0.5s ease-in-out",
+                    }}
+                  />
+                </div>
+              )}
+            </Dropzone>
+            {/* <Dropzone
               onDrop={(files) => console.log("accepted files", files)}
               onReject={(files) => console.log("rejected files", files)}
               maxSize={5 * 1024 ** 2}
@@ -101,7 +166,7 @@ const MyProfilePage = () => {
                 }}
                 stroke={1.5}
               />
-            </Dropzone>
+            </Dropzone> */}
 
             <Text fw={500}>Profile Photo</Text>
           </Flex>

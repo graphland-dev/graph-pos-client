@@ -39,6 +39,11 @@ const GET_USER_QUERIES = gql`
         businessPhoneNumber
         description
         createdAt
+        logo {
+          meta
+          path
+          provider
+        }
       }
     }
   }

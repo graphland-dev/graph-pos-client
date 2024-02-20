@@ -68,7 +68,6 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
         <EmployeeDetailsBasicInfo
           employeeDetails={employeeDetails}
           departments={departments || []}
-         
         />
       )}
       {activeTab === 1 && (
@@ -78,7 +77,10 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
         <EmployeeDetailsIncrements id={employeeDetails?._id} />
       )}
       {activeTab === 3 && (
-        <EmployeeDetailsDocuments id={employeeDetails?._id} refetch={refetch} />
+        <EmployeeDetailsDocuments
+          employeeDetails={employeeDetails}
+          refetch={refetch}
+        />
       )}
     </ViewDashboardLayout>
   );

@@ -1,30 +1,35 @@
 import { gql } from "@apollo/client";
 
 export const ACCOUNTING_EXPENSE_QUERY_LIST = gql`
-query Accounting__expenses {
-  accounting__expenses {
-    meta {
-      totalCount
-    }
-    nodes {
-      _id
-      account {
-        _id
-        name
-        referenceNumber
+  query Accounting__expenses {
+    accounting__expenses {
+      meta {
+        totalCount
       }
-      amount
-      category
-      checkNo
-      createdAt
-      date
-      note
-      purpose
-      updatedAt
-      voucherNo
+      nodes {
+        _id
+        attachments {
+          meta
+          path
+          provider
+        }
+        account {
+          _id
+          name
+          referenceNumber
+        }
+        amount
+        category
+        checkNo
+        createdAt
+        date
+        note
+        purpose
+        updatedAt
+        voucherNo
+      }
     }
   }
-}
 `;
 
 export const ACCOUNTING_EXPENSE_CREATE_MUTATION = gql`
