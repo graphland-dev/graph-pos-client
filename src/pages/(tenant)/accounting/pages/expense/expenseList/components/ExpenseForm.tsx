@@ -24,6 +24,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "../../expenseCategory/utils/query";
 import { ACCOUNTING_EXPENSE_CREATE_MUTATION } from "../utils/query";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 
 interface IExpenseFormProps {
   onSubmissionDone: () => void;
@@ -39,10 +40,9 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   formData,
   accounts,
 }) => {
-
-    const [uploadedfiles, setUploadedFiles] = React.useState<
-      ServerFileReference[]
-    >([]);
+  const [uploadedFiles, setUploadedFiles] = React.useState<
+    ServerFileReference[]
+  >([]);
 
   const [createMutation, { loading: creating }] = useMutation(
     ACCOUNTING_EXPENSE_CREATE_MUTATION
@@ -104,7 +104,15 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   const onSubmit = (data: any) => {
     createMutation({
       variables: {
-        body: { ...data, categoryId: data.categoryId },
+        body: {
+          ...data,
+          categoryId: data.categoryId,
+          attachments: uploadedFiles.map((file) => ({
+            meta: file.meta,
+            path: file.path,
+            provider: file.provider,
+          })),
+        },
       },
       onCompleted: (res) => {
         console.log(res);
@@ -203,13 +211,12 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
         />
 
         <Attachments
-          attachments={uploadedfiles}
+          attachments={formData?.attachments || []}
           enableUploader
           onUploadDone={(files) => {
             setUploadedFiles(files);
-            console.log(files);
           }}
-          folder={"Graphland__Expense__Document"}
+          folder={FOLDER__NAME.EXPENSE_ATTACHMENTS}
         />
 
         <Button
