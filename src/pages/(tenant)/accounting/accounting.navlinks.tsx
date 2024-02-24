@@ -1,9 +1,7 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
 import {
   IconExchange,
-  IconLoadBalancer,
-  IconTableShare,
-  IconVectorTriangle,
+  IconTableShare
 } from "@tabler/icons-react";
 
 export const accountingNavlinks: AppNavLink[] = [
@@ -20,10 +18,10 @@ export const accountingNavlinks: AppNavLink[] = [
         label: "Adjustments",
         href: "adjustments",
       },
-      {
-        label: "Invoice generator",
-        href: "invoice-generator",
-      },
+      // {
+      //   label: "Invoice generator",
+      //   href: "invoice-generator",
+      // },
       {
         label: "Transfers",
         href: "transfers",
@@ -53,38 +51,38 @@ export const accountingNavlinks: AppNavLink[] = [
       },
     ],
   },
-  {
-    label: "Load Management",
-    icon: <IconLoadBalancer />,
-    href: "load-Management",
-    children: [
-      {
-        label: "Authorities",
-        href: "authorities",
-      },
-      {
-        label: "Loans",
-        href: "loans",
-      },
-      {
-        label: "Payments",
-        href: "payments",
-      },
-    ],
-  },
-  {
-    label: "Asset Management",
-    icon: <IconVectorTriangle />,
-    href: "asset-Management",
-    children: [
-      {
-        label: "Types",
-        href: "types",
-      },
-      {
-        label: "Assets",
-        href: "assets",
-      },
-    ],
-  },
+  // {
+  //   label: "Load Management",
+  //   icon: <IconLoadBalancer />,
+  //   href: "load-Management",
+  //   children: [
+  //     {
+  //       label: "Authorities",
+  //       href: "authorities",
+  //     },
+  //     {
+  //       label: "Loans",
+  //       href: "loans",
+  //     },
+  //     {
+  //       label: "Payments",
+  //       href: "payments",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Asset Management",
+  //   icon: <IconVectorTriangle />,
+  //   href: "asset-Management",
+  //   children: [
+  //     {
+  //       label: "Types",
+  //       href: "types",
+  //     },
+  //     {
+  //       label: "Assets",
+  //       href: "assets",
+  //     },
+  //   ],
+  // },
 ];
