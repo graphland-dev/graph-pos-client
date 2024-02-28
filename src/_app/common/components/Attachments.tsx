@@ -13,7 +13,12 @@ import {
 import { Dropzone, MIME_TYPES } from "@mantine/dropzone";
 import { openConfirmModal } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import { IconExternalLink, IconTrash, IconUpload } from "@tabler/icons-react";
+import {
+  IconBucketDroplet,
+  IconExternalLink,
+  IconTrash,
+  IconUpload,
+} from "@tabler/icons-react";
 import React, { useState } from "react";
 import { getFileUrl } from "../utils/getFileUrl";
 
@@ -106,6 +111,13 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
         {title}
       </Text>
 
+      {!enableUploader && attachments.length === 0 && (
+        <Flex align={"center"} gap={"md"} className="p-4 border border-dashed">
+          <IconBucketDroplet size={20} />
+          <Text color="gray.6">No file attached</Text>
+        </Flex>
+      )}
+
       {enableUploader && (
         <div>
           <Dropzone
@@ -185,7 +197,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
                     {...getFileIconStyle(file)}
                   />
                 </div>
-                <Text className="line-clamp-1">
+                <Text className="flex-1 min-w-0 truncate">
                   {JSON.parse(file?.meta || "{}")?.originalname}
                 </Text>
               </Flex>
