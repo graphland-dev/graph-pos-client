@@ -12,12 +12,12 @@ import SupplierDetailsBasicInfo from "../SupplierDetailsBasicInfo";
 import SupplierDetailsPurchase from "./SupplierDetailsPurchase";
 import SupplierDetailsDocuments from "./SupplierDetailsDocuments";
 
-interface ISupplierDetailsFormProps {
+interface ISupplierDetailsProps {
   supplierDetails: Supplier | null;
   refetch: () => void;
 }
 
-const ViewSupplierDetails: React.FC<ISupplierDetailsFormProps> = ({
+const ViewSupplierDetails: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
   refetch,
 }) => {

@@ -27,7 +27,7 @@ import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useAtom } from "jotai";
 import { useServerFile } from "@/_app/hooks/use-upload-file";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { userTenantsAtom } from "@/_app/states/user.atom";
 import { Notify } from "@/_app/common/Notification/Notify";
 import { FOLDER__NAME } from "@/_app/models/FolderName";
@@ -41,7 +41,7 @@ const OrganizationOverviewPage: React.FC = () => {
 
   const { uploadFile, uploading } = useServerFile();
   const [organizationLogo, setOrganizationLogo] = useState({ path: null });
-
+ const saveButtonRef = useRef<HTMLButtonElement | null>(null);
   // form initiated
   const {
     register,
@@ -59,6 +59,7 @@ const OrganizationOverviewPage: React.FC = () => {
     setValue("businessPhoneNumber", tenant?.businessPhoneNumber);
     setValue("description", tenant?.description);
   }, [tenant]);
+
 
   // update mutation
   const [updateOrganizationInfo, { loading }] = useMutation(
@@ -83,6 +84,12 @@ const OrganizationOverviewPage: React.FC = () => {
     });
   };
 
+    useEffect(() => {
+      if (organizationLogo.path !== null) {
+         saveButtonRef?.current?.click();
+      }
+    }, [organizationLogo]);
+  
   return (
     <div>
       <Paper px={20} py={20} radius={10} className="lg:w-8/12">
@@ -100,6 +107,7 @@ const OrganizationOverviewPage: React.FC = () => {
                 });
                 if (res.data.length > 0) {
                   setOrganizationLogo(res.data[0]);
+                 
                 }
               }}
               loading={uploading}
@@ -205,7 +213,7 @@ const OrganizationOverviewPage: React.FC = () => {
 
           <Space h={"sm"} />
 
-          <Button type="submit" loading={loading}>
+          <Button ref={saveButtonRef} type="submit" loading={loading}>
             Save
           </Button>
         </form>
