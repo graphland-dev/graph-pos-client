@@ -50,7 +50,7 @@ export const inventoryNavlinks: AppNavLink[] = [
     href: "payments",
     children: [
       {
-        label: "Supplier Pay",
+        label: "Purchase Payments",
         href: "supplier-payments",
       },
     ],

@@ -1,5 +1,8 @@
+import PageTitle from "@/_app/common/PageTitle";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
+import commaNumber from "@/_app/common/utils/commaNumber";
+import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   MatchOperator,
   ProductPurchase,
@@ -10,7 +13,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -19,7 +21,6 @@ import {
   Inventory__Remove_Product_Purchase,
   Inventory__product_Purchases_Query,
 } from "./utils/query";
-import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   refetching: boolean;
@@ -87,34 +88,33 @@ const PurchaseListPage = () => {
       },
       {
         accessorKey: "purchaseDate",
-
-        accessorFn: (row: ProductPurchase) =>
-          dayjs(row?.purchaseDate).format("MMMM D, YYYY h:mm A"),
+        accessorFn: (row: ProductPurchase) => dateFormat(row?.purchaseDate),
         header: "Purchase Date",
       },
       {
         accessorKey: "purchaseOrderDate",
-
         accessorFn: (row: ProductPurchase) =>
-          dayjs(row?.purchaseOrderDate).format("MMMM D, YYYY h:mm A"),
+          dateFormat(row?.purchaseOrderDate),
         header: "Order Date",
       },
       {
         accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${originalRow?.netTotal - (originalRow?.paidAmount || 0)} BDT`,
+          `${commaNumber(
+            originalRow?.netTotal - (originalRow?.paidAmount || 0)
+          )} BDT`,
         header: "Due Amount",
       },
       {
         accessorKey: "paidAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${originalRow?.paidAmount} BDT`,
+          `${commaNumber(originalRow?.paidAmount || 0)} BDT`,
         header: "Paid Amount",
       },
       {
         accessorKey: "netTotal",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${originalRow?.netTotal} BDT`,
+          `${commaNumber(originalRow?.netTotal || 0)} BDT`,
         header: "Net Total",
       },
     ],
