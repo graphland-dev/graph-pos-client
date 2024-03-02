@@ -7,6 +7,11 @@ import {
 
 export const inventoryNavlinks: AppNavLink[] = [
   {
+    label: "POS",
+    icon: <IconShoppingCart />,
+    href: "pos",
+  },
+  {
     label: "Products",
     icon: <IconBrandProducthunt />,
     href: "products",
@@ -51,7 +56,7 @@ export const inventoryNavlinks: AppNavLink[] = [
     children: [
       {
         label: "Purchase Payments",
-        href: "supplier-payments",
+        href: "purchase-payments",
       },
     ],
   },

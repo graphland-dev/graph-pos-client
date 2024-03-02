@@ -49,7 +49,7 @@ import {
 } from "./utils/validation";
 import commaNumber from "@/_app/common/utils/commaNumber";
 
-const CreateSupplierPayment = () => {
+const CreatePurchasePayment = () => {
   const [searchParams] = useSearchParams();
   const supplierId = searchParams.get("supplierId");
   const purchaseId = searchParams.get("purchaseId");
@@ -369,4 +369,4 @@ const CreateSupplierPayment = () => {
   );
 };
 
-export default CreateSupplierPayment;
+export default CreatePurchasePayment;
