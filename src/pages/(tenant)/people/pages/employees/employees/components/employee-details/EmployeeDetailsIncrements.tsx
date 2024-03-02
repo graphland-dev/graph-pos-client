@@ -96,8 +96,7 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
         header: "Note",
       },
       {
-        accessorFn: (row: EmployeeIncrement) =>
-          dayjs(row?.date).format("MMMM D, YYYY h:mm A"),
+        accessorFn: (row: EmployeeIncrement) => dateFormat(row?.date),
         accessorKey: "date",
         header: "Date",
       },

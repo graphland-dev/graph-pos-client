@@ -910,7 +910,7 @@ export type Product = {
   _id: Scalars['ID']['output'];
   brand?: Maybe<Brand>;
   category?: Maybe<ProductCategory>;
-  code: Scalars['String']['output'];
+  code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   discountAmount?: Maybe<Scalars['Float']['output']>;
   discountMode?: Maybe<ProductDiscountMode>;
@@ -967,6 +967,7 @@ export type ProductPurchase = {
   paidAmount?: Maybe<Scalars['Float']['output']>;
   products: Array<PurchaseProductItemReference>;
   purchaseDate?: Maybe<Scalars['DateTime']['output']>;
+  purchaseId?: Maybe<Scalars['String']['output']>;
   purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
   subTotal: Scalars['Float']['output'];
   supplier?: Maybe<Supplier>;
@@ -1001,8 +1002,10 @@ export type ProductStock = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   note?: Maybe<Scalars['String']['output']>;
   product: Product;
+  purchaseId?: Maybe<Scalars['String']['output']>;
   quantity: Scalars['Int']['output'];
   source: ProductStockSource;
+  tenant?: Maybe<Scalars['String']['output']>;
   type: ProductStockType;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };

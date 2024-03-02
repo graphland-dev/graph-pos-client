@@ -103,6 +103,7 @@ export const PRODUCT_STOCK_HISTORY_QUERY = gql`
         _id
         createdAt
         note
+        purchaseId
         product {
           _id
           code

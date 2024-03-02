@@ -78,6 +78,10 @@ const PurchaseListPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
+        accessorKey: "purchaseId",
+        header: "Purchase ID",
+      },
+      {
         accessorKey: "supplier.name",
         header: "Supplier Name",
       },

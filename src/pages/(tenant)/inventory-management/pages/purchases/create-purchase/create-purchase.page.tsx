@@ -44,7 +44,7 @@ import {
   getVatProfileSelectInputData,
 } from "./utils/helpers";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
 import ProductsCardList from "./components/ProductsCardList";
@@ -67,6 +67,8 @@ const CreatePurchasePage = () => {
   const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
 
   const navigate = useNavigate();
+
+  const params = useParams<{ tenant: string }>();
 
   const {
     data,
@@ -187,7 +189,9 @@ const CreatePurchasePage = () => {
       sucTitle: "Inventory product added to purchase",
       onSuccess(res) {
         navigate(
-          `/inventory-management/payments/supplier-payments/${watch(
+          `/${
+            params.tenant
+          }/inventory-management/payments/supplier-payments/${watch(
             "supplierId"
           )}/${res?.inventory__createProductPurchase?._id}`
         );
