@@ -5,9 +5,9 @@ export const Inventory__Product_Purchases = gql`
     inventory__productPurchases(where: $where) {
       nodes {
         _id
-        purchaseId
-        dueAmount
+        purchaseUID
         paidAmount
+        netTotal
         supplier {
           _id
           name

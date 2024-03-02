@@ -191,7 +191,7 @@ const CreatePurchasePage = () => {
         const supplierId = watch("supplierId");
         const purchaseId = res?.inventory__createProductPurchase?._id;
         navigate(
-          `/${params.tenant}/inventory-management/payments/supplier-payments?supplierId=${supplierId}&purchaseId=${purchaseId}`
+          `/${params.tenant}/inventory-management/payments/create-supplier-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
         );
       },
     })
@@ -447,6 +447,7 @@ const CreatePurchasePage = () => {
           </Input.Wrapper>
           <Space h={"sm"} />
           <Input.Wrapper
+            withAsterisk
             label="Select VAT profile"
             error={<ErrorMessage errors={errors} name={`taxRate`} />}
           >

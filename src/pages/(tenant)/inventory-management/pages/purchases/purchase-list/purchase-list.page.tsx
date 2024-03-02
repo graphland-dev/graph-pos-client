@@ -78,8 +78,8 @@ const PurchaseListPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "purchaseId",
-        header: "Purchase ID",
+        accessorKey: "purchaseUID",
+        header: "Purchase UID",
       },
       {
         accessorKey: "supplier.name",
@@ -99,18 +99,10 @@ const PurchaseListPage = () => {
           dayjs(row?.purchaseOrderDate).format("MMMM D, YYYY h:mm A"),
         header: "Order Date",
       },
-      // {
-      // 	header: 'Stock Quantity',
-      // 	accessorFn(originalRow: Product) {
-      // 		return (
-      // 			originalRow?.stockInQuantity - originalRow?.stockOutQuantity || 0
-      // 		);
-      // 	},
-      // },
       {
         accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${originalRow?.dueAmount} BDT`,
+          `${originalRow?.netTotal - (originalRow?.paidAmount || 0)} BDT`,
         header: "Due Amount",
       },
       {
@@ -125,10 +117,6 @@ const PurchaseListPage = () => {
           `${originalRow?.netTotal} BDT`,
         header: "Net Total",
       },
-      // {
-      // 	accessorKey: 'price',
-      // 	header: 'Price',
-      // },
     ],
     []
   );
@@ -154,6 +142,16 @@ const PurchaseListPage = () => {
         totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
         RowActionMenu={(row: ProductPurchase) => (
           <>
+            {(row?.paidAmount || 0) < (row?.netTotal || 0) && (
+              <Menu.Item
+                icon={<IconFileInfo size={18} />}
+                component={Link}
+                to={`/${params.tenant}/inventory-management/payments/create-supplier-payment?supplierId=${row.supplier?._id}&purchaseId=${row._id}`}
+              >
+                Make Payment
+              </Menu.Item>
+            )}
+
             <Menu.Item
               icon={<IconFileInfo size={18} />}
               onClick={() => {
@@ -162,7 +160,6 @@ const PurchaseListPage = () => {
                   openDrawer: true,
                 });
               }}
-              color="yellow"
             >
               View
             </Menu.Item>

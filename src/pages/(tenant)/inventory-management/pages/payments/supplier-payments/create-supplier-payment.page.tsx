@@ -47,6 +47,7 @@ import {
   IPurchasePaymentFormState,
   Purchase_Payment_Schema_Validation,
 } from "./utils/validation";
+import commaNumber from "@/_app/common/utils/commaNumber";
 
 const CreateSupplierPayment = () => {
   const [searchParams] = useSearchParams();
@@ -116,14 +117,10 @@ const CreateSupplierPayment = () => {
             operator: MatchOperator.Eq,
             value: watch("supplierId"),
           },
-          {
-            key: "dueAmount",
-            operator: MatchOperator.Gt,
-            value: "0",
-          },
         ],
       },
     },
+    skip: !watch("supplierId"),
   });
 
   const [createPayment, { loading: creatingPayment }] = useMutation(
@@ -136,16 +133,17 @@ const CreateSupplierPayment = () => {
   useEffect(() => {
     if (supplierId) setValue("supplierId", supplierId!);
 
-    setValue(`items`, [
-      purchases?.inventory__productPurchases?.nodes?.find(
-        (purchase: ProductPurchase) => purchase?._id === purchaseId
-      ),
-    ]);
+    if (purchaseId) {
+      setValue(
+        `items`,
+        purchases?.inventory__productPurchases?.nodes?.filter(
+          (purchase: ProductPurchase) => purchase?._id === purchaseId
+        ) || []
+      );
+    }
   }, [supplierId, purchaseId, purchases]);
 
   const onSubmit = (v: any) => {
-    console.log(v);
-
     createPayment({
       variables: {
         body: {
@@ -153,6 +151,7 @@ const CreateSupplierPayment = () => {
           accountId: v?.accountId,
           items: v?.items?.map((item: any) => ({
             purchaseId: item?._id,
+            purchaseUID: item?.purchaseUID,
             amount: item?.amount,
           })),
           checkNo: v?.checkNo,
@@ -188,14 +187,6 @@ const CreateSupplierPayment = () => {
             </Title>
             <Text color="red">{errors?.supplierId?.message}</Text>
           </div>
-
-          {/* <Button
-						variant='light'
-						leftIcon={<IconPlus />}
-						onClick={() => createSupplierDrawerHandler.open()}
-					>
-						Add new
-					</Button> */}
         </Flex>
         <Space h={"md"} />
         <SuppliersCardList
@@ -244,7 +235,7 @@ const CreateSupplierPayment = () => {
           <Table withBorder withColumnBorders>
             <thead className="bg-slate-300">
               <tr className="!p-2 rounded-md">
-                <th>Purchase ID</th>
+                <th>Purchase UID</th>
                 <th>Due Amount</th>
                 <th>Pay Amount</th>
                 <th>Action</th>
@@ -252,10 +243,14 @@ const CreateSupplierPayment = () => {
             </thead>
 
             <tbody>
-              {itemsFields?.map((item: any, idx: number) => (
+              {itemsFields?.map((item: ProductPurchase, idx: number) => (
                 <tr key={idx}>
-                  <td className="font-medium">{item?._id}</td>
-                  <td className="font-medium">{item?.dueAmount}</td>
+                  <td className="font-medium">{item?.purchaseUID}</td>
+                  <td className="font-medium">
+                    {commaNumber(
+                      (item?.netTotal || 0) - (item?.paidAmount || 0)
+                    )}
+                  </td>
                   <td className="font-medium">
                     <NumberInput
                       w={100}

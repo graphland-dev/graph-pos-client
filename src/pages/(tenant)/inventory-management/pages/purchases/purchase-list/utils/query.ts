@@ -5,7 +5,7 @@ export const Inventory__product_Purchases_Query = gql`
     inventory__productPurchases(where: $where) {
       nodes {
         _id
-        purchaseId
+        purchaseUID
         products {
           referenceId
           name
@@ -42,7 +42,6 @@ export const Inventory__product_Purchases_Query = gql`
         costAmount
         netTotal
         paidAmount
-        dueAmount
         note
         createdAt
         updatedAt

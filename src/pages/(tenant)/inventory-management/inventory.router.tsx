@@ -72,6 +72,13 @@ export const inventoryModuleRouter: RouteObject[] = [
             // query strings
             // - supplierId
             // - purchaseId
+            path: "supplier-payments",
+            element: <h3>supplier-payments</h3>,
+          },
+          {
+            // query strings
+            // - supplierId
+            // - purchaseId
             path: "create-supplier-payment",
             element: <CreateSupplierPayment />,
           },

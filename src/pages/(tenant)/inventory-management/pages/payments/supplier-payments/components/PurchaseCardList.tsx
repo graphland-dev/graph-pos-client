@@ -24,13 +24,19 @@ const PurchaseCardList: React.FC<{
   return (
     <div>
       <div className="grid grid-cols-3 gap-3">
-        {purchases?.map((purchase: ProductPurchase, idx: number) => (
+        {purchases?.map((purchase, idx: number) => (
           <Paper
             key={idx}
             p={10}
             withBorder
-            className="relative cursor-pointer hover:bg-slate-100 hover:duration-200"
-            onClick={() => onAddItem(purchase)}
+            className="relative cursor-pointer"
+            onClick={() => {
+              onAddItem({
+                ...purchase,
+                purchaseId: purchase?._id,
+                purchaseUID: purchase?.purchaseUID,
+              });
+            }}
           >
             {watch(`items.${idx}._id`) === purchase?._id && (
               <IconSquareCheckFilled
@@ -39,9 +45,12 @@ const PurchaseCardList: React.FC<{
               />
             )}
             <Text size={"md"} fw={700}>
-              {purchase?.purchaseId}
+              {purchase?.purchaseUID}
             </Text>
-            <Text size={"sm"}>Due amount: {purchase?.dueAmount || 0} BDT</Text>
+            <Text size={"sm"}>
+              Due amount:{" "}
+              {(purchase?.netTotal || 0) - (purchase?.paidAmount || 0) || 0} BDT
+            </Text>
             <Text size={"sm"}>Net total: {purchase?.netTotal || 0} BDT </Text>
           </Paper>
         ))}
