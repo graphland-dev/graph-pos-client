@@ -28,7 +28,7 @@ const SuppliersCardList: React.FC<{
             key={idx}
             p={10}
             withBorder
-            className="relative cursor-pointer hover:bg-slate-100 hover:duration-200"
+            className="relative cursor-pointer"
             onClick={() => setValue("supplierId", supplier?._id)}
           >
             {watch("supplierId") === supplier?._id && (

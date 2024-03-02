@@ -134,7 +134,8 @@ const CreateSupplierPayment = () => {
   );
 
   useEffect(() => {
-    setValue("supplierId", supplierId!);
+    if (supplierId) setValue("supplierId", supplierId!);
+
     setValue(`items`, [
       purchases?.inventory__productPurchases?.nodes?.find(
         (purchase: ProductPurchase) => purchase?._id === purchaseId
