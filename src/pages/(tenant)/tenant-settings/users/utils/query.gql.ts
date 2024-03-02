@@ -14,3 +14,9 @@ export const Organization__Employees__Query = gql`
 		}
 	}
 `;
+
+export const IDENTITY_ADD_USER_TO_CURRENT_TENANT = gql`
+  mutation Identity__addUserToCurrentTenant($input: AddUserToTenantInput!) {
+    identity__addUserToCurrentTenant(input: $input)
+  }
+`;

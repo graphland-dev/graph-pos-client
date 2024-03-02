@@ -14,9 +14,7 @@ import {
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
-
   formData?: Supplier;
-
   action: "CREATE" | "EDIT";
 }
 
