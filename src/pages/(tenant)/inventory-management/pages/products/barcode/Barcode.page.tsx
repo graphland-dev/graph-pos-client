@@ -24,7 +24,7 @@ import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { IconPrinter } from "@tabler/icons-react";
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import * as yup from "yup";
@@ -74,10 +74,14 @@ const BarcodePage = () => {
     },
   });
 
-  const productsDropdownData = data?.inventory__products.nodes?.map((item) => ({
-    value: item?.code,
-    label: `${item?.name}`,
-  }));
+  const productsDropdown = useMemo(
+    () =>
+      data?.inventory__products.nodes?.map((item) => ({
+        value: item?.code,
+        label: `${item?.name}`,
+      })),
+    [data?.inventory__products.nodes]
+  );
 
   const getProductByCode = (code: string) => {
     return data?.inventory__products.nodes?.find((p) => p.code === code);
@@ -107,7 +111,7 @@ const BarcodePage = () => {
                   setValue("productCode", productCode || "");
                 }}
                 placeholder="Select Product"
-                data={productsDropdownData || []}
+                data={productsDropdown || ([] as any)}
                 value={watch("productCode")}
               />
             </Input.Wrapper>

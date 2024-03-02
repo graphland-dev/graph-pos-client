@@ -1,7 +1,7 @@
 import DashboardLayout from '@/_app/common/layouts/DashboardLayout';
 import { RouteObject } from 'react-router-dom';
 import { inventoryNavlinks } from './inventory.navlinks';
-import SupplierPayment from './pages/payments/supplier-payments/supplier-payment.page';
+import CreateSupplierPayment from './pages/payments/supplier-payments/create-supplier-payment.page';
 import Barcode from './pages/products/barcode/Barcode.page';
 import ProductEditPage from './pages/products/product-edit/ProductEdit.page';
 import ProductCategoryPage from './pages/products/products-category/productsCategory.page';
@@ -9,7 +9,6 @@ import ProductListPage from './pages/products/products-list/productsList.page';
 import CreatePurchasePage from './pages/purchases/create-purchase/create-purchase.page';
 import PurchaseListPage from './pages/purchases/purchase-list/purchase-list.page';
 import Return from './pages/purchases/return/return.page';
-import SalesPage from './pages/sales/sales.page';
 
 export const inventoryModuleRouter: RouteObject[] = [
 	{
@@ -22,6 +21,12 @@ export const inventoryModuleRouter: RouteObject[] = [
 			/>
 		),
 		children: [
+			//   {
+			//     path: "",
+			//     element: (
+			//       <Navigate to={"/inventory-management/products/products-list"} />
+			//     ),
+			//   },
 			{
 				path: 'products',
 				children: [
@@ -44,10 +49,6 @@ export const inventoryModuleRouter: RouteObject[] = [
 				],
 			},
 			{
-				path: 'sales',
-				element: <SalesPage />,
-			},
-			{
 				path: 'purchases',
 				children: [
 					{
@@ -68,8 +69,18 @@ export const inventoryModuleRouter: RouteObject[] = [
 				path: 'payments',
 				children: [
 					{
-						path: 'supplier-payments/:supplierId/:purchaseId',
-						element: <SupplierPayment />,
+						// query strings
+						// - supplierId
+						// - purchaseId
+						path: 'supplier-payments',
+						element: <h3>supplier-payments</h3>,
+					},
+					{
+						// query strings
+						// - supplierId
+						// - purchaseId
+						path: 'create-supplier-payment',
+						element: <CreateSupplierPayment />,
 					},
 				],
 			},

@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import {
   Avatar,
   Button,
+  Drawer,
   Flex,
   Image,
   Paper,
@@ -11,20 +12,57 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useDisclosure, useSetState } from "@mantine/hooks";
 import { Organization__Employees__Query } from "./utils/query.gql";
+import UserCreateForm from "./components/UserCreateFrom";
+
+
+interface IState {
+  refetch: boolean;
+  selectedUser: User | null;
+  viewModal: boolean;
+}
 
 const UsersPage = () => {
-  const { data, loading } = useQuery<{
+  const [opened, handler] = useDisclosure();
+  const [state, ] = useSetState<IState>({
+    refetch: false,
+    selectedUser: null,
+    viewModal: false,
+  });
+  const { data, loading, refetch } = useQuery<{
     identity__currentTenantUsers: UsersWithPagination;
   }>(Organization__Employees__Query);
 
   return (
     <div>
+      <Drawer
+        opened={opened}
+        onClose={handler.close}
+        position="right"
+        title="Create User"
+        withCloseButton={true}
+      >
+        <UserCreateForm
+          formData={state.selectedUser!}
+          onFormSubmitted={() => {
+            refetch();
+            handler.close();
+          }}
+        />
+      </Drawer>
       <Flex justify={"space-between"}>
         <Title order={2} fw={700}>
           Organization Employees
         </Title>
-        <Button variant="outline">Invite Member </Button>
+        <Button
+          onClick={() => {
+            handler.open();
+          }}
+          variant="outline"
+        >
+          Invite Member{" "}
+        </Button>
       </Flex>
 
       <Space h={"lg"} />

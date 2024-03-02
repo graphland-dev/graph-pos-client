@@ -1,5 +1,8 @@
+import PageTitle from "@/_app/common/PageTitle";
+import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
+import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   AccountsWithPagination,
   MatchOperator,
@@ -10,7 +13,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconPlus, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import TransferForm from "./components/TransferForm";
@@ -18,8 +20,6 @@ import {
   ACCOUNTING_DELETE_TRANSFER_MUTATION,
   ACCOUNTING_TRANSFER_QUERY_LIST,
 } from "./ulits/query";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -104,8 +104,7 @@ const TransferPage = () => {
         header: "Amount",
       },
       {
-        accessorFn: (row: Transfer) =>
-          dayjs(row?.date).format("MMMM D, YYYY h:mm A"),
+        accessorFn: (row: Transfer) => dateFormat(row?.date),
         accessorKey: "date",
         header: "Date",
       },

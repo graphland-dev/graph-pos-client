@@ -49,7 +49,7 @@ const ProductListPage = () => {
       sucTitle: "Inventory product created successfully!",
       onSuccess(res) {
         navigate(
-          `/inventory-management/products/${res?.inventory__createProduct?._id}`
+          `/${params.tenant}/inventory-management/products/${res?.inventory__createProduct?._id}`
         );
         refetch();
       },
