@@ -39,7 +39,7 @@ const PurchaseCardList: React.FC<{
               />
             )}
             <Text size={"md"} fw={700}>
-              Purchase ID: {purchase?.purchaseId}
+              {purchase?.purchaseId}
             </Text>
             <Text size={"sm"}>Due amount: {purchase?.dueAmount || 0} BDT</Text>
             <Text size={"sm"}>Net total: {purchase?.netTotal || 0} BDT </Text>

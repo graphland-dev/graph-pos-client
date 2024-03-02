@@ -188,12 +188,10 @@ const CreatePurchasePage = () => {
     Notify({
       sucTitle: "Inventory product added to purchase",
       onSuccess(res) {
+        const supplierId = watch("supplierId");
+        const purchaseId = res?.inventory__createProductPurchase?._id;
         navigate(
-          `/${
-            params.tenant
-          }/inventory-management/payments/supplier-payments/${watch(
-            "supplierId"
-          )}/${res?.inventory__createProductPurchase?._id}`
+          `/${params.tenant}/inventory-management/payments/supplier-payments?supplierId=${supplierId}&purchaseId=${purchaseId}`
         );
       },
     })

@@ -1,7 +1,7 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
 import { inventoryNavlinks } from "./inventory.navlinks";
-import SupplierPayment from "./pages/payments/supplier-payments/supplier-payment.page";
+import CreateSupplierPayment from "./pages/payments/supplier-payments/create-supplier-payment.page";
 import Barcode from "./pages/products/barcode/Barcode.page";
 import ProductEditPage from "./pages/products/product-edit/ProductEdit.page";
 import ProductCategoryPage from "./pages/products/products-category/productsCategory.page";
@@ -72,8 +72,8 @@ export const inventoryModuleRouter: RouteObject[] = [
             // query strings
             // - supplierId
             // - purchaseId
-            path: "supplier-payments",
-            element: <SupplierPayment />,
+            path: "create-supplier-payment",
+            element: <CreateSupplierPayment />,
           },
         ],
       },

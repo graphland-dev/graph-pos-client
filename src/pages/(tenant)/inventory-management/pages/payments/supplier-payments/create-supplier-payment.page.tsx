@@ -48,12 +48,11 @@ import {
   Purchase_Payment_Schema_Validation,
 } from "./utils/validation";
 
-const SupplierPayment = () => {
+const CreateSupplierPayment = () => {
   const [searchParams] = useSearchParams();
-  const [supplierId] = useState(searchParams.get("purchaseId"));
-  const [purchaseId] = useState(searchParams.get("purchaseId"));
+  const supplierId = searchParams.get("supplierId");
+  const purchaseId = searchParams.get("purchaseId");
 
-  // const [supplierId, setSupplierId] = useState<string>();
   const [supplierPage, onChangeSupplierPage] = useState(1);
   const [purchasePage, onChangePurchasePage] = useState(1);
 
@@ -374,4 +373,4 @@ const SupplierPayment = () => {
   );
 };
 
-export default SupplierPayment;
+export default CreateSupplierPayment;
