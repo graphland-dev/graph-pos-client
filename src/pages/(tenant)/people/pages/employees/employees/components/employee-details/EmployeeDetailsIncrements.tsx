@@ -16,12 +16,12 @@ import React, { useMemo } from "react";
 //   INCREMENT_DELETE_MUTATION,
 //   INCREMENT_EMPLOYEE_QUERY,
 // } from "./utils/increment.query";
-import dayjs from "dayjs";
 import {
   INCREMENTS_QUERY,
   INCREMENT_DELETE_MUTATION,
 } from "../../../increments/utils/increment.query";
 import EmployeeIncrementsForm from "./employee_details_form/EmployeeIncrementsForm";
+import dateFormat from "@/_app/common/utils/dateFormat";
 
 interface IState {
   refetching: boolean;

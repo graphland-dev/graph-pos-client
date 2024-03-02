@@ -19,8 +19,8 @@ import {
   INCREMENT_DELETE_MUTATION,
   INCREMENT_EMPLOYEE_QUERY,
 } from "./utils/increment.query";
-import dayjs from "dayjs";
 import PageTitle from "@/_app/common/PageTitle";
+import dateFormat from "@/_app/common/utils/dateFormat";
 
 interface IState {
   refetching: boolean;
