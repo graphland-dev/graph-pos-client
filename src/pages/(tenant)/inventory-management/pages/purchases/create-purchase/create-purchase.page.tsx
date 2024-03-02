@@ -58,6 +58,7 @@ import {
   ICreatePurchaseFormState,
   Schema_Validation,
 } from "./utils/validation";
+import commaNumber from "@/_app/common/utils/commaNumber";
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);
@@ -365,17 +366,23 @@ const CreatePurchasePage = () => {
                           />
                         </td>
                         <td className="font-medium text-center">
-                          {watch(`products.${idx}.quantity`) *
-                            watch(`products.${idx}.unitPrice`)}
+                          {commaNumber(
+                            watch(`products.${idx}.quantity`) *
+                              watch(`products.${idx}.unitPrice`)
+                          )}
                         </td>
                         <td className="font-medium">{product?.taxRate || 0}</td>
                         <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`))}
+                          {commaNumber(
+                            calculateTaxAmount(watch(`products.${idx}`))
+                          )}
                         </td>
                         <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`)) +
-                            watch(`products.${idx}.quantity`) *
-                              watch(`products.${idx}.unitPrice`)}
+                          {commaNumber(
+                            calculateTaxAmount(watch(`products.${idx}`)) +
+                              watch(`products.${idx}.quantity`) *
+                                watch(`products.${idx}.unitPrice`)
+                          )}
                         </td>
                         <td className="font-medium">
                           <ActionIcon
@@ -399,8 +406,7 @@ const CreatePurchasePage = () => {
                     </td>
                     <td>{getTotalTaxAmount(watch("products") || [])}</td>
                     <td>
-                      {getTotalProductsPrice(watch("products")!) +
-                        getTotalCostAmount(watch("costs")!)}
+                      {commaNumber(getTotalProductsPrice(watch("products")!))}
                     </td>
                     <td></td>
                   </tr>
