@@ -31,7 +31,7 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import SuppliersCardList from "../../purchases/create-purchase/components/SuppliersCardList";
 import PurchaseCardList from "./components/PurchaseCardList";
 import {
@@ -49,7 +49,9 @@ import {
 } from "./utils/validation";
 
 const SupplierPayment = () => {
-  const { supplierId, purchaseId: purId } = useParams();
+  const [searchParams] = useSearchParams();
+  const [supplierId] = useState(searchParams.get("purchaseId"));
+  const [purchaseId] = useState(searchParams.get("purchaseId"));
 
   // const [supplierId, setSupplierId] = useState<string>();
   const [supplierPage, onChangeSupplierPage] = useState(1);
@@ -136,10 +138,10 @@ const SupplierPayment = () => {
     setValue("supplierId", supplierId!);
     setValue(`items`, [
       purchases?.inventory__productPurchases?.nodes?.find(
-        (purchase: ProductPurchase) => purchase?._id === purId
+        (purchase: ProductPurchase) => purchase?._id === purchaseId
       ),
     ]);
-  }, [supplierId, purId, purchases]);
+  }, [supplierId, purchaseId, purchases]);
 
   const onSubmit = (v: any) => {
     console.log(v);
@@ -281,7 +283,7 @@ const SupplierPayment = () => {
             </tbody>
           </Table>
         ) : (
-          <Paper className="text-left font-medium text-red-500 rounded-md p-3">
+          <Paper className="p-3 font-medium text-left text-red-500 rounded-md">
             <Text>No items added!</Text>
           </Paper>
         )}

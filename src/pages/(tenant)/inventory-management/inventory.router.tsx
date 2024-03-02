@@ -69,7 +69,10 @@ export const inventoryModuleRouter: RouteObject[] = [
         path: "payments",
         children: [
           {
-            path: "supplier-payments/:supplierId/:purchaseId",
+            // query strings
+            // - supplierId
+            // - purchaseId
+            path: "supplier-payments",
             element: <SupplierPayment />,
           },
         ],
