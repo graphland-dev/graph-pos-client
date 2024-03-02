@@ -1,23 +1,23 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from "@/_app/common/confirm/confirm";
+import DataTable from "@/_app/common/data-table/DataTable";
 import {
   MatchOperator,
   Supplier,
   SuppliersWithPagination,
-} from '@/_app/graphql-models/graphql';
-import { useMutation, useQuery } from '@apollo/client';
-import { Button, Drawer, Menu } from '@mantine/core';
-import { useDisclosure, useSetState } from '@mantine/hooks';
-import { IconEye, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
-import { MRT_ColumnDef } from 'mantine-react-table';
-import { useMemo, useState } from 'react';
-import ViewSupplierDetails from './components/supplier_details/ViewSupplierDetails';
+} from "@/_app/graphql-models/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { Button, Drawer, Menu } from "@mantine/core";
+import { useDisclosure, useSetState } from "@mantine/hooks";
+import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { MRT_ColumnDef } from "mantine-react-table";
+import { useMemo, useState } from "react";
+import ViewSupplierDetails from "./components/supplier_details/ViewSupplierDetails";
 import {
   PEOPLE_REMOVE_SUPPLIERS,
   PEOPLE_SUPPLIERS_QUERY,
-} from './utils/suppliers.query';
-import SuppliersCreateFrom from './components/SuppliersCreateFrom';
-import PageTitle from '@/_app/common/PageTitle';
+} from "./utils/suppliers.query";
+import SuppliersCreateFrom from "./components/SuppliersCreateFrom";
+import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   refetching: boolean;
@@ -27,76 +27,77 @@ interface IState {
 }
 
 const SuppliersPage = () => {
-	const [openedDrawer, drawerHandler] = useDisclosure();
-	const [state, setState] = useSetState<IState>({
+  const [openedDrawer, drawerHandler] = useDisclosure();
+  const [state, setState] = useSetState<IState>({
     refetching: false,
     action: "CREATE",
     selectedSuppliers: null,
     viewModal: false,
   });
 
-	const [supplierViewDetails, setSupplierViewDetails] = useState<Supplier | null>(null);
+  const [supplierViewDetails, setSupplierViewDetails] =
+    useState<Supplier | null>(null);
 
-	const {
-		data,
-		refetch,
-		loading: fetchingPeople,
-	} = useQuery<{
-		people__suppliers: SuppliersWithPagination;
-	}>(PEOPLE_SUPPLIERS_QUERY);
+  const {
+    data,
+    refetch,
+    loading: fetchingPeople,
+  } = useQuery<{
+    people__suppliers: SuppliersWithPagination;
+  }>(PEOPLE_SUPPLIERS_QUERY);
 
-	const [deleteClientMutation] = useMutation(PEOPLE_REMOVE_SUPPLIERS, {
-		onCompleted: () => handleRefetch({}),
-	});
+  const [deleteClientMutation] = useMutation(PEOPLE_REMOVE_SUPPLIERS, {
+    onCompleted: () => handleRefetch({}),
+  });
 
-	const handleRefetch = (variables: any) => {
-		setState({ refetching: true });
-		refetch(variables).finally(() => {
-			setState({ refetching: false });
-		});
-	};
+  const handleRefetch = (variables: any) => {
+    setState({ refetching: true });
+    refetch(variables).finally(() => {
+      setState({ refetching: false });
+    });
+  };
 
-	const handleDeleteIncrement = (_id: string) => {
-		confirmModal({
-			title: 'Sure to delete supplier?',
-			description: 'Be careful!! Once you deleted, it can not be undone',
-			isDangerous: true,
-			onConfirm() {
-				deleteClientMutation({
-					variables: {
-						where: { key: '_id', operator: MatchOperator.Eq, value: _id },
-					},
-				});
-			},
-		});
-	};
+  const handleDeleteIncrement = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete supplier?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteClientMutation({
+          variables: {
+            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+          },
+        });
+      },
+    });
+  };
 
-	const columns = useMemo<MRT_ColumnDef<any>[]>(
-		() => [
-			{
-				accessorKey: 'name',
-				header: 'Name',
-			},
-			{
-				accessorKey: 'companyName',
-				header: 'Company Name',
-			},
-			{
-				accessorKey: 'contactNumber',
-				header: 'Contact number',
-			},
-			{
-				accessorKey: 'email',
-				header: 'Email',
-			},
-			{
-				accessorKey: 'address',
-				header: 'Address',
-			},
-		],
-		[]
-	);
-	return (
+  const columns = useMemo<MRT_ColumnDef<any>[]>(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "companyName",
+        header: "Company Name",
+      },
+      {
+        accessorKey: "contactNumber",
+        header: "Contact number",
+      },
+      {
+        accessorKey: "email",
+        header: "Email",
+      },
+      {
+        accessorKey: "address",
+        header: "Address",
+      },
+    ],
+    []
+  );
+  return (
     <div>
       <PageTitle title="suppliers" />
       <DataTable
@@ -180,7 +181,9 @@ const SuppliersPage = () => {
       >
         <ViewSupplierDetails
           supplierDetails={supplierViewDetails}
-          refetch={refetch}
+          refetch={() => {
+            refetch();
+          }}
         />
       </Drawer>
     </div>

@@ -8,7 +8,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ACCOUNTING_EXPENSE_DELETE_MUTATION,
   ACCOUNTING_EXPENSE_QUERY_LIST,
@@ -16,10 +16,11 @@ import {
 import { Button, Drawer, Menu } from "@mantine/core";
 import ExpenseForm from "./components/ExpenseForm";
 import { useSetState } from "@mantine/hooks";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
 import PageTitle from "@/_app/common/PageTitle";
+import ViewExpenseDetails from "./components/ViewExpenseDetails";
 
 interface IState {
   modalOpened: boolean;
@@ -37,6 +38,10 @@ const ExpenseListPage = () => {
     operationPayload: {},
     refetching: false,
   });
+
+  const [expenseViewDetails, setExpenseViewDetails] = useState<Expense | null>(
+    null
+  );
 
   const { data, loading, refetch } = useQuery<{
     accounting__expenses: ExpensesWithPagination;
@@ -155,6 +160,15 @@ const ExpenseListPage = () => {
               Edit
             </Menu.Item>
             <Menu.Item
+              onClick={() => {
+                setState({ modalOpened: true });
+                setExpenseViewDetails(row);
+              }}
+              icon={<IconEye size={18} />}
+            >
+              Details
+            </Menu.Item>
+            <Menu.Item
               onClick={() => handleDeleteAccount(row._id)}
               icon={<IconTrash size={18} />}
             >
@@ -177,6 +191,22 @@ const ExpenseListPage = () => {
         }
         loading={loading || state.refetching}
       />
+
+      <Drawer
+        padding={14}
+        title="Expense details"
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
+        position="right"
+        size={"40%"}
+      >
+        <ViewExpenseDetails
+          expenseDetails={expenseViewDetails}
+          refetch={() => {
+            refetch();
+          }}
+        />
+      </Drawer>
     </>
   );
 };

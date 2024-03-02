@@ -43,11 +43,14 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
 	const [uploadedfiles, setUploadedFiles] = React.useState<
 		ServerFileReference[]
 	>([]);
+	// const [uploadedFiles, setUploadedFiles] = React.useState<
+	// 	ServerFileReference[]
+	// >([]);
 
 	const [createMutation, { loading: creating }] = useMutation(
 		ACCOUNTING_EXPENSE_CREATE_MUTATION
 	);
-	const [updateExpense, { loading: updating }] = useMutation(
+	const [, { loading: updating }] = useMutation(
 		ACCOUNTING_EXPENSE_CREATE_MUTATION,
 		Notify({
 			sucTitle: 'Expense updated successfully',
@@ -111,21 +114,16 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
 	}, [formData]);
 
 	const onSubmit = (data: any) => {
-		if (operationType === 'create') {
-			createMutation({
-				variables: {
-					body: { ...data, categoryId: data.categoryId },
-				},
-				onCompleted: () => {
-					onSubmissionDone();
-				},
-				onError: (err) => console.log(err),
-			});
-		} else {
-			updateExpense({
-				variables: {},
-			});
-		}
+		createMutation({
+			variables: {
+				body: { ...data, categoryId: data.categoryId },
+			},
+			onCompleted: (res) => {
+				console.log(res);
+				onSubmissionDone();
+			},
+			onError: (err) => console.log(err),
+		});
 	};
 
 	return (

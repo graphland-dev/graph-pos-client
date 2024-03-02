@@ -3,6 +3,7 @@ import {
   TenantsWithPagination,
   User,
 } from "@/_app/graphql-models/graphql";
+import { $triggerRefetchMe } from "@/_app/rxjs-controllers";
 import {
   userAtom,
   userPermissionsAtom,
@@ -11,7 +12,7 @@ import {
 import { gql, useQuery } from "@apollo/client";
 import { LoadingOverlay } from "@mantine/core";
 import { useAtom } from "jotai";
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 const GET_USER_QUERIES = gql`
@@ -23,6 +24,11 @@ const GET_USER_QUERIES = gql`
       memberships {
         tenant
         roles
+      }
+      avatar {
+        meta
+        path
+        provider
       }
     }
     identity__myPermissions(tenant: $tenant) {
@@ -39,6 +45,11 @@ const GET_USER_QUERIES = gql`
         businessPhoneNumber
         description
         createdAt
+        logo {
+          meta
+          path
+          provider
+        }
       }
     }
   }
@@ -52,7 +63,7 @@ export const AuthGuardedWrapper: React.FC<PropsWithChildren> = ({
   const [, setUserPermissions] = useAtom(userPermissionsAtom);
   const [, setUserTenants] = useAtom(userTenantsAtom);
 
-  const { loading } = useQuery<{
+  const { loading, refetch } = useQuery<{
     identity__me: User;
     identity__myPermissions: RolePermission[];
     identity__myTenants: TenantsWithPagination;
@@ -71,6 +82,12 @@ export const AuthGuardedWrapper: React.FC<PropsWithChildren> = ({
       window.location.href = "/auth/login";
     },
   });
+
+  useEffect(() => {
+    $triggerRefetchMe.subscribe(() => {
+      refetch();
+    });
+  }, []);
 
   return (
     <div className="relative">

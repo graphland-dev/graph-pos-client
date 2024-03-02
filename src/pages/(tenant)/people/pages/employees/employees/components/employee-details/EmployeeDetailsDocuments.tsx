@@ -1,28 +1,26 @@
 import Attachments from "@/_app/common/components/Attachments";
-import {
-  MatchOperator,
-  ServerFileReference,
-} from "@/_app/graphql-models/graphql";
-import { useMutation } from "@apollo/client";
-import { Button, Flex } from "@mantine/core";
-import { IconUpload } from "@tabler/icons-react";
+import { Employee, MatchOperator, ServerFileReference } from "@/_app/graphql-models/graphql";
 import React from "react";
 import { PEOPLE_EMPLOYEES_UPDATE_MUTATION } from "../../utils/query";
+import { useMutation } from "@apollo/client";
 import { Notify } from "@/_app/common/Notification/Notify";
+import { FOLDER__NAME } from "@/_app/models/FolderName";
 
 interface IDocumentsDetailsProps {
-  id: string | undefined;
+  employeeDetails: Employee | null;
   refetch: () => void;
 }
-const EmployeeDetailsDocuments: React.FC<IDocumentsDetailsProps> = ({
-  id,
-  refetch,
-}) => {
-  const [uploadedfiles, setUploadedFiles] = React.useState<
-    ServerFileReference[]
-  >([]);
+const EmployeeDetailsDocuments: React.FC<IDocumentsDetailsProps> = ({refetch, employeeDetails}) => {
+ 
+  
+   const attachments =
+     employeeDetails?.attachments?.map((file) => ({
+       meta: file.meta,
+       path: file.path,
+       provider: file.provider,
+     })) ?? [];
 
-  const [updateEmployeeWithAttachments, { loading }] = useMutation(
+  const [updateEmployeeWithAttachments] = useMutation(
     PEOPLE_EMPLOYEES_UPDATE_MUTATION,
     Notify({
       sucTitle: "Attachments saved successfully!",
@@ -32,51 +30,36 @@ const EmployeeDetailsDocuments: React.FC<IDocumentsDetailsProps> = ({
     })
   );
 
-  const handleUpload = () => {
-    updateEmployeeWithAttachments({
-      variables: {
-        where: {
-          key: "_id",
-          operator: MatchOperator.Eq,
-          value: id,
-        },
-        body: {
-          attachments:
-            [
-              ...(uploadedfiles?.map((att) => ({
-                meta: att?.meta,
-                path: att?.path,
-                provider: att?.provider,
-              })) as ServerFileReference[]),
-            ] ?? [],
-        },
-      },
-    });
-  };
+   const handleUpload = (files: ServerFileReference[]) => {
+     updateEmployeeWithAttachments({
+       variables: {
+         where: {
+           key: "_id",
+           operator: MatchOperator.Eq,
+           value: employeeDetails?._id,
+         },
+         body: {
+           attachments: files?.map((att) => ({
+             meta: att?.meta,
+             path: att?.path,
+             provider: att?.provider,
+           })),
+         },
+       },
+     });
+   };
 
   return (
     <div>
       <Attachments
-        attachments={uploadedfiles}
+        attachments={attachments}
         enableUploader
         onUploadDone={(files) => {
-          setUploadedFiles(files);
+          handleUpload(files);
           console.log(files);
         }}
-        folder={"Graphland__Payroll__Attachments"}
+        folder={FOLDER__NAME.EMPLOYEE_ATTACHMENTS}
       />
-      {uploadedfiles.length > 0 && (
-        <Flex justify={"end"} mt={"md"}>
-          <Button
-            color="yellow.8"
-            onClick={handleUpload}
-            loading={loading}
-            leftIcon={<IconUpload size={20} />}
-          >
-            Upload
-          </Button>
-        </Flex>
-      )}
     </div>
   );
 };

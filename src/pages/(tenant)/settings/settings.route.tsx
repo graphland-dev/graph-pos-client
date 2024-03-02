@@ -1,9 +1,9 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
-import { Navigate, RouteObject } from "react-router-dom";
-import { settingsNavlinks } from "./settings.navlinks";
-import VatPage from "./pages/vat/vat.page";
-import UnitPage from "./pages/unit/unit.page";
+import { RouteObject } from "react-router-dom";
 import BrandPage from "./pages/brand/brand.page";
+import UnitPage from "./pages/unit/unit.page";
+import VatPage from "./pages/vat/vat.page";
+import { settingsNavlinks } from "./settings.navlinks";
 
 export const settingModuleRouter: RouteObject[] = [
   {
@@ -16,10 +16,10 @@ export const settingModuleRouter: RouteObject[] = [
       />
     ),
     children: [
-      {
-        path: "",
-        element: <Navigate to={"/settings/vat-profiles"} />,
-      },
+      // {
+      //   path: "",
+      //   element: <Navigate to={"/settings/vat-profiles"} />,
+      // },
       {
         path: "vat-profiles",
         element: <VatPage />,

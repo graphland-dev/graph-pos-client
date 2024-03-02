@@ -3,6 +3,7 @@ import { Avatar, Image, Menu } from "@mantine/core";
 import { openConfirmModal } from "@mantine/modals";
 import { useAtom } from "jotai";
 import { Link } from "react-router-dom";
+import { getFileUrl } from "../../utils/getFileUrl";
 
 const UserMenu = () => {
   const [currentUser] = useAtom(userAtom);
@@ -24,11 +25,23 @@ const UserMenu = () => {
     <>
       <Menu shadow="md" width={200}>
         <Menu.Target>
-          <Avatar size={32.8} variant="gradient" className="cursor-pointer">
-            <Image
-              src={`https://api.dicebear.com/7.x/initials/svg?seed=${currentUser?.name}`}
-            />
-          </Avatar>
+          {currentUser?.avatar?.path ? (
+            <div className="w-8 h-8 cursor-pointer">
+              <Image
+                fit="cover"
+                width={32}
+                height={32}
+                className="rounded overflow-hidden"
+                src={getFileUrl(currentUser?.avatar ?? {})}
+              />
+            </div>
+          ) : (
+            <Avatar size={32.8} variant="gradient" className="cursor-pointer">
+              <Image
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${currentUser?.name}`}
+              />
+            </Avatar>
+          )}
         </Menu.Target>
 
         <Menu.Dropdown>
