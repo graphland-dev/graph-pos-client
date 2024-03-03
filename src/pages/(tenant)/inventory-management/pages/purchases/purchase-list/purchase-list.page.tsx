@@ -1,8 +1,8 @@
-import PageTitle from "@/_app/common/PageTitle";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
-import commaNumber from "@/_app/common/utils/commaNumber";
-import dateFormat from "@/_app/common/utils/dateFormat";
+import PageTitle from '@/_app/common/PageTitle';
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
+import commaNumber from '@/_app/common/utils/commaNumber';
+import dateFormat from '@/_app/common/utils/dateFormat';
 import {
 	MatchOperator,
 	ProductPurchase,
@@ -20,12 +20,7 @@ import PurchaseItemsShowCase from './components/PurchaseItemsShowCase';
 import {
 	Inventory__Remove_Product_Purchase,
 	Inventory__product_Purchases_Query,
-} from "./utils/query";
-  MatchOperator,
-  ProductPurchase,
-  ProductPurchasesWithPagination,
-  PurchaseProductItemReference,
-} from "@/_app/graphql-models/graphql";
+} from './utils/query';
 
 interface IState {
 	refetching: boolean;
@@ -81,81 +76,81 @@ const PurchaseListPage = () => {
 		});
 	};
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
-    () => [
-      {
-        accessorKey: "purchaseUID",
-        header: "Purchase UID",
-      },
-      {
-        accessorKey: "supplier.name",
-        header: "Supplier Name",
-      },
-      {
-        accessorKey: "purchaseDate",
-        accessorFn: (row: ProductPurchase) => dateFormat(row?.purchaseDate),
-        header: "Purchase Date",
-      },
-      {
-        accessorKey: "purchaseOrderDate",
-        accessorFn: (row: ProductPurchase) =>
-          dateFormat(row?.purchaseOrderDate),
-        header: "Order Date",
-      },
-      {
-        accessorKey: "dueAmount",
-        accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(
-            originalRow?.netTotal - (originalRow?.paidAmount || 0)
-          )} BDT`,
-        header: "Due Amount",
-      },
-      {
-        accessorKey: "paidAmount",
-        accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(originalRow?.paidAmount || 0)} BDT`,
-        header: "Paid Amount",
-      },
-      {
-        accessorKey: "netTotal",
-        accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(originalRow?.netTotal || 0)} BDT`,
-        header: "Net Total",
-      },
-    ],
-    []
-  );
+	const columns = useMemo<MRT_ColumnDef<any>[]>(
+		() => [
+			{
+				accessorKey: 'purchaseUID',
+				header: 'Purchase UID',
+			},
+			{
+				accessorKey: 'supplier.name',
+				header: 'Supplier Name',
+			},
+			{
+				accessorKey: 'purchaseDate',
+				accessorFn: (row: ProductPurchase) => dateFormat(row?.purchaseDate),
+				header: 'Purchase Date',
+			},
+			{
+				accessorKey: 'purchaseOrderDate',
+				accessorFn: (row: ProductPurchase) =>
+					dateFormat(row?.purchaseOrderDate),
+				header: 'Order Date',
+			},
+			{
+				accessorKey: 'dueAmount',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${commaNumber(
+						originalRow?.netTotal - (originalRow?.paidAmount || 0)
+					)} BDT`,
+				header: 'Due Amount',
+			},
+			{
+				accessorKey: 'paidAmount',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${commaNumber(originalRow?.paidAmount || 0)} BDT`,
+				header: 'Paid Amount',
+			},
+			{
+				accessorKey: 'netTotal',
+				accessorFn: (originalRow: ProductPurchase) =>
+					`${commaNumber(originalRow?.netTotal || 0)} BDT`,
+				header: 'Net Total',
+			},
+		],
+		[]
+	);
 
-  return (
-    <>
-      <PageTitle title="purchase-list" />
-      <Drawer
-        onClose={() =>
-          setState({
-            openDrawer: false,
-          })
-        }
-        title="Product items in purchase"
-        opened={state.openDrawer}
-      >
-        <PurchaseItemsShowCase items={products!} />
-      </Drawer>
-      <DataTable
-        columns={columns}
-        data={data?.inventory__productPurchases.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
-        RowActionMenu={(row: ProductPurchase) => (
-          <>
-            {(row?.paidAmount || 0) < (row?.netTotal || 0) && (
-              <Menu.Item
-                icon={<IconFileInfo size={18} />}
-                component={Link}
-                to={`/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${row.supplier?._id}&purchaseId=${row._id}`}
-              >
-                Make Payment
-              </Menu.Item>
-            )}
+	return (
+		<>
+			<PageTitle title='purchase-list' />
+			<Drawer
+				onClose={() =>
+					setState({
+						openDrawer: false,
+					})
+				}
+				title='Product items in purchase'
+				opened={state.openDrawer}
+			>
+				<PurchaseItemsShowCase items={products!} />
+			</Drawer>
+			<DataTable
+				columns={columns}
+				data={data?.inventory__productPurchases.nodes ?? []}
+				refetch={handleRefetch}
+				totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
+				RowActionMenu={(row: ProductPurchase) => (
+					<>
+						{(row?.paidAmount || 0) < (row?.netTotal || 0) && (
+							<Menu.Item
+								icon={<IconFileInfo size={18} />}
+								component={Link}
+								to={`/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${row.supplier?._id}&purchaseId=${row._id}`}
+							>
+								Make Payment
+							</Menu.Item>
+						)}
 
 						<Menu.Item
 							icon={<IconFileInfo size={18} />}

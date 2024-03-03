@@ -116,6 +116,26 @@ const CreatePurchasePage = () => {
 		},
 	});
 
+	// const {
+	// 	register,
+	// 	setValue,
+	// 	formState: { errors },
+	// 	control,
+	// 	watch,
+	// 	handleSubmit,
+	// } = useForm<ICreatePurchaseFormState>({
+	// 	// defaultValues: {
+	// 	//   purchaseDate: new Date(),
+	// 	//   purchaseOrderDate: new Date(),
+	// 	//   note: "",
+	// 	//   products: [],
+	// 	//   costs: [],
+	// 	//   supplierId: "",
+	// 	//   taxRate: 0,
+	// 	// },
+	// 	resolver: yupResolver(Schema_Validation),
+	// 	mode: 'onChange',
+	// });
 	const {
 		register,
 		setValue,
@@ -124,38 +144,18 @@ const CreatePurchasePage = () => {
 		watch,
 		handleSubmit,
 	} = useForm<ICreatePurchaseFormState>({
-		// defaultValues: {
-		//   purchaseDate: new Date(),
-		//   purchaseOrderDate: new Date(),
-		//   note: "",
-		//   products: [],
-		//   costs: [],
-		//   supplierId: "",
-		//   taxRate: 0,
-		// },
+		defaultValues: {
+			purchaseDate: new Date(),
+			purchaseOrderDate: new Date(),
+			// note: "",
+			// products: [],
+			// costs: [],
+			// supplierId: "",
+			// taxRate: 0,
+		},
 		resolver: yupResolver(Schema_Validation),
 		mode: 'onChange',
 	});
-  const {
-    register,
-    setValue,
-    formState: { errors },
-    control,
-    watch,
-    handleSubmit,
-  } = useForm<ICreatePurchaseFormState>({
-    defaultValues: {
-      purchaseDate: new Date(),
-      purchaseOrderDate: new Date(),
-      // note: "",
-      // products: [],
-      // costs: [],
-      // supplierId: "",
-      // taxRate: 0,
-    },
-    resolver: yupResolver(Schema_Validation),
-    mode: "onChange",
-  });
 
 	const {
 		append: appendProduct,
@@ -216,19 +216,19 @@ const CreatePurchasePage = () => {
 			},
 		})
 	);
-  const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
-    CREATE_INVENTORY_PRODUCT_PURCHASE,
-    Notify({
-      sucTitle: "Inventory product added to purchase",
-      onSuccess(res) {
-        const supplierId = watch("supplierId");
-        const purchaseId = res?.inventory__createProductPurchase?._id;
-        navigate(
-          `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
-        );
-      },
-    })
-  );
+	// const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
+	//   CREATE_INVENTORY_PRODUCT_PURCHASE,
+	//   Notify({
+	//     sucTitle: "Inventory product added to purchase",
+	//     onSuccess(res) {
+	//       const supplierId = watch("supplierId");
+	//       const purchaseId = res?.inventory__createProductPurchase?._id;
+	//       navigate(
+	//         `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
+	//       );
+	//     },
+	//   })
+	// );
 
 	const onSubmit = (v: any) => {
 		createPurchaseProduct({
@@ -356,7 +356,7 @@ const CreatePurchasePage = () => {
 					{Boolean(productFields?.length) && (
 						<>
 							<Table withBorder withColumnBorders>
-								<thead className='bg-slate-300'>
+								<thead className='bg-base'>
 									<tr className='!p-2 rounded-md'>
 										<th>Name</th>
 										<th>Quantity</th>
@@ -368,21 +368,6 @@ const CreatePurchasePage = () => {
 										<th>Action</th>
 									</tr>
 								</thead>
-          {Boolean(productFields?.length) && (
-            <>
-              <Table withBorder withColumnBorders>
-                <thead className="bg-base">
-                  <tr className="!p-2 rounded-md">
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Unit cost</th>
-                    <th>Tax %</th>
-                    <th>Tax Amount</th>
-                    <th>Total cost</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
 
 								<tbody>
 									{productFields?.map(
@@ -508,7 +493,7 @@ const CreatePurchasePage = () => {
 							disabled={vatProfileLoading}
 						/>
 					</Input.Wrapper>
-                  <tr>
+					{/* <tr>
                     <td colSpan={5} className="font-semibold text-right">
                       Total
                     </td>
@@ -519,55 +504,55 @@ const CreatePurchasePage = () => {
                     <td></td>
                   </tr>
                 </tbody>
-              </Table>
-              <Space h={50} />
-            </>
-          )}
-          <Input.Wrapper
-            label="Purchase date"
-            withAsterisk
-            error={<ErrorMessage errors={errors} name={"purchaseDate"} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseDate", d!)}
-              value={watch("purchaseDate")}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Purchase order date"
-            withAsterisk
-            error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseOrderDate", d!)}
-              value={watch("purchaseOrderDate")}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Note"
-            error={<ErrorMessage errors={errors} name={`note`} />}
-          >
-            <Textarea {...register("note")} placeholder="Write note" />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            withAsterisk
-            label="Select VAT profile"
-            error={<ErrorMessage errors={errors} name={`taxRate`} />}
-          >
-            <Select
-              data={getVatProfileSelectInputData(
-                vatProfile?.setup__vats?.nodes as Vat[]
-              )}
-              onChange={(v) => setValue("taxRate", parseInt(v!))}
-              placeholder="Select vat profile"
-              disabled={vatProfileLoading}
-            />
-          </Input.Wrapper>
+              </Table> */}
+					{/* <Space h={50} />
+            </> */}
+					{/* )} */}
+					<Input.Wrapper
+						label='Purchase date'
+						withAsterisk
+						error={<ErrorMessage errors={errors} name={'purchaseDate'} />}
+					>
+						<DateInput
+							onChange={(d) => setValue('purchaseDate', d!)}
+							value={watch('purchaseDate')}
+							placeholder='Pick a date'
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Purchase order date'
+						withAsterisk
+						error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
+					>
+						<DateInput
+							onChange={(d) => setValue('purchaseOrderDate', d!)}
+							value={watch('purchaseOrderDate')}
+							placeholder='Pick a date'
+						/>
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						label='Note'
+						error={<ErrorMessage errors={errors} name={`note`} />}
+					>
+						<Textarea {...register('note')} placeholder='Write note' />
+					</Input.Wrapper>
+					<Space h={'sm'} />
+					<Input.Wrapper
+						withAsterisk
+						label='Select VAT profile'
+						error={<ErrorMessage errors={errors} name={`taxRate`} />}
+					>
+						<Select
+							data={getVatProfileSelectInputData(
+								vatProfile?.setup__vats?.nodes as Vat[]
+							)}
+							onChange={(v) => setValue('taxRate', parseInt(v!))}
+							placeholder='Select vat profile'
+							disabled={vatProfileLoading}
+						/>
+					</Input.Wrapper>
 
 					<Space h={'xl'} />
 
@@ -597,8 +582,6 @@ const CreatePurchasePage = () => {
 								'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
 								{
 									'bg-gray-100': true,
-									//  colorScheme != "dark",
-									// 'bg-gray-800': colorScheme == 'dark',
 								}
 							)}
 						>
@@ -625,39 +608,6 @@ const CreatePurchasePage = () => {
 									{...register(`costs.${idx}.name`)}
 								/>
 							</Input.Wrapper>
-          {costsFields?.map((_, idx) => (
-            <div
-              key={idx}
-              className={classNames(
-                "relative p-2 mt-5 mb-2 rounded-sm bg-gray-100",
-                {
-                  "bg-gray-100": true,
-                }
-              )}
-            >
-              <ActionIcon
-                color="red"
-                size={"sm"}
-                radius={100}
-                variant="filled"
-                className="absolute -top-2 -right-1"
-                onClick={() => removeCosts(idx)}
-              >
-                <IconMinus size={16} />
-              </ActionIcon>
-              <Input.Wrapper
-                label="Cost name"
-                withAsterisk
-                error={
-                  <ErrorMessage errors={errors} name={`costs.${idx}.name`} />
-                }
-              >
-                <Input
-                  size="xs"
-                  placeholder="Write cost name"
-                  {...register(`costs.${idx}.name`)}
-                />
-              </Input.Wrapper>
 
 							<Space h={'xs'} />
 							<Input.Wrapper
