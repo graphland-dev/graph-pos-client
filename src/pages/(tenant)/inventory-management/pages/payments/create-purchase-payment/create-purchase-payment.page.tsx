@@ -1,5 +1,6 @@
 import { Notify } from "@/_app/common/Notification/Notify";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
+import commaNumber from "@/_app/common/utils/commaNumber";
 import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import {
   AccountsWithPagination,
@@ -31,7 +32,7 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SuppliersCardList from "../../purchases/create-purchase/components/SuppliersCardList";
 import PurchaseCardList from "./components/PurchaseCardList";
 import {
@@ -47,9 +48,10 @@ import {
   IPurchasePaymentFormState,
   Purchase_Payment_Schema_Validation,
 } from "./utils/validation";
-import commaNumber from "@/_app/common/utils/commaNumber";
 
 const CreatePurchasePayment = () => {
+  const navigate = useNavigate();
+  const params = useParams<{ tenant: string }>();
   const [searchParams] = useSearchParams();
   const supplierId = searchParams.get("supplierId");
   const purchaseId = searchParams.get("purchaseId");
@@ -127,6 +129,11 @@ const CreatePurchasePayment = () => {
     Accounting__Create_Purchase_Payment,
     Notify({
       sucTitle: "Payment created successfully!",
+      onSuccess: () => {
+        navigate(
+          `/${params.tenant}/inventory-management/payments/purchase-payments`
+        );
+      },
     })
   );
 

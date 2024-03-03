@@ -1,7 +1,8 @@
 import { Button, Drawer, Space, Tabs } from "@mantine/core";
-import StockIn from "./StockIn";
-import StockOut from "./StockOut";
-import { useMutation, useQuery } from "@apollo/client";
+import { useSetState } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons-react";
+import { useParams } from "react-router-dom";
+import StockAddForm from "./StockAddForm";
 import {
   PRODUCT_STOCK_HISTORY_QUERY,
   PRODUCT_STOCK_REMOVE_MUTATION,
@@ -10,12 +11,11 @@ import {
   MatchOperator,
   ProductStocksWithPagination,
 } from "@/_app/graphql-models/graphql";
-import { useSetState } from "@mantine/hooks";
-import StockAddForm from "./StockAddForm";
-import { IconPlus } from "@tabler/icons-react";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import { useParams } from "react-router-dom";
+import { useMutation, useQuery } from "@apollo/client";
+import StockIn from "./StockIn";
+import StockOut from "./StockOut";
 import { useMemo } from "react";
+import { confirmModal } from "@/_app/common/confirm/confirm";
 
 interface IState {
   modalOpened: boolean;
@@ -67,9 +67,6 @@ const StockHistory = () => {
       ),
     [data?.inventory__productStocks.nodes]
   );
-  // const filteredStockOutData = data?.inventory__productStocks.nodes?.filter(
-  //   (item) => item.type === "STOCK_OUT"
-  // );
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });

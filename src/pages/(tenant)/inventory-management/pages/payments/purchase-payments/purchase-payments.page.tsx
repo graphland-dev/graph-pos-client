@@ -5,13 +5,14 @@ import {
   PurchasePaymentsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Drawer, Menu } from "@mantine/core";
+import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
-import { IconListDetails } from "@tabler/icons-react";
+import { IconListDetails, IconPlus } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
 import PurchasePaymentsDetails from "./components/PurchasePaymentsDetails";
+import { Link, useParams } from "react-router-dom";
 
 interface IState {
   refetching: boolean;
@@ -24,6 +25,7 @@ const PurchasePaymentPage = () => {
     purchasePaymentsRow: null,
   });
   const [openedDetailsDrawer, detailsDrawerHandler] = useDisclosure();
+  const params = useParams<{ tenant: string }>();
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -107,33 +109,18 @@ const PurchasePaymentPage = () => {
             </Menu.Item> */}
           </>
         )}
-        // ActionArea={
-        //   <>
-        //     <Button
-        //       leftIcon={<IconPlus size={16} />}
-        //       loading={loading}
-        //       onClick={() =>
-        //         createProduct({
-        //           variables: {
-        //             body: {
-        //               name: `Product ${
-        //                 (data?.inventory__products?.meta
-        //                   ?.totalCount as number) + 1
-        //               }`,
-        //               code: `P ${
-        //                 (data?.inventory__products?.meta
-        //                   ?.totalCount as number) + 1
-        //               }`,
-        //             },
-        //           },
-        //         })
-        //       }
-        //       size="sm"
-        //     >
-        //       Add new
-        //     </Button>
-        //   </>
-        // }
+        ActionArea={
+          <>
+            <Button
+              leftIcon={<IconPlus size={16} />}
+              component={Link}
+              to={`/${params.tenant}/inventory-management/payments/create-purchase-payment`}
+              size="sm"
+            >
+              Make a payment
+            </Button>
+          </>
+        }
         loading={loading || state.refetching}
       />
 
