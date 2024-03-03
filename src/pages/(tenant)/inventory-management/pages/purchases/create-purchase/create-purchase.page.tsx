@@ -124,15 +124,15 @@ const CreatePurchasePage = () => {
     watch,
     handleSubmit,
   } = useForm<ICreatePurchaseFormState>({
-    // defaultValues: {
-    //   purchaseDate: new Date(),
-    //   purchaseOrderDate: new Date(),
-    //   note: "",
-    //   products: [],
-    //   costs: [],
-    //   supplierId: "",
-    //   taxRate: 0,
-    // },
+    defaultValues: {
+      purchaseDate: new Date(),
+      purchaseOrderDate: new Date(),
+      // note: "",
+      // products: [],
+      // costs: [],
+      // supplierId: "",
+      // taxRate: 0,
+    },
     resolver: yupResolver(Schema_Validation),
     mode: "onChange",
   });
@@ -323,7 +323,7 @@ const CreatePurchasePage = () => {
           {Boolean(productFields?.length) && (
             <>
               <Table withBorder withColumnBorders>
-                <thead className="bg-slate-300">
+                <thead className="bg-base">
                   <tr className="!p-2 rounded-md">
                     <th>Name</th>
                     <th>Quantity</th>
@@ -402,7 +402,7 @@ const CreatePurchasePage = () => {
                     )
                   )}
 
-                  <tr className="bg-green-50">
+                  <tr>
                     <td colSpan={5} className="font-semibold text-right">
                       Total
                     </td>
@@ -424,6 +424,7 @@ const CreatePurchasePage = () => {
           >
             <DateInput
               onChange={(d) => setValue("purchaseDate", d!)}
+              value={watch("purchaseDate")}
               placeholder="Pick a date"
             />
           </Input.Wrapper>
@@ -435,6 +436,7 @@ const CreatePurchasePage = () => {
           >
             <DateInput
               onChange={(d) => setValue("purchaseOrderDate", d!)}
+              value={watch("purchaseOrderDate")}
               placeholder="Pick a date"
             />
           </Input.Wrapper>
@@ -489,8 +491,6 @@ const CreatePurchasePage = () => {
                 "relative p-2 mt-5 mb-2 rounded-sm bg-gray-100",
                 {
                   "bg-gray-100": true,
-                  //  colorScheme != "dark",
-                  // 'bg-gray-800': colorScheme == 'dark',
                 }
               )}
             >
