@@ -1,9 +1,13 @@
+import { Notify } from '@/_app/common/Notification/Notify';
 import { getFileUrl } from '@/_app/common/utils/getFileUrl';
 import {
+	MatchOperator,
+	Product,
 	ServerFileInput,
 	ServerFileReference,
 } from '@/_app/graphql-models/graphql';
 import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -19,15 +23,34 @@ import {
 import { openConfirmModal } from '@mantine/modals';
 import { showNotification } from '@mantine/notifications';
 import { IconPlus, IconX } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FiUpload } from 'react-icons/fi';
 import { HiOutlinePhotograph } from 'react-icons/hi';
+import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+import {
+	INVENTORY_PRODUCT_MEDIA_QUERY,
+	INVENTORY_PRODUCT_UPDATE,
+} from '../../utils/productEdit.query';
 
 // import 'react-image-crop/dist/ReactCrop.css';
 
 const MediaTab: React.FC = () => {
+	const { productId } = useParams();
+
+	const { data: mediaData, refetch } = useQuery<{
+		inventory__product: Product;
+	}>(INVENTORY_PRODUCT_MEDIA_QUERY, {
+		variables: {
+			where: {
+				key: '_id',
+				operator: MatchOperator.Eq,
+				value: productId,
+			},
+		},
+	});
+
 	const [thumbnail, setThumbnail] = useState<ServerFileInput>();
 	const [galleryPhotos, setGalleryPhotos] = useState<ServerFileReference[]>([]);
 
@@ -56,9 +79,6 @@ const MediaTab: React.FC = () => {
 		name: 'gallery',
 	});
 
-	// const [uploadedThumbnail, setUploadedThumbnail] =
-	// 	useState<ServerFileReference>();
-
 	const { uploadFile, deleteFiles, deleting } = useServerFile();
 
 	function handleDeleteFile(index: number) {
@@ -79,6 +99,7 @@ const MediaTab: React.FC = () => {
 						});
 						setGalleryPhotos((prev) => prev.filter((_, i) => i !== index));
 						// onUploadDone?.(galleryPhotos.filter((_, i) => i !== index));
+						remove(index);
 					})
 					.catch(() => {
 						showNotification({
@@ -91,59 +112,50 @@ const MediaTab: React.FC = () => {
 		});
 	}
 
-	// const { uploadFile, uploadingFile, deleteFile, deletingFile } =
-	// 	useUploadFile();
+	// prefill with prev data
+	useEffect(() => {
+		setValue(
+			'gallery',
+			mediaData?.inventory__product?.gallery?.map((g) => ({
+				path: g?.path,
+				meta: g?.meta,
+				provider: g?.provider,
+			})) as any
+		);
+		setThumbnail({
+			path: mediaData?.inventory__product?.thumbnail?.path,
+			meta: mediaData?.inventory__product?.thumbnail?.meta,
+			provider: mediaData?.inventory__product?.thumbnail?.provider,
+		} as ServerFileInput);
+	}, [mediaData]);
 
-	// const [updateVendorSettingsMutation, { loading }] = useMutation(
-	// 	UPDATE_VENDOR_MUTATION,
-	// 	Notify({
-	// 		sucTitle: 'Vendor settings updated',
-	// 		sucMessage: 'Vendor settings updated',
-	// 	})
-	// );
+	// save media
+	const [saveMedia, { loading: savingMedia }] = useMutation(
+		INVENTORY_PRODUCT_UPDATE,
+		Notify({
+			sucTitle: 'Media galleries saved!',
+			onSuccess() {
+				refetch();
+			},
+		})
+	);
 
 	const onSubmit = (values: any) => {
-		// updateVendorSettingsMutation({
-		// 	variables: {
-		// 		input: {
-		// 			id: vendorId,
-		// 			cover: {
-		// 				key: cover?.key,
-		// 				bucket: cover?.bucket,
-		// 				region: cover?.region,
-		// 			},
-		// 			photos: photos.map((p) => ({
-		// 				key: p?.key,
-		// 				bucket: p?.bucket,
-		// 				region: p?.region,
-		// 			})),
-		// 		},
-		// 	},
-		// });
+		saveMedia({
+			variables: {
+				body: {
+					thumbnail,
+					gallery: values?.gallery,
+				},
+				where: {
+					key: '_id',
+					operator: 'eq',
+					value: productId,
+				},
+			},
+		});
 		console.log(values);
 	};
-
-	// useEffect(() => {
-	// 	const photos: IFile[] = [];
-
-	// 	setCover({
-	// 		key: vendorData?.vendor?.cover?.key,
-	// 		region: vendorData?.vendor?.cover?.region,
-	// 		bucket: vendorData?.vendor?.cover?.bucket,
-	// 	});
-
-	// 	vendorData?.vendor?.photos?.map((photo: IFile) =>
-	// 		photos.push({
-	// 			key: photo.key,
-	// 			region: photo.region,
-	// 			bucket: photo.bucket,
-	// 		})
-	// 	);
-
-	// 	setPhotos(photos);
-
-	// 	setValue('photos', vendorData?.vendor?.photos);
-	// }, [vendorData]);
 
 	return (
 		<Card title='Vendor Images' shadow='sm'>
@@ -159,7 +171,7 @@ const MediaTab: React.FC = () => {
 				<Space h={5} />
 				<div className='relative w-6/12 overflow-hidden bg-gray-300 rounded-md'>
 					<div className='h-[200px] flex items-center justify-center'>
-						{thumbnail ? (
+						{thumbnail?.path ? (
 							<img
 								src={getFileUrl(thumbnail)!}
 								alt='Thumbnail'
@@ -265,12 +277,9 @@ const MediaTab: React.FC = () => {
 										onClick={() => {
 											if (watch(`gallery.${idx}`)?.path) {
 												handleDeleteFile(idx);
-												setGalleryPhotos((prev) => {
-													prev.splice(idx, 1);
-													return [...prev];
-												});
+											} else {
+												remove(idx);
 											}
-											remove(idx);
 										}}
 									>
 										<IconX color='#fff' size={16} />
@@ -312,10 +321,7 @@ const MediaTab: React.FC = () => {
 				</div>
 				<Space h={'md'} />
 				<div>
-					<Button
-						type='submit'
-						// loading={loading} onClick={onSubmit}
-					>
+					<Button type='submit' loading={savingMedia}>
 						Save
 					</Button>
 				</div>
