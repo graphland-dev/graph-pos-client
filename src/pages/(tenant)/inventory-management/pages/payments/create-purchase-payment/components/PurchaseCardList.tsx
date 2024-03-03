@@ -1,51 +1,61 @@
-import { Supplier } from "@/_app/graphql-models/graphql";
+import { ProductPurchase } from "@/_app/graphql-models/graphql";
 import { Button, Group, Paper, Skeleton, Space, Text } from "@mantine/core";
 import { IconSquareCheckFilled } from "@tabler/icons-react";
 import React from "react";
 
-const SuppliersCardList: React.FC<{
-  suppliers: Supplier[];
+const PurchaseCardList: React.FC<{
+  purchases: ProductPurchase[];
   setValue: any;
   watch: any;
-  isFetchingSuppliers: boolean;
+  isFetchingPurchases: boolean;
   hasNextPage: boolean;
-  supplierPage: number;
-  onChangeSupplierPage: (state: number) => void;
+  purchasePage: number;
+  onChangePurchasePage: (state: number) => void;
+  onAddItem: (state: any) => void;
 }> = ({
-  suppliers,
-  setValue,
+  purchases,
   watch,
-  isFetchingSuppliers,
+  isFetchingPurchases,
   hasNextPage,
-  supplierPage,
-  onChangeSupplierPage,
+  purchasePage,
+  onChangePurchasePage,
+  onAddItem,
 }) => {
   return (
     <div>
       <div className="grid grid-cols-3 gap-3">
-        {suppliers?.map((supplier: Supplier, idx: number) => (
+        {purchases?.map((purchase, idx: number) => (
           <Paper
             key={idx}
             p={10}
             withBorder
             className="relative cursor-pointer"
-            onClick={() => setValue("supplierId", supplier?._id)}
+            onClick={() => {
+              onAddItem({
+                ...purchase,
+                purchaseId: purchase?._id,
+                purchaseUID: purchase?.purchaseUID,
+              });
+            }}
           >
-            {watch("supplierId") === supplier?._id && (
+            {watch(`items.${idx}._id`) === purchase?._id && (
               <IconSquareCheckFilled
                 size={20}
                 className="absolute top-3 right-3"
               />
             )}
             <Text size={"md"} fw={700}>
-              Name: {supplier?.name}
+              {purchase?.purchaseUID}
             </Text>
-            <Text size={"sm"}>Company name: {supplier?.companyName}</Text>
-            <Text size={"sm"}>Company email: {supplier?.email}</Text>
+            <Text size={"sm"}>
+              Due amount:{" "}
+              {(purchase?.netTotal || 0) - (purchase?.paidAmount || 0) || 0} BDT
+            </Text>
+            <Text size={"sm"}>Net total: {purchase?.netTotal || 0} BDT </Text>
           </Paper>
         ))}
       </div>
-      {isFetchingSuppliers && (
+      {isFetchingPurchases && (
         <div className="grid grid-cols-3 gap-3">
           {new Array(6).fill(6).map((_, idx) => (
             <Skeleton key={idx} h={90} radius={"sm"} />
@@ -59,8 +69,8 @@ const SuppliersCardList: React.FC<{
         <Button
           variant="subtle"
           size="xs"
-          disabled={supplierPage === 1}
-          onClick={() => onChangeSupplierPage(supplierPage - 1)}
+          disabled={purchasePage === 1}
+          onClick={() => onChangePurchasePage(purchasePage - 1)}
         >
           Load Previous
         </Button>{" "}
@@ -68,7 +78,7 @@ const SuppliersCardList: React.FC<{
           variant="subtle"
           disabled={!hasNextPage}
           size="xs"
-          onClick={() => onChangeSupplierPage(supplierPage + 1)}
+          onClick={() => onChangePurchasePage(purchasePage + 1)}
         >
           Load Next
         </Button>
@@ -77,4 +87,4 @@ const SuppliersCardList: React.FC<{
   );
 };
 
-export default SuppliersCardList;
+export default PurchaseCardList;

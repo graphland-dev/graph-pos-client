@@ -1,36 +1,34 @@
-import { Table } from '@mantine/core';
-import { IconTrash } from '@tabler/icons-react';
-import dayjs from 'dayjs';
-
-
+import dateFormat from "@/_app/common/utils/dateFormat";
+import { ProductStock } from "@/_app/graphql-models/graphql";
+import { Table } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
 
 interface IStockProps {
-  data: any[];
+  data: ProductStock[];
   refetch: (v: any) => void;
   totalCount: number;
   removeStock: (v: any) => void;
 }
 
-
 const StockOut: React.FC<IStockProps> = ({ data, removeStock }) => {
-    
-
-      const rows = data.map((item) => (
-        <tr key={item._id}>
-          <td>{dayjs(item.createAt).format("MMMM D, YYYY h:mm A")}</td>
-          <td>{item.quantity}</td>
-          <td>{item.note}</td>
-          <td>{item.source}</td>
-          <td>
-            <IconTrash onClick={() => removeStock(item._id)} />
-          </td>
-        </tr>
-      ));
+  const rows = data.map((item) => (
+    <tr key={item._id}>
+      <td>{item?.purchaseUID}</td>
+      <td>{dateFormat(item.createdAt)}</td>
+      <td>{item?.quantity}</td>
+      <td>{item?.note}</td>
+      <td>{item?.source}</td>
+      <td>
+        <IconTrash onClick={() => removeStock(item._id)} />
+      </td>
+    </tr>
+  ));
   return (
     <>
       <Table withBorder withColumnBorders>
         <thead>
           <tr>
+            <th>Purchase ID</th>
             <th>Date</th>
             <th>Quality</th>
             <th>Note</th>
@@ -42,6 +40,6 @@ const StockOut: React.FC<IStockProps> = ({ data, removeStock }) => {
       </Table>
     </>
   );
-}
+};
 
-export default StockOut
+export default StockOut;

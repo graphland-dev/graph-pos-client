@@ -15,6 +15,7 @@ import StockAddForm from "./StockAddForm";
 import { IconPlus } from "@tabler/icons-react";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import { useParams } from "react-router-dom";
+import { useMemo } from "react";
 
 interface IState {
   modalOpened: boolean;
@@ -51,12 +52,24 @@ const StockHistory = () => {
     },
   });
 
-  const filteredStockInData = data?.inventory__productStocks.nodes?.filter(
-    (item: any) => item.type === "STOCK_IN"
+  const filteredStockInData = useMemo(
+    () =>
+      data?.inventory__productStocks.nodes?.filter(
+        (item: any) => item.type === "STOCK_IN"
+      ),
+    [data?.inventory__productStocks.nodes]
   );
-  const filteredStockOutData = data?.inventory__productStocks.nodes?.filter(
-    (item) => item.type === "STOCK_OUT"
+
+  const filteredStockOutData = useMemo(
+    () =>
+      data?.inventory__productStocks.nodes?.filter(
+        (item) => item.type === "STOCK_OUT"
+      ),
+    [data?.inventory__productStocks.nodes]
   );
+  // const filteredStockOutData = data?.inventory__productStocks.nodes?.filter(
+  //   (item) => item.type === "STOCK_OUT"
+  // );
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });

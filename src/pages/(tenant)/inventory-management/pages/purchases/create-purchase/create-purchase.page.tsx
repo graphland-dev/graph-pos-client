@@ -44,7 +44,7 @@ import {
   getVatProfileSelectInputData,
 } from "./utils/helpers";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
 import ProductsCardList from "./components/ProductsCardList";
@@ -58,6 +58,7 @@ import {
   ICreatePurchaseFormState,
   Schema_Validation,
 } from "./utils/validation";
+import commaNumber from "@/_app/common/utils/commaNumber";
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);
@@ -66,6 +67,8 @@ const CreatePurchasePage = () => {
   const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
 
   const navigate = useNavigate();
+
+  const params = useParams<{ tenant: string }>();
 
   const {
     data,
@@ -185,10 +188,10 @@ const CreatePurchasePage = () => {
     Notify({
       sucTitle: "Inventory product added to purchase",
       onSuccess(res) {
+        const supplierId = watch("supplierId");
+        const purchaseId = res?.inventory__createProductPurchase?._id;
         navigate(
-          `/inventory-management/payments/supplier-payments/${watch(
-            "supplierId"
-          )}/${res?.inventory__createProductPurchase?._id}`
+          `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
         );
       },
     })
@@ -365,17 +368,23 @@ const CreatePurchasePage = () => {
                           />
                         </td>
                         <td className="font-medium text-center">
-                          {watch(`products.${idx}.quantity`) *
-                            watch(`products.${idx}.unitPrice`)}
+                          {commaNumber(
+                            watch(`products.${idx}.quantity`) *
+                              watch(`products.${idx}.unitPrice`)
+                          )}
                         </td>
                         <td className="font-medium">{product?.taxRate || 0}</td>
                         <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`))}
+                          {commaNumber(
+                            calculateTaxAmount(watch(`products.${idx}`))
+                          )}
                         </td>
                         <td className="font-medium">
-                          {calculateTaxAmount(watch(`products.${idx}`)) +
-                            watch(`products.${idx}.quantity`) *
-                              watch(`products.${idx}.unitPrice`)}
+                          {commaNumber(
+                            calculateTaxAmount(watch(`products.${idx}`)) +
+                              watch(`products.${idx}.quantity`) *
+                                watch(`products.${idx}.unitPrice`)
+                          )}
                         </td>
                         <td className="font-medium">
                           <ActionIcon
@@ -399,8 +408,7 @@ const CreatePurchasePage = () => {
                     </td>
                     <td>{getTotalTaxAmount(watch("products") || [])}</td>
                     <td>
-                      {getTotalProductsPrice(watch("products")!) +
-                        getTotalCostAmount(watch("costs")!)}
+                      {commaNumber(getTotalProductsPrice(watch("products")!))}
                     </td>
                     <td></td>
                   </tr>
@@ -439,6 +447,7 @@ const CreatePurchasePage = () => {
           </Input.Wrapper>
           <Space h={"sm"} />
           <Input.Wrapper
+            withAsterisk
             label="Select VAT profile"
             error={<ErrorMessage errors={errors} name={`taxRate`} />}
           >

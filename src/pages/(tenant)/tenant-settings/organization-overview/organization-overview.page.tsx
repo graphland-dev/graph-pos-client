@@ -31,6 +31,7 @@ import { useEffect, useRef, useState } from "react";
 import { userTenantsAtom } from "@/_app/states/user.atom";
 import { Notify } from "@/_app/common/Notification/Notify";
 import { FOLDER__NAME } from "@/_app/models/FolderName";
+import { $triggerRefetchMe } from "@/_app/rxjs-controllers";
 
 const OrganizationOverviewPage: React.FC = () => {
   const params = useParams<{ tenant: string }>();
@@ -38,10 +39,9 @@ const OrganizationOverviewPage: React.FC = () => {
   const tenant = tenants?.find((t) => t.uid === params.tenant);
   const file = tenant?.logo;
 
-
   const { uploadFile, uploading } = useServerFile();
   const [organizationLogo, setOrganizationLogo] = useState({ path: null });
- const saveButtonRef = useRef<HTMLButtonElement | null>(null);
+  const saveButtonRef = useRef<HTMLButtonElement | null>(null);
   // form initiated
   const {
     register,
@@ -60,12 +60,14 @@ const OrganizationOverviewPage: React.FC = () => {
     setValue("description", tenant?.description);
   }, [tenant]);
 
-
   // update mutation
   const [updateOrganizationInfo, { loading }] = useMutation(
     ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION,
     Notify({
       sucTitle: "Organization information updated.",
+      onSuccess() {
+        $triggerRefetchMe.next(true);
+      },
     })
   );
 
@@ -84,12 +86,12 @@ const OrganizationOverviewPage: React.FC = () => {
     });
   };
 
-    useEffect(() => {
-      if (organizationLogo.path !== null) {
-         saveButtonRef?.current?.click();
-      }
-    }, [organizationLogo]);
-  
+  useEffect(() => {
+    if (organizationLogo.path !== null) {
+      saveButtonRef?.current?.click();
+    }
+  }, [organizationLogo]);
+
   return (
     <div>
       <Paper px={20} py={20} radius={10} className="lg:w-8/12">
@@ -107,7 +109,6 @@ const OrganizationOverviewPage: React.FC = () => {
                 });
                 if (res.data.length > 0) {
                   setOrganizationLogo(res.data[0]);
-                 
                 }
               }}
               loading={uploading}
@@ -131,7 +132,7 @@ const OrganizationOverviewPage: React.FC = () => {
                     height="200px"
                     width="200px"
                     fit="cover"
-                    className="rounded-full overflow-hidden"
+                    className="overflow-hidden rounded-full"
                     src={
                       organizationLogo?.path
                         ? getFileUrl(organizationLogo)

@@ -50,7 +50,7 @@ const RootApp = () => {
                 backgroundColor:
                   theme.colorScheme === "dark"
                     ? theme.colors.gray[9]
-                    : theme.colors.gray[0],
+                    : "#F1F5FA",
               },
             }),
           }}

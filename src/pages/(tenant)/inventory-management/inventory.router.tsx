@@ -1,7 +1,9 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
 import { inventoryNavlinks } from "./inventory.navlinks";
-import SupplierPayment from "./pages/payments/supplier-payments/supplier-payment.page";
+import CreatePurchasePayment from "./pages/payments/create-purchase-payment/create-purchase-payment.page";
+import PurchasePaymentPage from "./pages/payments/purchase-payments/purchase-payments.page";
+import PosPage from "./pages/pos/pos.page";
 import Barcode from "./pages/products/barcode/Barcode.page";
 import ProductEditPage from "./pages/products/product-edit/ProductEdit.page";
 import ProductCategoryPage from "./pages/products/products-category/productsCategory.page";
@@ -21,12 +23,10 @@ export const inventoryModuleRouter: RouteObject[] = [
       />
     ),
     children: [
-      //   {
-      //     path: "",
-      //     element: (
-      //       <Navigate to={"/inventory-management/products/products-list"} />
-      //     ),
-      //   },
+      {
+        path: "pos",
+        element: <PosPage />,
+      },
       {
         path: "products",
         children: [
@@ -69,8 +69,15 @@ export const inventoryModuleRouter: RouteObject[] = [
         path: "payments",
         children: [
           {
-            path: "supplier-payments/:supplierId/:purchaseId",
-            element: <SupplierPayment />,
+            path: "purchase-payments",
+            element: <PurchasePaymentPage />,
+          },
+          {
+            // query strings
+            // - supplierId
+            // - purchaseId
+            path: "create-purchase-payment",
+            element: <CreatePurchasePayment />,
           },
         ],
       },

@@ -28,7 +28,8 @@ export enum Accounting_Transaction_Source {
   EmployeeSalary = 'EMPLOYEE_SALARY',
   Expense = 'EXPENSE',
   LoanPayment = 'LOAN_PAYMENT',
-  Payroll = 'PAYROLL'
+  Payroll = 'PAYROLL',
+  PurchasePayment = 'PURCHASE_PAYMENT'
 }
 
 export enum Accounting_Transaction_Type {
@@ -910,7 +911,7 @@ export type Product = {
   _id: Scalars['ID']['output'];
   brand?: Maybe<Brand>;
   category?: Maybe<ProductCategory>;
-  code: Scalars['String']['output'];
+  code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   discountAmount?: Maybe<Scalars['Float']['output']>;
   discountMode?: Maybe<ProductDiscountMode>;
@@ -961,13 +962,13 @@ export type ProductPurchase = {
   discountAmount?: Maybe<Scalars['Float']['output']>;
   discountMode?: Maybe<ProductDiscountMode>;
   discountPercentage?: Maybe<Scalars['Float']['output']>;
-  dueAmount?: Maybe<Scalars['Float']['output']>;
   netTotal: Scalars['Float']['output'];
   note?: Maybe<Scalars['String']['output']>;
   paidAmount?: Maybe<Scalars['Float']['output']>;
   products: Array<PurchaseProductItemReference>;
   purchaseDate?: Maybe<Scalars['DateTime']['output']>;
   purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
+  purchaseUID?: Maybe<Scalars['String']['output']>;
   subTotal: Scalars['Float']['output'];
   supplier?: Maybe<Supplier>;
   taxAmount: Scalars['Float']['output'];
@@ -1001,8 +1002,10 @@ export type ProductStock = {
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   note?: Maybe<Scalars['String']['output']>;
   product: Product;
+  purchaseUID?: Maybe<Scalars['String']['output']>;
   quantity: Scalars['Int']['output'];
   source: ProductStockSource;
+  tenant?: Maybe<Scalars['String']['output']>;
   type: ProductStockType;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -1060,6 +1063,7 @@ export type PurchasePaymentReferenceInput = {
   amount: Scalars['Float']['input'];
   attachments?: InputMaybe<Array<ServerFileInput>>;
   purchaseId: Scalars['String']['input'];
+  purchaseUID?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type PurchasePaymentsWithPagination = {

@@ -31,7 +31,7 @@ import {
 import { IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import SuppliersCardList from "../../purchases/create-purchase/components/SuppliersCardList";
 import PurchaseCardList from "./components/PurchaseCardList";
 import {
@@ -47,11 +47,13 @@ import {
   IPurchasePaymentFormState,
   Purchase_Payment_Schema_Validation,
 } from "./utils/validation";
+import commaNumber from "@/_app/common/utils/commaNumber";
 
-const SupplierPayment = () => {
-  const { supplierId, purchaseId: purId } = useParams();
+const CreatePurchasePayment = () => {
+  const [searchParams] = useSearchParams();
+  const supplierId = searchParams.get("supplierId");
+  const purchaseId = searchParams.get("purchaseId");
 
-  // const [supplierId, setSupplierId] = useState<string>();
   const [supplierPage, onChangeSupplierPage] = useState(1);
   const [purchasePage, onChangePurchasePage] = useState(1);
 
@@ -115,14 +117,10 @@ const SupplierPayment = () => {
             operator: MatchOperator.Eq,
             value: watch("supplierId"),
           },
-          {
-            key: "dueAmount",
-            operator: MatchOperator.Gt,
-            value: "0",
-          },
         ],
       },
     },
+    skip: !watch("supplierId"),
   });
 
   const [createPayment, { loading: creatingPayment }] = useMutation(
@@ -133,17 +131,19 @@ const SupplierPayment = () => {
   );
 
   useEffect(() => {
-    setValue("supplierId", supplierId!);
-    setValue(`items`, [
-      purchases?.inventory__productPurchases?.nodes?.find(
-        (purchase: ProductPurchase) => purchase?._id === purId
-      ),
-    ]);
-  }, [supplierId, purId, purchases]);
+    if (supplierId) setValue("supplierId", supplierId!);
+
+    if (purchaseId) {
+      setValue(
+        `items`,
+        purchases?.inventory__productPurchases?.nodes?.filter(
+          (purchase: ProductPurchase) => purchase?._id === purchaseId
+        ) || []
+      );
+    }
+  }, [supplierId, purchaseId, purchases]);
 
   const onSubmit = (v: any) => {
-    console.log(v);
-
     createPayment({
       variables: {
         body: {
@@ -151,6 +151,7 @@ const SupplierPayment = () => {
           accountId: v?.accountId,
           items: v?.items?.map((item: any) => ({
             purchaseId: item?._id,
+            purchaseUID: item?.purchaseUID,
             amount: item?.amount,
           })),
           checkNo: v?.checkNo,
@@ -186,14 +187,6 @@ const SupplierPayment = () => {
             </Title>
             <Text color="red">{errors?.supplierId?.message}</Text>
           </div>
-
-          {/* <Button
-						variant='light'
-						leftIcon={<IconPlus />}
-						onClick={() => createSupplierDrawerHandler.open()}
-					>
-						Add new
-					</Button> */}
         </Flex>
         <Space h={"md"} />
         <SuppliersCardList
@@ -242,7 +235,7 @@ const SupplierPayment = () => {
           <Table withBorder withColumnBorders>
             <thead className="bg-slate-300">
               <tr className="!p-2 rounded-md">
-                <th>Purchase ID</th>
+                <th>Purchase UID</th>
                 <th>Due Amount</th>
                 <th>Pay Amount</th>
                 <th>Action</th>
@@ -250,10 +243,14 @@ const SupplierPayment = () => {
             </thead>
 
             <tbody>
-              {itemsFields?.map((item: any, idx: number) => (
+              {itemsFields?.map((item: ProductPurchase, idx: number) => (
                 <tr key={idx}>
-                  <td className="font-medium">{item?._id}</td>
-                  <td className="font-medium">{item?.dueAmount}</td>
+                  <td className="font-medium">{item?.purchaseUID}</td>
+                  <td className="font-medium">
+                    {commaNumber(
+                      (item?.netTotal || 0) - (item?.paidAmount || 0)
+                    )}
+                  </td>
                   <td className="font-medium">
                     <NumberInput
                       w={100}
@@ -281,7 +278,7 @@ const SupplierPayment = () => {
             </tbody>
           </Table>
         ) : (
-          <Paper className="text-left font-medium text-red-500 rounded-md p-3">
+          <Paper className="p-3 font-medium text-left text-red-500 rounded-md">
             <Text>No items added!</Text>
           </Paper>
         )}
@@ -372,4 +369,4 @@ const SupplierPayment = () => {
   );
 };
 
-export default SupplierPayment;
+export default CreatePurchasePayment;
