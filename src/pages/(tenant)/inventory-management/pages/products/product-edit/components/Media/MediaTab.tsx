@@ -1,6 +1,14 @@
+import { Notify } from '@/_app/common/Notification/Notify';
 import { getFileUrl } from '@/_app/common/utils/getFileUrl';
-import { ServerFileInput } from '@/_app/graphql-models/graphql';
+import {
+	MatchOperator,
+	Product,
+	ServerFileInput,
+	ServerFileReference,
+} from '@/_app/graphql-models/graphql';
 import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	Button,
@@ -12,33 +20,53 @@ import {
 	Text,
 	Title,
 } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
-import React, { useState } from 'react';
+import { openConfirmModal } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
+import { IconPlus, IconX } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { FiUpload } from 'react-icons/fi';
 import { HiOutlinePhotograph } from 'react-icons/hi';
-// import 'react-image-crop/dist/ReactCrop.css';
+import { useParams } from 'react-router-dom';
 import * as Yup from 'yup';
+import {
+	INVENTORY_PRODUCT_MEDIA_QUERY,
+	INVENTORY_PRODUCT_UPDATE,
+} from '../../utils/productEdit.query';
 
-const UploadFilesForm: React.FC = () => {
-	// const { data: vendorData, loading: qLoading } = useQuery(GET_VENDOR_BY_ID, {
-	// 	variables: {
-	// 		id: vendorId,
-	// 	},
-	// 	skip: !vendorId,
-	//
-	// });
+// import 'react-image-crop/dist/ReactCrop.css';
+
+const MediaTab: React.FC = () => {
+	const { productId } = useParams();
+
+	const { data: mediaData, refetch } = useQuery<{
+		inventory__product: Product;
+	}>(INVENTORY_PRODUCT_MEDIA_QUERY, {
+		variables: {
+			where: {
+				key: '_id',
+				operator: MatchOperator.Eq,
+				value: productId,
+			},
+		},
+	});
 
 	const [thumbnail, setThumbnail] = useState<ServerFileInput>();
-	// const [photos, setPhotos] = useState<IFile[]>(vendorData?.photos ?? []);
+	const [galleryPhotos, setGalleryPhotos] = useState<ServerFileReference[]>([]);
 
-	const { control } = useForm({
+	const {
+		setValue,
+		watch,
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm({
 		defaultValues: {
-			photos: [
+			gallery: [
 				{
-					bucket: '',
-					region: '',
-					key: '',
+					meta: '',
+					path: '',
+					provider: '',
 				},
 			],
 		},
@@ -46,124 +74,104 @@ const UploadFilesForm: React.FC = () => {
 		mode: 'onChange',
 	});
 
-	const { append } = useFieldArray({
+	const { append, fields, remove } = useFieldArray({
 		control,
-		name: 'photos',
+		name: 'gallery',
 	});
 
-	// const [uploadedThumbnail, setUploadedThumbnail] =
-	// 	useState<ServerFileReference>();
+	const { uploadFile, deleteFiles, deleting } = useServerFile();
 
-	const { uploadFile } = useServerFile();
+	function handleDeleteFile(index: number) {
+		openConfirmModal({
+			title: 'Sure to delete this file?',
+			labels: {
+				confirm: 'Yes, delete',
+				cancel: 'No, keep',
+			},
+			onConfirm: () => {
+				const sFile = galleryPhotos[index];
+				deleteFiles([sFile.path as string])
+					.then(() => {
+						showNotification({
+							title: 'File deleted',
+							message: '',
+							color: 'green',
+						});
+						setGalleryPhotos((prev) => prev.filter((_, i) => i !== index));
+						// onUploadDone?.(galleryPhotos.filter((_, i) => i !== index));
+						remove(index);
+					})
+					.catch(() => {
+						showNotification({
+							title: 'Failed to delete file',
+							message: '',
+							color: 'red',
+						});
+					});
+			},
+		});
+	}
 
-	// const handleUploadFiles = (files: File[]) => {
+	// prefill with prev data
+	useEffect(() => {
+		setValue(
+			'gallery',
+			mediaData?.inventory__product?.gallery?.map((g) => ({
+				path: g?.path,
+				meta: g?.meta,
+				provider: g?.provider,
+			})) as any
+		);
+		setThumbnail({
+			path: mediaData?.inventory__product?.thumbnail?.path,
+			meta: mediaData?.inventory__product?.thumbnail?.meta,
+			provider: mediaData?.inventory__product?.thumbnail?.provider,
+		} as ServerFileInput);
+	}, [mediaData]);
 
-	// 		.catch(() => {
-	// 			showNotification({
-	// 				title: 'Failed to upload files to server',
-	// 				message: '',
-	// 				color: 'red',
-	// 			});
-	// 		});
-	// };
+	// save media
+	const [saveMedia, { loading: savingMedia }] = useMutation(
+		INVENTORY_PRODUCT_UPDATE,
+		Notify({
+			sucTitle: 'Media galleries saved!',
+			onSuccess() {
+				refetch();
+			},
+		})
+	);
 
-	// function handleDeleteFile(index: number) {
-	// 	openConfirmModal({
-	// 		title: 'Sure to delete this file?',
-	// 		labels: {
-	// 			confirm: 'Yes, delete',
-	// 			cancel: 'No, keep',
-	// 		},
-	// 		onConfirm: () => {
-	// 			const sFile = uploadedFiles[index];
-	// 			deleteFiles([sFile.path as string])
-	// 				.then(() => {
-	// 					showNotification({
-	// 						title: 'File deleted',
-	// 						message: '',
-	// 						color: 'green',
-	// 					});
-	// 					setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
-	// 				})
-	// 				.catch(() => {
-	// 					showNotification({
-	// 						title: 'Failed to delete file',
-	// 						message: '',
-	// 						color: 'red',
-	// 					});
-	// 				});
-	// 		},
-	// 	});
-	// }
-
-	// const { uploadFile, uploadingFile, deleteFile, deletingFile } =
-	// 	useUploadFile();
-
-	// const [updateVendorSettingsMutation, { loading }] = useMutation(
-	// 	UPDATE_VENDOR_MUTATION,
-	// 	Notify({
-	// 		sucTitle: 'Vendor settings updated',
-	// 		sucMessage: 'Vendor settings updated',
-	// 	})
-	// );
-
-	// const onSubmit = () => {
-	// 	updateVendorSettingsMutation({
-	// 		variables: {
-	// 			input: {
-	// 				id: vendorId,
-	// 				cover: {
-	// 					key: cover?.key,
-	// 					bucket: cover?.bucket,
-	// 					region: cover?.region,
-	// 				},
-	// 				photos: photos.map((p) => ({
-	// 					key: p?.key,
-	// 					bucket: p?.bucket,
-	// 					region: p?.region,
-	// 				})),
-	// 			},
-	// 		},
-	// 	});
-	// };
-
-	// useEffect(() => {
-	// 	const photos: IFile[] = [];
-
-	// 	setCover({
-	// 		key: vendorData?.vendor?.cover?.key,
-	// 		region: vendorData?.vendor?.cover?.region,
-	// 		bucket: vendorData?.vendor?.cover?.bucket,
-	// 	});
-
-	// 	vendorData?.vendor?.photos?.map((photo: IFile) =>
-	// 		photos.push({
-	// 			key: photo.key,
-	// 			region: photo.region,
-	// 			bucket: photo.bucket,
-	// 		})
-	// 	);
-
-	// 	setPhotos(photos);
-
-	// 	setValue('photos', vendorData?.vendor?.photos);
-	// }, [vendorData]);
+	const onSubmit = (values: any) => {
+		saveMedia({
+			variables: {
+				body: {
+					thumbnail,
+					gallery: values?.gallery,
+				},
+				where: {
+					key: '_id',
+					operator: 'eq',
+					value: productId,
+				},
+			},
+		});
+		console.log(values);
+	};
 
 	return (
 		<Card title='Vendor Images' shadow='sm'>
 			<Card.Section p={'xs'} withBorder>
-				<Text>Upload cover and photos</Text>
+				<Text>Upload thumbnail and gallery</Text>
 			</Card.Section>
 			<Space h={'lg'} />
 			<Title order={4} fw={500}>
 				Medias
 			</Title>
 			<Space h={'md'} />
-			<Input.Wrapper label='Cover' size='md'>
+			<Input.Wrapper label='Thumbnail' size='md'>
 				<Space h={5} />
 				<div className='relative w-6/12 overflow-hidden bg-gray-300 rounded-md'>
 					<div className='h-[200px] flex items-center justify-center'>
-						{thumbnail ? (
+						{thumbnail?.path ? (
 							<img
 								src={getFileUrl(thumbnail)!}
 								alt='Thumbnail'
@@ -173,6 +181,7 @@ const UploadFilesForm: React.FC = () => {
 							<HiOutlinePhotograph size={50} color='#FF9D40' />
 						)}
 					</div>
+
 					{/* 
 					<ReactCrop crop={crop} onChange={(c) => setCrop(c)}>
 						<img src={src} />
@@ -181,14 +190,20 @@ const UploadFilesForm: React.FC = () => {
 					<div className='absolute bottom-3 right-3'>
 						<FileButton
 							onChange={async (files) => {
-								// uploadFile(file!, console.log);
-								// handleUploadFiles(file!).then((file) => setThumbnail(file));
 								uploadFile({
 									files: [files!],
 									folder: 'Inventory_Product_Thumbnail',
-								}).then((res) => {
-									setThumbnail(res.data);
-								});
+								})
+									.then((res) => {
+										setThumbnail(res.data[0]);
+									})
+									.catch(() =>
+										showNotification({
+											title: 'Failed to upload files to server',
+											message: '',
+											color: 'red',
+										})
+									);
 							}}
 							accept='image/png,image/jpeg'
 						>
@@ -209,16 +224,16 @@ const UploadFilesForm: React.FC = () => {
 
 			<Flex justify={'space-between'} align='center'>
 				<Title order={4} fw={500}>
-					Upload photos
+					Upload Gallery Photos
 				</Title>
 				<Button
 					leftIcon={<IconPlus size={20} />}
 					variant='light'
 					onClick={() =>
 						append({
-							key: '',
-							bucket: '',
-							region: '',
+							meta: '',
+							path: '',
+							provider: '',
 						})
 					}
 				>
@@ -227,23 +242,27 @@ const UploadFilesForm: React.FC = () => {
 			</Flex>
 			<Space h={'md'} />
 
-			<form
-			// onSubmit={handleSubmit(basicInfoFormSubmit)}
-			>
-				{/* <div className='grid grid-cols-3 gap-3'>
-					{fields.map((field, idx: number) => (
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<div className='grid grid-cols-3 gap-3'>
+					{fields.map((_, idx: number) => (
 						<Input.Wrapper
 							label={`Photo ${idx + 1}`}
 							size='md'
 							key={idx}
-							// error={<ErrorMessage errors={errors} name="name" />}
+							error={
+								<ErrorMessage errors={errors} name={`gallery.${idx}.path`} />
+							}
 						>
 							<Space h={5} />
 							<div className='relative bg-gray-300 rounded-md '>
 								<div className='h-[200px] flex items-center justify-center'>
-									{photos?.[idx] ? (
+									{watch(`gallery.${idx}`)?.path ? (
 										<img
-											src={getImage(photos?.[idx]!)!}
+											src={
+												getFileUrl(
+													watch(`gallery.${idx}`) as ServerFileReference
+												)!
+											}
 											alt='Thumbnail'
 											className='object-cover object-center w-full rounded-md h-52'
 										/>
@@ -252,33 +271,40 @@ const UploadFilesForm: React.FC = () => {
 									)}
 								</div>
 								<div className='absolute flex gap-3 bottom-3 right-3'>
-									{photos[idx]?.key && (
-										<Button
-											color='red'
-											loading={deletingFile}
-											onClick={() => {
-												deleteFile(photos[idx]?.key);
+									<Button
+										color='red'
+										loading={deleting}
+										onClick={() => {
+											if (watch(`gallery.${idx}`)?.path) {
+												handleDeleteFile(idx);
+											} else {
 												remove(idx);
-												setPhotos((prev) => {
-													prev.splice(idx, 1);
-													return [...prev];
-												});
-											}}
-										>
-											<IconX color='#fff' size={16} />
-										</Button>
-									)}
+											}
+										}}
+									>
+										<IconX color='#fff' size={16} />
+									</Button>
+
 									<FileButton
-										onChange={(file) => {
-											uploadFile(
-												file!,
-												`vendor-photos-${vendorId}-${idx}_${Date.now()}`
-											).then((file) => {
-												setPhotos((prev) => {
-													prev.splice(idx, 1);
-													return [...prev, file];
-												});
-											});
+										onChange={async (files) => {
+											uploadFile({
+												files: [files!],
+												folder: 'Inventory_Product_Gallery',
+											})
+												.then((res) => {
+													setGalleryPhotos((prev) => {
+														prev.splice(idx, 1);
+														return [...prev, res?.data[0]];
+													});
+													setValue(`gallery.${idx}`, res?.data[0]);
+												})
+												.catch(() =>
+													showNotification({
+														title: 'Failed to upload files to server',
+														message: '',
+														color: 'red',
+													})
+												);
 										}}
 										accept='image/png,image/jpeg'
 									>
@@ -295,23 +321,23 @@ const UploadFilesForm: React.FC = () => {
 				</div>
 				<Space h={'md'} />
 				<div>
-					<Button loading={loading} onClick={onSubmit}>
+					<Button type='submit' loading={savingMedia}>
 						Save
 					</Button>
-				</div> */}
+				</div>
 			</form>
 		</Card>
 	);
 };
 
-export default UploadFilesForm;
+export default MediaTab;
 
 export const UPLOAD_PHOTOS_FORM = Yup.object().shape({
-	photos: Yup.array().of(
+	gallery: Yup.array().of(
 		Yup.object().shape({
-			bucket: Yup.string().required(),
-			key: Yup.string().required(),
-			region: Yup.string().required(),
+			meta: Yup.string().required(),
+			path: Yup.string().required('File is not uploaded'),
+			provider: Yup.string().required(),
 		})
 	),
 });
