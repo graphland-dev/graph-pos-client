@@ -1,5 +1,5 @@
 @layer tailwind {
-	@tailwind base;
+  @tailwind base;
 }
 @tailwind components;
 @tailwind utilities;
@@ -9,22 +9,16 @@
 // }
 
 :root {
-	--neutral-primary: #1f2937;
-	--neutral-secondary: #4b5563;
-	--neutral-muted: #9ca3af;
-	--notifications-z-index: 99999999999999999999999999999999999999999999999;
+  --neutral-primary: #1f2937;
+  --neutral-secondary: #4b5563;
+  --neutral-muted: #9ca3af;
+
+  --base: #fff;
 }
 
-//   @media (prefers-color-scheme: dark) {
-//     :root {
-//       --neutral-primary: #d1d5db;
-//       --neutral-secondary: #d1d5db;
-//       --neutral-muted: #9ca3af;
-//     }
-//   }
-
-html[data-color-scheme='dark'] {
-	--neutral-primary: #d1d5db;
-	--neutral-secondary: #d1d5db;
-	--neutral-muted: #9ca3af;
+html[data-color-scheme="dark"] {
+  --base: #18181b;
+  --neutral-primary: #d1d5db;
+  --neutral-secondary: #d1d5db;
+  --neutral-muted: #9ca3af;
 }

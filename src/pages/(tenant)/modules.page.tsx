@@ -50,7 +50,7 @@ const ModulesPage = () => {
             onClick={() => navigate(`/${params?.tenant}/${module.path}`)}
             withBorder
             p={"xl"}
-            className="flex flex-col items-center gap-3 cursor-pointer"
+            className="flex flex-col items-center gap-3 cursor-pointer bg-base"
           >
             <module.icon />
             <Text fz={"lg"}>{module.label}</Text>

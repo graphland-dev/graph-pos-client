@@ -146,7 +146,7 @@ const PurchaseListPage = () => {
               <Menu.Item
                 icon={<IconFileInfo size={18} />}
                 component={Link}
-                to={`/${params.tenant}/inventory-management/payments/create-supplier-payment?supplierId=${row.supplier?._id}&purchaseId=${row._id}`}
+                to={`/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${row.supplier?._id}&purchaseId=${row._id}`}
               >
                 Make Payment
               </Menu.Item>
