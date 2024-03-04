@@ -11,7 +11,7 @@ import {
   VatsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
-import { SETTINGS_VAT_QUERY } from "@/pages/(tenant)/settings/pages/vat/utils/query";
+
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -59,6 +59,7 @@ import {
   ICreatePurchaseFormState,
   Schema_Validation,
 } from "./utils/validation";
+import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);

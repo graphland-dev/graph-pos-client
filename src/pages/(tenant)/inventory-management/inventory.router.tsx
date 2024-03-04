@@ -11,77 +11,101 @@ import ProductListPage from './pages/products/products-list/productsList.page';
 import CreatePurchasePage from './pages/purchases/create-purchase/create-purchase.page';
 import PurchaseListPage from './pages/purchases/purchase-list/purchase-list.page';
 import Return from './pages/purchases/return/return.page';
+import VatPage from './pages/settings/pages/vat/vat.page';
+import UnitPage from './pages/settings/pages/unit/unit.page';
+import BrandPage from './pages/settings/pages/brand/brand.page';
 
 export const inventoryModuleRouter: RouteObject[] = [
-	{
-		path: '',
-		element: (
-			<DashboardLayout
-				navlinks={inventoryNavlinks}
-				title='Inventory Management'
-				path='inventory-management'
-			/>
-		),
-		children: [
-			{
-				path: 'pos',
-				element: <PosPage />,
-			},
-			{
-				path: 'products',
-				children: [
-					{
-						path: 'products-list',
-						element: <ProductListPage />,
-					},
-					{
-						path: ':productId',
-						element: <ProductEditPage />,
-					},
-					{
-						path: 'products-category',
-						element: <ProductCategoryPage />,
-					},
-					{
-						path: 'barcode',
-						element: <Barcode />,
-					},
-				],
-			},
-			{
-				path: 'purchases',
-				children: [
-					{
-						path: '',
-						element: <PurchaseListPage />,
-					},
-					{
-						path: 'create',
-						element: <CreatePurchasePage />,
-					},
-					{
-						path: 'return',
-						element: <Return />,
-					},
-				],
-			},
-			{
-				path: 'payments',
-				children: [
-					{
-						path: 'purchase-payments',
-						element: <PurchasePaymentPage />,
-					},
-					{
-						// query strings
-						// - supplierId
-						// - purchaseId
-						path: 'create-purchase-payment',
-						element: <CreatePurchasePayment />,
-					},
-				],
-			},
-		],
-	},
+  {
+    path: "",
+    element: (
+      <DashboardLayout
+        navlinks={inventoryNavlinks}
+        title="Inventory Management"
+        path="inventory-management"
+      />
+    ),
+    children: [
+      {
+        path: "pos",
+        element: <PosPage />,
+      },
+      {
+        path: "products",
+        children: [
+          {
+            path: "products-list",
+            element: <ProductListPage />,
+          },
+          {
+            path: ":productId",
+            element: <ProductEditPage />,
+          },
+          {
+            path: "products-category",
+            element: <ProductCategoryPage />,
+          },
+          {
+            path: "barcode",
+            element: <Barcode />,
+          },
+        ],
+      },
+      {
+        path: "purchases",
+        children: [
+          {
+            path: "",
+            element: <PurchaseListPage />,
+          },
+          {
+            path: "create",
+            element: <CreatePurchasePage />,
+          },
+          {
+            path: "return",
+            element: <Return />,
+          },
+        ],
+      },
+      {
+        path: "payments",
+        children: [
+          {
+            path: "purchase-payments",
+            element: <PurchasePaymentPage />,
+          },
+          {
+            // query strings
+            // - supplierId
+            // - purchaseId
+            path: "create-purchase-payment",
+            element: <CreatePurchasePayment />,
+          },
+        ],
+      },
+      {
+        path: "settings",
+        children: [
+          // {
+          //   path: "",
+          //   element: <Navigate to={"/settings/vat-profiles"} />,
+          // },
+          {
+            path: "vat-profiles",
+            element: <VatPage />,
+          },
+          {
+            path: "units",
+            element: <UnitPage />,
+          },
+          {
+            path: "brands",
+            element: <BrandPage />,
+          },
+        ],
+      },
+    ],
+  },
 ];
 //

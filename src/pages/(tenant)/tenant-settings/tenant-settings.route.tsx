@@ -5,7 +5,6 @@ import RolesPage from "./roles/roles.page";
 import { tenantSettingsNavlinks } from "./tenant-settings.navlinks";
 import UsersPage from "./users/users.page";
 
-
 export const tenantSettingRouter: RouteObject[] = [
   {
     path: "",

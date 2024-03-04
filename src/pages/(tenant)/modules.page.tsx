@@ -1,11 +1,10 @@
 import CommonHeader from "@/_app/common/layouts/componants/CommonHeader";
 import { Paper, Text } from "@mantine/core";
 import {
-  IconAdjustments,
   IconBuildingWarehouse,
   IconPremiumRights,
   IconReportAnalytics,
-  IconUsers,
+  IconUsers
 } from "@tabler/icons-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -30,11 +29,11 @@ const modules = [
     label: "Reports",
     icon: IconReportAnalytics,
   },
-  {
-    path: "settings",
-    label: "Settings",
-    icon: IconAdjustments,
-  },
+  // {
+  //   path: "settings",
+  //   label: "Settings",
+  //   icon: IconAdjustments,
+  // },
 ];
 
 const ModulesPage = () => {

@@ -7,7 +7,6 @@ import { inventoryModuleRouter } from "./pages/(tenant)/inventory-management/inv
 import ModulesPage from "./pages/(tenant)/modules.page";
 import { peopleModuleRouter } from "./pages/(tenant)/people/people.route";
 import { reportsModuleRouter } from "./pages/(tenant)/reports/report.router";
-import { settingModuleRouter } from "./pages/(tenant)/settings/settings.route";
 import TenantResolver from "./pages/(tenant)/tenant-resolver";
 import { tenantSettingRouter } from "./pages/(tenant)/tenant-settings/tenant-settings.route";
 import { authRouter } from "./pages/auth/auth.router";
@@ -60,10 +59,10 @@ export const rootRouter = createBrowserRouter([
         path: "reports",
         children: reportsModuleRouter,
       },
-      {
-        path: "settings",
-        children: settingModuleRouter,
-      },
+      // {
+      //   path: "settings",
+      //   children: settingModuleRouter,
+      // },
       {
         path: "tenant-settings",
         children: tenantSettingRouter,
