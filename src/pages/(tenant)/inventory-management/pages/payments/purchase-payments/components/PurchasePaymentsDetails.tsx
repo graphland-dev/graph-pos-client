@@ -4,10 +4,10 @@ import {
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import { Paper, Table, Text, Title } from "@mantine/core";
-import React from "react";
-import { Inventory__product_Purchases_Query } from "../../../purchases/purchase-list/utils/query";
 import dayjs from "dayjs";
+import React from "react";
 import { Link } from "react-router-dom";
+import { Inventory__product_Purchases_Query } from "../../../purchases/purchase-list/utils/query";
 
 const PurchasePaymentsDetails: React.FC<{
   purchasePaymentsRow: PurchasePayment;
@@ -23,15 +23,7 @@ const PurchasePaymentsDetails: React.FC<{
     },
   });
 
-  console.log(purchasePaymentsRow);
 
-  // const elements = [
-  //   { position: 6, mass: 12.011, symbol: "C", name: "Carbon" },
-  //   { position: 7, mass: 14.007, symbol: "N", name: "Nitrogen" },
-  //   { position: 39, mass: 88.906, symbol: "Y", name: "Yttrium" },
-  //   { position: 56, mass: 137.33, symbol: "Ba", name: "Barium" },
-  //   { position: 58, mass: 140.12, symbol: "Ce", name: "Cerium" },
-  // ];
 
   const elements = data?.inventory__productPurchases?.nodes;
   const totalAmount = data?.inventory__productPurchases?.nodes?.reduce(
@@ -136,22 +128,6 @@ const PurchasePaymentsDetails: React.FC<{
         <Text>Contact: {purchasePaymentsRow?.account.contactNumber}</Text> */}
       </Paper>
 
-      {/* <Table>
-        <thead>
-          <tr>
-            <th>Opportunity name</th>
-            <th>Amount</th>
-          </tr>
-        </thead>
-        <tbody>
-          {purchasePaymentsRow?.opportunities?.map((opp, idx) => (
-            <tr key={idx}>
-              <td>{opp?.name}</td>
-              <td>{opp?.amount}</td>
-            </tr>
-          ))}
-        </tbody>
-      </Table> */}
 
       <Table withColumnBorders captionSide="bottom">
         <thead className="bg-slate-300">{ths}</thead>
@@ -159,13 +135,6 @@ const PurchasePaymentsDetails: React.FC<{
         <tfoot>{tfs}</tfoot>
       </Table>
 
-      {/* <AttachmentUploadArea
-        details={purchasePaymentsRow}
-        folder="Graphland__Payroll__Attachments"
-        updateAttachmentsMutation={() => {}}
-        updating={false}
-        isGridStyle={true}
-      /> */}
 
       {/* <Attachments
         attachments={purchasePaymentsRow.attachments ?? []}
