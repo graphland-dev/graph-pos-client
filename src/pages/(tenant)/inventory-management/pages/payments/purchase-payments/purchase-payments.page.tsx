@@ -5,14 +5,14 @@ import {
   PurchasePaymentsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
+import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconListDetails, IconPlus } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
-import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
-import PurchasePaymentsDetails from "./components/PurchasePaymentsDetails";
 import { Link, useParams } from "react-router-dom";
+import PurchasePaymentsDetails from "./components/PurchasePaymentsDetails";
+import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
 
 interface IState {
   refetching: boolean;
@@ -44,10 +44,7 @@ const PurchasePaymentPage = () => {
         header: "Supplier",
       },
 
-      // {
-      //   accessorKey: "supplier",
-      //   header: "Supplier ",
-      // },
+     
       {
         accessorKey: "paidAmount",
         header: "Paid Amount",
@@ -68,7 +65,7 @@ const PurchasePaymentPage = () => {
   }>(PURCHASE_PAYMENTS_QUERY, {
     variables: {
       where: {
-        limit: 10,
+        limit: -1,
         page: 1,
       },
     },
@@ -85,12 +82,7 @@ const PurchasePaymentPage = () => {
         RowActionMenu={(row: PurchasePayment) => (
           <>
             <Menu.Item
-              // component={Link}
-              // to={`/${params.tenant}/inventory-management/products/${row?._id}`}
-              // onClick={() => {
-              //   console.log(row);
-              // }}
-              // icon={<IconFileInfo size={18} />}
+             
               icon={<IconListDetails size={18} />}
               onClick={() => {
                 setState({
@@ -101,12 +93,7 @@ const PurchasePaymentPage = () => {
             >
               View
             </Menu.Item>
-            {/* <Menu.Item
-              onClick={() => handleDeleteAccount(row._id)}
-              icon={<IconTrash size={18} />}
-            >
-              Delete
-            </Menu.Item> */}
+           
           </>
         )}
         ActionArea={
@@ -127,8 +114,9 @@ const PurchasePaymentPage = () => {
       <Drawer
         opened={openedDetailsDrawer}
         onClose={detailsDrawerHandler.close}
-        position="right"
-        title="Purchase Payment details"
+        position="left"
+        size={"90%"}
+        title={<Title order={3}>Purchase Payment details</Title>}
         withCloseButton={true}
       >
         <PurchasePaymentsDetails
