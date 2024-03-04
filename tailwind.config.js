@@ -7,6 +7,10 @@ export default {
       keyframes: { "reverse-spin": { from: { transform: "rotate(360deg)" } } },
       colors: {
         base: "var(--base)",
+        'light-gray': "var(--light-gray)",
+        'text-gray': "var(--text-gray)",
+        'text-muted': "var(--text-muted)",
+        'card-header': "var(--card-header)",
         neutral: {
           primary: "var(--neutral-primary)",
           secondary: "var(--neutral-secondary)",

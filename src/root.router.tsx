@@ -11,7 +11,7 @@ import TenantResolver from "./pages/(tenant)/tenant-resolver";
 import { tenantSettingRouter } from "./pages/(tenant)/tenant-settings/tenant-settings.route";
 import { authRouter } from "./pages/auth/auth.router";
 import SelectOrganization from "./pages/select-organization.page";
-import TestPage from "./pages/test.page";
+import DesignSystem from "./pages/design-system.page";
 
 export const rootRouter = createBrowserRouter([
   {
@@ -19,8 +19,8 @@ export const rootRouter = createBrowserRouter([
     element: <Navigate to="/select-tenant" />,
   },
   {
-    path: "/test",
-    element: <TestPage />,
+    path: "/design-system",
+    element: <DesignSystem />,
   },
   {
     path: "/select-tenant",

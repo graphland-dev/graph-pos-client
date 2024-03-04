@@ -13,6 +13,13 @@
   --neutral-secondary: #4b5563;
   --neutral-muted: #9ca3af;
 
+  --card-header: #e5e7eb;
+
+  // text
+  --text-base: #0a0a0a;
+  --text-gray: #9ca3af;
+  --text-muted: #d1d5db;
+
   --base: #fff;
 }
 
@@ -21,4 +28,17 @@ html[data-color-scheme="dark"] {
   --neutral-primary: #d1d5db;
   --neutral-secondary: #d1d5db;
   --neutral-muted: #9ca3af;
+
+  --card-header: #18181b;
+
+  // text
+  --text-base: #e4e4e7;
+  --text-gray: #9ca3af;
+  --text-muted: #374151;
+
+  --light-gray: #171717;
+}
+
+body {
+  color: var(--text-base);
 }
