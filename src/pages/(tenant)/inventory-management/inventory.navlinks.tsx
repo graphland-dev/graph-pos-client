@@ -1,10 +1,13 @@
-import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { IconAdjustments, IconBrandAbstract, IconReceipt2, IconRulerMeasure } from "@tabler/icons-react";
+import { AppNavLink } from '@/_app/models/AppNavLink.type';
 import {
-  IconBrandProducthunt,
-  IconCoin,
-  IconShoppingCart,
-} from "@tabler/icons-react";
+  IconAdjustments,
+	IconBrandAbstract,
+	IconBrandProducthunt,
+	IconCoin,
+	IconReceipt2,
+	IconRulerMeasure,
+	IconShoppingCart,
+} from '@tabler/icons-react';
 
 export const inventoryNavlinks: AppNavLink[] = [
   {

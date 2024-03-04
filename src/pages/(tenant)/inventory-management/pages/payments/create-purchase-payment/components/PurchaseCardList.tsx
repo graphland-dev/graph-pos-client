@@ -1,7 +1,16 @@
+import commaNumber from "@/_app/common/utils/commaNumber";
 import { ProductPurchase } from "@/_app/graphql-models/graphql";
-import { Button, Group, Paper, Skeleton, Space, Text } from "@mantine/core";
+import {
+  Button,
+  Group,
+  Paper,
+  Skeleton,
+  Space,
+  Text,
+  clsx,
+} from "@mantine/core";
 import { IconSquareCheckFilled } from "@tabler/icons-react";
-import React from "react";
+import React, { useMemo } from "react";
 
 const PurchaseCardList: React.FC<{
   purchases: ProductPurchase[];
@@ -21,6 +30,14 @@ const PurchaseCardList: React.FC<{
   onChangePurchasePage,
   onAddItem,
 }) => {
+  const dueAmount = useMemo(() => {
+    return (purchase: ProductPurchase) => {
+      const netTotal = purchase.netTotal || 0;
+      const paidAmount = purchase.paidAmount || 0;
+      return commaNumber(netTotal - paidAmount);
+    };
+  }, []);
+
   return (
     <div>
       <div className="grid grid-cols-3 gap-3">
@@ -29,8 +46,11 @@ const PurchaseCardList: React.FC<{
             key={idx}
             p={10}
             withBorder
-            className="relative cursor-pointer"
+            className={clsx("relative cursor-pointer", {
+              "bg-red-100 cursor-not-allowed": dueAmount(purchase) === "0",
+            })}
             onClick={() => {
+              if (dueAmount(purchase) === "0") return;
               onAddItem({
                 ...purchase,
                 purchaseId: purchase?._id,
@@ -48,10 +68,12 @@ const PurchaseCardList: React.FC<{
               {purchase?.purchaseUID}
             </Text>
             <Text size={"sm"}>
-              Due amount:{" "}
-              {(purchase?.netTotal || 0) - (purchase?.paidAmount || 0) || 0} BDT
+              Due amount: {dueAmount(purchase)}
+              BDT
             </Text>
-            <Text size={"sm"}>Net total: {purchase?.netTotal || 0} BDT </Text>
+            <Text size={"sm"}>
+              Net total: {commaNumber(purchase?.netTotal || 0)} BDT{" "}
+            </Text>
           </Paper>
         ))}
       </div>

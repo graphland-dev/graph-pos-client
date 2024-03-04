@@ -13,7 +13,7 @@ interface IStockProps {
 const StockOut: React.FC<IStockProps> = ({ data, removeStock }) => {
   const rows = data.map((item) => (
     <tr key={item._id}>
-      <td>{item?.purchaseUID}</td>
+      <td>{item?.invoiceUID}</td>
       <td>{dateFormat(item.createdAt)}</td>
       <td>{item?.quantity}</td>
       <td>{item?.note}</td>
@@ -28,7 +28,7 @@ const StockOut: React.FC<IStockProps> = ({ data, removeStock }) => {
       <Table withBorder withColumnBorders>
         <thead>
           <tr>
-            <th>Purchase ID</th>
+            <th>Invoice UID</th>
             <th>Date</th>
             <th>Quality</th>
             <th>Note</th>

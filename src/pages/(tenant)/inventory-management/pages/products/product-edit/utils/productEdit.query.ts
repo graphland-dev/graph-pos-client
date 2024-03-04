@@ -11,6 +11,24 @@ export const INVENTORY_PRODUCT_BASIC_INFO_QUERY = gql`
   }
 `;
 
+export const INVENTORY_PRODUCT_MEDIA_QUERY = gql`
+  query Inventory__product($where: CommonFindDocumentDto!) {
+    inventory__product(where: $where) {
+      _id
+      thumbnail {
+        meta
+        path
+        provider
+      }
+      gallery {
+        meta
+        path
+        provider
+      }
+    }
+  }
+`;
+
 export const INVENTORY_PRODUCT_PRICE_QUERY = gql`
   query Inventory__product($where: CommonFindDocumentDto!) {
     inventory__product(where: $where) {
@@ -104,6 +122,7 @@ export const PRODUCT_STOCK_HISTORY_QUERY = gql`
         createdAt
         note
         purchaseUID
+        invoiceUID
         product {
           _id
           code

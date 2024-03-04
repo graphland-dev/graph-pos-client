@@ -219,7 +219,6 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
 					enableUploader
 					onUploadDone={(files) => {
 						setUploadedFiles(files);
-						console.log(files);
 					}}
 					folder={'Graphland__Expense__Document'}
 				/>

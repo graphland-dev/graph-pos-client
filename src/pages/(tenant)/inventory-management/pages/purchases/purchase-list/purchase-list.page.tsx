@@ -5,9 +5,9 @@ import commaNumber from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   MatchOperator,
+  ProductItemReference,
   ProductPurchase,
   ProductPurchasesWithPagination,
-  PurchaseProductItemReference,
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
@@ -28,7 +28,7 @@ interface IState {
 }
 
 const PurchaseListPage = () => {
-  const [products, setProducts] = useState<PurchaseProductItemReference[]>();
+  const [products, setProducts] = useState<ProductItemReference[]>();
   const [state, setState] = useSetState<IState>({
     refetching: false,
     openDrawer: false,
