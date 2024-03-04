@@ -287,6 +287,7 @@ export type CreatePurchasePaymentInput = {
   accountId: Scalars['String']['input'];
   attachments?: InputMaybe<Array<ServerFileInput>>;
   checkNo?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['String']['input']>;
   items: Array<PurchasePaymentReferenceInput>;
   note?: InputMaybe<Scalars['String']['input']>;
   receptNo?: InputMaybe<Scalars['String']['input']>;
@@ -1065,6 +1066,7 @@ export type ProductPurchase = {
   netTotal: Scalars['Float']['output'];
   note?: Maybe<Scalars['String']['output']>;
   paidAmount?: Maybe<Scalars['Float']['output']>;
+  paymentHistory?: Maybe<Array<ProductPurchasePaymentHistoryReference>>;
   products: Array<ProductItemReference>;
   purchaseDate?: Maybe<Scalars['DateTime']['output']>;
   purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
@@ -1075,6 +1077,15 @@ export type ProductPurchase = {
   taxRate: Scalars['Float']['output'];
   tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductPurchasePaymentHistoryReference = {
+  __typename?: 'ProductPurchasePaymentHistoryReference';
+  amount?: Maybe<Scalars['Float']['output']>;
+  committedBy?: Maybe<UserReference>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  paymentUID?: Maybe<Scalars['String']['output']>;
+  referenceId?: Maybe<Scalars['String']['output']>;
 };
 
 export type ProductPurchasesWithPagination = {
@@ -1132,8 +1143,10 @@ export type PurchasePayment = {
   account: Account;
   attachments?: Maybe<Array<ServerFileReference>>;
   checkNo?: Maybe<Scalars['String']['output']>;
+  committedBy?: Maybe<UserReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
-  items: Array<PurchasePaymentReference>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  items: Array<PurchasePaymentItemReference>;
   note?: Maybe<Scalars['String']['output']>;
   paidAmount: Scalars['Float']['output'];
   paymentUID?: Maybe<Scalars['String']['output']>;
@@ -1143,8 +1156,8 @@ export type PurchasePayment = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
-export type PurchasePaymentReference = {
-  __typename?: 'PurchasePaymentReference';
+export type PurchasePaymentItemReference = {
+  __typename?: 'PurchasePaymentItemReference';
   amount: Scalars['Float']['output'];
   purchase: ProductPurchase;
   purchaseUID?: Maybe<Scalars['String']['output']>;
