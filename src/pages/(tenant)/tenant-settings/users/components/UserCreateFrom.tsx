@@ -68,7 +68,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({ onFormSubmitted }) => {
         </Input.Wrapper>
 
         <Input.Wrapper
-          label="Department"
+          label="Select Roles"
           withAsterisk
           error={<ErrorMessage name={"departmentId"} errors={errors} />}
         >

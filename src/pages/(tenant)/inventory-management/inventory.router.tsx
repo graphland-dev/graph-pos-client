@@ -11,6 +11,9 @@ import ProductListPage from "./pages/products/products-list/productsList.page";
 import CreatePurchasePage from "./pages/purchases/create-purchase/create-purchase.page";
 import PurchaseListPage from "./pages/purchases/purchase-list/purchase-list.page";
 import Return from "./pages/purchases/return/return.page";
+import VatPage from "./pages/settings/pages/vat/vat.page";
+import UnitPage from "./pages/settings/pages/unit/unit.page";
+import BrandPage from "./pages/settings/pages/brand/brand.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -78,6 +81,27 @@ export const inventoryModuleRouter: RouteObject[] = [
             // - purchaseId
             path: "create-purchase-payment",
             element: <CreatePurchasePayment />,
+          },
+        ],
+      },
+      {
+        path: "settings",
+        children: [
+          // {
+          //   path: "",
+          //   element: <Navigate to={"/settings/vat-profiles"} />,
+          // },
+          {
+            path: "vat-profiles",
+            element: <VatPage />,
+          },
+          {
+            path: "units",
+            element: <UnitPage />,
+          },
+          {
+            path: "brands",
+            element: <BrandPage />,
           },
         ],
       },

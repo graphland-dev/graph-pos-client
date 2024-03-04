@@ -1,4 +1,5 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
+import { IconAdjustments, IconBrandAbstract, IconReceipt2, IconRulerMeasure } from "@tabler/icons-react";
 import {
   IconBrandProducthunt,
   IconCoin,
@@ -57,6 +58,28 @@ export const inventoryNavlinks: AppNavLink[] = [
       {
         label: "Purchase Payments",
         href: "purchase-payments",
+      },
+    ],
+  },
+  {
+    label: "Settings",
+    icon: <IconAdjustments />,
+    href: "settings",
+    children: [
+      {
+        label: "Vat Profiles",
+        icon: <IconReceipt2 />,
+        href: "vat-profiles",
+      },
+      {
+        label: "Units",
+        icon: <IconRulerMeasure />,
+        href: "units",
+      },
+      {
+        label: "Brands",
+        icon: <IconBrandAbstract />,
+        href: "brands",
       },
     ],
   },
