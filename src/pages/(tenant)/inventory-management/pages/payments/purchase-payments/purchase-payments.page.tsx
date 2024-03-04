@@ -27,6 +27,12 @@ const PurchasePaymentPage = () => {
   const [openedDetailsDrawer, detailsDrawerHandler] = useDisclosure();
   const params = useParams<{ tenant: string }>();
 
+  const { data, loading, refetch } = useQuery<{
+    accounting__purchasePayments: PurchasePaymentsWithPagination;
+  }>(PURCHASE_PAYMENTS_QUERY, {
+    variables: { where: { limit: 100, page: 1 } },
+  });
+
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
@@ -44,7 +50,6 @@ const PurchasePaymentPage = () => {
         header: "Supplier",
       },
 
-     
       {
         accessorKey: "paidAmount",
         header: "Paid Amount",
@@ -60,17 +65,6 @@ const PurchasePaymentPage = () => {
     });
   };
 
-  const { data, loading, refetch } = useQuery<{
-    accounting__purchasePayments: PurchasePaymentsWithPagination;
-  }>(PURCHASE_PAYMENTS_QUERY, {
-    variables: {
-      where: {
-        limit: -1,
-        page: 1,
-      },
-    },
-  });
-
   return (
     <>
       <PageTitle title="Purchase Payment-list" />
@@ -82,7 +76,6 @@ const PurchasePaymentPage = () => {
         RowActionMenu={(row: PurchasePayment) => (
           <>
             <Menu.Item
-             
               icon={<IconListDetails size={18} />}
               onClick={() => {
                 setState({
@@ -93,7 +86,6 @@ const PurchasePaymentPage = () => {
             >
               View
             </Menu.Item>
-           
           </>
         )}
         ActionArea={
