@@ -1,25 +1,34 @@
 import { gql } from "@apollo/client";
 
 export const PURCHASE_PAYMENTS_QUERY = gql`
-  query Accounting__purchasePayments($where: CommonPaginationDto) {
-    accounting__purchasePayments(where: $where) {
+  query Accounting__purchasePayments {
+    accounting__purchasePayments {
+      meta {
+        totalCount
+        currentPage
+        totalPages
+        hasNextPage
+      }
       nodes {
-        _id
-        paymentUID
+        checkNo
         account {
           _id
           name
+          note
+          brunchName
           referenceNumber
+          tenant
         }
+        note
+        paidAmount
+        paymentUID
+        receptNo
         supplier {
           _id
           name
-        }
-        paidAmount
-        attachments {
-          meta
-          path
-          provider
+          email
+          companyName
+          contactNumber
         }
       }
     }

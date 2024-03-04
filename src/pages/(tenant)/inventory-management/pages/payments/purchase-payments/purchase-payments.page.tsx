@@ -5,7 +5,7 @@ import {
   PurchasePaymentsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
+import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconListDetails, IconPlus } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
@@ -68,7 +68,7 @@ const PurchasePaymentPage = () => {
   }>(PURCHASE_PAYMENTS_QUERY, {
     variables: {
       where: {
-        limit: 10,
+        limit: -1,
         page: 1,
       },
     },
@@ -127,8 +127,9 @@ const PurchasePaymentPage = () => {
       <Drawer
         opened={openedDetailsDrawer}
         onClose={detailsDrawerHandler.close}
-        position="right"
-        title="Purchase Payment details"
+        position="left"
+        size={"90%"}
+        title={<Title order={3}>Purchase Payment details</Title>}
         withCloseButton={true}
       >
         <PurchasePaymentsDetails
