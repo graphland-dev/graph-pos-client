@@ -212,7 +212,7 @@ const CreatePurchasePage = () => {
         const supplierId = watch("supplierId");
         const purchaseId = res?.inventory__createProductPurchase?._id;
         navigate(
-          `/${params.tenant}/inventory-management/payments/create-supplier-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
+          `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
         );
       },
     })
