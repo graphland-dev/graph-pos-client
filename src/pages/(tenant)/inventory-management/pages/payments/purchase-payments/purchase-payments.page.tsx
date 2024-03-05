@@ -72,7 +72,7 @@ const PurchasePaymentPage = () => {
         columns={columns}
         data={data?.accounting__purchasePayments.nodes ?? []}
         refetch={handleRefetch}
-        totalCount={data?.accounting__purchasePayments?.meta?.totalCount ?? 10}
+        totalCount={data?.accounting__purchasePayments?.meta?.totalCount ?? 100}
         RowActionMenu={(row: PurchasePayment) => (
           <>
             <Menu.Item
