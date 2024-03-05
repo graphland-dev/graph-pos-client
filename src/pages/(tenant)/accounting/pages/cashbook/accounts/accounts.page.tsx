@@ -18,7 +18,7 @@ import {
   ACCOUNTING_ACCOUNT_DELETE_MUTATION,
 } from "./utils/query";
 import PageTitle from "@/_app/common/PageTitle";
-import commaNumber from "@/_app/common/utils/commaNumber";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 
 interface IState {
   modalOpened: boolean;
@@ -87,7 +87,9 @@ const AccountsPage = () => {
       },
       {
         accessorFn: (row: Account) =>
-          commaNumber((row?.creditAmount || 0) - (row?.debitAmount || 0)),
+          currencyNumberFormat(
+            (row?.creditAmount || 0) - (row?.debitAmount || 0)
+          ),
         header: "Balance",
       },
       {
