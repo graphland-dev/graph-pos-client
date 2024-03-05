@@ -10,7 +10,7 @@ import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ViewSupplierDetails from "./components/supplier_details/ViewSupplierDetails";
 import {
   PEOPLE_REMOVE_SUPPLIERS,
@@ -18,6 +18,7 @@ import {
 } from "./utils/suppliers.query";
 import SuppliersCreateFrom from "./components/SuppliersCreateFrom";
 import PageTitle from "@/_app/common/PageTitle";
+import { useSearchParams } from "react-router-dom";
 
 interface IState {
   refetching: boolean;
@@ -28,6 +29,7 @@ interface IState {
 
 const SuppliersPage = () => {
   const [openedDrawer, drawerHandler] = useDisclosure();
+  const [searchParams] = useSearchParams();
   const [state, setState] = useSetState<IState>({
     refetching: false,
     action: "CREATE",
@@ -97,6 +99,21 @@ const SuppliersPage = () => {
     ],
     []
   );
+
+  useEffect(() => {
+    const supplierId = searchParams.get("supplierId");
+    if (supplierId) {
+      const row = data?.people__suppliers?.nodes?.find(
+        (item) => item._id == supplierId
+      );
+
+      if (row) {
+        setState({ viewModal: true });
+        setSupplierViewDetails(row!);
+      }
+    }
+  }, [searchParams]);
+
   return (
     <div>
       <PageTitle title="suppliers" />
