@@ -44,7 +44,7 @@ import {
   getVatProfileSelectInputData,
 } from "./utils/helpers";
 
-import commaNumber from "@/_app/common/utils/commaNumber";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
@@ -402,19 +402,19 @@ const CreatePurchasePage = () => {
                           />
                         </td>
                         <td className="font-medium text-center">
-                          {commaNumber(
+                          {currencyNumberFormat(
                             watch(`products.${idx}.quantity`) *
                               watch(`products.${idx}.unitPrice`)
                           )}
                         </td>
                         <td className="font-medium">{product?.taxRate || 0}</td>
                         <td className="font-medium">
-                          {commaNumber(
+                          {currencyNumberFormat(
                             calculateTaxAmount(watch(`products.${idx}`))
                           )}
                         </td>
                         <td className="font-medium">
-                          {commaNumber(
+                          {currencyNumberFormat(
                             calculateTaxAmount(watch(`products.${idx}`)) +
                               watch(`products.${idx}.quantity`) *
                                 watch(`products.${idx}.unitPrice`)
@@ -442,7 +442,9 @@ const CreatePurchasePage = () => {
                     </td>
                     <td>{getTotalTaxAmount(watch("products") || [])}</td>
                     <td>
-                      {commaNumber(getTotalProductsPrice(watch("products")!))}
+                      {currencyNumberFormat(
+                        getTotalProductsPrice(watch("products")!)
+                      )}
                     </td>
                     <td></td>
                   </tr>

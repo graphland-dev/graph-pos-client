@@ -1,7 +1,7 @@
 import PageTitle from "@/_app/common/PageTitle";
 import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
-import commaNumber from "@/_app/common/utils/commaNumber";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   MatchOperator,
@@ -99,7 +99,7 @@ const PurchaseListPage = () => {
       {
         accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(
+          `${currencyNumberFormat(
             originalRow?.netTotal - (originalRow?.paidAmount || 0)
           )} BDT`,
         header: "Due Amount",
@@ -107,13 +107,13 @@ const PurchaseListPage = () => {
       {
         accessorKey: "paidAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(originalRow?.paidAmount || 0)} BDT`,
+          `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
         header: "Paid Amount",
       },
       {
         accessorKey: "netTotal",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${commaNumber(originalRow?.netTotal || 0)} BDT`,
+          `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
         header: "Net Total",
       },
     ],
@@ -139,7 +139,7 @@ const PurchaseListPage = () => {
         columns={columns}
         data={data?.inventory__productPurchases.nodes ?? []}
         refetch={handleRefetch}
-        totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 10}
+        totalCount={data?.inventory__productPurchases.meta?.totalCount ?? 100}
         RowActionMenu={(row: ProductPurchase) => (
           <>
             {(row?.paidAmount || 0) < (row?.netTotal || 0) && (

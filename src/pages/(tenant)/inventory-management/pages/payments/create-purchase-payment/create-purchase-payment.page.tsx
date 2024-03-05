@@ -1,6 +1,6 @@
 import { Notify } from "@/_app/common/Notification/Notify";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import commaNumber from "@/_app/common/utils/commaNumber";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import {
   AccountsWithPagination,
@@ -254,7 +254,7 @@ const CreatePurchasePayment = () => {
                 <tr key={idx}>
                   <td className="font-medium">{item?.purchaseUID}</td>
                   <td className="font-medium">
-                    {commaNumber(
+                    {currencyNumberFormat(
                       (item?.netTotal || 0) - (item?.paidAmount || 0)
                     )}
                   </td>

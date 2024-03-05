@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const PURCHASE_PAYMENTS_QUERY = gql`
-  query Accounting__purchasePayments {
-    accounting__purchasePayments {
+  query Accounting__purchasePayments($where: CommonPaginationDto) {
+    accounting__purchasePayments(where: $where) {
       meta {
         totalCount
         currentPage
