@@ -217,19 +217,6 @@ const CreatePurchasePage = () => {
       },
     })
   );
-  // const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
-  //   CREATE_INVENTORY_PRODUCT_PURCHASE,
-  //   Notify({
-  //     sucTitle: "Inventory product added to purchase",
-  //     onSuccess(res) {
-  //       const supplierId = watch("supplierId");
-  //       const purchaseId = res?.inventory__createProductPurchase?._id;
-  //       navigate(
-  //         `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
-  //       );
-  //     },
-  //   })
-  // );
 
   const onSubmit = (v: any) => {
     createPurchaseProduct({
@@ -357,7 +344,7 @@ const CreatePurchasePage = () => {
           {Boolean(productFields?.length) && (
             <>
               <Table withBorder withColumnBorders>
-                <thead className="bg-base">
+                <thead className="bg-card-header">
                   <tr className="!p-2 rounded-md">
                     <th>Name</th>
                     <th>Quantity</th>
@@ -436,7 +423,7 @@ const CreatePurchasePage = () => {
                     )
                   )}
 
-                  <tr className="bg-green-50">
+                  <tr>
                     <td colSpan={5} className="font-semibold text-right">
                       Total
                     </td>
@@ -471,66 +458,6 @@ const CreatePurchasePage = () => {
           >
             <DateInput
               onChange={(d) => setValue("purchaseOrderDate", d!)}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Note"
-            error={<ErrorMessage errors={errors} name={`note`} />}
-          >
-            <Textarea {...register("note")} placeholder="Write note" />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            withAsterisk
-            label="Select VAT profile"
-            error={<ErrorMessage errors={errors} name={`taxRate`} />}
-          >
-            <Select
-              data={getVatProfileSelectInputData(
-                vatProfile?.setup__vats?.nodes as Vat[]
-              )}
-              onChange={(v) => setValue("taxRate", parseInt(v!))}
-              placeholder="Select vat profile"
-              disabled={vatProfileLoading}
-            />
-          </Input.Wrapper>
-          {/* <tr>
-                    <td colSpan={5} className="font-semibold text-right">
-                      Total
-                    </td>
-                    <td>{getTotalTaxAmount(watch("products") || [])}</td>
-                    <td>
-                      {commaNumber(getTotalProductsPrice(watch("products")!))}
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </Table> */}
-          {/* <Space h={50} />
-            </> */}
-          {/* )} */}
-          <Input.Wrapper
-            label="Purchase date"
-            withAsterisk
-            error={<ErrorMessage errors={errors} name={"purchaseDate"} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseDate", d!)}
-              value={watch("purchaseDate")}
-              placeholder="Pick a date"
-            />
-          </Input.Wrapper>
-          <Space h={"sm"} />
-          <Input.Wrapper
-            label="Purchase order date"
-            withAsterisk
-            error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
-          >
-            <DateInput
-              onChange={(d) => setValue("purchaseOrderDate", d!)}
-              value={watch("purchaseOrderDate")}
               placeholder="Pick a date"
             />
           </Input.Wrapper>
