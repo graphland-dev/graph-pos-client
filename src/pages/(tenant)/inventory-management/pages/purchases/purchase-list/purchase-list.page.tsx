@@ -40,7 +40,7 @@ const PurchaseListPage = () => {
   }>(Inventory__product_Purchases_Query, {
     variables: {
       where: {
-        limit: 10,
+        limit: 100,
         page: 1,
       },
     },
