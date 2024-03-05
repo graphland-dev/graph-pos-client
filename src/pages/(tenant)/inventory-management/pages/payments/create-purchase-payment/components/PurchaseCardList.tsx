@@ -9,13 +9,11 @@ import {
   Text,
   clsx,
 } from "@mantine/core";
-import { IconSquareCheckFilled } from "@tabler/icons-react";
 import React, { useMemo } from "react";
 
 const PurchaseCardList: React.FC<{
   purchases: ProductPurchase[];
   setValue: any;
-  watch: any;
   isFetchingPurchases: boolean;
   hasNextPage: boolean;
   purchasePage: number;
@@ -23,7 +21,6 @@ const PurchaseCardList: React.FC<{
   onAddItem: (state: any) => void;
 }> = ({
   purchases,
-  watch,
   isFetchingPurchases,
   hasNextPage,
   purchasePage,
@@ -34,7 +31,7 @@ const PurchaseCardList: React.FC<{
     return (purchase: ProductPurchase) => {
       const netTotal = purchase.netTotal || 0;
       const paidAmount = purchase.paidAmount || 0;
-      return currencyNumberFormat(netTotal - paidAmount);
+      return netTotal - paidAmount;
     };
   }, []);
 
@@ -47,10 +44,10 @@ const PurchaseCardList: React.FC<{
             p={10}
             withBorder
             className={clsx("relative cursor-pointer", {
-              "bg-red-100 cursor-not-allowed": dueAmount(purchase) === "0",
+              "bg-red-200 !cursor-not-allowed": dueAmount(purchase) <= 0,
             })}
             onClick={() => {
-              if (dueAmount(purchase) === "0") return;
+              if (dueAmount(purchase) <= 0) return;
               onAddItem({
                 ...purchase,
                 purchaseId: purchase?._id,
@@ -58,18 +55,11 @@ const PurchaseCardList: React.FC<{
               });
             }}
           >
-            {watch(`items.${idx}._id`) === purchase?._id && (
-              <IconSquareCheckFilled
-                size={20}
-                className="absolute top-3 right-3"
-              />
-            )}
-            nnnnnnn
             <Text size={"md"} fw={700}>
               {purchase?.purchaseUID}
             </Text>
             <Text size={"sm"}>
-              Due amount: {dueAmount(purchase)}
+              Due amount: {currencyNumberFormat(dueAmount(purchase))}
               BDT
             </Text>
             <Text size={"sm"}>

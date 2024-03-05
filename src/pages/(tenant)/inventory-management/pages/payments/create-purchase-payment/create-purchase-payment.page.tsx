@@ -29,17 +29,13 @@ import {
   Textarea,
   Title,
 } from "@mantine/core";
+import { DateInput } from "@mantine/dates";
 import { IconX } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SuppliersCardList from "../../purchases/create-purchase/components/SuppliersCardList";
 import PurchaseCardList from "./components/PurchaseCardList";
-import {
-  getRemainingDuesAmount,
-  getTotalDuesAmount,
-  getTotalPaidAmount,
-} from "./utils/helpers";
 import {
   Accounting__Create_Purchase_Payment,
   Inventory__Product_Purchases,
@@ -67,15 +63,15 @@ const CreatePurchasePayment = () => {
     watch,
     handleSubmit,
   } = useForm<IPurchasePaymentFormState>({
-    // defaultValues: {
-    //   purchaseDate: new Date(),
-    //   purchaseOrderDate: new Date(),
-    //   note: "",
-    //   products: [],
-    //   costs: [],
-    //   supplierId: "",
-    //   taxRate: 0,
-    // },
+    defaultValues: {
+      date: new Date(),
+      // purchaseOrderDate: new Date(),
+      // note: "",
+      // products: [],
+      // costs: [],
+      // supplierId: "",
+      // taxRate: 0,
+    },
     resolver: yupResolver(Purchase_Payment_Schema_Validation),
     mode: "onChange",
   });
@@ -88,6 +84,10 @@ const CreatePurchasePayment = () => {
     name: "items",
     control,
   });
+
+  const netPaymentAmount = () => {
+    return watch("items").reduce((total, i) => total + i.amount || 0, 0);
+  };
 
   const {
     data,
@@ -164,6 +164,7 @@ const CreatePurchasePayment = () => {
           checkNo: v?.checkNo,
           receptNo: v?.receptNo,
           note: v?.note,
+          date: v?.date,
         },
       },
     });
@@ -228,7 +229,6 @@ const CreatePurchasePayment = () => {
           purchases={
             purchases?.inventory__productPurchases?.nodes as ProductPurchase[]
           }
-          watch={watch}
           setValue={setValue}
           onAddItem={appendItems}
         />
@@ -240,7 +240,7 @@ const CreatePurchasePayment = () => {
 
         {itemsFields?.length ? (
           <Table withBorder withColumnBorders>
-            <thead className="bg-slate-300">
+            <thead className="bg-card-header">
               <tr className="!p-2 rounded-md">
                 <th>Purchase UID</th>
                 <th>Due Amount</th>
@@ -282,6 +282,12 @@ const CreatePurchasePayment = () => {
                   </td>
                 </tr>
               ))}
+              <tr>
+                <td colSpan={2} className="!text-right">
+                  Net Payment
+                </td>
+                <td colSpan={2}>{netPaymentAmount()}</td>
+              </tr>
             </tbody>
           </Table>
         ) : (
@@ -296,13 +302,17 @@ const CreatePurchasePayment = () => {
           searchable
           withAsterisk
           onChange={(fromAccountId) =>
-            setValue("accountId", fromAccountId || "")
+            setValue("accountId", fromAccountId || "", { shouldValidate: true })
           }
           label="Select account"
           placeholder="Select Account"
           data={accountListForDrop || []}
           value={watch("accountId")}
         />
+        <p className="text-red-500">
+          <ErrorMessage errors={errors} name="accountId" />
+        </p>
+
         <Space h={"sm"} />
 
         {watch("accountId") && (
@@ -336,6 +346,18 @@ const CreatePurchasePayment = () => {
         <Space h={"sm"} />
 
         <Input.Wrapper
+          label="Payment Date"
+          error={<ErrorMessage errors={errors} name="date" />}
+        >
+          <DateInput
+            value={watch("date")}
+            onChange={(date) => setValue("date", date!)}
+          />
+        </Input.Wrapper>
+
+        <Space h={"sm"} />
+
+        <Input.Wrapper
           label="Note"
           error={<ErrorMessage errors={errors} name="note" />}
         >
@@ -343,30 +365,6 @@ const CreatePurchasePayment = () => {
         </Input.Wrapper>
 
         <Space h={30} />
-
-        <Paper p={10} className="rounded-md ">
-          <Flex justify={"space-between"} align={"center"}>
-            <Text fw={700} size={"md"}>
-              Total Dues{" "}
-            </Text>
-            <Text>{getTotalDuesAmount(watch("items"))} BDT</Text>
-          </Flex>
-          <Flex justify={"space-between"} align={"center"}>
-            <Text fw={700} size={"md"}>
-              Total Paid{" "}
-            </Text>
-            <Text>{getTotalPaidAmount(watch("items"))} BDT</Text>
-          </Flex>
-          <hr />
-          <Flex justify={"space-between"} align={"center"}>
-            <Text fw={700} size={"md"}>
-              Remaining Dues (Total - Total Paid){" "}
-            </Text>
-            <Text>{getRemainingDuesAmount(watch("items"))} BDT</Text>
-          </Flex>
-        </Paper>
-
-        <Space h={10} />
 
         <Button type="submit" fullWidth loading={creatingPayment}>
           Save

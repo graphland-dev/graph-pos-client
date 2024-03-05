@@ -1,7 +1,5 @@
 function currencyNumberFormat(inputNumber: number) {
-  const currencyFormatter = new Intl.NumberFormat("en-IN", {
-    maximumSignificantDigits: 3,
-  });
+  const currencyFormatter = new Intl.NumberFormat("en-IN");
   return currencyFormatter.format(inputNumber);
 }
 
