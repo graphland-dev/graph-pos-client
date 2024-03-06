@@ -110,7 +110,7 @@ const PurchasePaymentsDetails: React.FC<{
           </Text>
           <Text>
             Company Name:{" "}
-            {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
+            {purchasePaymentsRow?.supplier?.companyName}
           </Text>
           <Text>Email: {purchasePaymentsRow?.supplier.email}</Text>
           <Text>Contact: {purchasePaymentsRow?.supplier.contactNumber}</Text>
