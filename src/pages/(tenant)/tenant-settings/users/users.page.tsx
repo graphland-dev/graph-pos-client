@@ -75,7 +75,7 @@ const UsersPage = () => {
             p={10}
             my={10}
           >
-            <div>
+            <div className="flex gap-3">
               <Avatar radius={7}>
                 <Image
                   src={`https://api.dicebear.com/7.x/initials/svg?seed=${
@@ -90,14 +90,25 @@ const UsersPage = () => {
                 <Text size={"xs"}>{user?.email}</Text>
               </div>
             </div>
-            <Badge
-              className="cursor-pointer"
-              onClick={() => {
-                handler.open();
-              }}
-            >
-              Edit
-            </Badge>
+            <div>
+              <Badge
+                className="cursor-pointer"
+                onClick={() => {
+                  handler.open();
+                }}
+              >
+                Edit
+              </Badge>
+              <Badge
+                color="red"
+                className="cursor-pointer"
+                // onClick={() => {
+                //   handler.open();
+                // }}
+              >
+                Delete
+              </Badge>
+            </div>
           </Paper>
         )
       )}

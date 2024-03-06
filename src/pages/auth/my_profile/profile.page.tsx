@@ -12,6 +12,7 @@ import {
   Image,
   Input,
   Paper,
+  PasswordInput,
   Space,
   Text,
   Title,
@@ -25,10 +26,12 @@ import { useForm } from "react-hook-form";
 import { FaCamera } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import {
+  IPasswordUpdateFormType,
   IProfileFormType,
+  Password__update__Form__Validation,
   Profile__Form__Validation,
 } from "./utils/form.validation";
-import { UPDATE_PROFILE_MUTATION } from "./utils/query.gql";
+import { UPDATE_MY_PASSWORD, UPDATE_PROFILE_MUTATION } from "./utils/query.gql";
 
 const MyProfilePage = () => {
   const navigate = useNavigate();
@@ -48,6 +51,15 @@ const MyProfilePage = () => {
     resolver: yupResolver(Profile__Form__Validation),
   });
 
+  //Update password form initiated
+  const {
+    register: passwordRegister,
+    handleSubmit: passwordHandleSubmit,
+    formState: { errors: passwordErrors },
+  } = useForm<IPasswordUpdateFormType>({
+    resolver: yupResolver(Password__update__Form__Validation),
+  });
+
   // prefill form with previous values
   useEffect(() => {
     setValue("name", user?.name as string);
@@ -56,6 +68,13 @@ const MyProfilePage = () => {
   // update mutation
   const [updateProfileInfo, { loading }] = useMutation(
     UPDATE_PROFILE_MUTATION,
+    Notify({
+      sucTitle: "Profile information updated.",
+    })
+  );
+  // update PASSWORD mutation
+  const [updatePassword, { loading: updatePasswordLoading }] = useMutation(
+    UPDATE_MY_PASSWORD,
     Notify({
       sucTitle: "Profile information updated.",
     })
@@ -70,6 +89,14 @@ const MyProfilePage = () => {
           email: user?.email,
           avatar: profileLogo,
         },
+      },
+    });
+  };
+
+  const onSubmitPassword = (values: IPasswordUpdateFormType) => {
+    updatePassword({
+      variables: {
+        input: values,
       },
     });
   };
@@ -184,35 +211,53 @@ const MyProfilePage = () => {
           </Button>
         </form>
       </Paper>
-      <Paper px={20} py={20} radius={10} withBorder>
+      <Space h={"lg"} />
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Space h={"sm"} />
+      <Paper px={20} py={20} radius={10} withBorder>
+        <Title order={4}>Update Password</Title>
+
+        <Space h={"md"} />
+        <form onSubmit={passwordHandleSubmit(onSubmitPassword)}>
           <Input.Wrapper
-            label="Name"
-            error={<ErrorMessage name="name" errors={errors} />}
+            label="Current Password"
+            error={<ErrorMessage name="password" errors={passwordErrors} />}
           >
-            <Input placeholder="Organization name" {...register("name")} />
+            <PasswordInput
+              {...passwordRegister("password")}
+              placeholder="Current Password"
+              withAsterisk
+            />
           </Input.Wrapper>
 
           <Space h={"xs"} />
 
-          <Input.Wrapper label="Email">
-            <Input placeholder="Email" disabled value={user?.email as string} />
+          <Input.Wrapper
+            error={<ErrorMessage name="newPassword" errors={passwordErrors} />}
+            label="New Password"
+          >
+            <PasswordInput
+              {...passwordRegister("newPassword")}
+              placeholder="New Password"
+              withAsterisk
+            />
           </Input.Wrapper>
-
-          {/* <Space h={'xs'} />
-
-					<Input.Wrapper
-						label='Description'
-						error={<ErrorMessage name='description' errors={errors} />}
-					>
-						<Textarea placeholder='Description' {...register('description')} />
-					</Input.Wrapper> */}
+          <Space h={"xs"} />
+          <Input.Wrapper
+            error={
+              <ErrorMessage name="confirmNewPassword" errors={passwordErrors} />
+            }
+            label="Confirm Password"
+          >
+            <PasswordInput
+              {...passwordRegister("confirmNewPassword")}
+              placeholder="Confirm Password"
+              withAsterisk
+            />
+          </Input.Wrapper>
 
           <Space h={"sm"} />
 
-          <Button type="submit" loading={loading}>
+          <Button type="submit" loading={updatePasswordLoading}>
             Save
           </Button>
         </form>
