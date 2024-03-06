@@ -2,6 +2,7 @@ import { User, UsersWithPagination } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
   Avatar,
+  Badge,
   Button,
   Drawer,
   Flex,
@@ -13,9 +14,8 @@ import {
   Title,
 } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
-import { Organization__Employees__Query } from "./utils/query.gql";
 import UserCreateForm from "./components/UserCreateFrom";
-
+import { Organization__Employees__Query } from "./utils/query.gql";
 
 interface IState {
   refetch: boolean;
@@ -25,7 +25,7 @@ interface IState {
 
 const UsersPage = () => {
   const [opened, handler] = useDisclosure();
-  const [state, ] = useSetState<IState>({
+  const [state] = useSetState<IState>({
     refetch: false,
     selectedUser: null,
     viewModal: false,
@@ -71,23 +71,33 @@ const UsersPage = () => {
         (user: User, idx: number) => (
           <Paper
             key={idx}
-            className="flex items-center gap-4 rounded-md"
+            className="flex items-center justify-between gap-4 rounded-md"
             p={10}
             my={10}
           >
-            <Avatar radius={7}>
-              <Image
-                src={`https://api.dicebear.com/7.x/initials/svg?seed=${
-                  user?.name ?? user?.email
-                }`}
-              />
-            </Avatar>
             <div>
-              <Text fw={500} tt={"capitalize"}>
-                {user?.name ?? user?.email?.split("@")[0]}
-              </Text>
-              <Text size={"xs"}>{user?.email}</Text>
+              <Avatar radius={7}>
+                <Image
+                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${
+                    user?.name ?? user?.email
+                  }`}
+                />
+              </Avatar>
+              <div>
+                <Text fw={500} tt={"capitalize"}>
+                  {user?.name ?? user?.email?.split("@")[0]}
+                </Text>
+                <Text size={"xs"}>{user?.email}</Text>
+              </div>
             </div>
+            <Badge
+              className="cursor-pointer"
+              onClick={() => {
+                handler.open();
+              }}
+            >
+              Edit
+            </Badge>
           </Paper>
         )
       )}

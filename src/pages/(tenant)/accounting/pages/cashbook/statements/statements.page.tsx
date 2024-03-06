@@ -1,16 +1,16 @@
+import PageTitle from "@/_app/common/PageTitle";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
   Transaction,
   TransactionsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Badge } from "@mantine/core";
+import { Badge, Tooltip } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
+import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import { ACCOUNTING_STATEMENTS_QUERY_LIST } from "./ulits/query";
-import dayjs from "dayjs";
-import PageTitle from "@/_app/common/PageTitle";
 
 interface IState {
   modalOpened: boolean;
@@ -50,6 +50,19 @@ const StatementPage = () => {
         header: "Date",
       },
       {
+        accessorFn: (row: Transaction) => (
+          <Tooltip
+            multiline
+            py={12}
+            color="gray"
+            withArrow
+            position="bottom"
+            transitionProps={{ duration: 200 }}
+            label={row.note}
+          >
+            <div className="text-ellipsis overflow-hidden w-32">{ row.note}</div>
+          </Tooltip>
+        ),
         accessorKey: "note",
         header: "Note",
       },

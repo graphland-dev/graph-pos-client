@@ -1,37 +1,23 @@
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
-import {
-  ProductPurchasesWithPagination,
-  PurchasePayment,
-} from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { PurchasePayment } from "@/_app/graphql-models/graphql";
 import { Anchor, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Inventory__product_Purchases_Query } from "../../../purchases/purchase-list/utils/query";
 
 const PurchasePaymentsDetails: React.FC<{
   purchasePaymentsRow: PurchasePayment;
-}> = ({ purchasePaymentsRow }) => {
-  const { data, loading } = useQuery<{
-    inventory__productPurchases: ProductPurchasesWithPagination;
-  }>(Inventory__product_Purchases_Query, {
-    variables: {
-      where: {
-        limit: -1,
-        page: 1,
-      },
-    },
-  });
+  loading: boolean;
+}> = ({ purchasePaymentsRow, loading }) => {
 
-  const elements = data?.inventory__productPurchases?.nodes;
+  const elements = purchasePaymentsRow?.items;
   const totalAmount = useMemo(
     () =>
-      data?.inventory__productPurchases?.nodes?.reduce(
-        (total, current) => total + (current?.paidAmount ?? 0),
+      purchasePaymentsRow?.items?.reduce(
+        (total, current) => total + (current?.purchase.paidAmount ?? 0),
         0
       ),
-    [data?.inventory__productPurchases?.nodes]
+    [purchasePaymentsRow?.items]
   );
 
   const ths = (
@@ -72,7 +58,7 @@ const PurchasePaymentsDetails: React.FC<{
   );
 
   const rows = elements?.map((element) => (
-    <tr key={element._id}>
+    <tr key={element.purchaseUID}>
       <td>
         <Anchor
           component={Link}
@@ -82,9 +68,9 @@ const PurchasePaymentsDetails: React.FC<{
         </Anchor>
         {}
       </td>
-      <td>{dateFormat(element.purchaseDate)} </td>
-      <td>{currencyNumberFormat(element.netTotal)}</td>
-      <td>{currencyNumberFormat(element.paidAmount || 0)}</td>
+      <td>{dateFormat(element.purchase.purchaseDate)} </td>
+      <td>{currencyNumberFormat(element.purchase.netTotal)}</td>
+      <td>{currencyNumberFormat(element.purchase.paidAmount || 0)}</td>
     </tr>
   ));
 
@@ -145,8 +131,7 @@ const PurchasePaymentsDetails: React.FC<{
           Company Name:{" "}
           {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
         </Text>
-        {/* <Text>Email: {purchasePaymentsRow?.account.email}</Text>
-        <Text>Contact: {purchasePaymentsRow?.account.contactNumber}</Text> */}
+       
       </Paper>
 
       <Table withColumnBorders captionSide="bottom">
