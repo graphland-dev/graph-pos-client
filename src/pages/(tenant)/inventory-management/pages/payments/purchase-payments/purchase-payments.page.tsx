@@ -23,6 +23,7 @@ const PurchasePaymentPage = () => {
   const [state, setState] = useSetState<IState>({
     refetching: false,
     purchasePaymentsRow: null,
+   
   });
   const [openedDetailsDrawer, detailsDrawerHandler] = useDisclosure();
   const params = useParams<{ tenant: string }>();
@@ -80,6 +81,7 @@ const PurchasePaymentPage = () => {
               onClick={() => {
                 setState({
                   purchasePaymentsRow: row,
+                 
                 });
                 detailsDrawerHandler.open();
               }}
@@ -113,6 +115,7 @@ const PurchasePaymentPage = () => {
       >
         <PurchasePaymentsDetails
           purchasePaymentsRow={state?.purchasePaymentsRow as PurchasePayment}
+          loading={loading}
         />
       </Drawer>
     </>

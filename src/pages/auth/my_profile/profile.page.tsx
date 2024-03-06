@@ -184,6 +184,39 @@ const MyProfilePage = () => {
           </Button>
         </form>
       </Paper>
+      <Paper px={20} py={20} radius={10} withBorder>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Space h={"sm"} />
+          <Input.Wrapper
+            label="Name"
+            error={<ErrorMessage name="name" errors={errors} />}
+          >
+            <Input placeholder="Organization name" {...register("name")} />
+          </Input.Wrapper>
+
+          <Space h={"xs"} />
+
+          <Input.Wrapper label="Email">
+            <Input placeholder="Email" disabled value={user?.email as string} />
+          </Input.Wrapper>
+
+          {/* <Space h={'xs'} />
+
+					<Input.Wrapper
+						label='Description'
+						error={<ErrorMessage name='description' errors={errors} />}
+					>
+						<Textarea placeholder='Description' {...register('description')} />
+					</Input.Wrapper> */}
+
+          <Space h={"sm"} />
+
+          <Button type="submit" loading={loading}>
+            Save
+          </Button>
+        </form>
+      </Paper>
     </div>
   );
 };

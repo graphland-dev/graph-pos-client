@@ -19,6 +19,16 @@ export const PURCHASE_PAYMENTS_QUERY = gql`
           referenceNumber
           tenant
         }
+        items {
+          purchase {
+            _id
+            netTotal
+            purchaseUID
+            purchaseDate
+            paidAmount
+          }
+          purchaseUID
+        }
         note
         paidAmount
         paymentUID
