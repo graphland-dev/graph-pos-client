@@ -1,5 +1,6 @@
+import { confirmModal } from "@/_app/common/confirm/confirm";
 import { User, UsersWithPagination } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   Avatar,
   Badge,
@@ -13,42 +14,79 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import { useDisclosure, useSetState } from "@mantine/hooks";
+import { useSetState } from "@mantine/hooks";
 import UserCreateForm from "./components/UserCreateFrom";
-import { Organization__Employees__Query } from "./utils/query.gql";
+import {
+  IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
+  Organization__Employees__Query,
+} from "./utils/query.gql";
 
 interface IState {
-  refetch: boolean;
-  selectedUser: User | null;
-  viewModal: boolean;
+  modalOpened: boolean;
+  operationType: "create" | "update";
+  operationId?: string | null;
+  operationPayload?: any;
+  refetching: boolean;
 }
 
 const UsersPage = () => {
-  const [opened, handler] = useDisclosure();
-  const [state] = useSetState<IState>({
-    refetch: false,
-    selectedUser: null,
-    viewModal: false,
+  const [state, setState] = useSetState<IState>({
+    modalOpened: false,
+    operationType: "create",
+    operationId: null,
+    operationPayload: {},
+    refetching: false,
   });
+
   const { data, loading, refetch } = useQuery<{
     identity__currentTenantUsers: UsersWithPagination;
   }>(Organization__Employees__Query);
 
+
+
+  const [deleteEmployeeRoleMutation] = useMutation(
+    IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
+    { onCompleted: () => handleRefetch({}) }
+  );
+
+  const handleDeleteEmployeeRole = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete employee role?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteEmployeeRoleMutation({
+          variables: {
+            userId: _id,
+          },
+        });
+      },
+    });
+  };
+
+  const handleRefetch = (variables: any) => {
+    setState({ refetching: true });
+    refetch(variables).finally(() => {
+      setState({ refetching: false });
+    });
+  };
+
   return (
     <div>
       <Drawer
-        opened={opened}
-        onClose={handler.close}
+        opened={state.modalOpened}
+        onClose={() => setState({ modalOpened: false })}
         position="right"
-        title="Create User"
         withCloseButton={true}
       >
         <UserCreateForm
-          formData={state.selectedUser!}
-          onFormSubmitted={() => {
-            refetch();
-            handler.close();
+          onSubmissionDone={() => {
+            handleRefetch({});
+            setState({ modalOpened: false });
           }}
+          operationType={state.operationType}
+          operationId={state.operationId}
+          formData={state.operationPayload}
         />
       </Drawer>
       <Flex justify={"space-between"}>
@@ -56,9 +94,9 @@ const UsersPage = () => {
           Organization Employees
         </Title>
         <Button
-          onClick={() => {
-            handler.open();
-          }}
+          onClick={() =>
+            setState({ modalOpened: true, operationType: "create" })
+          }
           variant="outline"
         >
           Invite Member{" "}
@@ -93,18 +131,21 @@ const UsersPage = () => {
             <div>
               <Badge
                 className="cursor-pointer"
-                onClick={() => {
-                  handler.open();
-                }}
+                onClick={() =>
+                  setState({
+                    modalOpened: true,
+                    operationType: "update",
+                    operationId: user._id,
+                    operationPayload: user,
+                  })
+                }
               >
                 Edit
               </Badge>
               <Badge
                 color="red"
                 className="cursor-pointer"
-                // onClick={() => {
-                //   handler.open();
-                // }}
+                onClick={() => handleDeleteEmployeeRole(user._id)}
               >
                 Delete
               </Badge>

@@ -3,18 +3,28 @@ import { Role, User } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, MultiSelect } from "@mantine/core";
+import { Button, Input, MultiSelect, Space, Title } from "@mantine/core";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { CURRENT__TENANT__ROLES } from "../../roles/utils/query.gql";
-import { IDENTITY_ADD_USER_TO_CURRENT_TENANT } from "../utils/query.gql";
+import {
+  IDENTITY_ADD_USER_TO_CURRENT_TENANT,
+  IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
+} from "../utils/query.gql";
+import { useEffect } from "react";
 
 interface IUserFormProps {
-  onFormSubmitted: () => void;
+  onSubmissionDone: () => void;
+  operationType: "create" | "update";
+  operationId?: string | null;
   formData?: User;
-  
 }
-const UserCreateForm: React.FC<IUserFormProps> = ({ onFormSubmitted }) => {
+const UserCreateForm: React.FC<IUserFormProps> = ({
+  onSubmissionDone,
+  operationType,
+  operationId,
+  formData,
+}) => {
   const {
     register,
     reset,
@@ -30,41 +40,81 @@ const UserCreateForm: React.FC<IUserFormProps> = ({ onFormSubmitted }) => {
     resolver: yupResolver(formValidationSchema),
   });
 
-  const { data: roleData, loading: roleLoading } = useQuery<{
+  const { data: roleData} = useQuery<{
     identity__currentTenantRoles: Role[];
   }>(CURRENT__TENANT__ROLES);
-  console.log(roleData, roleLoading);
-  const [createUser, { loading: creating }] = useMutation(
-    IDENTITY_ADD_USER_TO_CURRENT_TENANT,
+ 
+
+  const [roleUpdateMutation, { loading: updating }] = useMutation(
+    IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
     Notify({
-      sucTitle: "Supplier successfully created!",
+      sucTitle: "User role successfully updated!",
       onSuccess() {
         reset();
-        onFormSubmitted();
+        onSubmissionDone();
       },
     })
   );
 
-  const onSubmit = (values: IUserForm) => {
-    createUser({
-      variables: {
-        input: {
-          roles: values.roles,
-          email: values.email,
-        },
+  const [createUser, { loading: creating }] = useMutation(
+    IDENTITY_ADD_USER_TO_CURRENT_TENANT,
+    Notify({
+      sucTitle: "User successfully created!",
+      onSuccess() {
+        reset();
+        onSubmissionDone();
       },
-    });
+    })
+  );
+
+  console.log(formData);
+
+  useEffect(() => {
+    if (operationType === "update") {
+      setValue("email", formData?.email || "");
+      setValue("roles", formData?.systemRoles || []);
+    } else {
+      setValue("email", "");
+      setValue("roles", []);
+    }
+  }, [formData]);
+
+  const onSubmit = (values: IUserForm) => {
+    if (operationType == "create") {
+      createUser({
+        variables: {
+          input: {
+            roles: values.roles,
+            email: values.email,
+          },
+        },
+      });
+    } else {
+      roleUpdateMutation({
+        variables: {
+          roles: values.roles,
+          userId: operationId,
+        },
+      });
+    }
   };
 
   return (
     <div>
-      {" "}
+      <Title order={4}>
+        <span className="capitalize">{operationType} Employee roles </span>
+      </Title>
+      <Space h={"md"} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input.Wrapper
           label="Email"
           error={<ErrorMessage name="email" errors={errors} />}
         >
-          <Input placeholder="Write email" {...register("email")} />
+          <Input
+            disabled={operationType === "update"}
+            placeholder="Write email"
+            {...register("email")}
+          />
         </Input.Wrapper>
 
         <Input.Wrapper
@@ -89,7 +139,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({ onFormSubmitted }) => {
           />
         </Input.Wrapper>
 
-        <Button type="submit" loading={creating} fullWidth>
+        <Button type="submit" loading={creating || updating} fullWidth>
           Save
         </Button>
       </form>
