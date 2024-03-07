@@ -19,7 +19,7 @@ import { IconPlus } from '@tabler/icons-react';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
-import { Pos_Client_Query } from '../query.pos';
+import { Pos_Client_Query } from '../utils/query.pos';
 
 const ClientSelectArea: React.FC<{
 	formInstance: any;

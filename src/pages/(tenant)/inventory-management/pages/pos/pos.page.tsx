@@ -1,3 +1,4 @@
+import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	ActionIcon,
@@ -23,6 +24,9 @@ import {
 	IconX,
 } from '@tabler/icons-react';
 import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import ClientSelectArea from './components/ClientSelectArea';
+import ProductSelectArea from './components/ProductSelectArea';
 
 const elements = [
 	{ productName: 'Product 6', price: 660, quantity: 6 },
@@ -92,7 +96,9 @@ const PosPage = () => {
 									formInstance={form}
 									contactNumber={watch('client')}
 								/>
-								<Input size='md' radius={0} placeholder='Item name/code' />
+
+								{/* <Input size='md' radius={0} placeholder='Item name/code' /> */}
+								<ProductSelectArea formInstance={form} />
 							</div>
 							<Space h={20} />
 
@@ -544,16 +550,14 @@ const PosPage = () => {
 
 export default PosPage;
 
-import { ErrorMessage } from '@hookform/error-message';
-import * as Yup from 'yup';
-import ClientSelectArea from './components/ClientSelectArea';
-
 const Pos_Form_Validation_Schema = Yup.object().shape({
 	client: Yup.string().required().label('Client'),
 	discountType: Yup.string().required().label('Discount type'),
 	discountAmount: Yup.number().required().label('Discount amount'),
 	transportCost: Yup.number().required().label('Transport cost'),
 	invoiceTax: Yup.string().required().label('Invoice tax'),
+	category: Yup.string().required().label('Category'),
+	brand: Yup.string().required().label('Brand'),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;
