@@ -19,6 +19,65 @@ export const Pos_Products_Query = gql`
 				_id
 				name
 				code
+				tenant
+				gallery {
+					provider
+					path
+					meta
+				}
+				thumbnail {
+					provider
+					path
+					meta
+				}
+				stockInQuantity
+				stockOutQuantity
+				modelName
+				category {
+					_id
+					tenant
+					name
+					code
+					note
+					createdAt
+					updatedAt
+				}
+				brand {
+					_id
+					tenant
+					name
+					code
+					note
+					createdAt
+					updatedAt
+				}
+				unit {
+					_id
+					tenant
+					name
+					code
+					note
+					createdAt
+					updatedAt
+				}
+				vat {
+					_id
+					tenant
+					name
+					percentage
+					code
+					note
+					createdAt
+					updatedAt
+				}
+				price
+				discountPercentage
+				discountAmount
+				discountMode
+				taxType
+				note
+				createdAt
+				updatedAt
 			}
 		}
 	}
