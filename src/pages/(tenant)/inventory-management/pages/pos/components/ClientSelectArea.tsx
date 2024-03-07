@@ -93,9 +93,10 @@ const ClientSelectArea: React.FC<{
 					<ErrorMessage name='client' errors={formInstance.formState.errors} />
 				}
 			>
-				<Flex align={'center'} gap={5}>
+				<Flex align={'center'}>
 					<Autocomplete
 						size='md'
+						radius={0}
 						className='w-full'
 						disabled={loadingClients}
 						data={getClientSelectInputData(data?.people__clients?.nodes)}
@@ -103,7 +104,6 @@ const ClientSelectArea: React.FC<{
 						onChange={(clientEvent) =>
 							formInstance.setValue('client', clientEvent)
 						}
-						// defaultValue={watch('client')}
 						nothingFound={
 							<div>
 								<Text>No client with {formInstance.watch('client')}</Text>
@@ -116,9 +116,10 @@ const ClientSelectArea: React.FC<{
 					/>
 
 					<ActionIcon
-						size={'xl'}
+						size={42}
 						variant='filled'
 						color='blue'
+						radius={0}
 						onClick={handler.open}
 					>
 						<IconPlus />

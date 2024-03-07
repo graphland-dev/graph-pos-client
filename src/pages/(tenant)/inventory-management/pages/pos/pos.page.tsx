@@ -65,8 +65,8 @@ const PosPage = () => {
 	const {
 		// register,
 		// control,
-		// setValue,
-		// formState: { errors },
+		setValue,
+		formState: { errors },
 		handleSubmit,
 		watch,
 	} = form;
@@ -84,14 +84,16 @@ const PosPage = () => {
 			<Space h={20} />
 
 			<form onSubmit={handleSubmit(onSubmitPOS)}>
-				<div className='grid grid-cols-2 gap-5'>
-					<div>
+				<div className='flex items-start gap-3'>
+					<div className='lg:w-7/12'>
 						<Paper p={15} withBorder>
-							<ClientSelectArea
-								formInstance={form}
-								contactNumber={watch('client')}
-							/>
-
+							<div className='grid grid-cols-2 place-content-center gap-3'>
+								<ClientSelectArea
+									formInstance={form}
+									contactNumber={watch('client')}
+								/>
+								<Input size='md' radius={0} placeholder='Item name/code' />
+							</div>
 							<Space h={20} />
 
 							<Title order={5}>Product Items</Title>
@@ -121,37 +123,74 @@ const PosPage = () => {
 
 						<Paper p={15} withBorder>
 							<div className='grid grid-cols-2 gap-3'>
+								{/* {JSON.stringify(errors, null, 2)} */}
 								<div>
-									<Select
-										label='Discount Type'
-										placeholder='Fixed'
+									<Input.Wrapper
 										size='md'
-										data={['Fixed', 'Percentage(%)']}
-									/>
+										error={<ErrorMessage name='discountType' errors={errors} />}
+									>
+										<Select
+											label='Discount Type'
+											placeholder='Fixed'
+											size='md'
+											onChange={(e) => setValue('discountType', e!)}
+											radius={0}
+											data={['Fixed', 'Percentage(%)']}
+										/>
+									</Input.Wrapper>
 
 									<Space h={'sm'} />
 
-									<NumberInput
-										label='Transport Cost'
+									<Input.Wrapper
 										size='md'
-										placeholder='Enter transport cost'
-									/>
+										error={
+											<ErrorMessage name='transportCost' errors={errors} />
+										}
+									>
+										<NumberInput
+											label='Transport Cost'
+											size='md'
+											onChange={(e) =>
+												setValue('transportCost', parseInt(e as string))
+											}
+											radius={0}
+											placeholder='Enter transport cost'
+										/>
+									</Input.Wrapper>
 								</div>
 								<div>
-									<NumberInput
-										label='Discount'
+									<Input.Wrapper
 										size='md'
-										placeholder='Enter discount'
-									/>
+										error={
+											<ErrorMessage name='discountAmount' errors={errors} />
+										}
+									>
+										<NumberInput
+											label='Discount'
+											radius={0}
+											size='md'
+											onChange={(e) =>
+												setValue('discountAmount', parseInt(e as string))
+											}
+											placeholder='Enter discount'
+										/>
+									</Input.Wrapper>
 
 									<Space h={'sm'} />
 
-									<Select
-										label='Invoice Tax'
-										placeholder='Select tax type'
+									<Input.Wrapper
 										size='md'
-										data={['Vat@10%', 'Vat@0']}
-									/>
+										error={<ErrorMessage name='invoiceTax' errors={errors} />}
+									>
+										<Select
+											label='Invoice Tax'
+											placeholder='Select tax type'
+											size='md'
+											onChange={(e) => setValue('invoiceTax', e!)}
+											radius={0}
+											data={['Vat@10%', 'Vat@0']}
+										/>
+									</Input.Wrapper>
 								</div>
 							</div>
 
@@ -196,17 +235,19 @@ const PosPage = () => {
           --------------------------
           */}
 
-					<div>
+					<div className='lg:w-5/12'>
 						<Paper p={15} withBorder>
 							<Flex gap={8}>
 								<Select
 									data={['Drinks', 'Fast Food', 'Accessories', 'Dry Foods']}
 									size='md'
+									radius={0}
 									placeholder='Select a category'
 								/>
 								<Select
 									data={['Drinks', 'Fast Food', 'Accessories', 'Dry Foods']}
 									size='md'
+									radius={0}
 									placeholder='Select a category'
 								/>
 							</Flex>
@@ -215,7 +256,7 @@ const PosPage = () => {
 						<Space h={20} />
 
 						<Paper p={15} withBorder>
-							<Input size='md' placeholder='Search products...' />
+							<Input size='md' radius={0} placeholder='Item name/code' />
 
 							<Space h={10} />
 
@@ -503,11 +544,16 @@ const PosPage = () => {
 
 export default PosPage;
 
+import { ErrorMessage } from '@hookform/error-message';
 import * as Yup from 'yup';
 import ClientSelectArea from './components/ClientSelectArea';
 
-export const Pos_Form_Validation_Schema = Yup.object().shape({
+const Pos_Form_Validation_Schema = Yup.object().shape({
 	client: Yup.string().required().label('Client'),
+	discountType: Yup.string().required().label('Discount type'),
+	discountAmount: Yup.number().required().label('Discount amount'),
+	transportCost: Yup.number().required().label('Transport cost'),
+	invoiceTax: Yup.string().required().label('Invoice tax'),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;
