@@ -1,18 +1,14 @@
-import { Product, ProductsWithPagination } from '@/_app/graphql-models/graphql';
-import { useQuery } from '@apollo/client';
+import { Product } from '@/_app/graphql-models/graphql';
 import { ErrorMessage } from '@hookform/error-message';
 import { Autocomplete, Input } from '@mantine/core';
 import React from 'react';
-import { Pos_Products_Query } from '../utils/query.pos';
 
 const ProductSelectArea: React.FC<{
 	formInstance: any;
-	handleAddProductToList: (productId: string, products: Product[]) => void;
-}> = ({ formInstance, handleAddProductToList }) => {
-	const { data: products, loading: fetchingProducts } = useQuery<{
-		inventory__products: ProductsWithPagination;
-	}>(Pos_Products_Query);
-
+	handleAddProductToList: (productId: string) => void;
+	products: Product[];
+	fetchingProducts: boolean;
+}> = ({ formInstance, handleAddProductToList, products, fetchingProducts }) => {
 	return (
 		<Input.Wrapper
 			size='md'
@@ -25,14 +21,9 @@ const ProductSelectArea: React.FC<{
 				radius={0}
 				className='w-full'
 				disabled={fetchingProducts}
-				data={getProductSelectInputData(products?.inventory__products?.nodes)}
+				data={getProductSelectInputData(products)}
 				placeholder='Item name/code'
-				onChange={(productId) =>
-					handleAddProductToList(
-						productId,
-						products?.inventory__products?.nodes as Product[]
-					)
-				}
+				onChange={(productId) => handleAddProductToList(productId)}
 				nothingFound
 			/>
 		</Input.Wrapper>

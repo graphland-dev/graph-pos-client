@@ -12,7 +12,7 @@ export const Pos_Client_Query = gql`
 	}
 `;
 
-export const Pos_Products_Query = gql`
+export const Pos_Products_Query1 = gql`
 	query ($where: CommonPaginationDto) {
 		inventory__products(where: $where) {
 			nodes {
@@ -100,6 +100,41 @@ export const Pos_Categories_Query = gql`
 			nodes {
 				_id
 				name
+			}
+		}
+	}
+`;
+
+export const Pos_Products_Query = gql`
+	query ($where: CommonPaginationDto) {
+		inventory__products(where: $where) {
+			nodes {
+				_id
+				brand {
+					_id
+					name
+				}
+				category {
+					_id
+					name
+				}
+				discountAmount
+				discountMode
+				discountPercentage
+				code
+				name
+				price
+				taxType
+				thumbnail {
+					meta
+					path
+					provider
+				}
+				vat {
+					_id
+					name
+					percentage
+				}
 			}
 		}
 	}

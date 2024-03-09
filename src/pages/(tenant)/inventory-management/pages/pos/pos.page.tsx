@@ -1,8 +1,11 @@
 import currencyNumberFormat from '@/_app/common/utils/commaNumber';
+import { getFileUrl } from '@/_app/common/utils/getFileUrl';
 import {
 	Product,
 	ProductItemReference,
 	ProductTaxType,
+	ProductsWithPagination,
+	ServerFileReference,
 	Vat,
 	VatsWithPagination,
 } from '@/_app/graphql-models/graphql';
@@ -19,6 +22,7 @@ import {
 	NumberInput,
 	Paper,
 	Select,
+	Skeleton,
 	Space,
 	Table,
 	Text,
@@ -42,9 +46,28 @@ import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import CategoryAndBrandSelectArea from './components/CategoryAndBrandSelectArea';
 import ClientSelectArea from './components/ClientSelectArea';
 import ProductSelectArea from './components/ProductSelectArea';
+import { Pos_Products_Query } from './utils/query.pos';
 import { getDiscount, getSalesVat } from './utils/utils.calc';
 
 const PosPage = () => {
+	// fetch vat profiles
+	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
+		setup__vats: VatsWithPagination;
+	}>(SETTINGS_VAT_QUERY, {
+		variables: {
+			where: { limit: -1 },
+		},
+	});
+
+	// fetch products
+	const { data: products, loading: productsFetching } = useQuery<{
+		inventory__products: ProductsWithPagination;
+	}>(Pos_Products_Query, {
+		variables: {
+			where: { limit: -1 },
+		},
+	});
+
 	const form = useForm<IPosFormType>({
 		defaultValues: {
 			discountAmount: 0,
@@ -75,8 +98,10 @@ const PosPage = () => {
 	});
 
 	// handle add product to list
-	function handleAddProductToList(productId: string, products: Product[]) {
-		const product = products?.find((p) => p._id === productId);
+	function handleAddProductToList(productId: string) {
+		const product = products?.inventory__products?.nodes?.find(
+			(p) => p._id === productId
+		);
 
 		const price = product?.price || 0;
 		const percentage = product?.vat?.percentage || 0;
@@ -105,15 +130,6 @@ const PosPage = () => {
 		}
 	}
 
-	// fetch vat profiles
-	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
-		setup__vats: VatsWithPagination;
-	}>(SETTINGS_VAT_QUERY, {
-		variables: {
-			where: { limit: -1 },
-		},
-	});
-
 	// submit pos form
 	const onSubmitPOS = (values: IPosFormType) => {
 		console.log(values);
@@ -140,6 +156,8 @@ const PosPage = () => {
 								<ProductSelectArea
 									formInstance={form}
 									handleAddProductToList={handleAddProductToList}
+									fetchingProducts={productsFetching}
+									products={products?.inventory__products?.nodes as Product[]}
 								/>
 							</div>
 							<Space h={20} />
@@ -421,278 +439,56 @@ const PosPage = () => {
 							<Space h={10} />
 
 							<div className='grid grid-cols-4 gap-2'>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										className='rounded-tl-lg rounded-br-lg'
-										variant='filled'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1695449586.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
+								{products?.inventory__products?.nodes?.map(
+									(product: Product, idx: number) => (
+										<Paper
+											key={idx}
+											radius={5}
+											shadow='sm'
+											pos={'relative'}
+											className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
+											onClick={() => handleAddProductToList(product?._id)}
+										>
+											<Badge
+												pos={'absolute'}
+												top={0}
+												left={0}
+												radius={0}
+												size='lg'
+												className='rounded-tl-lg rounded-br-lg'
+												variant='filled'
+											>
+												{product.price}
+											</Badge>
+											<img
+												src={getFileUrl(
+													product?.thumbnail as ServerFileReference
+												)}
+												alt='product image'
+												className='object-cover p-2 rounded-md'
+											/>
 
-									<Space h={5} />
+											<Space h={5} />
 
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										variant='filled'
-										className='rounded-tl-lg rounded-br-lg'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1702902621.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
+											<div className='p-2'>
+												<Text size='xs' fw={500}>
+													{product?.code}
+												</Text>
+												<Text fz={'md'} fw={500}>
+													{product?.name}
+												</Text>
+											</div>
+										</Paper>
+									)
+								)}
 
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										className='rounded-tl-lg rounded-br-lg'
-										variant='filled'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1694628470.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										variant='filled'
-										className='rounded-tl-lg rounded-br-lg'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1702902621.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										className='rounded-tl-lg rounded-br-lg'
-										variant='filled'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1695449586.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										variant='filled'
-										className='rounded-tl-lg rounded-br-lg'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1702902621.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										className='rounded-tl-lg rounded-br-lg'
-										variant='filled'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1694628470.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
-								<Paper
-									radius={5}
-									shadow='sm'
-									pos={'relative'}
-									className='hover:border-solid hover:border-[1px] hover:border-indigo-300 hover:duration-300'
-								>
-									<Badge
-										pos={'absolute'}
-										top={0}
-										left={0}
-										radius={0}
-										size='lg'
-										variant='filled'
-										className='rounded-tl-lg rounded-br-lg'
-									>
-										120
-									</Badge>
-									<img
-										src='https://posdemo3.uddoktait.com/images/products/1702902621.jpeg'
-										alt='product image'
-										className='object-cover p-2 rounded-md'
-									/>
-
-									<Space h={5} />
-
-									<div className='p-2'>
-										<Text size='xs' fw={500}>
-											AP-012232
-										</Text>
-										<Text fz={'md'} fw={500}>
-											Product 1
-										</Text>
-									</div>
-								</Paper>
+								{productsFetching && (
+									<>
+										{new Array(12).fill(12).map((_, idx) => (
+											<Skeleton key={idx} radius={5} h={200} />
+										))}
+									</>
+								)}
 							</div>
 						</Paper>
 					</div>
