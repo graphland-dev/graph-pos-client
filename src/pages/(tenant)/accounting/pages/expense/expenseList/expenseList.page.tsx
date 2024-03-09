@@ -28,6 +28,7 @@ interface IState {
   operationId?: string | null;
   operationPayload?: any;
   refetching: boolean;
+  viewDetailsOpened: boolean;
 }
 
 const ExpenseListPage = () => {
@@ -37,6 +38,7 @@ const ExpenseListPage = () => {
     operationId: null,
     operationPayload: {},
     refetching: false,
+    viewDetailsOpened: false,
   });
 
   const [expenseViewDetails, setExpenseViewDetails] = useState<Expense | null>(
@@ -161,7 +163,7 @@ const ExpenseListPage = () => {
             </Menu.Item>
             <Menu.Item
               onClick={() => {
-                setState({ modalOpened: true });
+                setState({ viewDetailsOpened: true });
                 setExpenseViewDetails(row);
               }}
               icon={<IconEye size={18} />}
@@ -195,8 +197,8 @@ const ExpenseListPage = () => {
       <Drawer
         padding={14}
         title="Expense details"
-        opened={state.modalOpened}
-        onClose={() => setState({ modalOpened: false })}
+        opened={state.viewDetailsOpened}
+        onClose={() => setState({ viewDetailsOpened: false })}
         position="right"
         size={"40%"}
       >

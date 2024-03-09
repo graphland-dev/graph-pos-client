@@ -1,7 +1,15 @@
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
 import { PurchasePayment } from "@/_app/graphql-models/graphql";
-import { Anchor, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
+import {
+  Anchor,
+  Divider,
+  Paper,
+  Skeleton,
+  Table,
+  Text,
+  Title,
+} from "@mantine/core";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 
@@ -9,7 +17,6 @@ const PurchasePaymentsDetails: React.FC<{
   purchasePaymentsRow: PurchasePayment;
   loading: boolean;
 }> = ({ purchasePaymentsRow, loading }) => {
-
   const elements = purchasePaymentsRow?.items;
   const totalAmount = useMemo(
     () =>
@@ -80,27 +87,50 @@ const PurchasePaymentsDetails: React.FC<{
         <Paper
           key={purchasePaymentsRow._id}
           p={10}
-          radius={10}
+          radius={5}
           shadow="sm"
           withBorder
-          className="w-full"
+          className="w-full flex flex-col gap-1"
         >
-          <Title order={3}>Basic Info</Title>
-          <Text>Payment UID: {purchasePaymentsRow?.paymentUID}</Text>
-          <Text>
-            Paid Amount:{" "}
+          <Title order={4}>Basic Info</Title>
+
+          <Divider />
+
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800">Payment UID:</span>{" "}
+            {purchasePaymentsRow?.paymentUID}
+          </Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Paid Amount:</span>
+
             {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
           </Text>
-          <Text>Check Number: {purchasePaymentsRow?.checkNo}</Text>
-          <Text>Recept No: {purchasePaymentsRow?.receptNo}</Text>
-          <Text>Note: {purchasePaymentsRow?.note}</Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Check Number:</span>
+            {purchasePaymentsRow?.checkNo}
+          </Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Recept No:</span>
+            {purchasePaymentsRow?.receptNo}
+          </Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Note:</span>
+            {purchasePaymentsRow?.note}
+          </Text>
         </Paper>
 
-        <Paper p={10} radius={10} shadow="sm" withBorder className="w-full">
-          <Title order={3}>Supplier</Title>
+        <Paper
+          p={10}
+          radius={5}
+          shadow="sm"
+          withBorder
+          className="w-full flex flex-col gap-1"
+        >
+          <Title order={4}>Supplier</Title>
+          <Divider />
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Name:</span>
 
-          <Text>
-            Name:{" "}
             <Anchor
               component={Link}
               to={`/${purchasePaymentsRow.account.tenant}/people/suppliers?supplierId=${purchasePaymentsRow?.supplier?._id}`}
@@ -108,18 +138,32 @@ const PurchasePaymentsDetails: React.FC<{
               {purchasePaymentsRow?.supplier?.name}
             </Anchor>
           </Text>
-          <Text>
-            Company Name:{" "}
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Company Name: </span>
+
             {purchasePaymentsRow?.supplier?.companyName}
           </Text>
-          <Text>Email: {purchasePaymentsRow?.supplier.email}</Text>
-          <Text>Contact: {purchasePaymentsRow?.supplier.contactNumber}</Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800">Email: </span>
+            {purchasePaymentsRow?.supplier.email}
+          </Text>
+          <Text className="flex justify-between">
+            <span className="font-semibold text-gray-800"> Contact:</span>
+            {purchasePaymentsRow?.supplier.contactNumber}
+          </Text>
         </Paper>
       </div>
-      <Paper p={10} radius={10} shadow="sm" withBorder className="w-6/12">
-        <Title order={3}>Account</Title>
-        <Text>
-          Name:{" "}
+      <Paper
+        p={10}
+        radius={5}
+        shadow="sm"
+        withBorder
+        className="w-6/12 flex flex-col gap-1"
+      >
+        <Title order={4}>Account</Title>
+        <Divider />
+        <Text className="flex justify-between">
+          <span className="font-semibold text-gray-800">Name:</span>{" "}
           <Anchor
             component={Link}
             to={`/${purchasePaymentsRow.account.tenant}/accounting/cashbook/accounts?accountId=${purchasePaymentsRow?.account?._id}`}
@@ -127,14 +171,16 @@ const PurchasePaymentsDetails: React.FC<{
             {purchasePaymentsRow?.account?.name}
           </Anchor>{" "}
         </Text>
-        <Text>
-          Company Name:{" "}
-          {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
+        <Text className="flex justify-between">
+          <span className="font-semibold text-gray-800"> Company Name:</span>{" "}
+          <span>
+            {" "}
+            {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
+          </span>
         </Text>
-       
       </Paper>
 
-      <Table withColumnBorders captionSide="bottom">
+      <Table mt={"md"} withColumnBorders captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>
         <tfoot>{tfs}</tfoot>
