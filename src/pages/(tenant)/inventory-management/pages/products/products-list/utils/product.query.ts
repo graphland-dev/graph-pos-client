@@ -1,28 +1,28 @@
-import { gql } from "@apollo/client";
+import { gql } from '@apollo/client';
 
 export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
-  query Query($where: CommonPaginationDto) {
-    inventory__products(where: $where) {
-      nodes {
-        _id
-        name
-        code
-        category {
-          _id
-          name
-        }
-        stockInQuantity
-        stockOutQuantity
-        price
-      }
-      meta {
-        totalCount
-        currentPage
-        hasNextPage
-        totalPages
-      }
-    }
-  }
+	query Query($where: CommonPaginationDto) {
+		inventory__products(where: $where) {
+			nodes {
+				_id
+				name
+				code
+				category {
+					_id
+					name
+				}
+				stockInQuantity
+				stockOutQuantity
+				price
+			}
+			meta {
+				totalCount
+				currentPage
+				hasNextPage
+				totalPages
+			}
+		}
+	}
 `;
 // export const INVENTORY_PRODUCT_QUERY = gql`
 // 	query Inventory__product($where: CommonFindDocumentDto!) {
@@ -77,15 +77,15 @@ export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
 // `;
 
 export const INVENTORY_PRODUCT_CREATE = gql`
-  mutation Inventory__createProduct($body: CreateProductInput!) {
-    inventory__createProduct(body: $body) {
-      _id
-    }
-  }
+	mutation Inventory__createProduct($body: CreateProductInput!) {
+		inventory__createProduct(body: $body) {
+			_id
+		}
+	}
 `;
 
 export const INVENTORY_PRODUCT_REMOVE = gql`
-  mutation Inventory__removeProduct($where: CommonFindDocumentDto!) {
-    inventory__removeProduct(where: $where)
-  }
+	mutation Inventory__removeProduct($where: CommonFindDocumentDto!) {
+		inventory__removeProduct(where: $where)
+	}
 `;

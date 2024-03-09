@@ -46,6 +46,7 @@ import {
 
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import { useNavigate, useParams } from "react-router-dom";
+import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
 import ProductsCardList from "./components/ProductsCardList";
@@ -59,7 +60,6 @@ import {
   ICreatePurchaseFormState,
   Schema_Validation,
 } from "./utils/validation";
-import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);
