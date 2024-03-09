@@ -104,8 +104,8 @@ export type ClientsWithPagination = {
 
 export type CommonFindDocumentDto = {
   and?: InputMaybe<Array<CommonFindDocumentDto>>;
-  key: Scalars['String']['input'];
-  operator: MatchOperator;
+  key?: InputMaybe<Scalars['String']['input']>;
+  operator?: InputMaybe<MatchOperator>;
   or?: InputMaybe<Array<CommonFindDocumentDto>>;
   value?: InputMaybe<Scalars['String']['input']>;
 };
@@ -528,7 +528,9 @@ export type Mutation = {
   identity__createTenant: CommonMutationResponse;
   identity__createUser: CommonMutationResponse;
   identity__login: LoginResponseDto;
+  identity__removeUserTenantMembership: Scalars['Boolean']['output'];
   identity__updateCurrentTenant: Scalars['Boolean']['output'];
+  identity__updateCurrentTenantUserRole: Scalars['Boolean']['output'];
   identity__updateMe?: Maybe<Scalars['Boolean']['output']>;
   identity__updateMyPassword?: Maybe<Scalars['Boolean']['output']>;
   identity__updateRole: Scalars['Boolean']['output'];
@@ -538,6 +540,7 @@ export type Mutation = {
   inventory__createProductInvoice: CommonMutationResponse;
   inventory__createProductPurchase: CommonMutationResponse;
   inventory__createProductStock: CommonMutationResponse;
+  inventory__loadDemoProducts: Scalars['Boolean']['output'];
   inventory__removeProduct: Scalars['Boolean']['output'];
   inventory__removeProductCategory: Scalars['Boolean']['output'];
   inventory__removeProductPurchase: Scalars['Boolean']['output'];
@@ -681,8 +684,19 @@ export type MutationIdentity__LoginArgs = {
 };
 
 
+export type MutationIdentity__RemoveUserTenantMembershipArgs = {
+  userId: Scalars['ID']['input'];
+};
+
+
 export type MutationIdentity__UpdateCurrentTenantArgs = {
   input: UpdateTenantInput;
+};
+
+
+export type MutationIdentity__UpdateCurrentTenantUserRoleArgs = {
+  roles: Array<Scalars['String']['input']>;
+  userId: Scalars['ID']['input'];
 };
 
 
@@ -960,6 +974,7 @@ export type Product = {
   discountMode?: Maybe<ProductDiscountMode>;
   discountPercentage?: Maybe<Scalars['Float']['output']>;
   gallery?: Maybe<Array<ServerFileReference>>;
+  isDemo?: Maybe<Scalars['Boolean']['output']>;
   modelName?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
@@ -979,6 +994,7 @@ export type ProductCategory = {
   _id: Scalars['ID']['output'];
   code: Scalars['String']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  isDemo?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
   tenant?: Maybe<Scalars['String']['output']>;
@@ -1472,6 +1488,7 @@ export enum ServerFileProvider {
 
 export type ServerFileReference = {
   __typename?: 'ServerFileReference';
+  externalUrl?: Maybe<Scalars['String']['output']>;
   meta?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
   provider?: Maybe<ServerFileProvider>;
