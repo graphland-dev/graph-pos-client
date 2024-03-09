@@ -3,7 +3,10 @@ import {
 	Product,
 	ProductItemReference,
 	ProductTaxType,
+	Vat,
+	VatsWithPagination,
 } from '@/_app/graphql-models/graphql';
+import { useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
 import {
@@ -33,21 +36,30 @@ import {
 	calculateTaxAmount,
 	getTotalProductsPrice,
 	getTotalTaxAmount,
+	getVatProfileSelectInputData,
 } from '../purchases/create-purchase/utils/helpers';
+import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import CategoryAndBrandSelectArea from './components/CategoryAndBrandSelectArea';
 import ClientSelectArea from './components/ClientSelectArea';
 import ProductSelectArea from './components/ProductSelectArea';
+import { getDiscount, getSalesVat } from './utils/utils.calc';
 
 const PosPage = () => {
 	const form = useForm<IPosFormType>({
+		defaultValues: {
+			discountAmount: 0,
+			discountType: 'Fixed',
+			transportCost: 0,
+			invoiceTax: 0,
+		},
 		resolver: yupResolver(Pos_Form_Validation_Schema),
 		mode: 'onChange',
 	});
 
 	const {
-		// register,
 		control,
 		setValue,
+		reset,
 		formState: { errors },
 		handleSubmit,
 		watch,
@@ -92,6 +104,16 @@ const PosPage = () => {
 			);
 		}
 	}
+
+	// fetch vat profiles
+	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
+		setup__vats: VatsWithPagination;
+	}>(SETTINGS_VAT_QUERY, {
+		variables: {
+			where: { limit: -1 },
+		},
+	});
+
 	// submit pos form
 	const onSubmitPOS = (values: IPosFormType) => {
 		console.log(values);
@@ -243,6 +265,7 @@ const PosPage = () => {
 											placeholder='Fixed'
 											size='md'
 											onChange={(e) => setValue('discountType', e!)}
+											defaultValue={watch('discountType')}
 											radius={0}
 											data={['Fixed', 'Percentage(%)']}
 										/>
@@ -262,6 +285,8 @@ const PosPage = () => {
 											onChange={(e) =>
 												setValue('transportCost', parseInt(e as string))
 											}
+											defaultValue={watch('transportCost')}
+											min={0}
 											radius={0}
 											placeholder='Enter transport cost'
 										/>
@@ -278,6 +303,8 @@ const PosPage = () => {
 											label='Discount'
 											radius={0}
 											size='md'
+											min={0}
+											defaultValue={watch('discountAmount')}
 											onChange={(e) =>
 												setValue('discountAmount', parseInt(e as string))
 											}
@@ -295,9 +322,15 @@ const PosPage = () => {
 											label='Invoice Tax'
 											placeholder='Select tax type'
 											size='md'
-											onChange={(e) => setValue('invoiceTax', e!)}
 											radius={0}
-											data={['Vat@10%', 'Vat@0']}
+											disabled={vatProfileLoading}
+											defaultValue={watch('invoiceTax').toString()}
+											data={getVatProfileSelectInputData(
+												vatProfile?.setup__vats?.nodes as Vat[]
+											)}
+											onChange={(e) =>
+												setValue('invoiceTax', parseInt(e as string)!)
+											}
 										/>
 									</Input.Wrapper>
 								</div>
@@ -308,7 +341,23 @@ const PosPage = () => {
 							<div className='p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm'>
 								Net Total:{' '}
 								{currencyNumberFormat(
-									getTotalProductsPrice(watch('products')!)
+									getTotalProductsPrice(watch('products')!) -
+										getDiscount(
+											watch('discountType'),
+											watch('discountAmount'),
+											getTotalProductsPrice(watch('products')!)
+										) +
+										watch('transportCost') +
+										getSalesVat(
+											watch('transportCost') +
+												getTotalProductsPrice(watch('products')!) -
+												getDiscount(
+													watch('discountType'),
+													watch('discountAmount'),
+													getTotalProductsPrice(watch('products')!)
+												),
+											watch('invoiceTax')
+										) ?? 0
 								) ?? 0.0}{' '}
 								BDT
 							</div>
@@ -332,7 +381,18 @@ const PosPage = () => {
 								</Button>
 								<Button
 									size='md'
-									type='submit'
+									onClick={() =>
+										reset({
+											brand: '',
+											client: '',
+											category: '',
+											discountAmount: 0,
+											discountType: 'Fixed',
+											invoiceTax: 0,
+											products: [],
+											transportCost: 0,
+										})
+									}
 									leftIcon={<IconRefresh size={16} />}
 									color='red'
 								>
@@ -649,7 +709,7 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
 	discountType: Yup.string().required().label('Discount type'),
 	discountAmount: Yup.number().required().label('Discount amount'),
 	transportCost: Yup.number().required().label('Transport cost'),
-	invoiceTax: Yup.string().required().label('Invoice tax'),
+	invoiceTax: Yup.number().required().label('Invoice tax'),
 	category: Yup.string().required().label('Category'),
 	brand: Yup.string().required().label('Brand'),
 	products: Yup.array()
