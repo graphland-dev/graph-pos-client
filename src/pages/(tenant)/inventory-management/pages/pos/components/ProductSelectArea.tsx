@@ -24,6 +24,9 @@ const ProductSelectArea: React.FC<{
         disabled={fetchingProducts}
         data={getProductSelectInputData(products)}
         placeholder="Item name/code"
+        onChange={(text) => {
+          console.log(text);
+        }}
         nothingFound
       />
     </Input.Wrapper>
