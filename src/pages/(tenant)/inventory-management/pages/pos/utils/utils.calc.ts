@@ -11,10 +11,8 @@ export const getDiscount = (
   totalPrice: number
 ) => {
   if (discountType === "Fixed") {
-    console.log({ fixed: discountAmount });
     return Number(discountAmount) ?? 0;
   } else {
-    console.log({ per: discountAmount });
     const calculateDiscountAmount = (totalPrice / 100) * discountAmount;
     return Number(calculateDiscountAmount) ?? 0;
   }

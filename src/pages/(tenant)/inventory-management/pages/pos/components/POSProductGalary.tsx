@@ -1,6 +1,9 @@
 import { getFileUrl } from "@/_app/common/utils/getFileUrl";
 import {
+  BrandsWithPagination,
+  MatchOperator,
   Product,
+  ProductCategorysWithPagination,
   ProductItemReference,
   ProductsWithPagination,
   ServerFileReference,
@@ -15,33 +18,68 @@ import {
   Space,
   Text,
 } from "@mantine/core";
-import React from "react";
-import { Pos_Products_Query } from "../utils/query.pos";
+import React, { useState } from "react";
+import { getSelectInputData } from "../../products/product-edit/components/AssignmentForm";
+import {
+  Pos_Brands_Query,
+  Pos_Categories_Query,
+  Pos_Products_Query,
+} from "../utils/query.pos";
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
 }
 
-const POSProductGalary: React.FC<IProp> = ({ onSelectProduct }) => {
+const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
+  const [category, setCategory] = useState("");
+  const [brand, setBrand] = useState("");
+
+  // products fetching
   const { data: products, loading: productsFetching } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(Pos_Products_Query, {
+    nextFetchPolicy: "network-only",
     variables: {
-      where: { limit: 20 },
+      where: {
+        limit: 20,
+        filters: [
+          {
+            key: "category",
+            operator: MatchOperator.Eq,
+            value: category,
+          },
+          {
+            key: "brand",
+            operator: MatchOperator.Eq,
+            value: brand,
+          },
+        ],
+      },
     },
   });
 
   // categories query
-  // const { data: categories, loading: loadingCategories } = useQuery<{
-  //   inventory__productCategories: ProductCategorysWithPagination;
-  // }>(Pos_Categories_Query);
+  const { data: categories, loading: loadingCategories } = useQuery<{
+    inventory__productCategories: ProductCategorysWithPagination;
+  }>(Pos_Categories_Query, {
+    variables: {
+      where: { limit: -1 },
+    },
+    nextFetchPolicy: "network-only",
+  });
 
   // // brands query
-  // const { data: brands, loading: loadingBrands } = useQuery<{
-  //   setup__brands: BrandsWithPagination;
-  // }>(Pos_Brands_Query);
+  const { data: brands, loading: loadingBrands } = useQuery<{
+    setup__brands: BrandsWithPagination;
+  }>(Pos_Brands_Query, {
+    variables: {
+      where: { limit: -1 },
+    },
+    nextFetchPolicy: "network-only",
+  });
 
+  // handle emit product
   const handleEmitProduct = (product: Product) => {
     const audio = new Audio("/beep.mp3");
     audio.play();
@@ -51,17 +89,32 @@ const POSProductGalary: React.FC<IProp> = ({ onSelectProduct }) => {
   return (
     <Paper p={15} className=" h-[calc(100vh-44px)] overflow-y-auto">
       <div className="grid grid-cols-2 gap-2">
-        <Input.Wrapper size="md">
+        <Input.Wrapper size="md" label="Category">
           <Select
             size="md"
             radius={0}
+            searchable
+            clearable
             placeholder="Select a category"
-            data={[]}
+            data={getSelectInputData(
+              categories?.inventory__productCategories?.nodes
+            )}
+            onChange={(catId) => setCategory(catId!)}
+            disabled={loadingCategories}
           />
         </Input.Wrapper>
 
-        <Input.Wrapper size="md">
-          <Select size="md" radius={0} placeholder="Select a brand" data={[]} />
+        <Input.Wrapper size="md" label="Brand">
+          <Select
+            size="md"
+            radius={0}
+            searchable
+            clearable
+            placeholder="Select a brand"
+            data={getSelectInputData(brands?.setup__brands?.nodes)}
+            onChange={(brandId) => setBrand(brandId!)}
+            disabled={loadingBrands}
+          />
         </Input.Wrapper>
       </div>
 
@@ -119,4 +172,4 @@ const POSProductGalary: React.FC<IProp> = ({ onSelectProduct }) => {
   );
 };
 
-export default POSProductGalary;
+export default POSProductGlary;

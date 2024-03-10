@@ -1,8 +1,6 @@
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import {
-  Product,
   ProductItemReference,
-  ProductsWithPagination,
   Vat,
   VatsWithPagination,
 } from "@/_app/graphql-models/graphql";
@@ -38,9 +36,8 @@ import {
 } from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSelectArea from "./components/ClientSelectArea";
-import POSProductGalary from "./components/POSProductGalary";
+import POSProductGlary from "./components/POSProductGalary";
 import ProductSelectArea from "./components/ProductSelectArea";
-import { Pos_Products_Query } from "./utils/query.pos";
 import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
@@ -50,15 +47,6 @@ const PosPage = () => {
   }>(SETTINGS_VAT_QUERY, {
     variables: {
       where: { limit: -1 },
-    },
-  });
-
-  // fetch products
-  const { data: products, loading: productsFetching } = useQuery<{
-    inventory__products: ProductsWithPagination;
-  }>(Pos_Products_Query, {
-    variables: {
-      where: { limit: 20 },
     },
   });
 
@@ -112,6 +100,7 @@ const PosPage = () => {
   const onSubmitPOS = (values: IPosFormType) => {
     console.log(values);
   };
+
   return (
     <div>
       <Flex className="p-1 pb-0 bg-red-500 h-11">
@@ -129,12 +118,9 @@ const PosPage = () => {
                   contactNumber={watch("client")}
                 />
 
-                {/* <Input size='md' radius={0} placeholder='Item name/code' /> */}
                 <ProductSelectArea
                   formInstance={form}
                   onSelectProduct={handleAddProductToList}
-                  fetchingProducts={productsFetching}
-                  products={products?.inventory__products?.nodes as Product[]}
                 />
               </div>
               <Space h={20} />
@@ -401,7 +387,7 @@ const PosPage = () => {
           --------------------------
           */}
           <div className="lg:w-5/12">
-            <POSProductGalary onSelectProduct={handleAddProductToList} />
+            <POSProductGlary onSelectProduct={handleAddProductToList} />
           </div>
         </div>
       </form>
