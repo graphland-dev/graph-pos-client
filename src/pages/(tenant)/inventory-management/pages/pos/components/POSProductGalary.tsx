@@ -39,6 +39,7 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
   const { data: products, loading: productsFetching } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(Pos_Products_Query, {
+    nextFetchPolicy: "network-only",
     variables: {
       where: {
         limit: 20,
@@ -61,12 +62,22 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
   // categories query
   const { data: categories, loading: loadingCategories } = useQuery<{
     inventory__productCategories: ProductCategorysWithPagination;
-  }>(Pos_Categories_Query);
+  }>(Pos_Categories_Query, {
+    variables: {
+      where: { limit: -1 },
+    },
+    nextFetchPolicy: "network-only",
+  });
 
   // // brands query
   const { data: brands, loading: loadingBrands } = useQuery<{
     setup__brands: BrandsWithPagination;
-  }>(Pos_Brands_Query);
+  }>(Pos_Brands_Query, {
+    variables: {
+      where: { limit: -1 },
+    },
+    nextFetchPolicy: "network-only",
+  });
 
   // handle emit product
   const handleEmitProduct = (product: Product) => {
@@ -88,7 +99,7 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
             data={getSelectInputData(
               categories?.inventory__productCategories?.nodes
             )}
-            onChange={(e) => setCategory(e!)}
+            onChange={(catId) => setCategory(catId!)}
             disabled={loadingCategories}
           />
         </Input.Wrapper>
@@ -101,7 +112,7 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
             clearable
             placeholder="Select a brand"
             data={getSelectInputData(brands?.setup__brands?.nodes)}
-            onChange={(e) => setBrand(e!)}
+            onChange={(brandId) => setBrand(brandId!)}
             disabled={loadingBrands}
           />
         </Input.Wrapper>
