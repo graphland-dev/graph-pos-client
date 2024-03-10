@@ -20,20 +20,26 @@ import {
 import Barcode from "react-jsbarcode";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.query";
 // import JsBarcode from "jsbarcode";
+import PageTitle from "@/_app/common/PageTitle";
 import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { IconPrinter } from "@tabler/icons-react";
+import { IconPrinter, IconTrash } from "@tabler/icons-react";
 import { useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import * as yup from "yup";
-import PageTitle from "@/_app/common/PageTitle";
+
+interface IProduct {
+  productCode: string;
+  barcodeType: string;
+  quantity: number;
+}
 
 const BarcodePage = () => {
   const {
-    setValue,
-    handleSubmit,
+    // setValue,
+    // handleSubmit,
     watch,
     formState: { errors },
   } = useForm({
@@ -46,6 +52,15 @@ const BarcodePage = () => {
       barcodePrice: 0.0,
     },
   });
+
+  const [product, setProduct] = useState<IProduct>({
+    productCode: "",
+    barcodeType: "",
+    quantity: 1,
+  });
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+
+  console.log(allProducts);
 
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [isShowProductName, setIsShowProductName] = useState(false);
@@ -87,8 +102,38 @@ const BarcodePage = () => {
     return data?.inventory__products.nodes?.find((p) => p.code === code);
   };
 
-  const onSubmit = () => {
-    // bareCodeGenerate();
+  const handleProductRemove = (index: number) => {
+    const updatedProducts = [...allProducts];
+    updatedProducts.splice(index, 1);
+    setAllProducts(updatedProducts);
+  };
+
+  const ths = (
+    <tr>
+      <th>Product Name</th>
+      <th>Product Quantity</th>
+      <th>Action</th>
+    </tr>
+  );
+
+  const rows = allProducts.map((product, index) => (
+    <tr key={product.productCode}>
+      <td>{product.productCode}</td>
+      <td>{product.quantity} </td>
+      <td>
+        <div
+          className="text-red-500 select-none cursor-pointer"
+          onClick={() => handleProductRemove(index)}
+        >
+          <IconTrash />
+        </div>
+      </td>
+    </tr>
+  ));
+
+  const handleAddToList = () => {
+    setAllProducts((prev) => [...prev, product]);
+    setProduct({ productCode: "", barcodeType: "", quantity: 1 });
   };
 
   return (
@@ -97,7 +142,7 @@ const BarcodePage = () => {
       <Paper p={"xl"}>
         <Title order={3}>Generate Barcode</Title>
         <Space h="" />
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
+        <form className="flex flex-col gap-6">
           <div className="grid gap-3 lg:grid-cols-2">
             <Input.Wrapper
               label="Select Product"
@@ -108,11 +153,15 @@ const BarcodePage = () => {
                 searchable
                 withAsterisk
                 onChange={(productCode) => {
-                  setValue("productCode", productCode || "");
+                  // setValue("productCode", productCode || "");
+                  setProduct((prev) => ({
+                    ...prev,
+                    productCode: productCode || "",
+                  }));
                 }}
                 placeholder="Select Product"
                 data={productsDropdown || ([] as any)}
-                value={watch("productCode")}
+                value={product.productCode}
               />
             </Input.Wrapper>
 
@@ -122,11 +171,12 @@ const BarcodePage = () => {
               error={<ErrorMessage name={"barcodeType"} errors={errors} />}
             >
               <Select
-                value={watch("barcodeType")}
+                value={product.barcodeType}
                 onChange={(barcodeType) =>
-                  setValue("barcodeType", barcodeType || "", {
-                    shouldValidate: true,
-                  })
+                  setProduct((prev) => ({
+                    ...prev,
+                    barcodeType: barcodeType || "",
+                  }))
                 }
                 data={[
                   {
@@ -137,10 +187,10 @@ const BarcodePage = () => {
                     label: "CodeBar",
                     value: Generate_Barcode_Type?.CodeBar,
                   },
-                  {
-                    label: "PharmaCode",
-                    value: Generate_Barcode_Type?.PharmaCode,
-                  },
+                  // {
+                  //   label: "PharmaCode",
+                  //   value: Generate_Barcode_Type?.PharmaCode,
+                  // },
                 ]}
               />
             </Input.Wrapper>
@@ -158,73 +208,122 @@ const BarcodePage = () => {
                 <td>
                   <TextInput
                     placeholder="Product Id"
-                    value={watch("productCode")}
+                    value={product.productCode}
                   />
                 </td>
                 <td>
                   <NumberInput
                     type="number"
                     placeholder="Quantity"
-                    value={watch("quantity")}
-                    onChange={(value: any) => {
-                      setValue("quantity", parseInt(value));
+                    value={product.quantity}
+                    onChange={(quantity: any) => {
+                      setProduct((prev) => ({
+                        ...prev,
+                        quantity: quantity || 0,
+                      }));
                     }}
                   />
                 </td>
               </tr>
             </tbody>
           </Table>
-
-          <Flex justify={"space-between"}>
-            <div className="flex flex-col gap-3">
-              <Checkbox
-                value={watch("barcodePrice")}
-                onChange={(event) =>
-                  setIsShowProductPrice(event.target.checked)
-                }
-                name="barcodePrice"
-                label="Generate barcode with price"
-              />
-              <Checkbox
-                onChange={(event) => setIsShowProductName(event.target.checked)}
-                name="barcodeProductName"
-                label="Generate barcode with product name"
-              />
-            </div>
-            <div>
-              <Button
-                onClick={handlePrint}
-                leftIcon={<IconPrinter size={16} />}
-              >
-                Print
-              </Button>
-            </div>
-          </Flex>
+          <div className="flex justify-center">
+            <Button
+              size="md"
+              disabled={!product.productCode || !product.barcodeType}
+              onClick={handleAddToList}
+            >
+              Add to list
+            </Button>
+          </div>
         </form>
 
+        <Table
+          mt={"md"}
+          highlightOnHover
+          withBorder
+          withColumnBorders
+          captionSide="bottom"
+        >
+          <thead className="bg-card-header">{ths}</thead>
+          <tbody>{rows}</tbody>
+        </Table>
+
+        {/* <Space h={"xl"} />
+        <div className="flex justify-center">
+          <Button
+            size="md"
+            disabled={!(allProducts.length > 0)}
+            onClick={handlePreview}
+          >
+            Preview
+          </Button>
+        </div> */}
+
         <Space h={"xl"} />
-        <div ref={printRef} className="grid grid-cols-3 gap-5">
-          {new Array(watch("quantity")).fill(1)?.map((_, key) => (
-            <Paper p={"lg"} shadow="xs" key={key} className="text-center">
-              {isShowProductName && (
-                <Text>{getProductByCode(watch("productCode")!)?.name}</Text>
-              )}
-              {watch("productCode") ? (
-                <Barcode
-                  value={watch("productCode")!}
-                  options={{
-                    format: watch("barcodeType"),
-                  }}
-                />
-              ) : null}
-              {isShowProductPrice && (
-                <Text>
-                  BDT {getProductByCode(watch("productCode")!)?.price}
-                </Text>
-              )}
-            </Paper>
-          ))}
+        <Flex justify={"space-between"}>
+          <div className="flex flex-wrap gap-3">
+            <Checkbox
+              value={watch("barcodePrice")}
+              onChange={(event) => setIsShowProductPrice(event.target.checked)}
+              name="barcodePrice"
+              label="Generate barcode with price"
+            />
+            <Checkbox
+              onChange={(event) => setIsShowProductName(event.target.checked)}
+              name="barcodeProductName"
+              label="Generate barcode with product name"
+            />
+          </div>
+          <div>
+            <Button onClick={handlePrint} leftIcon={<IconPrinter size={16} />}>
+              Print
+            </Button>
+          </div>
+        </Flex>
+
+        <Space h={"xl"} />
+        <div
+          ref={printRef}
+          className="flex flex-col justify-center items-center py-4 w-full "
+        >
+          {allProducts.map((item, index) => {
+            return (
+              <div key={index}>
+                {new Array(item.quantity).fill(1)?.map((_, key) => (
+                  <Paper
+                    p={"lg"}
+                    shadow="xs"
+                    radius={0}
+                    key={key}
+                    mb={"sm"}
+                    className=" flex flex-col justify-center items-center "
+                  >
+                    {isShowProductName && (
+                      <Text className="font-semibold">
+                        {getProductByCode(item.productCode)?.name}
+                      </Text>
+                    )}
+                    {item?.productCode ? (
+                      <Barcode
+                        value={item?.productCode}
+                        options={{
+                          format: item.barcodeType,
+                        }}
+                      />
+                    ) : null}
+                    {isShowProductPrice && (
+                      <Text>
+                        BDT: {getProductByCode(item.productCode)?.price}
+                      </Text>
+                    )}
+                  </Paper>
+                ))}
+              </div>
+            );
+          })}
         </div>
+     
       </Paper>
     </>
   );
