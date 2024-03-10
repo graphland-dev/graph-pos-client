@@ -17,6 +17,7 @@ const ProductSelectArea: React.FC<{
 }> = ({ formInstance }) => {
   const [value, setValue] = useDebouncedState("", 500);
   const [inputData, setInputData] = useState<any[]>([]);
+  const [searchedProducts, setSearchedProducts] = useState<Product[]>([]);
 
   // fetch products
   const [fetchProducts] = useLazyQuery<{
@@ -58,6 +59,7 @@ const ProductSelectArea: React.FC<{
           value: product._id,
         }))
       );
+      setSearchedProducts(products);
     });
   }, [value]);
 
@@ -77,7 +79,12 @@ const ProductSelectArea: React.FC<{
         className="w-full"
         data={inputData}
         placeholder="Search by name/code"
-        onChange={(value) => setValue(value)}
+        // onChange={(value) => {
+        //   const product = searchedProducts?.find((p) => p._id == value);
+        //   if (product) {
+        //     getProductReferenceByQuantity(product, 1);
+        //   }
+        // }}
         nothingFound={true}
       />
     </Input.Wrapper>
