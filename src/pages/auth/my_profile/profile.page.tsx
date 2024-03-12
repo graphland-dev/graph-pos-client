@@ -47,6 +47,7 @@ const MyProfilePage = () => {
     handleSubmit,
     formState: { errors },
     setValue,
+
   } = useForm<IProfileFormType>({
     resolver: yupResolver(Profile__Form__Validation),
   });
@@ -54,6 +55,7 @@ const MyProfilePage = () => {
   //Update password form initiated
   const {
     register: passwordRegister,
+    reset,
     handleSubmit: passwordHandleSubmit,
     formState: { errors: passwordErrors },
   } = useForm<IPasswordUpdateFormType>({
@@ -77,6 +79,9 @@ const MyProfilePage = () => {
     UPDATE_MY_PASSWORD,
     Notify({
       sucTitle: "Profile information updated.",
+      onSuccess() {
+      reset();
+      },
     })
   );
 
