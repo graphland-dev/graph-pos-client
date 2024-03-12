@@ -48,7 +48,7 @@ const EmployeeIncrementsForm: React.FC<IIncrementDetailsFormProps> = ({ employee
     );
 
     const onSubmit = (values: IIncrements) => {
-      // console.log({values, employeeId});
+     
       createIncrement({
         variables: {
           body: {

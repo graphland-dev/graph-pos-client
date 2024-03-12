@@ -99,7 +99,7 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({
   );
 
   const onSubmit = (values: IPayrollForm) => {
-    // console.log(values);
+   
     createPayroll({
       variables: {
         body: {

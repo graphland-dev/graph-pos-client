@@ -20,7 +20,7 @@ interface IState {
 const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
 }) => {
-    // console.log(supplierDetails);
+  
 
      const [openedDrawer, drawerHandler] = useDisclosure();
     const [state, setState] = useSetState<IState>({ refetching: false });
@@ -29,7 +29,7 @@ const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
   const { data: purchaseData, loading: fetchingPurchaseData, refetch } = useQuery<{
       inventory__productPurchases: ProductPurchasesWithPagination;
   }>(SUPPLIER_DETAILS_PURCHASE_QUERY);
-    console.log(purchaseData);
+   
     
     const handleRefetch = (variables: any) => {
       setState({ refetching: true });
