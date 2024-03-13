@@ -8,8 +8,14 @@ export const Organization__Employees__Query = gql`
         name
         email
         systemRoles
+        avatar {
+          path
+          provider
+          meta
+        }
         memberships {
           tenant
+          roles
         }
       }
     }

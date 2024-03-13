@@ -70,8 +70,6 @@ const BarcodePage = () => {
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [isShowProductName, setIsShowProductName] = useState(false);
 
-  // const [price, setPrice] = useState(0)
-
   const printRef = useRef<HTMLDivElement | null>(null);
   const handlePrint = useReactToPrint({
     content: () => printRef.current!,
@@ -124,10 +122,21 @@ const BarcodePage = () => {
   const rows = allProducts.map((product, index) => (
     <tr key={product.productCode}>
       <td>{product.productCode}</td>
-      <td>{product.quantity} </td>
+      <td>
+        <NumberInput
+          type="number"
+          placeholder="Quantity"
+          value={product.quantity}
+          onChange={(quantity: number) => {
+            const _products = [...allProducts];
+            _products[index].quantity = quantity;
+            setAllProducts(_products);
+          }}
+        />
+      </td>
       <td>
         <div
-          className="text-red-500 select-none cursor-pointer"
+          className="text-red-500 cursor-pointer select-none"
           onClick={() => handleProductRemove(index)}
         >
           <IconTrash />
@@ -235,7 +244,11 @@ const BarcodePage = () => {
           <div className="flex justify-center">
             <Button
               size="md"
-              disabled={!product.productCode || !product.barcodeType}
+              disabled={
+                !product.productCode ||
+                !product.barcodeType ||
+                product.quantity <= 0
+              }
               onClick={handleAddToList}
             >
               Add to list
@@ -290,18 +303,15 @@ const BarcodePage = () => {
         <Space h={"xl"} />
         <div
           ref={printRef}
-          className="flex flex-col justify-center items-center py-4 "
+          className="flex flex-col items-center justify-center py-4 "
         >
           {allProducts.map((item, index) => {
             return (
               <div key={index}>
                 {new Array(item.quantity).fill(1)?.map((_, key) => (
-                  <Paper
-                    p={"lg"}
-                    radius={0}
+                  <div
                     key={key}
-                    mb={"sm"}
-                    className="flex flex-col justify-center items-center w-[240px]"
+                    className="flex flex-col justify-center items-center w-[240px] border border-slate-200"
                   >
                     {isShowProductName && (
                       <Text className="font-semibold">
@@ -310,7 +320,7 @@ const BarcodePage = () => {
                     )}
                     {item?.productCode ? (
                       <Barcode
-                        className="w-[240px] px-2"
+                        className="w-[240px] h-[90px]"
                         value={item?.productCode}
                         options={{
                           format: item.barcodeType,
@@ -322,7 +332,7 @@ const BarcodePage = () => {
                         BDT: {getProductByCode(item.productCode)?.price}
                       </Text>
                     )}
-                  </Paper>
+                  </div>
                 ))}
               </div>
             );

@@ -18,8 +18,10 @@ import { useSetState } from "@mantine/hooks";
 import UserCreateForm from "./components/UserCreateFrom";
 import {
   IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
-  Organization__Employees__Query
+  Organization__Employees__Query,
 } from "./utils/query.gql";
+import { getFileUrl } from "@/_app/common/utils/getFileUrl";
+import { useParams } from "react-router-dom";
 
 interface IState {
   modalOpened: boolean;
@@ -30,6 +32,7 @@ interface IState {
 }
 
 const UsersPage = () => {
+  const params = useParams<{ tenant: string }>();
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
     operationType: "create",
@@ -41,10 +44,6 @@ const UsersPage = () => {
   const { data, loading, refetch } = useQuery<{
     identity__currentTenantUsers: UsersWithPagination;
   }>(Organization__Employees__Query);
-
-
-
-
 
   const [deleteEmployeeRoleMutation] = useMutation(
     IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
@@ -73,6 +72,13 @@ const UsersPage = () => {
     });
   };
 
+  const userRoles = (user: User) => {
+    const membership = user?.memberships?.find(
+      (m) => m.tenant === params.tenant
+    );
+    return membership?.roles || [];
+  };
+
   return (
     <div>
       <Drawer
@@ -93,7 +99,7 @@ const UsersPage = () => {
       </Drawer>
       <Flex justify={"space-between"}>
         <Title order={2} fw={700}>
-          Organization Employees
+          Organization Users
         </Title>
         <Button
           onClick={() =>
@@ -115,12 +121,16 @@ const UsersPage = () => {
             p={10}
             my={10}
           >
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <Avatar radius={7}>
                 <Image
-                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${
-                    user?.name ?? user?.email
-                  }`}
+                  src={
+                    user.avatar
+                      ? getFileUrl(user.avatar)
+                      : `https://api.dicebear.com/7.x/initials/svg?seed=${
+                          user.name || user.email
+                        }`
+                  }
                 />
               </Avatar>
               <div>
@@ -128,6 +138,12 @@ const UsersPage = () => {
                   {user?.name ?? user?.email?.split("@")[0]}
                 </Text>
                 <Text size={"xs"}>{user?.email}</Text>
+
+                <Flex gap={"md"} mt={"md"} wrap={"wrap"}>
+                  {userRoles(user).map((role) => (
+                    <p className="px-2 py-1 text-sm bg-card-header">{role}</p>
+                  ))}
+                </Flex>
               </div>
             </div>
             <div>
