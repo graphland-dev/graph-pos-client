@@ -4,13 +4,11 @@ import {
   MantineProvider,
 } from "@mantine/core";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
-import { SpotlightProvider } from "@mantine/spotlight";
 
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
-import { spotlightItems } from "./_app/configs/spotlight-items";
 import { rootRouter } from "./root.router";
 
 const RootApp = () => {
@@ -55,15 +53,10 @@ const RootApp = () => {
             }),
           }}
         >
-          <SpotlightProvider
-            shortcut={["mod + P", "mod + K"]}
-            actions={spotlightItems}
-          >
-            <ModalsProvider>
-              <Notifications position="top-right" />
-              <RouterProvider router={rootRouter} />
-            </ModalsProvider>
-          </SpotlightProvider>
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            <RouterProvider router={rootRouter} />
+          </ModalsProvider>
         </MantineProvider>
       </ColorSchemeProvider>
     </>
