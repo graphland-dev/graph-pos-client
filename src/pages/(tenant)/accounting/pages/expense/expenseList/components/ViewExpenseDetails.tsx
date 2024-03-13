@@ -15,13 +15,12 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
 }) => {
   return (
     <div>
-     
       <div className="flex flex-col gap-4 pb-5">
         <Paper
           p={10}
           radius={3}
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Purpose</Title>
           <Divider />
@@ -34,7 +33,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           p={10}
           radius={3}
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Account</Title>
           <Divider />
@@ -47,7 +46,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           p={10}
           radius={3}
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Amount</Title>
           <Divider />
@@ -59,9 +58,8 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
         <Paper
           p={10}
           radius={3}
-          shadow="xs"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Date</Title>
           <Divider />
@@ -74,7 +72,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           p={10}
           radius={3}
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Category</Title>
           <Divider />
@@ -88,7 +86,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           p={10}
           radius={3}
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Check No: </span>
@@ -103,6 +101,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           attachments={expenseDetails?.attachments ?? []}
           onUploadDone={() => {}}
           enableUploader={false}
+          enableDelete={false}
           folder={FOLDER__NAME.EXPENSE_ATTACHMENTS}
         />
       </div>

@@ -11,7 +11,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
@@ -148,7 +148,7 @@ const ExpenseListPage = () => {
         totalCount={data?.accounting__expenses?.meta?.totalCount ?? 10}
         RowActionMenu={(row: Expense) => (
           <>
-            <Menu.Item
+            {/* <Menu.Item
               onClick={() =>
                 setState({
                   modalOpened: true,
@@ -160,7 +160,7 @@ const ExpenseListPage = () => {
               icon={<IconPencil size={18} />}
             >
               Edit
-            </Menu.Item>
+            </Menu.Item> */}
             <Menu.Item
               onClick={() => {
                 setState({ viewDetailsOpened: true });
