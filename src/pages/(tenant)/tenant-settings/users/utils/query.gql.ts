@@ -36,3 +36,22 @@ export const IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE = gql`
     identity__removeUserTenantMembership(userId: $userId)
   }
 `;
+
+export const IDENTITY_CURRENT_TENANT = gql`
+  query Identity__currentTenantUsers($input: CommonPaginationDto) {
+    identity__currentTenantUsers(input: $input) {
+      nodes {
+        _id
+        name
+        email
+        systemRoles
+        memberships {
+          tenant
+          roles
+        }
+        email
+        tenant
+      }
+    }
+  }
+`;

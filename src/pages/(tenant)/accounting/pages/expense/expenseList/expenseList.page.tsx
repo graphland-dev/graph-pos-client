@@ -1,3 +1,6 @@
+import PageTitle from "@/_app/common/PageTitle";
+import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
+import { confirmModal } from "@/_app/common/confirm/confirm";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
   AccountsWithPagination,
@@ -6,21 +9,18 @@ import {
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
+import { Button, Drawer, Menu, Title } from "@mantine/core";
+import { useSetState } from "@mantine/hooks";
+import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
+import ExpenseForm from "./components/ExpenseForm";
+import ViewExpenseDetails from "./components/ViewExpenseDetails";
 import {
   ACCOUNTING_EXPENSE_DELETE_MUTATION,
   ACCOUNTING_EXPENSE_QUERY_LIST,
 } from "./utils/query";
-import { Button, Drawer, Menu } from "@mantine/core";
-import ExpenseForm from "./components/ExpenseForm";
-import { useSetState } from "@mantine/hooks";
-import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import PageTitle from "@/_app/common/PageTitle";
-import ViewExpenseDetails from "./components/ViewExpenseDetails";
 
 interface IState {
   modalOpened: boolean;
@@ -196,7 +196,11 @@ const ExpenseListPage = () => {
 
       <Drawer
         padding={14}
-        title="Expense details"
+        title={
+          <Title order={4} mb={"md"}>
+            Expense details
+          </Title>
+        }
         opened={state.viewDetailsOpened}
         onClose={() => setState({ viewDetailsOpened: false })}
         position="right"

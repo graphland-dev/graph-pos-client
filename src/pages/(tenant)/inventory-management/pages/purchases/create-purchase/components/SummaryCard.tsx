@@ -16,7 +16,7 @@ const SummaryCard: React.FC<{
 
 	const netTotal = subTotal + totalTax;
 
-	// console.log(netTotal);
+	
 
 	return (
 		<Paper withBorder p={'sm'} mb={'xl'}>

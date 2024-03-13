@@ -18,7 +18,7 @@ import { useSetState } from "@mantine/hooks";
 import UserCreateForm from "./components/UserCreateFrom";
 import {
   IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
-  Organization__Employees__Query,
+  Organization__Employees__Query
 } from "./utils/query.gql";
 
 interface IState {
@@ -41,6 +41,8 @@ const UsersPage = () => {
   const { data, loading, refetch } = useQuery<{
     identity__currentTenantUsers: UsersWithPagination;
   }>(Organization__Employees__Query);
+
+
 
 
 

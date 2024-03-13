@@ -1,5 +1,7 @@
 import {
   MatchOperator,
+  Maybe,
+  Product,
   ProductsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
@@ -36,6 +38,11 @@ interface IProduct {
   quantity: number;
 }
 
+interface IProductData {
+  value: Maybe<string> | undefined;
+  label: string;
+}
+
 const BarcodePage = () => {
   const {
     // setValue,
@@ -59,8 +66,6 @@ const BarcodePage = () => {
     quantity: 1,
   });
   const [allProducts, setAllProducts] = useState<IProduct[]>([]);
-
-  console.log(allProducts);
 
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [isShowProductName, setIsShowProductName] = useState(false);
@@ -89,9 +94,9 @@ const BarcodePage = () => {
     },
   });
 
-  const productsDropdown = useMemo(
+  const productsDropdown = useMemo<IProductData[] | undefined>(
     () =>
-      data?.inventory__products.nodes?.map((item) => ({
+      data?.inventory__products.nodes?.map((item: Product) => ({
         value: item?.code,
         label: `${item?.name}`,
       })),
@@ -285,7 +290,7 @@ const BarcodePage = () => {
         <Space h={"xl"} />
         <div
           ref={printRef}
-          className="flex flex-col justify-center items-center py-4 w-full "
+          className="flex flex-col justify-center items-center py-4 "
         >
           {allProducts.map((item, index) => {
             return (
@@ -293,11 +298,10 @@ const BarcodePage = () => {
                 {new Array(item.quantity).fill(1)?.map((_, key) => (
                   <Paper
                     p={"lg"}
-                    shadow="xs"
                     radius={0}
                     key={key}
                     mb={"sm"}
-                    className=" flex flex-col justify-center items-center "
+                    className="flex flex-col justify-center items-center w-[240px]"
                   >
                     {isShowProductName && (
                       <Text className="font-semibold">
@@ -306,6 +310,7 @@ const BarcodePage = () => {
                     )}
                     {item?.productCode ? (
                       <Barcode
+                        className="w-[240px] px-2"
                         value={item?.productCode}
                         options={{
                           format: item.barcodeType,
@@ -313,7 +318,7 @@ const BarcodePage = () => {
                       />
                     ) : null}
                     {isShowProductPrice && (
-                      <Text>
+                      <Text className="mt-0">
                         BDT: {getProductByCode(item.productCode)?.price}
                       </Text>
                     )}
@@ -323,7 +328,6 @@ const BarcodePage = () => {
             );
           })}
         </div>
-     
       </Paper>
     </>
   );

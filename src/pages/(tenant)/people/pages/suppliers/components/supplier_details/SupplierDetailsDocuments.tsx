@@ -26,7 +26,7 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
       provider: file.provider,
     })) ?? [];
 
-  // console.log(attachments);
+  
   // update suppliers
   const [updateAttachmentsMutation] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,

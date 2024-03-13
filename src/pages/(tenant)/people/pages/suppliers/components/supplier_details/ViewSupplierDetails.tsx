@@ -21,7 +21,7 @@ const ViewSupplierDetails: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
   refetch,
 }) => {
-  // console.log({ supplierDetails });
+ 
   const [activeTab, setActiveTab] = useState<number>(0);
   return (
     <div>

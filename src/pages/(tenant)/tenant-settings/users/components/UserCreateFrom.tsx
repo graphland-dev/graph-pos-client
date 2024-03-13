@@ -1,5 +1,10 @@
 import { Notify } from "@/_app/common/Notification/Notify";
-import { Role, User } from "@/_app/graphql-models/graphql";
+import {
+  MatchOperator,
+  Role,
+  User,
+  UsersWithPagination,
+} from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,9 +14,11 @@ import * as Yup from "yup";
 import { CURRENT__TENANT__ROLES } from "../../roles/utils/query.gql";
 import {
   IDENTITY_ADD_USER_TO_CURRENT_TENANT,
+  IDENTITY_CURRENT_TENANT,
   IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
 } from "../utils/query.gql";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 interface IUserFormProps {
   onSubmissionDone: () => void;
@@ -40,10 +47,32 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
     resolver: yupResolver(formValidationSchema),
   });
 
-  const { data: roleData} = useQuery<{
+  const { tenant } = useParams();
+
+  const { data: roleData } = useQuery<{
     identity__currentTenantRoles: Role[];
   }>(CURRENT__TENANT__ROLES);
- 
+
+  const { data: tenantRole } = useQuery<{
+    identity__currentTenantUsers: UsersWithPagination;
+  }>(IDENTITY_CURRENT_TENANT, {
+    variables: {
+      input: {
+        filters: [
+          {
+            key: "email",
+            operator: MatchOperator.Eq,
+            value: formData?.email,
+          },
+        ],
+      },
+    },
+  });
+
+  const userRoles =
+    tenantRole?.identity__currentTenantUsers?.nodes?.[0].memberships?.find(
+      (membership) => membership?.tenant === tenant
+    );
 
   const [roleUpdateMutation, { loading: updating }] = useMutation(
     IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
@@ -67,17 +96,15 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
     })
   );
 
-  console.log(formData);
-
   useEffect(() => {
     if (operationType === "update") {
       setValue("email", formData?.email || "");
-      setValue("roles", formData?.systemRoles || []);
+      setValue("roles", userRoles?.roles || []);
     } else {
       setValue("email", "");
       setValue("roles", []);
     }
-  }, [formData]);
+  }, [formData, userRoles]);
 
   const onSubmit = (values: IUserForm) => {
     if (operationType == "create") {

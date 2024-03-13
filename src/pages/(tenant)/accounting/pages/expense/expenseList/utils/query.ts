@@ -19,7 +19,16 @@ export const ACCOUNTING_EXPENSE_QUERY_LIST = gql`
           referenceNumber
         }
         amount
-        category
+        category {
+          _id
+          attachments {
+            path
+            provider
+            meta
+          }
+          name
+          tenant
+        }
         checkNo
         createdAt
         date
