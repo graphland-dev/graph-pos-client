@@ -2,7 +2,7 @@ import {
   MatchOperator,
   Maybe,
   Product,
-  ProductsWithPagination,
+  ProductsWithPagination
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
@@ -80,12 +80,11 @@ const BarcodePage = () => {
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
       where: {
-        limit: -1,
         filters: [
           {
-            key: "price",
-            operator: MatchOperator.Gt,
-            value: "0",
+            key: "name",
+            operator: MatchOperator.Eq,
+            value: product.productCode,
           },
         ],
       },
@@ -168,6 +167,7 @@ const BarcodePage = () => {
                 withAsterisk
                 onChange={(productCode) => {
                   // setValue("productCode", productCode || "");
+                  
                   setProduct((prev) => ({
                     ...prev,
                     productCode: productCode || "",

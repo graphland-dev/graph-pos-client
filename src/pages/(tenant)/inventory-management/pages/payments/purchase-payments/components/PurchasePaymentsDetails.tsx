@@ -17,6 +17,7 @@ const PurchasePaymentsDetails: React.FC<{
   purchasePaymentsRow: PurchasePayment;
   loading: boolean;
 }> = ({ purchasePaymentsRow, loading }) => {
+  
   const elements = purchasePaymentsRow?.items;
   const totalAmount = useMemo(
     () =>
@@ -93,9 +94,7 @@ const PurchasePaymentsDetails: React.FC<{
           className="w-full flex flex-col gap-1"
         >
           <Title order={4}>Basic Info</Title>
-
           <Divider />
-
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Payment UID:</span>{" "}
             {purchasePaymentsRow?.paymentUID}

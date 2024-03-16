@@ -1,6 +1,7 @@
 import {
   Icon3dRotate,
   IconBrandProducthunt,
+  IconCash,
   IconDashboard,
   IconExchange,
   IconForklift,
@@ -38,7 +39,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Accounting > Cashbook > Accounts",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/cashbook/accounts";
+        window.location.href = `/${tenant}/accounting/cashbook/accounts`;
       },
       icon: <IconTableShare size="1.2rem" />,
     },
@@ -46,7 +47,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Accounting > Cashbook > Adjustments",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/cashbook/adjustments";
+        window.location.href = `/${tenant}/accounting/cashbook/adjustments`;
       },
       icon: <IconTableShare size="1.2rem" />,
     },
@@ -54,23 +55,39 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Accounting > Cashbook > transfer",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/cashbook/transfer";
+        window.location.href = `/${tenant}/accounting/cashbook/transfers`;
       },
       icon: <IconTableShare size="1.2rem" />,
     },
     {
-      title: "Accounting > Cashbook > ledger",
+      title: "Accounting > Cashbook > Statements",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/cashbook/ledger";
+        window.location.href = `/${tenant}/accounting/cashbook/statements`;
       },
       icon: <IconTableShare size="1.2rem" />,
     },
+    {
+      title: "Accounting > Cashbook > Payroll",
+      description: "Get full information about current system status",
+      onTrigger: () => {
+        window.location.href = `/${tenant}/accounting/cashbook/payroll`;
+      },
+      icon: <IconWallet size="1.2rem" />,
+    },
+    // {
+    //   title: "Accounting > Cashbook > ledger",
+    //   description: "Get full information about current system status",
+    //   onTrigger: () => {
+    //     window.location.href = "/accounting/cashbook/ledger";
+    //   },
+    //   icon: <IconTableShare size="1.2rem" />,
+    // },
     {
       title: "Accounting > Expense > Expense-List",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/expense/expense-list";
+        window.location.href = `/${tenant}/accounting/expense/expense-list`;
       },
       icon: <IconExchange size="1.2rem" />,
     },
@@ -78,7 +95,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Accounting > Expense > Expense-Category",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/accounting/expense/expense-category";
+        window.location.href = `/${tenant}/accounting/expense/expense-category`;
       },
       icon: <IconExchange size="1.2rem" />,
     },
@@ -122,31 +139,31 @@ export const getSpotlightItems = (tenant: string) => {
     //   },
     //   icon: <IconVectorTriangle size="1.2rem" />,
     // },
-    {
-      title: "Accounting > Payroll",
-      description: "Get full information about current system status",
-      onTrigger: () => {
-        window.location.href = "/accounting/payroll";
-      },
-      icon: <IconWallet size="1.2rem" />,
-    },
 
-    //Inventory-management
+    //==================================Inventory-management=========================
     {
       title: "Inventory-Management",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management";
+        window.location.href = `/${tenant}/inventory-management`;
       },
       icon: <IconForklift size="1.2rem" />,
     },
 
     //Products
     {
+      title: "Inventory-Management > pos",
+      description: "Get full information about current system status",
+      onTrigger: () => {
+        window.location.href = `/${tenant}/inventory-management/products/pos`;
+      },
+      icon: <IconCash size="1.2rem" />,
+    },
+    {
       title: "Inventory-Management > Products > Products-List",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/products/products-list";
+        window.location.href = `/${tenant}/inventory-management/products/products-list`;
       },
       icon: <IconBrandProducthunt size="1.2rem" />,
     },
@@ -154,8 +171,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Inventory-Management > Products > Products-Category",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =
-          "/inventory-management/products/products-category";
+        window.location.href = `/${tenant}/inventory-management/products/products-category`;
       },
       icon: <IconBrandProducthunt size="1.2rem" />,
     },
@@ -163,17 +179,16 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Inventory-Management > Products > Barcode",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/products/barcode";
+        window.location.href = `/${tenant}/inventory-management/products/barcode`;
       },
       icon: <IconBrandProducthunt size="1.2rem" />,
     },
 
-    //purchases
     {
       title: "Inventory-Management > Purchases",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/purchases";
+        window.location.href = `/${tenant}/inventory-management/purchases`;
       },
       icon: <IconShoppingCart size="1.2rem" />,
     },
@@ -181,44 +196,60 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Inventory-Management > Purchases > Return",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/purchases/return";
+        window.location.href = `/${tenant}/inventory-management/purchases/return`;
       },
       icon: <IconShoppingCart size="1.2rem" />,
     },
 
-    //Inventory
     {
-      title: "Inventory-Management > Inventory > Inventory-list",
+      title: "Inventory-Management > Payments > Purchase-payments",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/inventory/inventory-list";
+        window.location.href = `/${tenant}/inventory-management/payments/purchase-payments`;
       },
       icon: <IconShoppingCart size="1.2rem" />,
     },
+    // ===========================settings==========================================
     {
-      title: "Inventory-Management > Inventory > Adjustment",
+      title: "Inventory-Management > Settings > Vat-profiles ",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/inventory-management/inventory/adjustment";
+        window.location.href = `/${tenant}/inventory-management/settings/vat-profiles`;
       },
-      icon: <IconShoppingCart size="1.2rem" />,
+      icon: <IconSettingsCheck size="1.2rem" />,
     },
-    //People
     {
-      title: "People",
+      title: "Inventory-Management > Settings > Units ",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/people";
+        window.location.href = `/${tenant}/inventory-management/settings/units`;
       },
-      icon: <IconFriends size="1.2rem" />,
+      icon: <IconSettingsCheck size="1.2rem" />,
+    },
+    {
+      title: "Inventory-Management > Settings  > Brands ",
+      description: "Get full information about current system status",
+      onTrigger: () => {
+        window.location.href = `/${tenant}/inventory-management/settings/brands`;
+      },
+      icon: <IconSettingsCheck size="1.2rem" />,
     },
 
-    //PEOPLE
+    //====================================PEOPLE============================================
+    // {
+    //   title: "People",
+    //   description: "Get full information about current system status",
+    //   onTrigger: () => {
+    //     window.location.href = "/people";
+    //   },
+    //   icon: <IconFriends size="1.2rem" />,
+    // },
+
     {
       title: "People > Client",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/people/client";
+        window.location.href = `/${tenant}/people/client`;
       },
       icon: <IconFriends size="1.2rem" />,
     },
@@ -226,7 +257,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Suppliers",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/people/suppliers";
+        window.location.href =  `/${tenant}/people/suppliers`;
       },
       icon: <Icon3dRotate size="1.2rem" />,
     },
@@ -234,7 +265,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Employees > Departments",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/people/employees/departments";
+        window.location.href =  `/${tenant}/people/employees/departments`;
       },
       icon: <IconUsersGroup size="1.2rem" />,
     },
@@ -242,7 +273,8 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Employees > Employees",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "employees";
+        window.location.href =
+          `/${tenant}/people/employees/employees`;
       },
       icon: <IconUsersGroup size="1.2rem" />,
     },
@@ -250,16 +282,16 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Employees > Increments",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/people/employees/increments";
+        window.location.href = `/${tenant}/people/employees/increments`;
       },
       icon: <IconUsersGroup size="1.2rem" />,
     },
     //Report
     {
-      title: "Report",
+      title: "Reports",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/reports";
+        window.location.href =  `/${tenant}/reports`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -267,7 +299,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Report > Reports > Balance-shit",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/reports/balance-shit";
+        window.location.href = `/${tenant}/reports/balance-shit`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -275,7 +307,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Report > Reports > Summary-Report",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/reports/summary-report";
+        window.location.href = `/${tenant}/reports/summary-report`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -283,7 +315,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Report > Reports > Expense-Report",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/reports/expense-report";
+        window.location.href = `/${tenant}/reports/expense-report`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -291,7 +323,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Report > Reports > Loss-Profit-Report",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = "/reports/loss-profit-report";
+        window.location.href =`/${tenant}/reports/loss-profit-report`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -305,29 +337,29 @@ export const getSpotlightItems = (tenant: string) => {
     //   },
     //   icon: <IconSettingsCheck size="1.2rem" />,
     // },
-    {
-      title: "Settings > Vat-Profile",
-      description: "Get full information about current system status",
-      onTrigger: () => {
-        window.location.href = "/settings";
-      },
-      icon: <IconSettingsCheck size="1.2rem" />,
-    },
-    {
-      title: "Settings > Units",
-      description: "Get full information about current system status",
-      onTrigger: () => {
-        window.location.href = "/settings/units";
-      },
-      icon: <IconSettingsCheck size="1.2rem" />,
-    },
-    {
-      title: "Settings > Brands",
-      description: "Get full information about current system status",
-      onTrigger: () => {
-        window.location.href = "/settings/brands";
-      },
-      icon: <IconSettingsCheck size="1.2rem" />,
-    },
+    // {
+    //   title: "Settings > Vat-Profile",
+    //   description: "Get full information about current system status",
+    //   onTrigger: () => {
+    //     window.location.href = "/settings";
+    //   },
+    //   icon: <IconSettingsCheck size="1.2rem" />,
+    // },
+    // {
+    //   title: "Settings > Units",
+    //   description: "Get full information about current system status",
+    //   onTrigger: () => {
+    //     window.location.href = "/settings/units";
+    //   },
+    //   icon: <IconSettingsCheck size="1.2rem" />,
+    // },
+    // {
+    //   title: "Settings > Brands",
+    //   description: "Get full information about current system status",
+    //   onTrigger: () => {
+    //     window.location.href = "/settings/brands";
+    //   },
+    //   icon: <IconSettingsCheck size="1.2rem" />,
+    // },
   ];
 };
