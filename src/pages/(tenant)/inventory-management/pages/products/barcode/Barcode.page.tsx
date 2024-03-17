@@ -2,7 +2,7 @@ import {
   MatchOperator,
   Maybe,
   Product,
-  ProductsWithPagination
+  ProductsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
@@ -36,6 +36,8 @@ interface IProduct {
   productCode: string;
   barcodeType: string;
   quantity: number;
+  productName: string;
+  productPrice: number;
 }
 
 interface IProductData {
@@ -47,7 +49,7 @@ const BarcodePage = () => {
   const {
     // setValue,
     // handleSubmit,
-    watch,
+   
     formState: { errors },
   } = useForm({
     resolver: yupResolver(barcodeValidationSchema),
@@ -60,13 +62,18 @@ const BarcodePage = () => {
     },
   });
 
+  const [productName, setProductName] = useState("");
+  const [showProductNames, setShowProductNames] = useState(false);
+
   const [product, setProduct] = useState<IProduct>({
     productCode: "",
     barcodeType: "",
     quantity: 1,
+    productName: "",
+    productPrice: 0,
   });
-  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
 
+  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [isShowProductName, setIsShowProductName] = useState(false);
 
@@ -75,7 +82,7 @@ const BarcodePage = () => {
     content: () => printRef.current!,
   });
 
-  const { data } = useQuery<{
+  const { data, refetch } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
@@ -83,12 +90,13 @@ const BarcodePage = () => {
         filters: [
           {
             key: "name",
-            operator: MatchOperator.Eq,
-            value: product.productCode,
+            operator: MatchOperator.Contains,
+            value: productName,
           },
         ],
       },
     },
+    skip: !productName,
   });
 
   const productsDropdown = useMemo<IProductData[] | undefined>(
@@ -99,6 +107,7 @@ const BarcodePage = () => {
       })),
     [data?.inventory__products.nodes]
   );
+
 
   const getProductByCode = (code: string) => {
     return data?.inventory__products.nodes?.find((p) => p.code === code);
@@ -145,8 +154,18 @@ const BarcodePage = () => {
   ));
 
   const handleAddToList = () => {
-    setAllProducts((prev) => [...prev, product]);
-    setProduct({ productCode: "", barcodeType: "", quantity: 1 });
+    const getProduct = getProductByCode(product.productCode);
+    setAllProducts((prev) => [
+      ...prev,
+      {
+        ...product,
+        productName: getProduct?.name || "",
+        productPrice: getProduct?.price || 0,
+      },
+    ]);
+    setProduct({ productCode: "", barcodeType: "", quantity: 1 , productName: "" , productPrice: 0});
+    setProductName("");
+    setShowProductNames(false);
   };
 
   return (
@@ -156,28 +175,55 @@ const BarcodePage = () => {
         <Title order={3}>Generate Barcode</Title>
         <Space h="" />
         <form className="flex flex-col gap-6">
-          <div className="grid gap-3 lg:grid-cols-2">
-            <Input.Wrapper
-              label="Select Product"
-              withAsterisk
-              error={<ErrorMessage name={"productCode"} errors={errors} />}
-            >
-              <Select
-                searchable
+          <div className="grid gap-3 lg:grid-cols-2 ">
+            <div className="relative">
+              <Input.Wrapper
+                label="Select Product"
                 withAsterisk
-                onChange={(productCode) => {
-                  // setValue("productCode", productCode || "");
-                  
-                  setProduct((prev) => ({
-                    ...prev,
-                    productCode: productCode || "",
-                  }));
-                }}
-                placeholder="Select Product"
-                data={productsDropdown || ([] as any)}
-                value={product.productCode}
-              />
-            </Input.Wrapper>
+                error={<ErrorMessage name={"productCode"} errors={errors} />}
+              >
+                <Input
+                  onChange={(e) => {
+                    setProductName(e.target.value);
+                    if (e.target.value.length > 0) {
+                      refetch();
+                    }
+                   
+                  }}
+                  placeholder="Select Product"
+                  // data={productsDropdown || ([] as any)}
+                  value={productName}
+                  onFocus={() => setShowProductNames(true)}
+                />
+              </Input.Wrapper>
+
+              <div
+                className={`absolute top-18 bg-white z-50 w-full rounded ${
+                  showProductNames ? "block" : "hidden"
+                }`}
+              >
+                {productsDropdown?.map((item) => {
+                   
+                  return (
+                    <Text
+                      className="p-1 mb-1 rounded hover:bg-yellow-100 cursor-pointer"
+                      onClick={() => {
+                        
+                        setProduct((prev) => ({
+                          ...prev,
+                          productCode: item.value || "",
+                        }));
+                        setProductName(item.label);
+                        setShowProductNames(false);
+                       
+                      }}
+                    >
+                      {item.label}
+                    </Text>
+                  );
+                })}
+              </div>
+            </div>
 
             <Input.Wrapper
               label="Barcode Type"
@@ -282,7 +328,7 @@ const BarcodePage = () => {
         <Flex justify={"space-between"}>
           <div className="flex flex-wrap gap-3">
             <Checkbox
-              value={watch("barcodePrice")}
+              // value={product.barcodeType}
               onChange={(event) => setIsShowProductPrice(event.target.checked)}
               name="barcodePrice"
               label="Generate barcode with price"
@@ -315,7 +361,7 @@ const BarcodePage = () => {
                   >
                     {isShowProductName && (
                       <Text className="font-semibold">
-                        {getProductByCode(item.productCode)?.name}
+                        {item.productName}
                       </Text>
                     )}
                     {item?.productCode ? (
@@ -328,9 +374,7 @@ const BarcodePage = () => {
                       />
                     ) : null}
                     {isShowProductPrice && (
-                      <Text className="mt-0">
-                        BDT: {getProductByCode(item.productCode)?.price}
-                      </Text>
+                      <Text className="mt-0">BDT: {item.productPrice}</Text>
                     )}
                   </div>
                 ))}
