@@ -164,7 +164,9 @@ const DataTable: React.FC<Prop> = ({
   });
   return (
     <>
-      <MantineReactTable table={table} />
+      <MantineReactTable
+          table={table}
+      />
     </>
   );
 };
