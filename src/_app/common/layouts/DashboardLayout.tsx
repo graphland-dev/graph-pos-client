@@ -39,6 +39,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                 component={Link}
                 to={linkWithTenant(`${path}/${item?.href}`)}
                 icon={item.icon}
+                className="rounded-md "
                 active={pathname.includes(item?.href as string)}
               >
                 {item?.children &&
