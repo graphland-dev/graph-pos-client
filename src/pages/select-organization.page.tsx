@@ -1,6 +1,8 @@
+import { getFileUrl } from "@/_app/common/utils/getFileUrl";
 import { TenantsWithPagination } from "@/_app/graphql-models/graphql";
 import { gql, useQuery } from "@apollo/client";
-import { LoadingOverlay, Title } from "@mantine/core";
+import { Image, LoadingOverlay, Text, Title } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
 import { Link } from "react-router-dom";
 
 const MY_TENANTS = gql`
@@ -11,6 +13,11 @@ const MY_TENANTS = gql`
         name
         uid
         createdAt
+        logo {
+          meta
+          path
+          provider
+        }
       }
     }
   }
@@ -30,16 +37,26 @@ const SelectOrganization = () => {
     <div className="relative p-14">
       <LoadingOverlay visible={!data} overlayBlur={1000} />
       <Title order={2}>Select Organization</Title>
-      <div className="grid grid-cols-4 gap-4 mt-4">
+      <div className="grid md:grid-cols-3 gap-4  mt-8 content-center ">
         {data?.identity__myTenants.nodes?.map((tenant, idx) => (
           <Link
             key={idx}
-            className="p-5 text-xl border-2 rounded-md text-neutral-primary border-neutral-primary"
             to={`/${tenant.uid}`}
+            className=" border-2 rounded text-neutral-primary border-neutral-primary p-5 py-10 flex flex-col justify-center items-center gap-2"
           >
-            {tenant.name}
+            <Image
+              fit="cover"
+              width={80}
+              height={80}
+              className="rounded overflow-hidden"
+              src={getFileUrl(tenant.logo ?? {})}
+            />
+            <Text className=" text-3xl ">{tenant.name}</Text>
           </Link>
         ))}
+        <div className=" border-2 rounded text-neutral-primary border-neutral-primary p-5 py-10 flex flex-col justify-center items-center gap-2">
+          <IconPlus size={30} />
+        </div>
       </div>
     </div>
   );
