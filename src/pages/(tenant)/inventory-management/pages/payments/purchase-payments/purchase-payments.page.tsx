@@ -5,7 +5,7 @@ import {
   PurchasePaymentsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Badge, Button, Drawer, Menu, Title } from "@mantine/core";
+import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconListDetails, IconPlus } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
@@ -51,22 +51,22 @@ const PurchasePaymentPage = () => {
       },
       {
         accessorKey: "paidAmount",
-        accessorFn: (row: PurchasePayment) => {
-          const totalAmount = row?.items?.reduce(
-            (total, current) => total + (current?.purchase.paidAmount ?? 0),
-            0
-          );
+        // accessorFn: (row: PurchasePayment) => {
+        //   const totalAmount = row?.items?.reduce(
+        //     (total, current) => total + (current?.purchase.paidAmount ?? 0),
+        //     0
+        //   );
 
-          let color = "red";
-          if (totalAmount - row.paidAmount === 0) {
-            color = "green"
-          }
-          if (totalAmount - row.paidAmount > 0) {
-            color = "yellow"
-          }
+        //   let color = "red";
+        //   if (totalAmount - row.paidAmount === 0) {
+        //     color = "green"
+        //   }
+        //   if (totalAmount - row.paidAmount > 0) {
+        //     color = "yellow"
+        //   }
           
-          return <Badge color={color}>{row.paidAmount}</Badge>;
-        },
+        //   return <Badge color={color}>{row.paidAmount}</Badge>;
+        // },
         header: "Paid Amount",
       },
       // {

@@ -313,16 +313,7 @@ const BarcodePage = () => {
           <tbody>{rows}</tbody>
         </Table>
 
-        {/* <Space h={"xl"} />
-        <div className="flex justify-center">
-          <Button
-            size="md"
-            disabled={!(allProducts.length > 0)}
-            onClick={handlePreview}
-          >
-            Preview
-          </Button>
-        </div> */}
+        
 
         <Space h={"xl"} />
         <Flex justify={"space-between"}>

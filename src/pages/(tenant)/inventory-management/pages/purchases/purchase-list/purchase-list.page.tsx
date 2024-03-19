@@ -9,7 +9,7 @@ import {
   ProductPurchasesWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
+import { Badge, Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
@@ -98,10 +98,24 @@ const PurchaseListPage = () => {
       },
       {
         accessorKey: "dueAmount",
-        accessorFn: (originalRow: ProductPurchase) =>
-          `${currencyNumberFormat(
-            originalRow?.netTotal - (originalRow?.paidAmount || 0)
-          )} BDT`,
+        accessorFn: (originalRow: ProductPurchase) => {
+           const totalDue =
+             originalRow?.netTotal - (originalRow?.paidAmount || 0);
+
+          let color = "red";
+          if (totalDue  === 0) {
+            color = "green";
+          }
+          if (totalDue  > 0) {
+            color = "yellow";
+          }
+          return (
+            <Badge color={color}>{`${currencyNumberFormat(
+              originalRow?.netTotal - (originalRow?.paidAmount || 0)
+            )} BDT`}</Badge>
+          );
+        },
+
         header: "Due Amount",
       },
       {
