@@ -57,12 +57,12 @@ const BarcodePage = () => {
               {
                 key: "name",
                 operator: MatchOperator.Contains,
-                value: productQuery,
+                value: productQuery.trim(),
               },
               {
                 key: "code",
                 operator: MatchOperator.Contains,
-                value: productQuery,
+                value: productQuery.trim(),
               },
             ],
           },

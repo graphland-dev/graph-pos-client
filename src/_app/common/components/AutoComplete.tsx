@@ -8,15 +8,20 @@ interface Prop {
   onChange: (text: string) => void;
   onSelect: (item: any) => void;
   labelKey: string;
+  placeholder?: string;
   loading: boolean;
+  enableNoResultDropdown?: boolean;
+  NoResultComponent?: React.ReactNode;
 }
 
 const AutoComplete: React.FC<Prop> = ({
   data,
+  placeholder,
   labelKey,
   onChange,
   onSelect,
   loading,
+  NoResultComponent,
 }) => {
   const [searchTerm, setSearchTerm] = useDebouncedState("", 100);
 
@@ -29,6 +34,7 @@ const AutoComplete: React.FC<Prop> = ({
       <div className="relative w-full">
         <div className="relative">
           <Combobox.Input
+            placeholder={placeholder}
             onChange={(event) => setSearchTerm(event.target.value)}
             className={"border border-slate-300 px-2 py-3 rounded-md w-full"}
           />
@@ -45,7 +51,7 @@ const AutoComplete: React.FC<Prop> = ({
                 cy="12"
                 r="10"
                 stroke="currentColor"
-                stroke-width="4"
+                strokeWidth="4"
               ></circle>
               <path
                 className="opacity-75"
@@ -60,8 +66,8 @@ const AutoComplete: React.FC<Prop> = ({
             "absolute top-10 left-0 w-full shadow-lg z-50 rounded-md bg-slate-100"
           }
         >
-          {data?.map((item: any) => (
-            <Combobox.Option key={item.id} value={item} as={Fragment}>
+          {data?.map((item: any, idx: number) => (
+            <Combobox.Option key={idx} value={item} as={Fragment}>
               {({ active }) => (
                 <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
                   {item[labelKey]}
@@ -69,6 +75,16 @@ const AutoComplete: React.FC<Prop> = ({
               )}
             </Combobox.Option>
           ))}
+
+          {!data.length && !loading && (
+            <Combobox.Option value={searchTerm} as={Fragment}>
+              {({ active }) => (
+                <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
+                  {NoResultComponent}
+                </li>
+              )}
+            </Combobox.Option>
+          )}
         </Combobox.Options>
       </div>
     </Combobox>

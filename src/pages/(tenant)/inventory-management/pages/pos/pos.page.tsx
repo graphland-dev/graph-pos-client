@@ -35,9 +35,9 @@ import {
   getVatProfileSelectInputData,
 } from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
-import ClientSelectArea from "./components/ClientSelectArea";
+import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
 import POSProductGlary from "./components/POSProductGalary";
-import ProductSelectArea from "./components/ProductSelectArea";
+import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
 import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
@@ -49,6 +49,8 @@ const PosPage = () => {
       where: { limit: -1 },
     },
   });
+
+  // const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const form = useForm<IPosFormType>({
     defaultValues: {
@@ -113,12 +115,12 @@ const PosPage = () => {
           <div className="lg:w-7/12">
             <Paper p={15} withBorder>
               <div className="grid grid-cols-2 gap-3 place-content-center">
-                <ClientSelectArea
+                <ClientSearchAutocomplete
                   formInstance={form}
                   contactNumber={watch("client")}
                 />
 
-                <ProductSelectArea
+                <ProductSearchAutocomplete
                   formInstance={form}
                   onSelectProduct={handleAddProductToList}
                 />
