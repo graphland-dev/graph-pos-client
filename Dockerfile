@@ -1,13 +1,11 @@
-FROM node:20.7.0-bullseye
+FROM node:18-alpine
 
 WORKDIR /app
-
-COPY package.json .
-RUN npm i
+COPY package*.json .
+RUN npm install
 
 COPY . .
 
-## EXPOSE [Port you mentioned in the vite.config file]
-EXPOSE 3000
+RUN npm run build
 
-ENTRYPOINT ["npm", "run", "dev", "--host"]
+ENTRYPOINT [ "npm", "run", "preview" ]

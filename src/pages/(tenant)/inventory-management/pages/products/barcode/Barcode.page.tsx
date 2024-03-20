@@ -1,7 +1,5 @@
 import {
   MatchOperator,
-  Maybe,
-  Product,
   ProductsWithPagination,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
@@ -16,23 +14,20 @@ import {
   Space,
   Table,
   Text,
-  TextInput,
   Title,
 } from "@mantine/core";
 import Barcode from "react-jsbarcode";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.query";
 // import JsBarcode from "jsbarcode";
 import PageTitle from "@/_app/common/PageTitle";
+import AutoComplete from "@/_app/common/components/AutoComplete";
 import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useDebouncedState } from "@mantine/hooks";
 import { IconPrinter, IconTrash } from "@tabler/icons-react";
-import { useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import * as yup from "yup";
 
-interface IProduct {
+interface IBarcodeProductItem {
   productCode: string;
   barcodeType: string;
   quantity: number;
@@ -40,40 +35,9 @@ interface IProduct {
   productPrice: number;
 }
 
-interface IProductData {
-  value: Maybe<string> | undefined;
-  label: string;
-}
-
 const BarcodePage = () => {
-  const {
-    // setValue,
-    // handleSubmit,
-   
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(barcodeValidationSchema),
-    defaultValues: {
-      productCode: "",
-      barcodeType: Generate_Barcode_Type.Code128,
-      quantity: 30,
-      barcodeProductName: "",
-      barcodePrice: 0.0,
-    },
-  });
-
-  const [productName, setProductName] = useState("");
-  const [showProductNames, setShowProductNames] = useState(false);
-
-  const [product, setProduct] = useState<IProduct>({
-    productCode: "",
-    barcodeType: "",
-    quantity: 1,
-    productName: "",
-    productPrice: 0,
-  });
-
-  const [allProducts, setAllProducts] = useState<IProduct[]>([]);
+  const [productQuery, setProductQuery] = useDebouncedState("", 300);
+  const [productItems, setProductItems] = useState<IBarcodeProductItem[]>();
   const [isShowProductPrice, setIsShowProductPrice] = useState(false);
   const [isShowProductName, setIsShowProductName] = useState(false);
 
@@ -82,63 +46,81 @@ const BarcodePage = () => {
     content: () => printRef.current!,
   });
 
-  const { data, refetch } = useQuery<{
+  const { data: searchedProducts, loading } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
       where: {
         filters: [
           {
-            key: "name",
-            operator: MatchOperator.Contains,
-            value: productName,
+            or: [
+              {
+                key: "name",
+                operator: MatchOperator.Contains,
+                value: productQuery.trim(),
+              },
+              {
+                key: "code",
+                operator: MatchOperator.Contains,
+                value: productQuery.trim(),
+              },
+            ],
           },
         ],
       },
     },
-    skip: !productName,
+    skip: !productQuery,
   });
 
-  const productsDropdown = useMemo<IProductData[] | undefined>(
-    () =>
-      data?.inventory__products.nodes?.map((item: Product) => ({
-        value: item?.code,
-        label: `${item?.name}`,
-      })),
-    [data?.inventory__products.nodes]
-  );
-
-
-  const getProductByCode = (code: string) => {
-    return data?.inventory__products.nodes?.find((p) => p.code === code);
-  };
-
   const handleProductRemove = (index: number) => {
-    const updatedProducts = [...allProducts];
+    const updatedProducts = [...(productItems ?? [])];
     updatedProducts.splice(index, 1);
-    setAllProducts(updatedProducts);
+    setProductItems(updatedProducts);
   };
 
   const ths = (
     <tr>
       <th>Product Name</th>
+      <th>Product Code</th>
+      <th>Barcode Type</th>
       <th>Product Quantity</th>
       <th>Action</th>
     </tr>
   );
 
-  const rows = allProducts.map((product, index) => (
+  const rows = productItems?.map((product, index) => (
     <tr key={product.productCode}>
+      <td>{product.productName}</td>
       <td>{product.productCode}</td>
+      <td>
+        <Select
+          value={product.barcodeType}
+          onChange={(barcodeType) => {
+            const _products = [...productItems];
+            _products[index].barcodeType = barcodeType ?? "";
+            setProductItems(_products);
+          }}
+          data={[
+            {
+              label: "Code128",
+              value: Generate_Barcode_Type?.Code128,
+            },
+            {
+              label: "CodeBar",
+              value: Generate_Barcode_Type?.CodeBar,
+            },
+          ]}
+        />
+      </td>
       <td>
         <NumberInput
           type="number"
           placeholder="Quantity"
           value={product.quantity}
           onChange={(quantity: number) => {
-            const _products = [...allProducts];
+            const _products = [...productItems];
             _products[index].quantity = quantity;
-            setAllProducts(_products);
+            setProductItems(_products);
           }}
         />
       </td>
@@ -153,21 +135,6 @@ const BarcodePage = () => {
     </tr>
   ));
 
-  const handleAddToList = () => {
-    const getProduct = getProductByCode(product.productCode);
-    setAllProducts((prev) => [
-      ...prev,
-      {
-        ...product,
-        productName: getProduct?.name || "",
-        productPrice: getProduct?.price || 0,
-      },
-    ]);
-    setProduct({ productCode: "", barcodeType: "", quantity: 1 , productName: "" , productPrice: 0});
-    setProductName("");
-    setShowProductNames(false);
-  };
-
   return (
     <>
       <PageTitle title="barcode" />
@@ -176,129 +143,26 @@ const BarcodePage = () => {
         <Space h="" />
         <form className="flex flex-col gap-6">
           <div className="grid gap-3 lg:grid-cols-2 ">
-            <div className="relative">
-              <Input.Wrapper
-                label="Select Product"
-                withAsterisk
-                error={<ErrorMessage name={"productCode"} errors={errors} />}
-              >
-                <Input
-                  onChange={(e) => {
-                    setProductName(e.target.value);
-                    if (e.target.value.length > 0) {
-                      refetch();
-                    }
-                   
-                  }}
-                  placeholder="Select Product"
-                  // data={productsDropdown || ([] as any)}
-                  value={productName}
-                  onFocus={() => setShowProductNames(true)}
-                />
-              </Input.Wrapper>
-
-              <div
-                className={`absolute top-18 bg-white z-50 w-full rounded ${
-                  showProductNames ? "block" : "hidden"
-                }`}
-              >
-                {productsDropdown?.map((item) => {
-                   
-                  return (
-                    <Text
-                      className="p-1 mb-1 rounded hover:bg-yellow-100 cursor-pointer"
-                      onClick={() => {
-                        
-                        setProduct((prev) => ({
-                          ...prev,
-                          productCode: item.value || "",
-                        }));
-                        setProductName(item.label);
-                        setShowProductNames(false);
-                       
-                      }}
-                    >
-                      {item.label}
-                    </Text>
-                  );
-                })}
-              </div>
-            </div>
-
-            <Input.Wrapper
-              label="Barcode Type"
-              withAsterisk
-              error={<ErrorMessage name={"barcodeType"} errors={errors} />}
-            >
-              <Select
-                value={product.barcodeType}
-                onChange={(barcodeType) =>
-                  setProduct((prev) => ({
-                    ...prev,
-                    barcodeType: barcodeType || "",
-                  }))
-                }
-                data={[
-                  {
-                    label: "Code128",
-                    value: Generate_Barcode_Type?.Code128,
-                  },
-                  {
-                    label: "CodeBar",
-                    value: Generate_Barcode_Type?.CodeBar,
-                  },
-                  // {
-                  //   label: "PharmaCode",
-                  //   value: Generate_Barcode_Type?.PharmaCode,
-                  // },
-                ]}
+            <Input.Wrapper label="Search Product">
+              <AutoComplete
+                loading={loading}
+                data={searchedProducts?.inventory__products?.nodes || []}
+                onChange={setProductQuery}
+                onSelect={(item: any) => {
+                  setProductItems([
+                    ...(productItems || []),
+                    {
+                      productName: item?.name,
+                      barcodeType: Generate_Barcode_Type?.Code128,
+                      productCode: item.code,
+                      productPrice: item.price,
+                      quantity: 1,
+                    },
+                  ]);
+                }}
+                labelKey={"name"}
               />
             </Input.Wrapper>
-          </div>
-          <Table withBorder withColumnBorders>
-            <thead>
-              <tr>
-                <th className="w-6/12">Product Code</th>
-                <th>Quantity</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr>
-                <td>
-                  <TextInput
-                    placeholder="Product Id"
-                    value={product.productCode}
-                  />
-                </td>
-                <td>
-                  <NumberInput
-                    type="number"
-                    placeholder="Quantity"
-                    value={product.quantity}
-                    onChange={(quantity: any) => {
-                      setProduct((prev) => ({
-                        ...prev,
-                        quantity: quantity || 0,
-                      }));
-                    }}
-                  />
-                </td>
-              </tr>
-            </tbody>
-          </Table>
-          <div className="flex justify-center">
-            <Button
-              size="md"
-              disabled={
-                !product.productCode ||
-                !product.barcodeType ||
-                product.quantity <= 0
-              }
-              onClick={handleAddToList}
-            >
-              Add to list
-            </Button>
           </div>
         </form>
 
@@ -313,13 +177,10 @@ const BarcodePage = () => {
           <tbody>{rows}</tbody>
         </Table>
 
-        
-
         <Space h={"xl"} />
         <Flex justify={"space-between"}>
           <div className="flex flex-wrap gap-3">
             <Checkbox
-              // value={product.barcodeType}
               onChange={(event) => setIsShowProductPrice(event.target.checked)}
               name="barcodePrice"
               label="Generate barcode with price"
@@ -342,7 +203,7 @@ const BarcodePage = () => {
           ref={printRef}
           className="flex flex-col items-center justify-center py-4 "
         >
-          {allProducts.map((item, index) => {
+          {productItems?.map((item, index) => {
             return (
               <div key={index}>
                 {new Array(item.quantity).fill(1)?.map((_, key) => (
@@ -351,9 +212,7 @@ const BarcodePage = () => {
                     className="flex flex-col justify-center items-center w-[240px] border border-slate-200"
                   >
                     {isShowProductName && (
-                      <Text className="font-semibold">
-                        {item.productName}
-                      </Text>
+                      <Text className="font-semibold">{item.productName}</Text>
                     )}
                     {item?.productCode ? (
                       <Barcode
@@ -379,11 +238,3 @@ const BarcodePage = () => {
 };
 
 export default BarcodePage;
-
-const barcodeValidationSchema = yup.object({
-  barcodeType: yup.string().required().label("Barcode Type"),
-  productCode: yup.string().optional().label("Code"),
-  quantity: yup.number().required().label("Quantity"),
-  barcodePrice: yup.number().required().label("Price"),
-  barcodeProductName: yup.string().required().label("Product"),
-});

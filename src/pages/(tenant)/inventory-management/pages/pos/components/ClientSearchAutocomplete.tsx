@@ -1,10 +1,21 @@
 import { Notify } from '@/_app/common/Notification/Notify';
-import { Client, ClientsWithPagination } from '@/_app/graphql-models/graphql';
+import {
+	ClientsWithPagination,
+	MatchOperator,
+} from '@/_app/graphql-models/graphql';
 import { PEOPLE_CREATE_CLIENT } from '@/pages/(tenant)/people/pages/client/utils/client.query';
-import { useMutation } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { ActionIcon, Button, Drawer, Flex, Input, Space } from '@mantine/core';
+import {
+	ActionIcon,
+	Button,
+	Drawer,
+	Flex,
+	Input,
+	Space,
+	Text,
+} from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect } from 'react';
@@ -18,25 +29,42 @@ interface ClientFormType {
 	contactNumber: string;
 }
 
-import { useLazyQuery } from '@apollo/client';
+import AutoComplete from '@/_app/common/components/AutoComplete';
 import React, { useState } from 'react';
-import AsyncSelect from 'react-select/async';
 
-const ClientSelectArea: React.FC<{
+const ClientSearchAutocomplete: React.FC<{
 	formInstance: any;
 	contactNumber: string;
 	// onRefetch: () => void;
 }> = ({ formInstance, contactNumber }) => {
-	const [inputData, setInputData] = useState<any[]>([]);
-	const [searchedClients, setSearchedClients] = useState<Client[]>([]);
+	const [q, setQ] = useState<string>('');
 
 	const [opened, handler] = useDisclosure();
 
-	// client query
-	const [fetchClients, { refetch }] = useLazyQuery<{
+	const { data, loading } = useQuery<{
 		people__clients: ClientsWithPagination;
 	}>(Pos_Client_Query, {
-		nextFetchPolicy: 'network-only',
+		variables: {
+			where: {
+				filters: [
+					{
+						or: [
+							{
+								key: 'name',
+								operator: MatchOperator.Contains,
+								value: q.trim(),
+							},
+							{
+								key: 'contactNumber',
+								operator: MatchOperator.Contains,
+								value: q.trim(),
+							},
+						],
+					},
+				],
+			},
+		},
+		skip: !q,
 	});
 
 	// client form instance
@@ -68,7 +96,6 @@ const ClientSelectArea: React.FC<{
 		Notify({
 			sucTitle: 'Client created',
 			onSuccess: () => {
-				refetch();
 				reset({
 					name: '',
 					email: '',
@@ -87,56 +114,6 @@ const ClientSelectArea: React.FC<{
 		});
 	};
 
-	// filter products
-	const filterClients = (inputValue: string) => {
-		return inputData.filter((i) =>
-			i.value.toLowerCase().includes(inputValue.toLowerCase())
-		);
-	};
-
-	// load options for input
-	const loadOptions = (
-		inputValue: string,
-		callback: (options: any[]) => void
-	) => {
-		// fetch products based on search on delay 1500ms
-		setTimeout(() => {
-			fetchClients({
-				variables: {
-					where: {
-						limit: -1,
-						filters: {
-							key: 'contactNumber',
-							operator: 'contains',
-							value: inputValue,
-						},
-					},
-				},
-			}).then((res) => {
-				const clients: Client[] = res.data?.people__clients?.nodes || [];
-				setInputData(
-					clients?.map((client) => ({
-						label: client.name,
-						value: client.contactNumber,
-					}))
-				);
-				setSearchedClients(clients);
-			});
-			callback(filterClients(inputValue));
-		}, 1500);
-	};
-
-	// handle add client to form
-	const handleMakeAddClientToForm = (e: any) => {
-		const findClient = searchedClients?.find(
-			(client) => client?.contactNumber === e
-		);
-
-		if (findClient?._id) {
-			formInstance.setValue('client', findClient?._id);
-		}
-	};
-
 	return (
 		<div>
 			<Input.Wrapper
@@ -149,17 +126,31 @@ const ClientSelectArea: React.FC<{
 				}
 			>
 				<Flex align={'center'} className='!w-full'>
-					<AsyncSelect
-						className='!w-full'
-						isClearable
-						cacheOptions
-						loadOptions={loadOptions}
-						defaultOptions
-						onChange={(e: any) => handleMakeAddClientToForm(e?.value)}
+					<AutoComplete
+						loading={loading}
+						data={data?.people__clients?.nodes || []}
+						onChange={setQ}
+						placeholder='Search client'
+						enableNoResultDropdown
+						NoResultComponent={
+							<div className='flex gap-2 py-2 cursor-pointer item-center'>
+								<IconPlus />
+								<Text>Create One</Text>
+							</div>
+						}
+						onSelect={(item: any) => {
+							if (typeof item === 'object') {
+								formInstance.setValue('client', item?._id);
+							} else {
+								setValue('contactNumber', item);
+								handler.open();
+							}
+						}}
+						labelKey={'name'}
 					/>
 					<ActionIcon
 						size={42}
-						variant='filled'
+						variant='subtle'
 						color='blue'
 						radius={0}
 						onClick={handler.open}
@@ -212,4 +203,4 @@ const ClientSelectArea: React.FC<{
 	);
 };
 
-export default ClientSelectArea;
+export default ClientSearchAutocomplete;

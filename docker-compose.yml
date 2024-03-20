@@ -1,10 +1,10 @@
 version: "3.8"
 
 services:
-  erp-client:
-    container_name: "erp-client"
+  graph360-client:
+    container_name: "graph360"
     ports:
-      - 3000:3000
+      - 3000:5173
     build:
       context: .
       dockerfile: Dockerfile
