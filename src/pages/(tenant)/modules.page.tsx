@@ -1,10 +1,10 @@
 import CommonHeader from "@/_app/common/layouts/componants/CommonHeader";
-import { Paper, Text } from "@mantine/core";
+import { Text } from "@mantine/core";
 import {
   IconBuildingWarehouse,
   IconPremiumRights,
   IconReportAnalytics,
-  IconUsers
+  IconUsers,
 } from "@tabler/icons-react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -44,16 +44,14 @@ const ModulesPage = () => {
       <CommonHeader />
       <div className="grid gap-5 p-10 lg:grid-cols-4">
         {modules.map((module, key) => (
-          <Paper
+          <div
             key={key}
             onClick={() => navigate(`/${params?.tenant}/${module.path}`)}
-            withBorder
-            p={"xl"}
-            className="flex flex-col items-center gap-3 cursor-pointer bg-base"
+            className="flex flex-col  cursor-pointer bg-base border-2 border-stone-300 rounded  p-5 py-12  justify-center items-center gap-2"
           >
             <module.icon />
-            <Text fz={"lg"}>{module.label}</Text>
-          </Paper>
+            <Text className=" text-xl">{module.label}</Text>
+          </div>
         ))}
       </div>
     </>
