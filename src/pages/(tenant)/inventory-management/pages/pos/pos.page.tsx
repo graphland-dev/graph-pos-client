@@ -14,6 +14,7 @@ import {
 	Group,
 	Input,
 	Menu,
+	Modal,
 	NumberInput,
 	Paper,
 	Popover,
@@ -23,13 +24,13 @@ import {
 	Text,
 	Title,
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import {
 	IconArrowsMaximize,
 	IconBell,
 	IconCalculator,
 	IconCirclePlus,
 	IconCreditCard,
-	IconDeviceFloppy,
 	IconFileInvoice,
 	IconLayoutGrid,
 	IconMenu2,
@@ -37,6 +38,7 @@ import {
 	IconShoppingBag,
 	IconX,
 } from '@tabler/icons-react';
+import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import {
@@ -47,11 +49,16 @@ import {
 } from '../purchases/create-purchase/utils/helpers';
 import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
+import HoldAction from './components/form-actions/HoldAction';
 import POSProductGlary from './components/POSProductGalary';
 import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
 import { getDiscount, getSalesVat } from './utils/utils.calc';
 
 const PosPage = () => {
+	const [openedHoldModal, holdModalHandler] = useDisclosure();
+	const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
+	const [formData, setFormData] = useState<IPosFormType>();
+
 	// fetch vat profiles
 	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
 		setup__vats: VatsWithPagination;
@@ -111,7 +118,12 @@ const PosPage = () => {
 
 	// submit pos form
 	const onSubmitPOS = (values: IPosFormType) => {
-		console.log(values);
+		if (action === 'ADD_TO_HOLD_LIST') {
+			setFormData(values);
+			holdModalHandler.open();
+		} else {
+			setFormData(values);
+		}
 	};
 
 	return (
@@ -390,28 +402,81 @@ const PosPage = () => {
 
 							<Space h={15} />
 
+							{/* hold modal */}
+							<Modal
+								opened={openedHoldModal}
+								onClose={holdModalHandler.close}
+								title=''
+							>
+								<HoldAction
+									formData={
+										{
+											...formData,
+											taxAmount: getSalesVat(
+												watch('transportCost') +
+													getTotalProductsPrice(watch('products')!) -
+													getDiscount(
+														watch('discountType'),
+														watch('discountAmount'),
+														getTotalProductsPrice(watch('products')!)
+													),
+												watch('invoiceTax')
+											),
+											subTotal: getTotalProductsPrice(watch('products')!),
+											netTotal:
+												getTotalProductsPrice(watch('products')!) -
+												getDiscount(
+													watch('discountType'),
+													watch('discountAmount'),
+													getTotalProductsPrice(watch('products')!)
+												) +
+												watch('transportCost') +
+												getSalesVat(
+													watch('transportCost') +
+														getTotalProductsPrice(watch('products')!) -
+														getDiscount(
+															watch('discountType'),
+															watch('discountAmount'),
+															getTotalProductsPrice(watch('products')!)
+														),
+													watch('invoiceTax')
+												),
+										}!
+									}
+									onSuccess={() => {
+										holdModalHandler.close();
+										reset({
+											client: '',
+											discountAmount: 0,
+											discountType: 'Fixed',
+											invoiceTax: 0,
+											products: [],
+											transportCost: 0,
+										});
+									}}
+								/>
+							</Modal>
+
 							<Group position='apart'>
 								<Button
 									size='md'
 									type='submit'
-									leftIcon={<IconDeviceFloppy size={16} />}
+									onClick={() => setAction('ADD_TO_HOLD_LIST')}
 								>
-									Save
+									Hold
 								</Button>
 								<Button
 									size='md'
 									type='submit'
 									leftIcon={<IconCreditCard size={16} />}
 								>
-									Save & Payment
+									Payment
 								</Button>
 								<Button
 									size='md'
 									onClick={() =>
 										reset({
-											brand: '',
 											client: '',
-											category: '',
 											discountAmount: 0,
 											discountType: 'Fixed',
 											invoiceTax: 0,
@@ -448,8 +513,6 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
 	discountAmount: Yup.number().required().label('Discount amount'),
 	transportCost: Yup.number().required().label('Transport cost'),
 	invoiceTax: Yup.number().required().label('Invoice tax'),
-	category: Yup.string().required().label('Category'),
-	brand: Yup.string().required().label('Brand'),
 	products: Yup.array()
 		.required()
 		.min(1, 'You must have to select at least one product')

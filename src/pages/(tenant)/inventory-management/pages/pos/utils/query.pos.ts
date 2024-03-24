@@ -7,6 +7,7 @@ export const Pos_Client_Query = gql`
 				_id
 				contactNumber
 				name
+				email
 			}
 		}
 	}
