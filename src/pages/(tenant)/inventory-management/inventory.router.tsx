@@ -14,6 +14,7 @@ import Return from "./pages/purchases/return/return.page";
 import VatPage from "./pages/settings/pages/vat/vat.page";
 import UnitPage from "./pages/settings/pages/unit/unit.page";
 import BrandPage from "./pages/settings/pages/brand/brand.page";
+import InvoicesPage from "./pages/invoices/invoices.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -30,6 +31,10 @@ export const inventoryModuleRouter: RouteObject[] = [
       />
     ),
     children: [
+      {
+        path: "invoices",
+        element: <InvoicesPage />,
+      },
       {
         path: "products",
         children: [
