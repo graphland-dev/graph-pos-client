@@ -50,12 +50,14 @@ import {
 import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
 import HoldAction from './components/form-actions/HoldAction';
+import PaymentForm from './components/form-actions/PaymentForm';
 import POSProductGlary from './components/POSProductGalary';
 import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
 import { getDiscount, getSalesVat } from './utils/utils.calc';
 
 const PosPage = () => {
 	const [openedHoldModal, holdModalHandler] = useDisclosure();
+	const [openedPaymentModal, paymentModalHandler] = useDisclosure();
 	const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
 	const [formData, setFormData] = useState<IPosFormType>();
 
@@ -101,13 +103,17 @@ const PosPage = () => {
 
 	// handle add product to list
 	function handleAddProductToList(productReference: ProductItemReference) {
+		// console.log({ productReference: watch('products') });
 		const productCart: ProductItemReference[] = watch('products');
 		const index = productCart?.findIndex(
 			(item) => item.referenceId == productReference.referenceId
 		);
 
 		if (index == -1) {
-			appendProduct(productReference);
+			appendProduct({
+				...productReference,
+				subAmount: productReference?.unitPrice * productReference?.quantity,
+			});
 		} else {
 			setValue(
 				`products.${index}.quantity`,
@@ -457,6 +463,14 @@ const PosPage = () => {
 								/>
 							</Modal>
 
+							{/* payment form */}
+							<Modal
+								opened={openedPaymentModal}
+								onClose={paymentModalHandler.close}
+								title=''
+							>
+								<PaymentForm />
+							</Modal>
 							<Group position='apart'>
 								<Button
 									size='md'
@@ -469,6 +483,7 @@ const PosPage = () => {
 									size='md'
 									type='submit'
 									leftIcon={<IconCreditCard size={16} />}
+									onClick={paymentModalHandler.open}
 								>
 									Payment
 								</Button>
