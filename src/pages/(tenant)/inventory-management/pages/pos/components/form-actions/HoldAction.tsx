@@ -12,6 +12,7 @@ interface IHoldActionProps {
 const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
 	const [reference, setReference] = useState('');
 
+	// create invoice mutation
 	const [createInvoiceAsHold, { loading: creating }] = useMutation(
 		Create_Product_Invoice,
 		Notify({
@@ -22,7 +23,7 @@ const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
 		})
 	);
 
-	console.log({ formData });
+	// console.log({ formData });
 	return (
 		<div>
 			<Title order={3}>Hold Invoice</Title>

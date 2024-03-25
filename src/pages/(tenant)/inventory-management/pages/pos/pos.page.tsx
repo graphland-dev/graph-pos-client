@@ -129,6 +129,7 @@ const PosPage = () => {
 			holdModalHandler.open();
 		} else {
 			setFormData(values);
+			paymentModalHandler.open();
 		}
 	};
 
@@ -467,9 +468,56 @@ const PosPage = () => {
 							<Modal
 								opened={openedPaymentModal}
 								onClose={paymentModalHandler.close}
-								title=''
+								title='Multiple payment to invoice'
+								size={'lg'}
 							>
-								<PaymentForm />
+								<PaymentForm
+									formData={
+										{
+											...formData,
+											taxAmount: getSalesVat(
+												watch('transportCost') +
+													getTotalProductsPrice(watch('products')!) -
+													getDiscount(
+														watch('discountType'),
+														watch('discountAmount'),
+														getTotalProductsPrice(watch('products')!)
+													),
+												watch('invoiceTax')
+											),
+											subTotal: getTotalProductsPrice(watch('products')!),
+											netTotal:
+												getTotalProductsPrice(watch('products')!) -
+												getDiscount(
+													watch('discountType'),
+													watch('discountAmount'),
+													getTotalProductsPrice(watch('products')!)
+												) +
+												watch('transportCost') +
+												getSalesVat(
+													watch('transportCost') +
+														getTotalProductsPrice(watch('products')!) -
+														getDiscount(
+															watch('discountType'),
+															watch('discountAmount'),
+															getTotalProductsPrice(watch('products')!)
+														),
+													watch('invoiceTax')
+												),
+										}!
+									}
+									onSuccess={() => {
+										paymentModalHandler.close();
+										reset({
+											client: '',
+											discountAmount: 0,
+											discountType: 'Fixed',
+											invoiceTax: 0,
+											products: [],
+											transportCost: 0,
+										});
+									}}
+								/>
 							</Modal>
 							<Group position='apart'>
 								<Button
@@ -483,7 +531,6 @@ const PosPage = () => {
 									size='md'
 									type='submit'
 									leftIcon={<IconCreditCard size={16} />}
-									onClick={paymentModalHandler.open}
 								>
 									Payment
 								</Button>
