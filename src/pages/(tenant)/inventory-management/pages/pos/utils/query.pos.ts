@@ -143,3 +143,18 @@ export const Pos_Products_Query = gql`
 		}
 	}
 `;
+
+export const Pos_Hold_List = gql`
+	query ($where: CommonPaginationDto) {
+		inventory__productInvoices(where: $where) {
+			nodes {
+				_id
+				client {
+					name
+				}
+				netTotal
+				status
+			}
+		}
+	}
+`;

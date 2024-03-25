@@ -74,7 +74,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess }) => {
 	});
 
 	// payment mutation
-	const [paymentToInvoice, { loading: __paymenting }] = useMutation(
+	const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
 		Create_Invoice_Payment,
 		Notify({
 			sucTitle: 'Payment successful',
@@ -222,7 +222,10 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess }) => {
 					>
 						Add new
 					</Button>
-					<Button type='submit' loading={__creatingInvoice || __paymenting}>
+					<Button
+						type='submit'
+						loading={__creatingInvoice || __payment__inprogress}
+					>
 						Save
 					</Button>
 				</Group>

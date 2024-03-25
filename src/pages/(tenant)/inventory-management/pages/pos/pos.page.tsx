@@ -13,7 +13,6 @@ import {
 	Flex,
 	Group,
 	Input,
-	Menu,
 	Modal,
 	NumberInput,
 	Paper,
@@ -28,14 +27,9 @@ import { useDisclosure } from '@mantine/hooks';
 import {
 	IconArrowsMaximize,
 	IconBell,
-	IconCalculator,
-	IconCirclePlus,
 	IconCreditCard,
-	IconFileInvoice,
 	IconLayoutGrid,
-	IconMenu2,
 	IconRefresh,
-	IconShoppingBag,
 	IconX,
 } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -51,6 +45,7 @@ import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
 import HoldAction from './components/form-actions/HoldAction';
 import PaymentForm from './components/form-actions/PaymentForm';
+import HoldList from './components/pos-header/HoldList';
 import POSProductGlary from './components/POSProductGalary';
 import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
 import { getDiscount, getSalesVat } from './utils/utils.calc';
@@ -142,17 +137,7 @@ const PosPage = () => {
 			>
 				<div className='font-bold'>POS Application</div>
 				<div className='flex items-center gap-3'>
-					<Menu position='bottom-end' withArrow>
-						<Menu.Target>
-							<IconCirclePlus color='grey' className='cursor-pointer' />
-						</Menu.Target>
-						<Menu.Dropdown>
-							<Menu.Item icon={<IconFileInvoice />}>New Invoice</Menu.Item>
-							<Menu.Item icon={<IconCalculator />}>New Expense</Menu.Item>
-							<Menu.Item icon={<IconShoppingBag />}>New Purchase</Menu.Item>
-							<Menu.Item icon={<IconMenu2 />}>New Quotation</Menu.Item>
-						</Menu.Dropdown>
-					</Menu>
+					<HoldList />
 					<Popover position='bottom-end' withArrow>
 						<Popover.Target>
 							<IconBell color='grey' className='cursor-pointer' />
