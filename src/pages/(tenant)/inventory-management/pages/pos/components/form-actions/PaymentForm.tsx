@@ -24,9 +24,14 @@ import {
 interface IPaymentFormProps {
 	formData: any;
 	onSuccess: () => void;
+	invoiceId?: string;
 }
 
-const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess }) => {
+const PaymentForm: React.FC<IPaymentFormProps> = ({
+	formData,
+	onSuccess,
+	invoiceId,
+}) => {
 	const [formValues, setFormValues] = useState<any>();
 
 	// accounts API
@@ -96,7 +101,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess }) => {
 					variables: {
 						body: {
 							clientId: formData?.client,
-							invoiceId: res?.inventory__createProductInvoice?._id,
+							invoiceId: invoiceId ?? res?.inventory__createProductInvoice?._id,
 							payments: formValues?.paymentCount,
 							poReference: null,
 							receptNo: null,
@@ -112,22 +117,40 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess }) => {
 
 	// payment form submit
 	const onSubmit = (values: any) => {
-		setFormValues(values);
-		createInvoice({
-			variables: {
-				input: {
-					clientId: formData?.client,
-					note: 'A simple note',
-					products: formData?.products,
-					taxRate: formData?.invoiceTax,
-					taxAmount: formData?.taxAmount,
-					costAmount: formData?.transportCost,
-					subTotal: formData?.subTotal,
-					netTotal: formData?.netTotal,
-					reference: 'Payment',
+		if (invoiceId) {
+			paymentToInvoice({
+				variables: {
+					body: {
+						clientId: formData?.client,
+						invoiceId: invoiceId,
+						payments: values?.paymentCount,
+						poReference: null,
+						receptNo: null,
+						reference: null,
+						paymentTerm: null,
+						date: null,
+					},
 				},
-			},
-		});
+			});
+		} else {
+			setFormValues(values);
+
+			createInvoice({
+				variables: {
+					input: {
+						clientId: formData?.client,
+						note: 'A simple note',
+						products: formData?.products,
+						taxRate: formData?.invoiceTax,
+						taxAmount: formData?.taxAmount,
+						costAmount: formData?.transportCost,
+						subTotal: formData?.subTotal,
+						netTotal: formData?.netTotal,
+						reference: 'Payment',
+					},
+				},
+			});
+		}
 	};
 
 	return (

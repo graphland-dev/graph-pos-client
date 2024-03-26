@@ -4,12 +4,13 @@ import {
 	ProductInvoicesWithPagination,
 } from '@/_app/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
-import { ActionIcon, Group, Paper, Popover, Text } from '@mantine/core';
-import { IconPencil, IconTrash } from '@tabler/icons-react';
+import { Button, Group, Paper, Popover, Text } from '@mantine/core';
 import React from 'react';
 import { Pos_Hold_List } from '../../utils/query.pos';
 
-const HoldList: React.FC = () => {
+const HoldList: React.FC<{
+	setSelectedInvoice: (state: ProductInvoice) => void;
+}> = ({ setSelectedInvoice }) => {
 	// hold list data API
 	const { data } = useQuery<{
 		inventory__productInvoices: ProductInvoicesWithPagination;
@@ -49,12 +50,12 @@ const HoldList: React.FC = () => {
 								</div>
 								<Group>
 									<Text>{invoice?.netTotal ?? 0} bdt</Text>
-									<ActionIcon size={'sm'}>
-										<IconPencil />
-									</ActionIcon>
-									<ActionIcon size={'sm'}>
-										<IconTrash />
-									</ActionIcon>
+									<Button
+										onClick={() => setSelectedInvoice(invoice!)}
+										size={'sm'}
+									>
+										Proceed
+									</Button>
 								</Group>
 							</Paper>
 						)

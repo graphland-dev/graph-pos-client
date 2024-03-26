@@ -1,5 +1,6 @@
 import currencyNumberFormat from '@/_app/common/utils/commaNumber';
 import {
+	ProductInvoice,
 	ProductItemReference,
 	Vat,
 	VatsWithPagination,
@@ -32,7 +33,7 @@ import {
 	IconRefresh,
 	IconX,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import {
@@ -55,6 +56,7 @@ const PosPage = () => {
 	const [openedPaymentModal, paymentModalHandler] = useDisclosure();
 	const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
 	const [formData, setFormData] = useState<IPosFormType>();
+	const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
 
 	// fetch vat profiles
 	const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
@@ -117,6 +119,18 @@ const PosPage = () => {
 		}
 	}
 
+	// prefill form
+	useEffect(() => {
+		if (selectedInvoice) {
+			setValue('client', selectedInvoice?.client?._id as string);
+			setValue('discountType', selectedInvoice?.discountMode as string);
+			setValue('discountAmount', selectedInvoice?.discountAmount as number);
+			setValue('transportCost', selectedInvoice?.costAmount as number);
+			setValue('invoiceTax', selectedInvoice?.taxAmount ?? (0 as number));
+			setValue('products', selectedInvoice?.products as ProductItemReference[]);
+		}
+	}, [selectedInvoice]);
+
 	// submit pos form
 	const onSubmitPOS = (values: IPosFormType) => {
 		if (action === 'ADD_TO_HOLD_LIST') {
@@ -137,7 +151,7 @@ const PosPage = () => {
 			>
 				<div className='font-bold'>POS Application</div>
 				<div className='flex items-center gap-3'>
-					<HoldList />
+					<HoldList setSelectedInvoice={setSelectedInvoice} />
 					<Popover position='bottom-end' withArrow>
 						<Popover.Target>
 							<IconBell color='grey' className='cursor-pointer' />
@@ -164,7 +178,9 @@ const PosPage = () => {
 							<div className='grid grid-cols-2 gap-3 place-content-center'>
 								<ClientSearchAutocomplete
 									formInstance={form}
-									contactNumber={watch('client')}
+									contactNumber={
+										watch('client') ?? selectedInvoice?.client?._id
+									}
 								/>
 
 								<ProductSearchAutocomplete
@@ -502,6 +518,7 @@ const PosPage = () => {
 											transportCost: 0,
 										});
 									}}
+									invoiceId={selectedInvoice?._id}
 								/>
 							</Modal>
 							<Group position='apart'>

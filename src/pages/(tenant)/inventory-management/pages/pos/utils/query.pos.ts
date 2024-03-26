@@ -154,6 +154,44 @@ export const Pos_Hold_List = gql`
 				}
 				netTotal
 				status
+				tenant
+				invoiceUID
+				products {
+					referenceId
+					name
+					code
+					unitPrice
+					taxRate
+					taxType
+					taxAmount
+					quantity
+					netAmount
+				}
+				costs {
+					name
+					amount
+					note
+				}
+				purchaseDate
+				purchaseOrderDate
+				taxRate
+				taxAmount
+				discountPercentage
+				discountAmount
+				discountMode
+				subTotal
+				costAmount
+				paidAmount
+				note
+				source
+				committedBy {
+					referenceId
+					name
+					email
+				}
+				reference
+				createdAt
+				updatedAt
 			}
 		}
 	}
