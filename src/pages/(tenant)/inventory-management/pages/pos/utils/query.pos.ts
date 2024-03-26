@@ -128,12 +128,6 @@ export const Pos_Products_Query = gql`
 				name
 				price
 				taxType
-				thumbnail {
-					meta
-					path
-					provider
-					externalUrl
-				}
 				vat {
 					_id
 					name
@@ -151,6 +145,7 @@ export const Pos_Hold_List = gql`
 				_id
 				client {
 					name
+					_id
 				}
 				netTotal
 				status

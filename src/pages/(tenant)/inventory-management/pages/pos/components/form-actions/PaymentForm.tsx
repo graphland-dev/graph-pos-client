@@ -217,6 +217,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 									setValue(`paymentCount.${idx}.amount`, parseInt(e as string))
 								}
 								defaultValue={watch(`paymentCount.${idx}.amount`)}
+								min={0}
 							/>
 						</Input.Wrapper>
 

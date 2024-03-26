@@ -28,9 +28,13 @@ import { useDisclosure } from '@mantine/hooks';
 import {
 	IconArrowsMaximize,
 	IconBell,
+	IconBox,
+	IconCalculator,
 	IconCreditCard,
 	IconLayoutGrid,
+	IconList,
 	IconRefresh,
+	IconUsers,
 	IconX,
 } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
@@ -149,7 +153,34 @@ const PosPage = () => {
 				justify={'space-between'}
 				align={'center'}
 			>
-				<div className='font-bold'>POS Application</div>
+				<div className='font-bold'>
+					<Flex>
+						<Button
+							variant='subtle'
+							size='xs'
+							leftIcon={<IconList size={16} />}
+						>
+							Sales List
+						</Button>
+						<Button
+							variant='subtle'
+							size='xs'
+							leftIcon={<IconUsers size={16} />}
+						>
+							Customer List
+						</Button>
+						<Button variant='subtle' size='xs' leftIcon={<IconBox size={16} />}>
+							Items List
+						</Button>
+						<Button
+							variant='subtle'
+							size='xs'
+							leftIcon={<IconCalculator size={16} />}
+						>
+							New Invoice
+						</Button>
+					</Flex>
+				</div>
 				<div className='flex items-center gap-3'>
 					<HoldList setSelectedInvoice={setSelectedInvoice} />
 					<Popover position='bottom-end' withArrow>
@@ -169,7 +200,7 @@ const PosPage = () => {
 					<IconLayoutGrid color='grey' className='cursor-pointer' />
 				</div>
 			</Flex>
-
+			{JSON.stringify(selectedInvoice?.client?._id, null, 2)}
 			<form onSubmit={handleSubmit(onSubmitPOS)} className='p-3'>
 				<div className='flex items-start gap-3'>
 					{/* Left Side */}
