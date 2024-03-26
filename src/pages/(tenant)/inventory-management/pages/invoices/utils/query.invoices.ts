@@ -3,6 +3,12 @@ import { gql } from "@apollo/client";
 export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
   query Inventory__productInvoices($where: CommonPaginationDto) {
     inventory__productInvoices(where: $where) {
+      meta {
+        currentPage
+        hasNextPage
+        totalCount
+        totalPages
+      }
       nodes {
         _id
         tenant
