@@ -1,19 +1,25 @@
-import { AppNavLink } from '@/_app/models/AppNavLink.type';
+import { AppNavLink } from "@/_app/models/AppNavLink.type";
 import {
   IconAdjustments,
-	IconBrandAbstract,
-	IconBrandProducthunt,
-	IconCoin,
-	IconReceipt2,
-	IconRulerMeasure,
-	IconShoppingCart,
-} from '@tabler/icons-react';
+  IconBrandAbstract,
+  IconBrandProducthunt,
+  IconCoin,
+  IconFile3d,
+  IconReceipt2,
+  IconRulerMeasure,
+  IconShoppingCart
+} from "@tabler/icons-react";
 
 export const inventoryNavlinks: AppNavLink[] = [
   {
     label: "POS",
     icon: <IconShoppingCart />,
     href: "pos",
+  },
+  {
+    label: "Invoices",
+    icon: <IconFile3d />,
+    href: "invoices",
   },
   {
     label: "Products",
