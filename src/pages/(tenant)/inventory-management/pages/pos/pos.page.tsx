@@ -601,6 +601,7 @@ const PosPage = () => {
 									size='md'
 									type='submit'
 									onClick={() => setAction('ADD_TO_HOLD_LIST')}
+									disabled={!watch('products')?.length || !watch('client')}
 								>
 									Hold
 								</Button>
@@ -608,6 +609,7 @@ const PosPage = () => {
 									size='md'
 									type='submit'
 									leftIcon={<IconCreditCard size={16} />}
+									disabled={!watch('products')?.length || !watch('client')}
 								>
 									Payment
 								</Button>
