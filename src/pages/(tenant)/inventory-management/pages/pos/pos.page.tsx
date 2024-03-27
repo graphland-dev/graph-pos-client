@@ -17,21 +17,18 @@ import {
   Modal,
   NumberInput,
   Paper,
-  Popover,
   Select,
   Space,
   Table,
-  Text,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import {
   IconArrowsMaximize,
-  IconBell,
   IconBox,
   IconCalculator,
   IconCreditCard,
-  IconLayoutGrid,
+  IconDashboard,
   IconList,
   IconRefresh,
   IconUsers,
@@ -39,6 +36,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import {
   calculateTaxAmount,
@@ -48,11 +46,11 @@ import {
 } from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
+import POSProductGlary from "./components/POSProductGalary";
+import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
 import HoldAction from "./components/form-actions/HoldAction";
 import PaymentForm from "./components/form-actions/PaymentForm";
 import HoldList from "./components/pos-header/HoldList";
-import POSProductGlary from "./components/POSProductGalary";
-import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
 import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
@@ -158,6 +156,17 @@ const PosPage = () => {
             <Button
               variant="subtle"
               size="xs"
+              component={Link}
+              to={"/"}
+              leftIcon={<IconDashboard size={16} />}
+            >
+              Dashboard
+            </Button>
+            <Button
+              variant="subtle"
+              size="xs"
+              component={Link}
+              to={"/"}
               leftIcon={<IconList size={16} />}
             >
               Sales List
@@ -182,22 +191,15 @@ const PosPage = () => {
           </Flex>
         </div>
         <div className="flex items-center gap-3">
-          <HoldList setSelectedInvoice={setSelectedInvoice} />
-          <Popover position="bottom-end" withArrow>
-            <Popover.Target>
-              <IconBell color="grey" className="cursor-pointer" />
-            </Popover.Target>
-
-            <Popover.Dropdown>
-              {" "}
-              <Text size="xs">
-                This is uncontrolled popover, it is opened when button is
-                clicked
-              </Text>
-            </Popover.Dropdown>
-          </Popover>
-          <IconArrowsMaximize color="grey" className="cursor-pointer" />
-          <IconLayoutGrid color="grey" className="cursor-pointer" />
+          <HoldList onSelectInvoice={setSelectedInvoice} />
+          <IconArrowsMaximize
+            onClick={() => {
+              const elem = document.documentElement;
+              elem?.requestFullscreen();
+            }}
+            color="grey"
+            className="cursor-pointer"
+          />
         </div>
       </Flex>
       {JSON.stringify(selectedInvoice?.client?._id, null, 2)}
@@ -209,7 +211,7 @@ const PosPage = () => {
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   formInstance={form}
-                  contactNumber={
+                  prefilledClientId={
                     watch("client") ?? selectedInvoice?.client?._id
                   }
                 />

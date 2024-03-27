@@ -36,9 +36,9 @@ import React, { useState } from "react";
 
 const ClientSearchAutocomplete: React.FC<{
   formInstance: any;
-  contactNumber: string;
+  prefilledClientId: string;
   // onRefetch: () => void;
-}> = ({ formInstance, contactNumber }) => {
+}> = ({ formInstance, prefilledClientId }) => {
   const [q, setQ] = useState<string>("");
 
   const [opened, handler] = useDisclosure();
@@ -54,12 +54,17 @@ const ClientSearchAutocomplete: React.FC<{
               {
                 key: "name",
                 operator: MatchOperator.Contains,
-                value: q.trim(),
+                value: q?.trim(),
+              },
+              {
+                key: "_id",
+                operator: MatchOperator.Eq,
+                value: q?.trim(),
               },
               {
                 key: "contactNumber",
                 operator: MatchOperator.Contains,
-                value: q.trim(),
+                value: q?.trim(),
               },
             ],
           },
@@ -89,8 +94,21 @@ const ClientSearchAutocomplete: React.FC<{
 
   // fill form
   useEffect(() => {
-    setValue("contactNumber", contactNumber);
-  }, [contactNumber]);
+    // setValue("contactNumber", contactNumber);
+    refetch({
+      variables: {
+        where: {
+          filters: [
+            {
+              key: "_id",
+              operator: MatchOperator.Eq,
+              value: prefilledClientId?.trim(),
+            },
+          ],
+        },
+      },
+    });
+  }, [prefilledClientId]);
 
   // client create mutation
   const [createClient, { loading: creatingClient }] = useMutation(
