@@ -1,66 +1,53 @@
-import {
-  MatchOperator,
-  ProductInvoice,
-  ProductInvoicesWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
-import { Button, Group, Paper, Popover, Text } from "@mantine/core";
-import React from "react";
-import { Pos_Hold_List } from "../../utils/query.pos";
+import { ProductInvoice } from '@/_app/graphql-models/graphql';
+import { Button, Drawer, Group, Paper, Text } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import React from 'react';
 
 const HoldList: React.FC<{
-  onSelectInvoice: (state: ProductInvoice) => void;
-}> = ({ onSelectInvoice }) => {
-  // hold list data API
-  const { data } = useQuery<{
-    inventory__productInvoices: ProductInvoicesWithPagination;
-  }>(Pos_Hold_List, {
-    variables: {
-      where: {
-        limit: -1,
-        filters: {
-          key: "status",
-          operator: MatchOperator.Eq,
-          value: "HOLD",
-        },
-      },
-    },
-  });
+	onSelectInvoice: (state: ProductInvoice) => void;
+	holdList: ProductInvoice[];
+}> = ({ onSelectInvoice, holdList }) => {
+	const [opened, handler] = useDisclosure();
 
-  return (
-    <div>
-      <Popover position="bottom" withArrow shadow="md">
-        <Popover.Target>
-          <Text color="red" className="cursor-pointer">
-            Hold List ({data?.inventory__productInvoices?.nodes?.length ?? 0})
-          </Text>
-        </Popover.Target>
-        <Popover.Dropdown p={5}>
-          {data?.inventory__productInvoices?.nodes?.map(
-            (invoice: ProductInvoice, idx: number) => (
-              <Paper
-                p={10}
-                my={5}
-                className="flex items-center justify-between gap-4"
-                withBorder
-                key={idx}
-              >
-                <div>
-                  <Text>{invoice?.client?.name}</Text>
-                </div>
-                <Group>
-                  <Text>{invoice?.netTotal ?? 0} bdt</Text>
-                  <Button onClick={() => onSelectInvoice(invoice!)} size={"sm"}>
-                    Proceed
-                  </Button>
-                </Group>
-              </Paper>
-            )
-          )}
-        </Popover.Dropdown>
-      </Popover>
-    </div>
-  );
+	return (
+		<div>
+			<Button
+				variant='subtle'
+				size='xs'
+				onClick={handler.open}
+				color='red'
+				className='cursor-pointer'
+			>
+				Hold List ({holdList?.length ?? 0})
+			</Button>
+			<Drawer
+				opened={opened}
+				onClose={handler.close}
+				title='Hold list'
+				position='right'
+			>
+				{holdList?.map((invoice: ProductInvoice, idx: number) => (
+					<Paper
+						p={10}
+						my={5}
+						className='flex items-center justify-between gap-4'
+						withBorder
+						key={idx}
+					>
+						<div>
+							<Text>{invoice?.reference?.slice(0, 20)}</Text>
+						</div>
+						<Group>
+							<Text>{invoice?.netTotal ?? 0} bdt</Text>
+							<Button onClick={() => onSelectInvoice(invoice!)} size={'xs'}>
+								Proceed
+							</Button>
+						</Group>
+					</Paper>
+				))}
+			</Drawer>
+		</div>
+	);
 };
 
 export default HoldList;
