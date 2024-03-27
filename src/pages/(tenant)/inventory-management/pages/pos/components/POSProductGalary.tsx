@@ -1,5 +1,4 @@
 import EmptyState from '@/_app/common/EmptyState/EmptyState';
-import { getFileUrl } from '@/_app/common/utils/getFileUrl';
 import {
 	BrandsWithPagination,
 	MatchOperator,
@@ -7,7 +6,6 @@ import {
 	ProductCategorysWithPagination,
 	ProductItemReference,
 	ProductsWithPagination,
-	ServerFileReference,
 } from '@/_app/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import {
@@ -141,11 +139,13 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
 							>
 								{product.price} BDT
 							</Badge>
-							<img
-								src={getFileUrl(product?.thumbnail as ServerFileReference)}
+							{/* <img
+								src={
+									getFileUrl(product?.thumbnail as ServerFileReference) ?? ''
+								}
 								alt='product image'
 								className='object-cover p-2 rounded-md'
-							/>
+							/> */}
 
 							<Space h={5} />
 

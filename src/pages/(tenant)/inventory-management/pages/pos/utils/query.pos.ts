@@ -7,6 +7,7 @@ export const Pos_Client_Query = gql`
 				_id
 				contactNumber
 				name
+				email
 			}
 		}
 	}
@@ -127,17 +128,65 @@ export const Pos_Products_Query = gql`
 				name
 				price
 				taxType
-				thumbnail {
-					meta
-					path
-					provider
-					externalUrl
-				}
 				vat {
 					_id
 					name
 					percentage
 				}
+			}
+		}
+	}
+`;
+
+export const Pos_Hold_List = gql`
+	query ($where: CommonPaginationDto) {
+		inventory__productInvoices(where: $where) {
+			nodes {
+				_id
+				client {
+					name
+					_id
+				}
+				netTotal
+				status
+				tenant
+				invoiceUID
+				products {
+					referenceId
+					name
+					code
+					unitPrice
+					taxRate
+					taxType
+					taxAmount
+					quantity
+					netAmount
+				}
+				costs {
+					name
+					amount
+					note
+				}
+				purchaseDate
+				purchaseOrderDate
+				taxRate
+				taxAmount
+				discountPercentage
+				discountAmount
+				discountMode
+				subTotal
+				costAmount
+				paidAmount
+				note
+				source
+				committedBy {
+					referenceId
+					name
+					email
+				}
+				reference
+				createdAt
+				updatedAt
 			}
 		}
 	}

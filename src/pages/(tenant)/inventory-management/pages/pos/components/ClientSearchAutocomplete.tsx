@@ -1,5 +1,6 @@
 import { Notify } from "@/_app/common/Notification/Notify";
 import {
+  Client,
   ClientsWithPagination,
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
@@ -13,6 +14,7 @@ import {
   Drawer,
   Flex,
   Input,
+  Paper,
   Space,
   Text,
 } from "@mantine/core";
@@ -41,7 +43,7 @@ const ClientSearchAutocomplete: React.FC<{
 
   const [opened, handler] = useDisclosure();
 
-  const { data, loading } = useQuery<{
+  const { data, loading, refetch } = useQuery<{
     people__clients: ClientsWithPagination;
   }>(Pos_Client_Query, {
     variables: {
@@ -95,13 +97,14 @@ const ClientSearchAutocomplete: React.FC<{
     PEOPLE_CREATE_CLIENT,
     Notify({
       sucTitle: "Client created",
-      onSuccess: () => {
+      onSuccess: (res) => {
         reset({
           name: "",
           email: "",
           contactNumber: "",
         });
-        formInstance.setValue("client", watch("contactNumber"));
+        formInstance.setValue("client", res?.people__createClient?._id);
+        refetch();
         handler.close();
       },
     })
@@ -158,6 +161,29 @@ const ClientSearchAutocomplete: React.FC<{
             <IconPlus />
           </ActionIcon>
         </Flex>
+
+        <Space h={"sm"} />
+
+        {formInstance.watch("client") && (
+          <Paper p={8} withBorder w={295}>
+            <Text>
+              {
+                findClientById(
+                  formInstance.watch("client"),
+                  data?.people__clients?.nodes as Client[]
+                )?.name
+              }
+            </Text>
+            <Text size={"xs"}>
+              {
+                findClientById(
+                  formInstance.watch("client"),
+                  data?.people__clients?.nodes as Client[]
+                )?.email
+              }
+            </Text>
+          </Paper>
+        )}
       </Input.Wrapper>
 
       {/* client create drawer */}
@@ -204,3 +230,9 @@ const ClientSearchAutocomplete: React.FC<{
 };
 
 export default ClientSearchAutocomplete;
+
+// find client by ID
+const findClientById = (_id: string, data: Client[]) => {
+  const client = data?.find((c) => c?._id === _id);
+  return client;
+};

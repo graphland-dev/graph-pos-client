@@ -1,5 +1,6 @@
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import {
+  ProductInvoice,
   ProductItemReference,
   Vat,
   VatsWithPagination,
@@ -13,7 +14,7 @@ import {
   Flex,
   Group,
   Input,
-  Menu,
+  Modal,
   NumberInput,
   Paper,
   Popover,
@@ -23,20 +24,20 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconArrowsMaximize,
   IconBell,
+  IconBox,
   IconCalculator,
-  IconCirclePlus,
   IconCreditCard,
-  IconDeviceFloppy,
-  IconFileInvoice,
   IconLayoutGrid,
-  IconMenu2,
+  IconList,
   IconRefresh,
-  IconShoppingBag,
+  IconUsers,
   IconX,
 } from "@tabler/icons-react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import {
@@ -47,11 +48,20 @@ import {
 } from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
+import HoldAction from "./components/form-actions/HoldAction";
+import PaymentForm from "./components/form-actions/PaymentForm";
+import HoldList from "./components/pos-header/HoldList";
 import POSProductGlary from "./components/POSProductGalary";
 import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
 import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
+  const [openedHoldModal, holdModalHandler] = useDisclosure();
+  const [openedPaymentModal, paymentModalHandler] = useDisclosure();
+  const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
+  const [formData, setFormData] = useState<IPosFormType>();
+  const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
+
   // fetch vat profiles
   const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
     setup__vats: VatsWithPagination;
@@ -94,13 +104,17 @@ const PosPage = () => {
 
   // handle add product to list
   function handleAddProductToList(productReference: ProductItemReference) {
+    // console.log({ productReference: watch('products') });
     const productCart: ProductItemReference[] = watch("products");
     const index = productCart?.findIndex(
       (item) => item.referenceId == productReference.referenceId
     );
 
     if (index == -1) {
-      appendProduct(productReference);
+      appendProduct({
+        ...productReference,
+        subAmount: productReference?.unitPrice * productReference?.quantity,
+      });
     } else {
       setValue(
         `products.${index}.quantity`,
@@ -109,9 +123,27 @@ const PosPage = () => {
     }
   }
 
+  // prefill form
+  useEffect(() => {
+    if (selectedInvoice) {
+      setValue("client", selectedInvoice?.client?._id as string);
+      setValue("discountType", selectedInvoice?.discountMode as string);
+      setValue("discountAmount", selectedInvoice?.discountAmount as number);
+      setValue("transportCost", selectedInvoice?.costAmount as number);
+      setValue("invoiceTax", selectedInvoice?.taxAmount ?? (0 as number));
+      setValue("products", selectedInvoice?.products as ProductItemReference[]);
+    }
+  }, [selectedInvoice]);
+
   // submit pos form
   const onSubmitPOS = (values: IPosFormType) => {
-    console.log(values);
+    if (action === "ADD_TO_HOLD_LIST") {
+      setFormData(values);
+      holdModalHandler.open();
+    } else {
+      setFormData(values);
+      paymentModalHandler.open();
+    }
   };
 
   return (
@@ -121,19 +153,36 @@ const PosPage = () => {
         justify={"space-between"}
         align={"center"}
       >
-        <div className="font-bold">POS Application</div>
+        <div className="font-bold">
+          <Flex>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftIcon={<IconList size={16} />}
+            >
+              Sales List
+            </Button>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftIcon={<IconUsers size={16} />}
+            >
+              Customer List
+            </Button>
+            <Button variant="subtle" size="xs" leftIcon={<IconBox size={16} />}>
+              Items List
+            </Button>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftIcon={<IconCalculator size={16} />}
+            >
+              New Invoice
+            </Button>
+          </Flex>
+        </div>
         <div className="flex items-center gap-3">
-          <Menu position="bottom-end" withArrow>
-            <Menu.Target>
-              <IconCirclePlus color="grey" className="cursor-pointer" />
-            </Menu.Target>
-            <Menu.Dropdown>
-              <Menu.Item icon={<IconFileInvoice />}>New Invoice</Menu.Item>
-              <Menu.Item icon={<IconCalculator />}>New Expense</Menu.Item>
-              <Menu.Item icon={<IconShoppingBag />}>New Purchase</Menu.Item>
-              <Menu.Item icon={<IconMenu2 />}>New Quotation</Menu.Item>
-            </Menu.Dropdown>
-          </Menu>
+          <HoldList setSelectedInvoice={setSelectedInvoice} />
           <Popover position="bottom-end" withArrow>
             <Popover.Target>
               <IconBell color="grey" className="cursor-pointer" />
@@ -151,7 +200,7 @@ const PosPage = () => {
           <IconLayoutGrid color="grey" className="cursor-pointer" />
         </div>
       </Flex>
-
+      {JSON.stringify(selectedInvoice?.client?._id, null, 2)}
       <form onSubmit={handleSubmit(onSubmitPOS)} className="p-3">
         <div className="flex items-start gap-3">
           {/* Left Side */}
@@ -160,7 +209,9 @@ const PosPage = () => {
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   formInstance={form}
-                  contactNumber={watch("client")}
+                  contactNumber={
+                    watch("client") ?? selectedInvoice?.client?._id
+                  }
                 />
 
                 <ProductSearchAutocomplete
@@ -390,28 +441,137 @@ const PosPage = () => {
 
               <Space h={15} />
 
+              {/* hold modal */}
+              <Modal
+                opened={openedHoldModal}
+                onClose={holdModalHandler.close}
+                title=""
+              >
+                <HoldAction
+                  formData={
+                    {
+                      ...formData,
+                      taxAmount: getSalesVat(
+                        watch("transportCost") +
+                          getTotalProductsPrice(watch("products")!) -
+                          getDiscount(
+                            watch("discountType"),
+                            watch("discountAmount"),
+                            getTotalProductsPrice(watch("products")!)
+                          ),
+                        watch("invoiceTax")
+                      ),
+                      subTotal: getTotalProductsPrice(watch("products")!),
+                      netTotal:
+                        getTotalProductsPrice(watch("products")!) -
+                        getDiscount(
+                          watch("discountType"),
+                          watch("discountAmount"),
+                          getTotalProductsPrice(watch("products")!)
+                        ) +
+                        watch("transportCost") +
+                        getSalesVat(
+                          watch("transportCost") +
+                            getTotalProductsPrice(watch("products")!) -
+                            getDiscount(
+                              watch("discountType"),
+                              watch("discountAmount"),
+                              getTotalProductsPrice(watch("products")!)
+                            ),
+                          watch("invoiceTax")
+                        ),
+                    }!
+                  }
+                  onSuccess={() => {
+                    holdModalHandler.close();
+                    reset({
+                      client: "",
+                      discountAmount: 0,
+                      discountType: "Fixed",
+                      invoiceTax: 0,
+                      products: [],
+                      transportCost: 0,
+                    });
+                  }}
+                />
+              </Modal>
+
+              {/* payment form */}
+              <Modal
+                opened={openedPaymentModal}
+                onClose={paymentModalHandler.close}
+                title="Multiple payment to invoice"
+                size={"lg"}
+              >
+                <PaymentForm
+                  formData={
+                    {
+                      ...formData,
+                      taxAmount: getSalesVat(
+                        watch("transportCost") +
+                          getTotalProductsPrice(watch("products")!) -
+                          getDiscount(
+                            watch("discountType"),
+                            watch("discountAmount"),
+                            getTotalProductsPrice(watch("products")!)
+                          ),
+                        watch("invoiceTax")
+                      ),
+                      subTotal: getTotalProductsPrice(watch("products")!),
+                      netTotal:
+                        getTotalProductsPrice(watch("products")!) -
+                        getDiscount(
+                          watch("discountType"),
+                          watch("discountAmount"),
+                          getTotalProductsPrice(watch("products")!)
+                        ) +
+                        watch("transportCost") +
+                        getSalesVat(
+                          watch("transportCost") +
+                            getTotalProductsPrice(watch("products")!) -
+                            getDiscount(
+                              watch("discountType"),
+                              watch("discountAmount"),
+                              getTotalProductsPrice(watch("products")!)
+                            ),
+                          watch("invoiceTax")
+                        ),
+                    }!
+                  }
+                  onSuccess={() => {
+                    paymentModalHandler.close();
+                    reset({
+                      client: "",
+                      discountAmount: 0,
+                      discountType: "Fixed",
+                      invoiceTax: 0,
+                      products: [],
+                      transportCost: 0,
+                    });
+                  }}
+                  invoiceId={selectedInvoice?._id}
+                />
+              </Modal>
               <Group position="apart">
                 <Button
                   size="md"
                   type="submit"
-                  leftIcon={<IconDeviceFloppy size={16} />}
+                  onClick={() => setAction("ADD_TO_HOLD_LIST")}
                 >
-                  Save
+                  Hold
                 </Button>
                 <Button
                   size="md"
                   type="submit"
                   leftIcon={<IconCreditCard size={16} />}
                 >
-                  Save & Payment
+                  Payment
                 </Button>
                 <Button
                   size="md"
                   onClick={() =>
                     reset({
-                      brand: "",
                       client: "",
-                      category: "",
                       discountAmount: 0,
                       discountType: "Fixed",
                       invoiceTax: 0,
@@ -448,8 +608,6 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
   discountAmount: Yup.number().required().label("Discount amount"),
   transportCost: Yup.number().required().label("Transport cost"),
   invoiceTax: Yup.number().required().label("Invoice tax"),
-  category: Yup.string().required().label("Category"),
-  brand: Yup.string().required().label("Brand"),
   products: Yup.array()
     .required()
     .min(1, "You must have to select at least one product")
