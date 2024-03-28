@@ -254,6 +254,9 @@ const PosPage = () => {
           <HoldList
             onSelectInvoice={setSelectedInvoice}
             holdList={holdList?.inventory__productInvoices?.nodes ?? []}
+            onRefetchHoldList={function (): void {
+              // throw new Error("Function not implemented.");
+            }}
           />
           <IconArrowsMaximize
             onClick={() => {
