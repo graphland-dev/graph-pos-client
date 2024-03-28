@@ -17,3 +17,9 @@ export const Create_Invoice_Payment = gql`
 		}
 	}
 `;
+
+export const Remove_Invoice = gql`
+	mutation Remove_Invoice($where: CommonFindDocumentDto!) {
+		inventory__removeProductInvoice(where: $where)
+	}
+`;

@@ -234,6 +234,7 @@ const PosPage = () => {
 					<HoldList
 						onSelectInvoice={setSelectedInvoice}
 						holdList={holdList?.inventory__productInvoices?.nodes ?? []}
+						onRefetchHoldList={refetchHoldList}
 					/>
 					<IconArrowsMaximize
 						onClick={() => {
