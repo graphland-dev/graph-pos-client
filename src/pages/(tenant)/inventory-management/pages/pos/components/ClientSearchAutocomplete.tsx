@@ -35,10 +35,9 @@ import AutoComplete from "@/_app/common/components/AutoComplete";
 import React, { useState } from "react";
 
 const ClientSearchAutocomplete: React.FC<{
-  formInstance: any;
   prefilledClientId: string;
-  // onRefetch: () => void;
-}> = ({ formInstance, prefilledClientId }) => {
+  onSelectClientId: (_id: string) => void;
+}> = ({ onSelectClientId, prefilledClientId }) => {
   const [q, setQ] = useState<string>("");
   const [clients, setClients] = useState<Client[]>([]);
 
@@ -103,7 +102,7 @@ const ClientSearchAutocomplete: React.FC<{
 
   // fill form
   useEffect(() => {
-    formInstance.setValue("client", prefilledClientId);
+    onSelectClientId(prefilledClientId);
 
     searchClientTrigger({
       variables: {
@@ -131,7 +130,7 @@ const ClientSearchAutocomplete: React.FC<{
           email: "",
           contactNumber: "",
         });
-        formInstance.setValue("client", res?.people__createClient?._id);
+        onSelectClientId(res?.people__createClient?._id);
         refetch();
         handler.close();
       },
@@ -147,15 +146,7 @@ const ClientSearchAutocomplete: React.FC<{
 
   return (
     <div>
-      <Input.Wrapper
-        size="md"
-        error={
-          <ErrorMessage
-            name="products"
-            errors={formInstance.formState.errors}
-          />
-        }
-      >
+      <Input.Wrapper size="md">
         <Flex align={"center"} className="!w-full">
           <AutoComplete
             loading={lazySearch || loading}
@@ -171,7 +162,8 @@ const ClientSearchAutocomplete: React.FC<{
             }
             onSelect={(item: any) => {
               if (typeof item === "object") {
-                formInstance.setValue("client", item?._id);
+                console.log(item?._id);
+                onSelectClientId(item?._id);
               } else {
                 setValue("contactNumber", item);
                 handler.open();
@@ -192,13 +184,11 @@ const ClientSearchAutocomplete: React.FC<{
 
         <Space h={"sm"} />
 
-        {formInstance.watch("client") && (
+        {prefilledClientId && (
           <Paper p={8} withBorder w={295}>
-            <Text>
-              {findClientById(formInstance.watch("client"), clients)?.name}
-            </Text>
+            <Text>{findClientById(prefilledClientId, clients)?.name}</Text>
             <Text size={"xs"}>
-              {findClientById(formInstance.watch("client"), clients)?.email}
+              {findClientById(prefilledClientId, clients)?.email}
             </Text>
           </Paper>
         )}
@@ -251,7 +241,6 @@ export default ClientSearchAutocomplete;
 
 // find client by ID
 const findClientById = (_id: string, data: Client[]) => {
-  console.log({ _id, data });
   const client = data?.find((c) => c?._id === _id);
   return client;
 };
