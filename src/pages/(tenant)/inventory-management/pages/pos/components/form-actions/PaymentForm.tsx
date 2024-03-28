@@ -64,16 +64,16 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 		reset,
 	} = useForm({
 		defaultValues: {
+			receiptNo: '',
+			paymentTerm: '',
+			reference: '',
+			poReference: '',
+			date: new Date(),
 			paymentCount: [
 				{
 					accountId: '',
 					amount: 0,
 					type: '',
-					receiptNo: '',
-					paymentTerm: '',
-					reference: '',
-					poReference: '',
-					date: new Date(),
 				},
 			],
 		},
@@ -93,6 +93,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 			onSuccess() {
 				onSuccess();
 				reset({
+					date: new Date(),
+					paymentTerm: '',
+					poReference: '',
+					receiptNo: '',
+					reference: '',
 					paymentCount: [],
 				});
 			},
@@ -110,11 +115,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 							clientId: formData?.client,
 							invoiceId: invoiceId ?? res?.inventory__createProductInvoice?._id,
 							payments: formValues?.paymentCount,
-							poReference: null,
-							receptNo: null,
-							reference: null,
-							paymentTerm: null,
-							date: null,
+							poReference: formData?.poReference,
+							receptNo: formData?.receptNo,
+							reference: formData?.reference,
+							paymentTerm: formData?.paymentTerm,
+							date: formData?.date,
 						},
 					},
 				});
@@ -135,11 +140,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 						clientId: formData?.client,
 						invoiceId: invoiceId,
 						payments: values?.paymentCount,
-						poReference: null,
-						receptNo: null,
-						reference: null,
-						paymentTerm: null,
-						date: null,
+						poReference: formData?.poReference,
+						receptNo: formData?.receptNo,
+						reference: formData?.reference,
+						paymentTerm: formData?.paymentTerm,
+						date: formData?.date,
 					},
 				},
 			});
@@ -167,6 +172,47 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 	return (
 		<div>
 			<form onSubmit={handleSubmit(onSubmit)}>
+				<Input.Wrapper
+					label='Reference'
+					error={<ErrorMessage name={`reference`} errors={errors} />}
+				>
+					<Input placeholder='Reference' {...register(`reference`)} />
+				</Input.Wrapper>
+				<Space h={5} />
+				<Input.Wrapper
+					label='PO Reference'
+					error={<ErrorMessage name={`poReference`} errors={errors} />}
+				>
+					<Input placeholder='PO Reference' {...register(`poReference`)} />
+				</Input.Wrapper>
+				<Space h={5} />
+				<Input.Wrapper
+					label='Receipt No'
+					error={<ErrorMessage name={`receiptNo`} errors={errors} />}
+				>
+					<Input placeholder='Receipt no' {...register(`receiptNo`)} />
+				</Input.Wrapper>
+				<Space h={5} />
+				<Input.Wrapper
+					label='Payment Term'
+					error={<ErrorMessage name={`paymentTerm`} errors={errors} />}
+				>
+					<Input placeholder='Payment Term' {...register(`paymentTerm`)} />
+				</Input.Wrapper>
+				<Space h={5} />
+				<Input.Wrapper
+					label='Date'
+					error={<ErrorMessage name={`date`} errors={errors} />}
+				>
+					<DateInput
+						placeholder='Pick a Date'
+						onChange={(e) => setValue(`date`, e!)}
+						defaultValue={watch(`date`)}
+					/>
+				</Input.Wrapper>
+
+				<Space h={10} />
+
 				{fields.map((_, idx) => (
 					<Paper key={idx} className='relative' p={10} my={10} withBorder>
 						<Input.Wrapper
@@ -232,83 +278,6 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 							/>
 						</Input.Wrapper>
 						<Space h={5} />
-						<Input.Wrapper
-							label='Reference'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.reference`}
-									errors={errors}
-								/>
-							}
-						>
-							<Input
-								placeholder='Reference'
-								{...register(`paymentCount.${idx}.reference`)}
-							/>
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='PO Reference'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.poReference`}
-									errors={errors}
-								/>
-							}
-						>
-							<Input
-								placeholder='PO Reference'
-								{...register(`paymentCount.${idx}.poReference`)}
-							/>
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='Receipt No'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.receiptNo`}
-									errors={errors}
-								/>
-							}
-						>
-							<Input
-								placeholder='Receipt no'
-								{...register(`paymentCount.${idx}.receiptNo`)}
-							/>
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='Payment Term'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.paymentTerm`}
-									errors={errors}
-								/>
-							}
-						>
-							<Input
-								placeholder='Payment Term'
-								{...register(`paymentCount.${idx}.paymentTerm`)}
-							/>
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='Date'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.date`}
-									errors={errors}
-								/>
-							}
-						>
-							<DateInput
-								placeholder='Pick a Date'
-								onChange={(e) => setValue(`paymentCount.${idx}.date`, e!)}
-								defaultValue={watch(`paymentCount.${idx}.date`)}
-							/>
-						</Input.Wrapper>
-
-						<Space h={10} />
 
 						<Group position='right'>
 							<Button color='red' onClick={() => remove(idx)} size='xs'>
@@ -328,16 +297,12 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 								accountId: '',
 								type: '',
 								amount: 0,
-								date: new Date(),
-								poReference: '',
-								reference: '',
-								paymentTerm: '',
-								receiptNo: '',
 							})
 						}
 					>
 						Add new
 					</Button>
+
 					<Button
 						type='submit'
 						loading={__creatingInvoice || __payment__inprogress}

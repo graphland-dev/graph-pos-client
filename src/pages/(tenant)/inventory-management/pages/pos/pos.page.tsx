@@ -13,6 +13,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {
 	ActionIcon,
 	Button,
+	Drawer,
 	Flex,
 	Group,
 	Input,
@@ -541,11 +542,12 @@ const PosPage = () => {
 							</Modal>
 
 							{/* payment form */}
-							<Modal
+							<Drawer
 								opened={openedPaymentModal}
 								onClose={paymentModalHandler.close}
 								title='Multiple payment to invoice'
 								size={'lg'}
+								position='right'
 							>
 								<PaymentForm
 									formData={
@@ -595,7 +597,7 @@ const PosPage = () => {
 									}}
 									invoiceId={selectedInvoice?._id}
 								/>
-							</Modal>
+							</Drawer>
 							<Group position='apart'>
 								<Button
 									size='md'
