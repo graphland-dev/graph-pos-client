@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 
 export const Pos_Client_Query = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Client_Query($where: CommonPaginationDto) {
     people__clients(where: $where) {
       nodes {
         _id
@@ -14,7 +14,7 @@ export const Pos_Client_Query = gql`
 `;
 
 export const Pos_Products_Query1 = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Products_Query1($where: CommonPaginationDto) {
     inventory__products(where: $where) {
       nodes {
         _id
@@ -87,7 +87,7 @@ export const Pos_Products_Query1 = gql`
 `;
 
 export const Pos_Brands_Query = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Brands_Query($where: CommonPaginationDto) {
     setup__brands(where: $where) {
       nodes {
         _id
@@ -98,7 +98,7 @@ export const Pos_Brands_Query = gql`
 `;
 
 export const Pos_Categories_Query = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Categories_Query($where: CommonPaginationDto) {
     inventory__productCategories(where: $where) {
       nodes {
         _id
@@ -109,7 +109,7 @@ export const Pos_Categories_Query = gql`
 `;
 
 export const Pos_Products_Query = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Products_Query($where: CommonPaginationDto) {
     inventory__products(where: $where) {
       nodes {
         _id
@@ -145,7 +145,7 @@ export const Pos_Products_Query = gql`
 `;
 
 export const Pos_Hold_List = gql`
-  query ($where: CommonPaginationDto) {
+  query Pos_Hold_List($where: CommonPaginationDto) {
     inventory__productInvoices(where: $where) {
       nodes {
         _id

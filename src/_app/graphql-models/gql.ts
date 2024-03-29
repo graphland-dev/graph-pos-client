@@ -19,7 +19,7 @@ const documents = {
     "\nmutation Setup__updateBrand($where: CommonFindDocumentDto!, $body: UpdateBrandInput!) {\n  setup__updateBrand(where: $where, body: $body)\n}\n\n": types.Setup__UpdateBrandDocument,
     "\nmutation Setup__removeBrand($where: CommonFindDocumentDto!) {\n  setup__removeBrand(where: $where)\n}\n\n": types.Setup__RemoveBrandDocument,
     "\n  mutation Identity__login($input: LoginInput!) {\n    identity__login(input: $input) {\n      accessToken\n    }\n  }\n": types.Identity__LoginDocument,
-    "\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n      }\n    }\n  }\n": types.Identity__MyTenantsDocument,
+    "\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n        logo {\n          meta\n          path\n          provider\n        }\n      }\n    }\n  }\n": types.Identity__MyTenantsDocument,
 };
 
 /**
@@ -63,7 +63,7 @@ export function graphql(source: "\n  mutation Identity__login($input: LoginInput
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n      }\n    }\n  }\n"): (typeof documents)["\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n        logo {\n          meta\n          path\n          provider\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query Identity__myTenants {\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        createdAt\n        logo {\n          meta\n          path\n          provider\n        }\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

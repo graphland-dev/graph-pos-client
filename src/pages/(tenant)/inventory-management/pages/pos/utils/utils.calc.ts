@@ -1,5 +1,6 @@
 import {
   Product,
+  ProductDiscountMode,
   ProductItemReference,
   ProductTaxType,
 } from "@/_app/graphql-models/graphql";
@@ -10,7 +11,7 @@ export const getDiscount = (
   discountAmount: number,
   totalPrice: number
 ) => {
-  if (discountType === "Fixed") {
+  if (discountType === ProductDiscountMode.Amount) {
     return Number(discountAmount) ?? 0;
   } else {
     const calculateDiscountAmount = (totalPrice / 100) * discountAmount;

@@ -5,7 +5,7 @@ import {
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
 import { PEOPLE_CREATE_CLIENT } from "@/pages/(tenant)/people/pages/client/utils/client.query";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -35,15 +35,15 @@ import AutoComplete from "@/_app/common/components/AutoComplete";
 import React, { useState } from "react";
 
 const ClientSearchAutocomplete: React.FC<{
-  formInstance: any;
   prefilledClientId: string;
-  // onRefetch: () => void;
-}> = ({ formInstance, prefilledClientId }) => {
+  onSelectClientId: (_id: string) => void;
+}> = ({ onSelectClientId, prefilledClientId }) => {
   const [q, setQ] = useState<string>("");
+  const [clients, setClients] = useState<Client[]>([]);
 
   const [opened, handler] = useDisclosure();
 
-  const { data, loading, refetch } = useQuery<{
+  const { loading, refetch } = useQuery<{
     people__clients: ClientsWithPagination;
   }>(Pos_Client_Query, {
     variables: {
@@ -57,11 +57,6 @@ const ClientSearchAutocomplete: React.FC<{
                 value: q?.trim(),
               },
               {
-                key: "_id",
-                operator: MatchOperator.Eq,
-                value: q?.trim(),
-              },
-              {
                 key: "contactNumber",
                 operator: MatchOperator.Contains,
                 value: q?.trim(),
@@ -71,7 +66,20 @@ const ClientSearchAutocomplete: React.FC<{
         ],
       },
     },
+    fetchPolicy: "network-only",
     skip: !q,
+    onCompleted(data) {
+      setClients(data.people__clients.nodes || []);
+    },
+  });
+
+  const [searchClientTrigger, { loading: lazySearch }] = useLazyQuery<{
+    people__clients: ClientsWithPagination;
+  }>(Pos_Client_Query, {
+    fetchPolicy: "network-only",
+    onCompleted(data) {
+      setClients(data.people__clients.nodes || []);
+    },
   });
 
   // client form instance
@@ -94,8 +102,9 @@ const ClientSearchAutocomplete: React.FC<{
 
   // fill form
   useEffect(() => {
-    // setValue("contactNumber", contactNumber);
-    refetch({
+    onSelectClientId(prefilledClientId);
+
+    searchClientTrigger({
       variables: {
         where: {
           filters: [
@@ -121,7 +130,7 @@ const ClientSearchAutocomplete: React.FC<{
           email: "",
           contactNumber: "",
         });
-        formInstance.setValue("client", res?.people__createClient?._id);
+        onSelectClientId(res?.people__createClient?._id);
         refetch();
         handler.close();
       },
@@ -137,19 +146,11 @@ const ClientSearchAutocomplete: React.FC<{
 
   return (
     <div>
-      <Input.Wrapper
-        size="md"
-        error={
-          <ErrorMessage
-            name="products"
-            errors={formInstance.formState.errors}
-          />
-        }
-      >
+      <Input.Wrapper size="md">
         <Flex align={"center"} className="!w-full">
           <AutoComplete
-            loading={loading}
-            data={data?.people__clients?.nodes || []}
+            loading={lazySearch || loading}
+            data={clients}
             onChange={setQ}
             placeholder="Search client"
             enableNoResultDropdown
@@ -161,7 +162,8 @@ const ClientSearchAutocomplete: React.FC<{
             }
             onSelect={(item: any) => {
               if (typeof item === "object") {
-                formInstance.setValue("client", item?._id);
+                console.log(item?._id);
+                onSelectClientId(item?._id);
               } else {
                 setValue("contactNumber", item);
                 handler.open();
@@ -182,23 +184,11 @@ const ClientSearchAutocomplete: React.FC<{
 
         <Space h={"sm"} />
 
-        {formInstance.watch("client") && (
+        {prefilledClientId && (
           <Paper p={8} withBorder w={295}>
-            <Text>
-              {
-                findClientById(
-                  formInstance.watch("client"),
-                  data?.people__clients?.nodes as Client[]
-                )?.name
-              }
-            </Text>
+            <Text>{findClientById(prefilledClientId, clients)?.name}</Text>
             <Text size={"xs"}>
-              {
-                findClientById(
-                  formInstance.watch("client"),
-                  data?.people__clients?.nodes as Client[]
-                )?.email
-              }
+              {findClientById(prefilledClientId, clients)?.email}
             </Text>
           </Paper>
         )}
