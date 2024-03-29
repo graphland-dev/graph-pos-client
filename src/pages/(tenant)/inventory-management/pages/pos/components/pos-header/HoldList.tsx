@@ -1,66 +1,128 @@
-import {
-  MatchOperator,
-  ProductInvoice,
-  ProductInvoicesWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
-import { Button, Group, Paper, Popover, Text } from "@mantine/core";
-import React from "react";
-import { Pos_Hold_List } from "../../utils/query.pos";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { MatchOperator, ProductInvoice } from '@/_app/graphql-models/graphql';
+import { useMutation } from '@apollo/client';
+import { Button, Drawer, Table, Text } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { openConfirmModal } from '@mantine/modals';
+import React from 'react';
+import { NavLink, useParams } from 'react-router-dom';
+import { Remove_Invoice } from '../../utils/query.payment';
 
 const HoldList: React.FC<{
-  onSelectInvoice: (state: ProductInvoice) => void;
-}> = ({ onSelectInvoice }) => {
-  // hold list data API
-  const { data } = useQuery<{
-    inventory__productInvoices: ProductInvoicesWithPagination;
-  }>(Pos_Hold_List, {
-    variables: {
-      where: {
-        limit: -1,
-        filters: {
-          key: "status",
-          operator: MatchOperator.Eq,
-          value: "HOLD",
-        },
-      },
-    },
-  });
+	onSelectInvoice: (state: ProductInvoice) => void;
+	holdList: ProductInvoice[];
+	onRefetchHoldList: () => void;
+}> = ({ onSelectInvoice, holdList, onRefetchHoldList }) => {
+	const [opened, handler] = useDisclosure();
 
-  return (
-    <div>
-      <Popover position="bottom" withArrow shadow="md">
-        <Popover.Target>
-          <Text color="red" className="cursor-pointer">
-            Hold List ({data?.inventory__productInvoices?.nodes?.length ?? 0})
-          </Text>
-        </Popover.Target>
-        <Popover.Dropdown p={5}>
-          {data?.inventory__productInvoices?.nodes?.map(
-            (invoice: ProductInvoice, idx: number) => (
-              <Paper
-                p={10}
-                my={5}
-                className="flex items-center justify-between gap-4"
-                withBorder
-                key={idx}
-              >
-                <div>
-                  <Text>{invoice?.client?.name}</Text>
-                </div>
-                <Group>
-                  <Text>{invoice?.netTotal ?? 0} bdt</Text>
-                  <Button onClick={() => onSelectInvoice(invoice!)} size={"sm"}>
-                    Proceed
-                  </Button>
-                </Group>
-              </Paper>
-            )
-          )}
-        </Popover.Dropdown>
-      </Popover>
-    </div>
-  );
+	return (
+		<div>
+			<Button
+				variant='subtle'
+				size='xs'
+				onClick={handler.open}
+				color='red'
+				className='cursor-pointer'
+			>
+				Hold List ({holdList?.length ?? 0})
+			</Button>
+			<Drawer
+				opened={opened}
+				onClose={handler.close}
+				title='Hold list'
+				position='right'
+				size={'lg'}
+			>
+				<Table withBorder>
+					<thead>
+						<tr>
+							<th>Client</th>
+							<th>Reference</th>
+							<th>Net Amount</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						{holdList?.map((invoice: ProductInvoice, idx: number) => (
+							<TableRow
+								key={idx}
+								invoice={invoice}
+								onSelectInvoice={onSelectInvoice}
+								onRefetchHoldList={onRefetchHoldList}
+							/>
+						))}
+					</tbody>
+				</Table>
+			</Drawer>
+		</div>
+	);
 };
 
 export default HoldList;
+
+const TableRow: React.FC<{
+	invoice: ProductInvoice;
+	onSelectInvoice: (state: ProductInvoice) => void;
+	onRefetchHoldList: () => void;
+}> = ({ invoice, onSelectInvoice, onRefetchHoldList }) => {
+	const params = useParams<{ tenant: string }>();
+
+	const [removeInvoice, { loading }] = useMutation(
+		Remove_Invoice,
+		Notify({
+			sucTitle: 'Invoice removed',
+			onSuccess() {
+				onRefetchHoldList();
+			},
+		})
+	);
+	return (
+		<tr>
+			<td>
+				<NavLink
+					to={`/${params?.tenant}/people/client?clientId=${invoice?.client?._id}`}
+					className='text-blue-400 underline'
+				>
+					{invoice?.client?.name}
+				</NavLink>
+			</td>
+			<td>{invoice?.reference}</td>
+			<td className='font-bold'>{invoice?.netTotal ?? 0} BDT</td>
+			<td>
+				{' '}
+				<Button onClick={() => onSelectInvoice(invoice!)} size={'xs'}>
+					Proceed
+				</Button>
+				&nbsp; &nbsp;
+				<Button
+					color='red'
+					size={'xs'}
+					loading={loading}
+					onClick={() =>
+						openConfirmModal({
+							title: 'Proceed to confirm action',
+							children: <Text>Are you sure to remove invoice ?</Text>,
+							labels: {
+								cancel: 'No',
+								confirm: 'Yes',
+							},
+							onCancel: () => {},
+							onConfirm: () =>
+								removeInvoice({
+									variables: {
+										where: {
+											key: '_id',
+											operator: MatchOperator.Eq,
+											value: invoice?._id,
+										},
+									},
+								}),
+						})
+					}
+				>
+					Remove
+				</Button>
+			</td>
+		</tr>
+	);
+};

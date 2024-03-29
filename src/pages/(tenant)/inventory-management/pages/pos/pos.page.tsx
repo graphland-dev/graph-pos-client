@@ -1,6 +1,9 @@
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import {
+  MatchOperator,
+  ProductDiscountMode,
   ProductInvoice,
+  ProductInvoicesWithPagination,
   ProductItemReference,
   Vat,
   VatsWithPagination,
@@ -11,6 +14,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ActionIcon,
   Button,
+  Drawer,
   Flex,
   Group,
   Input,
@@ -36,7 +40,7 @@ import {
 } from "@tabler/icons-react";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import {
   calculateTaxAmount,
@@ -48,17 +52,34 @@ import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
 import POSProductGlary from "./components/POSProductGalary";
 import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
+import HoldList from "./components/pos-header/HoldList";
+import { Pos_Hold_List } from "./utils/query.pos";
+import { getDiscount, getSalesVat } from "./utils/utils.calc";
 import HoldAction from "./components/form-actions/HoldAction";
 import PaymentForm from "./components/form-actions/PaymentForm";
-import HoldList from "./components/pos-header/HoldList";
-import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
   const [openedHoldModal, holdModalHandler] = useDisclosure();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
   const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
-  const [formData, setFormData] = useState<IPosFormType>();
   const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
+  const params = useParams<{ tenant: string }>();
+
+  // hold list data API
+  const { data: holdList, refetch: refetchHoldList } = useQuery<{
+    inventory__productInvoices: ProductInvoicesWithPagination;
+  }>(Pos_Hold_List, {
+    variables: {
+      where: {
+        limit: -1,
+        filters: {
+          key: "status",
+          operator: MatchOperator.Eq,
+          value: "HOLD",
+        },
+      },
+    },
+  });
 
   // fetch vat profiles
   const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
@@ -73,10 +94,8 @@ const PosPage = () => {
 
   const form = useForm<IPosFormType>({
     defaultValues: {
-      discountAmount: 0,
-      discountType: "Fixed",
-      transportCost: 0,
-      invoiceTax: 0,
+      discountMode: ProductDiscountMode.Amount,
+      costAmount: 0,
     },
     resolver: yupResolver(Pos_Form_Validation_Schema),
     mode: "onChange",
@@ -120,32 +139,53 @@ const PosPage = () => {
       );
     }
   }
+  const discountMode = watch("discountMode") || ProductDiscountMode.Amount;
+  const discountValue = watch("discountValue") || 0;
+  const products = watch("products") || [];
+  const costAmount = watch("costAmount") || 0;
+  const taxRate = watch("taxRate") || 0;
+
+  const productsPrice = getTotalProductsPrice(products);
+  const discountAmount = getDiscount(
+    discountMode,
+    discountValue,
+    productsPrice
+  );
+  const salesVatAmount = getSalesVat(
+    costAmount + productsPrice - discountAmount,
+    taxRate
+  );
+
+  const getNetAmount = () => {
+    const sum = productsPrice - discountAmount + costAmount + salesVatAmount;
+
+    return sum;
+  };
 
   // prefill form
   useEffect(() => {
     if (selectedInvoice) {
-      setValue("client", selectedInvoice?.client?._id as string);
-      setValue("discountType", selectedInvoice?.discountMode as string);
-      setValue("discountAmount", selectedInvoice?.discountAmount as number);
-      setValue("transportCost", selectedInvoice?.costAmount as number);
-      setValue("invoiceTax", selectedInvoice?.taxAmount ?? (0 as number));
+      setValue("clientId", selectedInvoice?.client?._id as string);
+      setValue("discountMode", selectedInvoice?.discountMode as string);
+      setValue("discountValue", selectedInvoice?.discountAmount as number);
+      setValue("costAmount", selectedInvoice?.costAmount as number);
+      setValue("taxRate", selectedInvoice?.taxAmount ?? (0 as number));
       setValue("products", selectedInvoice?.products as ProductItemReference[]);
     }
   }, [selectedInvoice]);
 
   // submit pos form
-  const onSubmitPOS = (values: IPosFormType) => {
+  const onSubmitPOS = () => {
     if (action === "ADD_TO_HOLD_LIST") {
-      setFormData(values);
       holdModalHandler.open();
     } else {
-      setFormData(values);
       paymentModalHandler.open();
     }
   };
 
   return (
     <div>
+      {/* Header */}
       <Flex
         className="px-3 pb-0 bg-white h-[70px] border-b-slate-100 border-b-[1px]"
         justify={"space-between"}
@@ -165,9 +205,9 @@ const PosPage = () => {
             <Button
               variant="subtle"
               size="xs"
-              component={Link}
-              to={"/"}
               leftIcon={<IconList size={16} />}
+              component={Link}
+              to={`/${params?.tenant}/inventory-management/invoices`}
             >
               Sales List
             </Button>
@@ -175,23 +215,49 @@ const PosPage = () => {
               variant="subtle"
               size="xs"
               leftIcon={<IconUsers size={16} />}
+              component={Link}
+              to={`/${params?.tenant}/people/client`}
             >
               Customer List
             </Button>
-            <Button variant="subtle" size="xs" leftIcon={<IconBox size={16} />}>
+            <Button
+              variant="subtle"
+              size="xs"
+              leftIcon={<IconBox size={16} />}
+              component={Link}
+              to={`/${params?.tenant}/inventory-management/products/products-list
+						`}
+            >
               Items List
             </Button>
             <Button
               variant="subtle"
               size="xs"
               leftIcon={<IconCalculator size={16} />}
+              onClick={() =>
+                reset({
+                  clientId: "",
+                  discountValue: 0,
+                  discountMode: ProductDiscountMode.Amount,
+                  taxRate: 0,
+                  taxAmount: 0,
+                  products: [],
+                  costAmount: 0,
+                })
+              }
             >
               New Invoice
             </Button>
           </Flex>
         </div>
         <div className="flex items-center gap-3">
-          <HoldList onSelectInvoice={setSelectedInvoice} />
+          <HoldList
+            onSelectInvoice={setSelectedInvoice}
+            holdList={holdList?.inventory__productInvoices?.nodes ?? []}
+            onRefetchHoldList={function (): void {
+              // throw new Error("Function not implemented.");
+            }}
+          />
           <IconArrowsMaximize
             onClick={() => {
               const elem = document.documentElement;
@@ -202,7 +268,6 @@ const PosPage = () => {
           />
         </div>
       </Flex>
-      {JSON.stringify(selectedInvoice?.client?._id, null, 2)}
       <form onSubmit={handleSubmit(onSubmitPOS)} className="p-3">
         <div className="flex items-start gap-3">
           {/* Left Side */}
@@ -210,10 +275,10 @@ const PosPage = () => {
             <Paper p={15} withBorder>
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
-                  formInstance={form}
                   prefilledClientId={
-                    watch("client") ?? selectedInvoice?.client?._id
+                    watch("clientId") ?? selectedInvoice?.client?._id
                   }
+                  onSelectClientId={(_id) => setValue("clientId", _id)}
                 />
 
                 <ProductSearchAutocomplete
@@ -340,13 +405,22 @@ const PosPage = () => {
                     error={<ErrorMessage name="discountType" errors={errors} />}
                   >
                     <Select
-                      label="Discount Type"
-                      placeholder="Fixed"
+                      label="Discount Mode"
+                      placeholder="Discount Mode"
                       size="md"
-                      onChange={(e) => setValue("discountType", e!)}
-                      defaultValue={watch("discountType")}
+                      onChange={(e) => setValue("discountMode", e!)}
                       radius={0}
-                      data={["Fixed", "Percentage(%)"]}
+                      value={watch("discountMode")}
+                      data={[
+                        {
+                          label: "Fixed",
+                          value: ProductDiscountMode.Amount,
+                        },
+                        {
+                          label: "Percentage (%)",
+                          value: ProductDiscountMode.Percentage,
+                        },
+                      ]}
                     />
                   </Input.Wrapper>
 
@@ -362,9 +436,9 @@ const PosPage = () => {
                       label="Transport Cost"
                       size="md"
                       onChange={(e) =>
-                        setValue("transportCost", parseInt(e as string))
+                        setValue("costAmount", parseInt(e as string))
                       }
-                      defaultValue={watch("transportCost")}
+                      defaultValue={watch("costAmount")}
                       min={0}
                       radius={0}
                       placeholder="Enter transport cost"
@@ -383,9 +457,9 @@ const PosPage = () => {
                       radius={0}
                       size="md"
                       min={0}
-                      defaultValue={watch("discountAmount")}
+                      defaultValue={watch("discountValue") || 0}
                       onChange={(e) =>
-                        setValue("discountAmount", parseInt(e as string))
+                        setValue("discountValue", parseInt(e as string))
                       }
                       placeholder="Enter discount"
                     />
@@ -403,12 +477,12 @@ const PosPage = () => {
                       size="md"
                       radius={0}
                       disabled={vatProfileLoading}
-                      defaultValue={watch("invoiceTax").toString()}
+                      defaultValue={watch("taxRate")?.toString()}
                       data={getVatProfileSelectInputData(
                         vatProfile?.setup__vats?.nodes as Vat[]
                       )}
                       onChange={(e) =>
-                        setValue("invoiceTax", parseInt(e as string)!)
+                        setValue("taxRate", parseInt(e as string)!)
                       }
                     />
                   </Input.Wrapper>
@@ -418,26 +492,7 @@ const PosPage = () => {
               <Space h={"sm"} />
 
               <div className="p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm">
-                Net Total:{" "}
-                {currencyNumberFormat(
-                  getTotalProductsPrice(watch("products")!) -
-                    getDiscount(
-                      watch("discountType"),
-                      watch("discountAmount"),
-                      getTotalProductsPrice(watch("products")!)
-                    ) +
-                    watch("transportCost") +
-                    getSalesVat(
-                      watch("transportCost") +
-                        getTotalProductsPrice(watch("products")!) -
-                        getDiscount(
-                          watch("discountType"),
-                          watch("discountAmount"),
-                          getTotalProductsPrice(watch("products")!)
-                        ),
-                      watch("invoiceTax")
-                    ) || 0
-                ) || 0.0}
+                Net Total: {currencyNumberFormat(getNetAmount())}
                 BDT
               </div>
 
@@ -452,113 +507,81 @@ const PosPage = () => {
                 <HoldAction
                   formData={
                     {
-                      ...formData,
-                      taxAmount: getSalesVat(
-                        watch("transportCost") +
-                          getTotalProductsPrice(watch("products")!) -
-                          getDiscount(
-                            watch("discountType"),
-                            watch("discountAmount"),
-                            getTotalProductsPrice(watch("products")!)
-                          ),
-                        watch("invoiceTax")
-                      ),
-                      subTotal: getTotalProductsPrice(watch("products")!),
-                      netTotal:
-                        getTotalProductsPrice(watch("products")!) -
-                        getDiscount(
-                          watch("discountType"),
-                          watch("discountAmount"),
-                          getTotalProductsPrice(watch("products")!)
-                        ) +
-                        watch("transportCost") +
-                        getSalesVat(
-                          watch("transportCost") +
-                            getTotalProductsPrice(watch("products")!) -
-                            getDiscount(
-                              watch("discountType"),
-                              watch("discountAmount"),
-                              getTotalProductsPrice(watch("products")!)
-                            ),
-                          watch("invoiceTax")
-                        ),
+                      clientId: watch("clientId"),
+                      products,
+                      costAmount,
+
+                      discountAmount,
+                      discountPercentage: discountValue,
+                      discountMode,
+
+                      subTotal: productsPrice,
+                      netTotal: getNetAmount(),
+
+                      taxRate,
+                      taxAmount: salesVatAmount,
                     }!
                   }
                   onSuccess={() => {
                     holdModalHandler.close();
                     reset({
-                      client: "",
-                      discountAmount: 0,
-                      discountType: "Fixed",
-                      invoiceTax: 0,
+                      clientId: "",
+                      discountValue: 0,
+                      discountMode: ProductDiscountMode.Amount,
+                      taxRate: 0,
                       products: [],
-                      transportCost: 0,
+                      costAmount: 0,
                     });
+                    refetchHoldList();
                   }}
                 />
               </Modal>
 
               {/* payment form */}
-              <Modal
+              <Drawer
                 opened={openedPaymentModal}
                 onClose={paymentModalHandler.close}
                 title="Multiple payment to invoice"
                 size={"lg"}
+                position="right"
               >
                 <PaymentForm
-                  formData={
-                    {
-                      ...formData,
-                      taxAmount: getSalesVat(
-                        watch("transportCost") +
-                          getTotalProductsPrice(watch("products")!) -
-                          getDiscount(
-                            watch("discountType"),
-                            watch("discountAmount"),
-                            getTotalProductsPrice(watch("products")!)
-                          ),
-                        watch("invoiceTax")
-                      ),
-                      subTotal: getTotalProductsPrice(watch("products")!),
-                      netTotal:
-                        getTotalProductsPrice(watch("products")!) -
-                        getDiscount(
-                          watch("discountType"),
-                          watch("discountAmount"),
-                          getTotalProductsPrice(watch("products")!)
-                        ) +
-                        watch("transportCost") +
-                        getSalesVat(
-                          watch("transportCost") +
-                            getTotalProductsPrice(watch("products")!) -
-                            getDiscount(
-                              watch("discountType"),
-                              watch("discountAmount"),
-                              getTotalProductsPrice(watch("products")!)
-                            ),
-                          watch("invoiceTax")
-                        ),
-                    }!
-                  }
+                  formData={{
+                    clientId: watch("clientId"),
+                    products,
+                    costAmount,
+
+                    discountAmount,
+                    discountPercentage: discountValue,
+                    discountMode,
+
+                    subTotal: productsPrice,
+                    netTotal: getNetAmount(),
+
+                    taxRate,
+                    taxAmount: salesVatAmount,
+                  }}
                   onSuccess={() => {
                     paymentModalHandler.close();
                     reset({
-                      client: "",
-                      discountAmount: 0,
-                      discountType: "Fixed",
-                      invoiceTax: 0,
+                      clientId: "",
+                      discountMode: ProductDiscountMode.Amount,
+                      discountValue: 0,
+                      taxRate: 0,
                       products: [],
-                      transportCost: 0,
+                      costAmount: 0,
                     });
                   }}
-                  invoiceId={selectedInvoice?._id}
+                  preMadeInvoiceId={selectedInvoice?._id}
                 />
-              </Modal>
+              </Drawer>
+
               <Group position="apart">
                 <Button
                   size="md"
                   type="submit"
                   onClick={() => setAction("ADD_TO_HOLD_LIST")}
+                  disabled={!watch("products")?.length || !watch("clientId")}
                 >
                   Hold
                 </Button>
@@ -566,6 +589,7 @@ const PosPage = () => {
                   size="md"
                   type="submit"
                   leftIcon={<IconCreditCard size={16} />}
+                  disabled={!watch("products")?.length || !watch("clientId")}
                 >
                   Payment
                 </Button>
@@ -573,12 +597,12 @@ const PosPage = () => {
                   size="md"
                   onClick={() =>
                     reset({
-                      client: "",
-                      discountAmount: 0,
-                      discountType: "Fixed",
-                      invoiceTax: 0,
+                      clientId: "",
+                      discountMode: ProductDiscountMode.Amount,
+                      taxRate: 0,
+                      taxAmount: 0,
                       products: [],
-                      transportCost: 0,
+                      costAmount: 0,
                     })
                   }
                   leftIcon={<IconRefresh size={16} />}
@@ -605,15 +629,21 @@ const PosPage = () => {
 export default PosPage;
 
 const Pos_Form_Validation_Schema = Yup.object().shape({
-  client: Yup.string().required().label("Client"),
-  discountType: Yup.string().required().label("Discount type"),
-  discountAmount: Yup.number().required().label("Discount amount"),
-  transportCost: Yup.number().required().label("Transport cost"),
-  invoiceTax: Yup.number().required().label("Invoice tax"),
+  clientId: Yup.string().required().label("Client"),
   products: Yup.array()
     .required()
     .min(1, "You must have to select at least one product")
     .label("Purchase products"),
+
+  discountMode: Yup.string().optional().label("Discount type"),
+  discountValue: Yup.number().optional().label("Discount value"), // amount, %
+  // discountAmount: Yup.number().optional().label("Discount amount"),
+  // discountPercentage: Yup.number().optional().label("Discount %"),
+
+  costAmount: Yup.number().optional().label("Transport cost"),
+
+  taxRate: Yup.number().optional().label("Tax rate"),
+  taxAmount: Yup.number().optional().label("Tax amount"),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;

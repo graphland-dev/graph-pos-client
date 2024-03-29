@@ -1,261 +1,327 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { getAccountBalance } from '@/_app/common/utils/getBalance';
-import { Account, AccountsWithPagination } from '@/_app/graphql-models/graphql';
-import { ACCOUNTING_ACCOUNTS_LIST } from '@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query';
-import { useMutation, useQuery } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
+import { Notify } from "@/_app/common/Notification/Notify";
+import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import {
-	Badge,
-	Button,
-	Group,
-	Input,
-	NumberInput,
-	Paper,
-	Select,
-	Space,
-} from '@mantine/core';
-import React, { useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+  Account,
+  AccountsWithPagination,
+  ProductDiscountMode,
+} from "@/_app/graphql-models/graphql";
+import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
 import {
-	Create_Invoice_Payment,
-	Create_Product_Invoice,
-} from '../../utils/query.payment';
+  Badge,
+  Button,
+  Group,
+  Input,
+  NumberInput,
+  Paper,
+  Select,
+  Space,
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import React, { useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { IPosFormType } from "../../pos.page";
+import {
+  Create_Invoice_Payment,
+  Create_Product_Invoice,
+} from "../../utils/query.payment";
+
+interface ExtendedFormData extends IPosFormType {
+  subTotal: number;
+  netTotal: number;
+
+  discountAmount: number;
+  discountPercentage: number;
+}
 
 interface IPaymentFormProps {
-	formData: any;
-	onSuccess: () => void;
-	invoiceId?: string;
+  formData: ExtendedFormData;
+  onSuccess: () => void;
+  preMadeInvoiceId?: string;
 }
 
 const PaymentForm: React.FC<IPaymentFormProps> = ({
-	formData,
-	onSuccess,
-	invoiceId,
+  formData,
+  onSuccess,
+  preMadeInvoiceId,
 }) => {
-	const [formValues, setFormValues] = useState<any>();
+  // accounts API
+  const { data } = useQuery<{
+    accounting__accounts: AccountsWithPagination;
+  }>(ACCOUNTING_ACCOUNTS_LIST, {
+    variables: {
+      where: {
+        limit: -1,
+        page: 1,
+      },
+    },
+  });
 
-	// accounts API
-	const { data } = useQuery<{
-		accounting__accounts: AccountsWithPagination;
-	}>(ACCOUNTING_ACCOUNTS_LIST, {
-		variables: {
-			where: {
-				limit: -1,
-				page: 1,
-			},
-		},
-	});
+  // accounts data dropdown
+  const accountListForDrop = data?.accounting__accounts?.nodes?.map((item) => ({
+    value: item?._id,
+    label: `${item?.name} [${item?.referenceNumber}]`,
+  }));
 
-	// accounts data dropdown
-	const accountListForDrop = data?.accounting__accounts?.nodes?.map((item) => ({
-		value: item?._id,
-		label: `${item?.name} [${item?.referenceNumber}]`,
-	}));
+  // payment form
+  const {
+    handleSubmit,
+    setValue,
+    formState: { errors },
+    control,
+    register,
+    watch,
+    reset,
+  } = useForm({
+    defaultValues: {
+      receiptNo: "",
+      paymentTerm: "",
+      reference: "",
+      poReference: "",
+      date: new Date(),
+      payments: [
+        {
+          accountId: "",
+          amount: 0,
+          type: "",
+        },
+      ],
+    },
+  });
 
-	// payment form
-	const {
-		handleSubmit,
-		setValue,
-		formState: { errors },
-		control,
-		watch,
-		reset,
-	} = useForm({
-		defaultValues: {
-			paymentCount: [
-				{
-					accountId: '',
-					amount: 0,
-					type: '',
-				},
-			],
-		},
-	});
+  // form fields array
+  const { append, fields, remove } = useFieldArray({
+    control,
+    name: "payments",
+  });
 
-	// form fields array
-	const { append, fields, remove } = useFieldArray({
-		control,
-		name: 'paymentCount',
-	});
+  // payment mutation
+  const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
+    Create_Invoice_Payment,
+    Notify({
+      sucTitle: "Payment successful",
+      onSuccess() {
+        onSuccess();
+        reset({
+          date: new Date(),
+          paymentTerm: "",
+          poReference: "",
+          receiptNo: "",
+          reference: "",
+          payments: [],
+        });
+      },
+    })
+  );
 
-	// payment mutation
-	const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
-		Create_Invoice_Payment,
-		Notify({
-			sucTitle: 'Payment successful',
-			onSuccess() {
-				onSuccess();
-				reset({
-					paymentCount: [],
-				});
-			},
-		})
-	);
+  // create invoice mutation
+  const [createInvoice, { loading: __creatingInvoice }] = useMutation(
+    Create_Product_Invoice
+  );
 
-	// create invoice mutation
-	const [createInvoice, { loading: __creatingInvoice }] = useMutation(
-		Create_Product_Invoice,
-		{
-			onCompleted(res) {
-				paymentToInvoice({
-					variables: {
-						body: {
-							clientId: formData?.client,
-							invoiceId: invoiceId ?? res?.inventory__createProductInvoice?._id,
-							payments: formValues?.paymentCount,
-							poReference: null,
-							receptNo: null,
-							reference: null,
-							paymentTerm: null,
-							date: null,
-						},
-					},
-				});
-			},
-		}
-	);
+  useEffect(() => {
+    // setValue(`paymentCount.${0}.amount`, formData?.netTotal);
+  }, [formData]);
 
-	// payment form submit
-	const onSubmit = (values: any) => {
-		if (invoiceId) {
-			paymentToInvoice({
-				variables: {
-					body: {
-						clientId: formData?.client,
-						invoiceId: invoiceId,
-						payments: values?.paymentCount,
-						poReference: null,
-						receptNo: null,
-						reference: null,
-						paymentTerm: null,
-						date: null,
-					},
-				},
-			});
-		} else {
-			setFormValues(values);
+  // payment form submit
+  const onSubmit = (values: any) => {
+    if (preMadeInvoiceId) {
+      paymentToInvoice({
+        variables: {
+          body: {
+            clientId: formData?.clientId,
 
-			createInvoice({
-				variables: {
-					input: {
-						clientId: formData?.client,
-						note: 'A simple note',
-						products: formData?.products,
-						taxRate: formData?.invoiceTax,
-						taxAmount: formData?.taxAmount,
-						costAmount: formData?.transportCost,
-						subTotal: formData?.subTotal,
-						netTotal: formData?.netTotal,
-						reference: 'Payment',
-					},
-				},
-			});
-		}
-	};
+            invoiceId: preMadeInvoiceId,
+            payments: values?.payments,
+            poReference: values?.poReference,
+            receptNo: values?.receptNo,
+            reference: values?.reference,
+            paymentTerm: values?.paymentTerm,
+            date: values?.date,
+          },
+        },
+      });
+    } else {
+      createInvoice({
+        variables: {
+          input: {
+            clientId: formData?.clientId,
+            products: formData?.products,
+            taxRate: formData?.taxRate,
+            taxAmount: formData?.taxAmount,
+            costAmount: formData?.costAmount,
 
-	return (
-		<div>
-			<form onSubmit={handleSubmit(onSubmit)}>
-				{fields.map((_, idx) => (
-					<Paper key={idx} className='relative' p={10} my={10} withBorder>
-						<Input.Wrapper
-							label='Account'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.account`}
-									errors={errors}
-								/>
-							}
-						>
-							<Select
-								data={accountListForDrop ?? []}
-								defaultValue={watch(`paymentCount.${idx}.accountId`)}
-								placeholder='Select account'
-								onChange={(e) => setValue(`paymentCount.${idx}.accountId`, e!)}
-							/>
-							{/* <Space h={5} /> */}
-							{watch(`paymentCount.${idx}.accountId`) && (
-								<Badge my={5}>
-									Balance:{' '}
-									{getAccountBalance(
-										data?.accounting__accounts?.nodes as Account[],
-										watch(`paymentCount.${idx}.accountId`)
-									)}
-								</Badge>
-							)}
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='Payment Type'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.paymentType`}
-									errors={errors}
-								/>
-							}
-						>
-							<Select
-								placeholder='Pick a payment type'
-								data={['Nagad', 'Rocket', 'Bank', 'Cash']}
-								onChange={(e) => setValue(`paymentCount.${idx}.type`, e!)}
-								defaultValue={watch(`paymentCount.${idx}.type`)}
-							/>
-						</Input.Wrapper>
-						<Space h={5} />
-						<Input.Wrapper
-							label='Amount'
-							error={
-								<ErrorMessage
-									name={`paymentCount.${idx}.amount`}
-									errors={errors}
-								/>
-							}
-						>
-							<NumberInput
-								placeholder='Amount'
-								onChange={(e) =>
-									setValue(`paymentCount.${idx}.amount`, parseInt(e as string))
-								}
-								defaultValue={watch(`paymentCount.${idx}.amount`)}
-								min={0}
-							/>
-						</Input.Wrapper>
+            subTotal: formData?.subTotal || 0,
+            netTotal: formData?.netTotal || 0,
+            reference: values.reference || "",
 
-						<Space h={10} />
+            discountAmount: formData?.discountAmount || 0,
+            discountMode: formData.discountMode || ProductDiscountMode.Amount,
+            discountPercentage: formData.discountPercentage || 0,
+          },
+        },
+      }).then((invoice) => {
+        paymentToInvoice({
+          variables: {
+            body: {
+              clientId: formData?.clientId,
 
-						<Group position='right'>
-							<Button color='red' onClick={() => remove(idx)} size='xs'>
-								Remove
-							</Button>
-						</Group>
-					</Paper>
-				))}
+              invoiceId: invoice.data?.inventory__createProductInvoice?._id,
+              payments: values?.payments,
+              poReference: values?.poReference,
+              receptNo: values?.receptNo,
+              reference: values?.reference,
+              paymentTerm: values?.paymentTerm,
+              date: values?.date,
+            },
+          },
+        });
+      });
+    }
+  };
 
-				<Space h={5} />
+  return (
+    <div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input.Wrapper
+          label="Reference"
+          error={<ErrorMessage name={`reference`} errors={errors} />}
+        >
+          <Input placeholder="Reference" {...register(`reference`)} />
+        </Input.Wrapper>
+        <Space h={5} />
+        <Input.Wrapper
+          label="PO Reference"
+          error={<ErrorMessage name={`poReference`} errors={errors} />}
+        >
+          <Input placeholder="PO Reference" {...register(`poReference`)} />
+        </Input.Wrapper>
+        <Space h={5} />
+        <Input.Wrapper
+          label="Receipt No"
+          error={<ErrorMessage name={`receiptNo`} errors={errors} />}
+        >
+          <Input placeholder="Receipt no" {...register(`receiptNo`)} />
+        </Input.Wrapper>
+        <Space h={5} />
+        <Input.Wrapper
+          label="Payment Term"
+          error={<ErrorMessage name={`paymentTerm`} errors={errors} />}
+        >
+          <Input placeholder="Payment Term" {...register(`paymentTerm`)} />
+        </Input.Wrapper>
+        <Space h={5} />
+        <Input.Wrapper
+          label="Date"
+          error={<ErrorMessage name={`date`} errors={errors} />}
+        >
+          <DateInput
+            placeholder="Pick a Date"
+            onChange={(e) => setValue(`date`, e!)}
+            defaultValue={watch(`date`)}
+          />
+        </Input.Wrapper>
 
-				<Group position='left'>
-					<Button
-						variant='subtle'
-						onClick={() =>
-							append({
-								accountId: '',
-								type: '',
-								amount: 0,
-							})
-						}
-					>
-						Add new
-					</Button>
-					<Button
-						type='submit'
-						loading={__creatingInvoice || __payment__inprogress}
-					>
-						Save
-					</Button>
-				</Group>
-			</form>
-		</div>
-	);
+        <Space h={10} />
+
+        {fields.map((_, idx) => (
+          <Paper key={idx} className="relative" p={10} my={10} withBorder>
+            <Input.Wrapper
+              label="Account"
+              error={
+                <ErrorMessage
+                  name={`paymentCount.${idx}.account`}
+                  errors={errors}
+                />
+              }
+            >
+              <Select
+                data={accountListForDrop ?? []}
+                defaultValue={watch(`payments.${idx}.accountId`)}
+                placeholder="Select account"
+                onChange={(e) => setValue(`payments.${idx}.accountId`, e!)}
+              />
+              {/* <Space h={5} /> */}
+              {watch(`payments.${idx}.accountId`) && (
+                <Badge my={5}>
+                  Balance:{" "}
+                  {getAccountBalance(
+                    data?.accounting__accounts?.nodes as Account[],
+                    watch(`payments.${idx}.accountId`)
+                  )}
+                </Badge>
+              )}
+            </Input.Wrapper>
+            <Space h={5} />
+            <Input.Wrapper
+              label="Payment Type"
+              error={
+                <ErrorMessage
+                  name={`paymentCount.${idx}.paymentType`}
+                  errors={errors}
+                />
+              }
+            >
+              <Select
+                placeholder="Pick a payment type"
+                data={["Nagad", "Rocket", "Bank", "Cash"]}
+                onChange={(e) => setValue(`payments.${idx}.type`, e!)}
+                defaultValue={watch(`payments.${idx}.type`)}
+              />
+            </Input.Wrapper>
+            <Space h={5} />
+            <Input.Wrapper
+              label="Amount"
+              error={
+                <ErrorMessage name={`payments.${idx}.amount`} errors={errors} />
+              }
+            >
+              <NumberInput
+                placeholder="Amount"
+                onChange={(e) =>
+                  setValue(`payments.${idx}.amount`, parseInt(e as string))
+                }
+                value={watch(`payments.${idx}.amount`)}
+                min={0}
+              />
+            </Input.Wrapper>
+            <Space h={5} />
+
+            <Group position="right">
+              <Button color="red" onClick={() => remove(idx)} size="xs">
+                Remove
+              </Button>
+            </Group>
+          </Paper>
+        ))}
+
+        <Space h={5} />
+
+        <Group position="left">
+          <Button
+            variant="subtle"
+            onClick={() =>
+              append({
+                accountId: "",
+                type: "",
+                amount: 0,
+              })
+            }
+          >
+            Add new
+          </Button>
+
+          <Button
+            type="submit"
+            loading={__creatingInvoice || __payment__inprogress}
+          >
+            Save
+          </Button>
+        </Group>
+      </form>
+    </div>
+  );
 };
 
 export default PaymentForm;
