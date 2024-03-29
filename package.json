@@ -11,6 +11,7 @@
     "generate:gql": "graphql-codegen -c src/_app/configs/codegen.config.ts"
   },
   "dependencies": {
+    "@apollo/client": "^3.9.9",
     "@emotion/react": "^11.11.4",
     "@headlessui/react": "^1.7.18",
     "@hookform/error-message": "^2.0.1",
