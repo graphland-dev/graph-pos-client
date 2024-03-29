@@ -15,6 +15,7 @@ import VatPage from "./pages/settings/pages/vat/vat.page";
 import UnitPage from "./pages/settings/pages/unit/unit.page";
 import BrandPage from "./pages/settings/pages/brand/brand.page";
 import InvoicesPage from "./pages/invoices/invoices.page";
+import InvoicePaymentsPage from "./pages/payments/invoice-payments/invoice-payments.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -79,6 +80,10 @@ export const inventoryModuleRouter: RouteObject[] = [
           {
             path: "purchase-payments",
             element: <PurchasePaymentPage />,
+          },
+          {
+            path: "invoice-payments",
+            element: <InvoicePaymentsPage />,
           },
           {
             // query strings
