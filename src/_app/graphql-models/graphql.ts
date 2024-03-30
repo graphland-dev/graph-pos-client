@@ -27,6 +27,7 @@ export enum Accounting_Transaction_Source {
   ClientInvoicePayment = 'CLIENT_INVOICE_PAYMENT',
   EmployeeSalary = 'EMPLOYEE_SALARY',
   Expense = 'EXPENSE',
+  InventoryInvoicePayment = 'INVENTORY_INVOICE_PAYMENT',
   LoanPayment = 'LOAN_PAYMENT',
   Payroll = 'PAYROLL',
   PurchasePayment = 'PURCHASE_PAYMENT'
@@ -210,6 +211,17 @@ export type CreateExpenseInput = {
   voucherNo?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CreateInventoryInvoicePaymentInput = {
+  clientId: Scalars['String']['input'];
+  date?: InputMaybe<Scalars['String']['input']>;
+  invoiceId: Scalars['String']['input'];
+  paymentTerm?: InputMaybe<Scalars['String']['input']>;
+  payments: Array<InventoryInvoicePaymentItemInput>;
+  poReference?: InputMaybe<Scalars['String']['input']>;
+  receptNo?: InputMaybe<Scalars['String']['input']>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreatePayrollInput = {
   accountId: Scalars['String']['input'];
   attachments?: InputMaybe<Array<ServerFileInput>>;
@@ -253,6 +265,8 @@ export type CreateProductInvoiceInput = {
   netTotal: Scalars['Float']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
   products: Array<ProductItemReferenceInput>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Purchase_Invoice_Status>;
   subTotal: Scalars['Float']['input'];
   taxAmount?: InputMaybe<Scalars['Float']['input']>;
   taxRate?: InputMaybe<Scalars['Float']['input']>;
@@ -432,7 +446,7 @@ export type Expense = {
   account?: Maybe<Account>;
   amount?: Maybe<Scalars['Float']['output']>;
   attachments?: Maybe<Array<ServerFileReference>>;
-  category?: Maybe<Scalars['ID']['output']>;
+  category?: Maybe<ExpenseCategory>;
   checkNo?: Maybe<Scalars['String']['output']>;
   coRelationId?: Maybe<Scalars['ID']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -464,6 +478,44 @@ export type ExpensesWithPagination = {
   __typename?: 'ExpensesWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Expense>>;
+};
+
+export type InventoryInvoicePayment = {
+  __typename?: 'InventoryInvoicePayment';
+  _id: Scalars['ID']['output'];
+  client?: Maybe<Client>;
+  coRelationId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  inventoryInvoicePaymentUID?: Maybe<Scalars['String']['output']>;
+  invoice?: Maybe<ProductInvoice>;
+  netAmount?: Maybe<Scalars['Float']['output']>;
+  paymentTerm?: Maybe<Scalars['String']['output']>;
+  payments?: Maybe<Array<InventoryInvoicePaymentItem>>;
+  poReference?: Maybe<Scalars['String']['output']>;
+  receptNo?: Maybe<Scalars['String']['output']>;
+  reference?: Maybe<Scalars['String']['output']>;
+  tenant?: Maybe<Scalars['String']['output']>;
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type InventoryInvoicePaymentItem = {
+  __typename?: 'InventoryInvoicePaymentItem';
+  account?: Maybe<Account>;
+  amount?: Maybe<Scalars['Float']['output']>;
+  type: Scalars['String']['output'];
+};
+
+export type InventoryInvoicePaymentItemInput = {
+  accountId: Scalars['String']['input'];
+  amount: Scalars['Float']['input'];
+  type: Scalars['String']['input'];
+};
+
+export type InventoryInvoicePaymentsWithPagination = {
+  __typename?: 'InventoryInvoicePaymentsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<InventoryInvoicePayment>>;
 };
 
 export type LoginInput = {
@@ -509,6 +561,7 @@ export type Mutation = {
   accounting__createAccount: CommonMutationResponse;
   accounting__createExpense: CommonMutationResponse;
   accounting__createExpenseCategory: CommonMutationResponse;
+  accounting__createInventoryInvoicePayment: CommonMutationResponse;
   accounting__createPayroll: CommonMutationResponse;
   accounting__createPurchasePayment: CommonMutationResponse;
   accounting__createTransaction: CommonMutationResponse;
@@ -543,6 +596,7 @@ export type Mutation = {
   inventory__loadDemoProducts: Scalars['Boolean']['output'];
   inventory__removeProduct: Scalars['Boolean']['output'];
   inventory__removeProductCategory: Scalars['Boolean']['output'];
+  inventory__removeProductInvoice: Scalars['Boolean']['output'];
   inventory__removeProductPurchase: Scalars['Boolean']['output'];
   inventory__removeProductStock: Scalars['Boolean']['output'];
   inventory__updateProduct: Scalars['Boolean']['output'];
@@ -588,6 +642,11 @@ export type MutationAccounting__CreateExpenseArgs = {
 
 export type MutationAccounting__CreateExpenseCategoryArgs = {
   body: CreateExpenseCategoryInput;
+};
+
+
+export type MutationAccounting__CreateInventoryInvoicePaymentArgs = {
+  body: CreateInventoryInvoicePaymentInput;
 };
 
 
@@ -757,6 +816,11 @@ export type MutationInventory__RemoveProductCategoryArgs = {
 };
 
 
+export type MutationInventory__RemoveProductInvoiceArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
 export type MutationInventory__RemoveProductPurchaseArgs = {
   where: CommonFindDocumentDto;
 };
@@ -917,6 +981,12 @@ export enum Product_Sell_Source {
   Quatation = 'QUATATION'
 }
 
+export enum Purchase_Invoice_Status {
+  Due = 'DUE',
+  Hold = 'HOLD',
+  Paid = 'PAID'
+}
+
 export type PagniationMeta = {
   __typename?: 'PagniationMeta';
   currentPage: Scalars['Float']['output'];
@@ -992,7 +1062,7 @@ export type Product = {
 export type ProductCategory = {
   __typename?: 'ProductCategory';
   _id: Scalars['ID']['output'];
-  code: Scalars['String']['output'];
+  code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   isDemo?: Maybe<Scalars['Boolean']['output']>;
   name: Scalars['String']['output'];
@@ -1030,7 +1100,9 @@ export type ProductInvoice = {
   products: Array<ProductItemReference>;
   purchaseDate?: Maybe<Scalars['DateTime']['output']>;
   purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
+  reference?: Maybe<Scalars['String']['output']>;
   source?: Maybe<Product_Sell_Source>;
+  status?: Maybe<Purchase_Invoice_Status>;
   subTotal: Scalars['Float']['output'];
   taxAmount: Scalars['Float']['output'];
   taxRate: Scalars['Float']['output'];
@@ -1115,6 +1187,7 @@ export type ProductStock = {
   _id: Scalars['ID']['output'];
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   invoiceUID?: Maybe<Scalars['String']['output']>;
+  isDemo?: Maybe<Scalars['Boolean']['output']>;
   note?: Maybe<Scalars['String']['output']>;
   product: Product;
   purchaseUID?: Maybe<Scalars['String']['output']>;
@@ -1195,12 +1268,14 @@ export type PurchasePaymentsWithPagination = {
 export type Query = {
   __typename?: 'Query';
   _service: _Service;
+  accounting__InventoryInvoicePayment: InventoryInvoicePayment;
   accounting__account: Account;
   accounting__accounts: AccountsWithPagination;
   accounting__expense: Expense;
   accounting__expenseCategory: ExpenseCategory;
   accounting__expenseCategorys: ExpenseCategorysWithPagination;
   accounting__expenses: ExpensesWithPagination;
+  accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   accounting__payrolls: PayrollsWithPagination;
   accounting__purchasePayments: PurchasePaymentsWithPagination;
   accounting__transaction: Transaction;
@@ -1243,6 +1318,11 @@ export type Query = {
 };
 
 
+export type QueryAccounting__InventoryInvoicePaymentArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
 export type QueryAccounting__AccountArgs = {
   where?: InputMaybe<CommonFindDocumentDto>;
 };
@@ -1269,6 +1349,11 @@ export type QueryAccounting__ExpenseCategorysArgs = {
 
 
 export type QueryAccounting__ExpensesArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryAccounting__InventoryInvoicePaymentsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
@@ -1867,7 +1952,7 @@ export type Identity__LoginMutation = { __typename?: 'Mutation', identity__login
 export type Identity__MyTenantsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type Identity__MyTenantsQuery = { __typename?: 'Query', identity__myTenants: { __typename?: 'TenantsWithPagination', nodes?: Array<{ __typename?: 'Tenant', _id: string, name: string, uid?: string | null, createdAt?: any | null }> | null } };
+export type Identity__MyTenantsQuery = { __typename?: 'Query', identity__myTenants: { __typename?: 'TenantsWithPagination', nodes?: Array<{ __typename?: 'Tenant', _id: string, name: string, uid?: string | null, createdAt?: any | null, logo?: { __typename?: 'ServerFileReference', meta?: string | null, path?: string | null, provider?: ServerFileProvider | null } | null }> | null } };
 
 
 export const Get_User_QueriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GET_USER_QUERIES"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myPermissions"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"collectionName"}},{"kind":"Field","name":{"kind":"Name","value":"actions"}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Get_User_QueriesQuery, Get_User_QueriesQueryVariables>;
@@ -1876,4 +1961,4 @@ export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"ki
 export const Setup__UpdateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__updateBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__updateBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}]}]}}]} as unknown as DocumentNode<Setup__UpdateBrandMutation, Setup__UpdateBrandMutationVariables>;
 export const Setup__RemoveBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__removeBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__removeBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<Setup__RemoveBrandMutation, Setup__RemoveBrandMutationVariables>;
 export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;
-export const Identity__MyTenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}}]}}]}}]}}]} as unknown as DocumentNode<Identity__MyTenantsQuery, Identity__MyTenantsQueryVariables>;
+export const Identity__MyTenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Identity__MyTenantsQuery, Identity__MyTenantsQueryVariables>;
