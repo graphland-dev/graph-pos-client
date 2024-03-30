@@ -15,8 +15,6 @@ const ProductInvoiceDetails: React.FC<{
   details: ProductInvoice;
   loading: boolean;
 }> = ({ details, loading }) => {
- 
-
   const ths = (
     <tr>
       <th>Product Name</th>
@@ -49,8 +47,6 @@ const ProductInvoiceDetails: React.FC<{
       </tr>
     ));
 
-
-
   const rows = details.products?.map((element) => (
     <tr key={element.referenceId}>
       <td>
@@ -81,20 +77,13 @@ const ProductInvoiceDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Basic Info</Title>
           <Divider />
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Purchase Date:</span>{" "}
-            {details.purchaseDate}
-          </Text>
-          <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">
-              Purchase Order Date:
-            </span>
-
-            {details.purchaseOrderDate}
+            {details.date}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Tax Rate:</span>
@@ -144,7 +133,7 @@ const ProductInvoiceDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Client</Title>
           <Divider />
