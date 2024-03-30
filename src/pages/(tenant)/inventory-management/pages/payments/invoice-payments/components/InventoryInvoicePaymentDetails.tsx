@@ -125,7 +125,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Client</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Name:</span>
+            {/* <span className="font-semibold text-gray-800"> Name:</span> */}
 
             {/* <Anchor
               component={Link}
@@ -162,7 +162,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Paying Invoice</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Name:</span>
+            {/* <span className="font-semibold text-gray-800"> Name:</span> */}
 
             {/* <Anchor
               component={Link}
