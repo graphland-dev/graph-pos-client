@@ -68,6 +68,10 @@ export const inventoryNavlinks: AppNavLink[] = [
         label: "Purchase Payments",
         href: "purchase-payments",
       },
+      {
+        label: "Invoice Payments",
+        href: "invoice-payments",
+      },
     ],
   },
   {
