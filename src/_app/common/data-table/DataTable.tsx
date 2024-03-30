@@ -77,7 +77,6 @@ const DataTable: React.FC<Prop> = ({
     }
   };
 
-  console.log(sorting[0]?.desc);
   const where = {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,

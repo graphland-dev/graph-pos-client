@@ -51,7 +51,7 @@ export const INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY = gql`
         invoiceUID
         paidAmount
         netTotal
-        purchaseDate
+        date
       }
     }
   }
