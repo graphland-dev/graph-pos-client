@@ -253,7 +253,8 @@ const CreatePurchasePage = () => {
   useEffect(() => {
     if (
       !isFetchingProducts &&
-      typeof searchParams.get("productId") === "string" &&  productsData?.inventory__products?.nodes &&
+      typeof searchParams.get("productId") === "string" &&
+      productsData?.inventory__products?.nodes &&
       productsData?.inventory__products?.nodes?.length > 0
     ) {
       handleAddProductToList(productsData.inventory__products.nodes[0]);
