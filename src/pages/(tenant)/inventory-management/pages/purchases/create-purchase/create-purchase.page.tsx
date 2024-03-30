@@ -34,7 +34,7 @@ import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { IconMinus, IconPlus, IconX } from "@tabler/icons-react";
 import classNames from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
   calculateTaxAmount,
@@ -45,7 +45,7 @@ import {
 } from "./utils/helpers";
 
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
@@ -70,6 +70,7 @@ const CreatePurchasePage = () => {
   const navigate = useNavigate();
 
   const params = useParams<{ tenant: string }>();
+  const [searchParams] = useSearchParams();
 
   const {
     data,
@@ -100,9 +101,12 @@ const CreatePurchasePage = () => {
 
         filters: [
           {
-            key: "price",
-            operator: MatchOperator.Gte,
-            value: `${0}`,
+            // key: "price",
+            // operator: MatchOperator.Gte,
+            // value: `${0}`,
+            key: "_id",
+            operator: MatchOperator.Eq,
+            value: searchParams.get("productId"),
           },
         ],
       },
@@ -245,6 +249,16 @@ const CreatePurchasePage = () => {
       },
     });
   };
+
+  useEffect(() => {
+    if (
+      !isFetchingProducts &&
+      typeof searchParams.get("productId") === "string" &&  productsData?.inventory__products?.nodes &&
+      productsData?.inventory__products?.nodes?.length > 0
+    ) {
+      handleAddProductToList(productsData.inventory__products.nodes[0]);
+    }
+  }, [isFetchingProducts]);
 
   return (
     <>
