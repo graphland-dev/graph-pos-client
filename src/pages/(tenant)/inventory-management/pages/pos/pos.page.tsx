@@ -561,7 +561,10 @@ const PosPage = () => {
                     costAmount,
 
                     discountAmount,
-                    discountPercentage: discountValue,
+                    discountPercentage:
+                      discountMode === ProductDiscountMode.Percentage
+                        ? discountValue
+                        : 0,
                     discountMode,
 
                     subTotal: productsPrice,

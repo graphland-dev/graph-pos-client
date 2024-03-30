@@ -49,9 +49,8 @@ const InvoicesPage = () => {
         header: "Client Name",
       },
       {
-        accessorKey: "purchaseDate",
         accessorFn: (row: ProductInvoice) =>
-          row?.purchaseDate ? dateFormat(row?.purchaseDate) : "",
+          row?.date ? dateFormat(row?.date) : "",
         header: "Purchase Date",
       },
       {

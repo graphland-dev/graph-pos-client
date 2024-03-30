@@ -60,11 +60,29 @@ const DataTable: React.FC<Prop> = ({
   });
   const [sorting, setSorting] = useState<any[]>([]);
   const [columnFilters, setColumnFilters] = useState<any[]>([]);
+
+  const getTableSorting = () => {
+    if (!sorting?.length) {
+      return SortType.Desc;
+    } else {
+      return sorting[0]?.desc ? SortType.Desc : SortType.Asc;
+    }
+  };
+
+  const getTableSortBy = () => {
+    if (!sorting) {
+      return "createdAt";
+    } else {
+      return sorting[0]?.id;
+    }
+  };
+
+  console.log(sorting[0]?.desc);
   const where = {
     page: pagination.pageIndex + 1,
     limit: pagination.pageSize,
-    sortBy: sorting[0]?.id,
-    sort: sorting[0]?.desc ? SortType.Desc : SortType.Asc,
+    sortBy: getTableSortBy(),
+    sort: getTableSorting(),
     filters: [
       ...filters,
       ...columnFilters.map((f: any) => ({
@@ -164,9 +182,7 @@ const DataTable: React.FC<Prop> = ({
   });
   return (
     <>
-      <MantineReactTable
-          table={table}
-      />
+      <MantineReactTable table={table} />
     </>
   );
 };

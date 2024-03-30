@@ -19,8 +19,7 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
           name
           email
         }
-        purchaseDate
-        purchaseOrderDate
+        date
         taxRate
         taxAmount
         discountPercentage
