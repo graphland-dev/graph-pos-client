@@ -1,7 +1,5 @@
 import { Notify } from "@/_app/common/Notification/Notify";
-import { getAccountBalance } from "@/_app/common/utils/getBalance";
 import {
-  Account,
   AccountsWithPagination,
   ProductDiscountMode,
 } from "@/_app/graphql-models/graphql";
@@ -9,7 +7,6 @@ import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cash
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import {
-  Badge,
   Button,
   Group,
   Input,
@@ -81,10 +78,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
       poReference: "",
       date: new Date(),
       payments: [
+        // Required
         {
           accountId: "",
-          amount: 0,
-          type: "",
+          amount: formData?.netTotal || 0,
+          type: "Cash",
         },
       ],
     },
@@ -228,6 +226,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
         {fields.map((_, idx) => (
           <Paper key={idx} className="relative" p={10} my={10} withBorder>
             <Input.Wrapper
+              withAsterisk
               label="Account"
               error={
                 <ErrorMessage
@@ -238,24 +237,17 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             >
               <Select
                 data={accountListForDrop ?? []}
+                withAsterisk
                 defaultValue={watch(`payments.${idx}.accountId`)}
                 placeholder="Select account"
                 onChange={(e) => setValue(`payments.${idx}.accountId`, e!)}
               />
               {/* <Space h={5} /> */}
-              {watch(`payments.${idx}.accountId`) && (
-                <Badge my={5}>
-                  Balance:{" "}
-                  {getAccountBalance(
-                    data?.accounting__accounts?.nodes as Account[],
-                    watch(`payments.${idx}.accountId`)
-                  )}
-                </Badge>
-              )}
             </Input.Wrapper>
             <Space h={5} />
             <Input.Wrapper
               label="Payment Type"
+              withAsterisk
               error={
                 <ErrorMessage
                   name={`paymentCount.${idx}.paymentType`}
@@ -265,6 +257,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             >
               <Select
                 placeholder="Pick a payment type"
+                withAsterisk
                 data={["Nagad", "Rocket", "Bank", "Cash"]}
                 onChange={(e) => setValue(`payments.${idx}.type`, e!)}
                 defaultValue={watch(`payments.${idx}.type`)}
@@ -316,7 +309,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             type="submit"
             loading={__creatingInvoice || __payment__inprogress}
           >
-            Save
+            Make Payment
           </Button>
         </Group>
       </form>

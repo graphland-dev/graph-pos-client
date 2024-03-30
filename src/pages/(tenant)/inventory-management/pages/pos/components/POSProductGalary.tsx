@@ -1,4 +1,5 @@
 import EmptyState from "@/_app/common/EmptyState/EmptyState";
+import { getFileUrl } from "@/_app/common/utils/getFileUrl";
 import {
   BrandsWithPagination,
   MatchOperator,
@@ -18,6 +19,7 @@ import {
   Space,
   Text,
 } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import React, { useState } from "react";
 import { getSelectInputData } from "../../products/product-edit/components/AssignmentForm";
 import {
@@ -26,7 +28,6 @@ import {
   Pos_Products_Query,
 } from "../utils/query.pos";
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
-import { getFileUrl } from "@/_app/common/utils/getFileUrl";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
@@ -87,6 +88,13 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
     onSelectProduct(getProductReferenceByQuantity(product, 1));
   };
 
+  const getStock = (product: Product) => {
+    const _in = product.stockInQuantity || 0;
+    const _out = product.stockOutQuantity || 0;
+
+    return _in - _out || 0;
+  };
+
   return (
     <Paper p={15} className=" h-[calc(100vh-44px)] overflow-y-auto">
       <div className="grid grid-cols-2 gap-2">
@@ -128,9 +136,22 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
               radius={5}
               shadow="sm"
               pos={"relative"}
-              onClick={() => handleEmitProduct(product)}
+              onClick={() => {
+                if (getStock(product)) {
+                  handleEmitProduct(product);
+                } else {
+                  showNotification({
+                    message: "Product not in stock",
+                    color: "red",
+                  });
+                }
+              }}
               className="overflow-hidden border cursor-pointer border-neutral-muted hover:border-blue-500"
             >
+              {!getStock(product) && (
+                <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-sm"></div>
+              )}
+
               <Badge
                 pos={"absolute"}
                 top={0}
@@ -153,10 +174,13 @@ const POSProductGlary: React.FC<IProp> = ({ onSelectProduct }) => {
 
               <div className="p-2">
                 <Text size="xs" fw={500}>
-                  {product?.code}
+                  CODE: {product?.code}
                 </Text>
                 <Text fz={"md"} fw={500}>
                   {product?.name}
+                </Text>
+                <Text fz={"md"} fw={500}>
+                  Stock: {getStock(product)}
                 </Text>
               </div>
             </Paper>

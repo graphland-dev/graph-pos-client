@@ -13,79 +13,6 @@ export const Pos_Client_Query = gql`
   }
 `;
 
-export const Pos_Products_Query1 = gql`
-  query Pos_Products_Query1($where: CommonPaginationDto) {
-    inventory__products(where: $where) {
-      nodes {
-        _id
-        name
-        code
-        tenant
-        gallery {
-          provider
-          path
-          meta
-          externalUrl
-        }
-        thumbnail {
-          provider
-          path
-          meta
-          externalUrl
-        }
-        stockInQuantity
-        stockOutQuantity
-        modelName
-        category {
-          _id
-          tenant
-          name
-          code
-          note
-          createdAt
-          updatedAt
-        }
-        brand {
-          _id
-          tenant
-          name
-          code
-          note
-          createdAt
-          updatedAt
-        }
-        unit {
-          _id
-          tenant
-          name
-          code
-          note
-          createdAt
-          updatedAt
-        }
-        vat {
-          _id
-          tenant
-          name
-          percentage
-          code
-          note
-          createdAt
-          updatedAt
-        }
-        price
-        discountPercentage
-        discountAmount
-        discountMode
-        taxType
-        note
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`;
-
 export const Pos_Brands_Query = gql`
   query Pos_Brands_Query($where: CommonPaginationDto) {
     setup__brands(where: $where) {
@@ -127,6 +54,8 @@ export const Pos_Products_Query = gql`
           provider
           externalUrl
         }
+        stockInQuantity
+        stockOutQuantity
         discountAmount
         discountMode
         discountPercentage
