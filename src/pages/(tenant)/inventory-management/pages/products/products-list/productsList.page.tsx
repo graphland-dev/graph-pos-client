@@ -9,7 +9,7 @@ import {
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconBrandProducthunt, IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -128,6 +128,13 @@ const ProductListPage = () => {
               icon={<IconFileInfo size={18} />}
             >
               View
+            </Menu.Item>
+            <Menu.Item
+              component={Link}
+              to={`/${params.tenant}/inventory-management/purchases/create?productId=${row?._id}`}
+              icon={<IconBrandProducthunt size={18} />}
+            >
+              Purchase This
             </Menu.Item>
             <Menu.Item
               onClick={() => handleDeleteAccount(row._id)}

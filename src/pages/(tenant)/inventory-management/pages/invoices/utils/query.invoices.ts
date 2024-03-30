@@ -15,9 +15,16 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
         invoiceUID
         status
         client {
-          _id
-          name
+          address
+          contactNumber
           email
+          name
+          tenant
+          attachments {
+            meta
+            path
+            provider
+          }
         }
         date
         taxRate
