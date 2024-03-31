@@ -9,44 +9,44 @@
 // }
 // [data-active]
 
-$slackDark: #49243e;
-$slackSemiDark: #704264;
-$slackLight: #bb8493;
-$slackBody: #d6c4be;
+$themeDark: #49243e;
+$themeSemiDark: #704264;
+$themeLight: #bb8493;
+$themeWhite: #d6c4be;
 
 .theme-switcher-icon {
-  color: $slackBody;
+  color: $themeWhite;
 }
 .app-common-header {
-  background-color: $slackDark;
+  background-color: $themeDark;
 
   &__logo {
-    color: $slackBody;
+    color: $themeWhite;
   }
 
   .spotlight {
-    background-color: $slackSemiDark;
+    background-color: $themeSemiDark;
     &__search-icon {
-      color: $slackBody;
+      color: $themeWhite;
     }
     &__command-label {
-      background-color: $slackDark;
-      color: $slackBody;
+      background-color: $themeDark;
+      color: $themeWhite;
     }
   }
 }
 .tenant-dropdown {
-  background-color: $slackSemiDark;
+  background-color: $themeSemiDark;
 
   &__name,
   &__switch-icon,
   &__setting-icon {
-    color: $slackBody;
+    color: $themeWhite;
   }
 }
 
 .app-sidebar {
-  background-color: $slackDark;
+  background-color: $themeDark;
   margin-top: -1px;
 
   .app-module-title {
@@ -56,11 +56,11 @@ $slackBody: #d6c4be;
 
   .app-navbar-item {
     // background-color: red;
-    color: $slackBody;
+    color: $themeWhite;
 
     &[data-active],
     &:hover {
-      background-color: $slackSemiDark !important;
+      background-color: $themeSemiDark !important;
       @apply transition-colors duration-300;
     }
   }
