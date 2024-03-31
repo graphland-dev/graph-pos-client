@@ -21,6 +21,8 @@
   --text-muted: #d1d5db;
 
   --base: #fff;
+
+  --icon: #475569;
 }
 
 html[data-color-scheme="dark"] {
@@ -37,6 +39,8 @@ html[data-color-scheme="dark"] {
   --text-muted: #374151;
 
   --light-gray: #171717;
+
+  --icon: #94a3b8;
 }
 
 body {

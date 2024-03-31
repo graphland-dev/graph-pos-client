@@ -1,6 +1,9 @@
 export interface AppNavLink {
   label: string;
   href?: string;
-  icon?: React.ReactNode;
+  icon?: React.ElementType<{
+    className: string;
+    size: string;
+  }>;
   children?: AppNavLink[];
 }

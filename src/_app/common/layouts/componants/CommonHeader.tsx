@@ -1,4 +1,9 @@
-import { Header, UnstyledButton, useMantineColorScheme } from "@mantine/core";
+import {
+  Burger,
+  Header,
+  UnstyledButton,
+  useMantineColorScheme,
+} from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { IconSearch } from "@tabler/icons-react";
 import classnames from "classnames";
@@ -6,14 +11,29 @@ import { Link, useParams } from "react-router-dom";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
 import TenantDropdown from "./TenantDropdown";
+import { useDisclosure } from "@mantine/hooks";
 
 const CommonHeader = () => {
   const { colorScheme } = useMantineColorScheme();
   const params = useParams<{ tenant: string }>();
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   return (
     <Header height={45} className="flex items-center justify-between px-10">
       <div className="flex items-center gap-2">
+        <Burger
+          opened={mobileOpened}
+          onClick={toggleMobile}
+          className="sm:hidden"
+          size="sm"
+        />
+        <Burger
+          opened={desktopOpened}
+          onClick={toggleDesktop}
+          className="hidden sm:block"
+          size="sm"
+        />
         <Link
           className="no-underline"
           to={params?.tenant ? `/${params.tenant}/` : "/"}
