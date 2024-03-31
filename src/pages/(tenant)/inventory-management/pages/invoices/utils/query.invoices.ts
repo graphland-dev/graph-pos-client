@@ -26,8 +26,7 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
             provider
           }
         }
-        purchaseDate
-        purchaseOrderDate
+        date
         taxRate
         taxAmount
         discountPercentage

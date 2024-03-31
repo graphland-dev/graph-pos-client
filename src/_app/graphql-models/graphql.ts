@@ -984,7 +984,8 @@ export enum Product_Sell_Source {
 export enum Purchase_Invoice_Status {
   Due = 'DUE',
   Hold = 'HOLD',
-  Paid = 'PAID'
+  Paid = 'PAID',
+  PartiallyPaid = 'PARTIALLY_PAID'
 }
 
 export type PagniationMeta = {
@@ -1090,6 +1091,7 @@ export type ProductInvoice = {
   costAmount: Scalars['Float']['output'];
   costs: Array<CostItemReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
   discountAmount?: Maybe<Scalars['Float']['output']>;
   discountMode?: Maybe<ProductDiscountMode>;
   discountPercentage?: Maybe<Scalars['Float']['output']>;
@@ -1098,8 +1100,6 @@ export type ProductInvoice = {
   note?: Maybe<Scalars['String']['output']>;
   paidAmount?: Maybe<Scalars['Float']['output']>;
   products: Array<ProductItemReference>;
-  purchaseDate?: Maybe<Scalars['DateTime']['output']>;
-  purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
   reference?: Maybe<Scalars['String']['output']>;
   source?: Maybe<Product_Sell_Source>;
   status?: Maybe<Purchase_Invoice_Status>;
@@ -1135,6 +1135,7 @@ export type ProductItemReferenceInput = {
   netAmount: Scalars['Float']['input'];
   quantity: Scalars['Int']['input'];
   referenceId: Scalars['ID']['input'];
+  stock?: InputMaybe<Scalars['Int']['input']>;
   subAmount: Scalars['Float']['input'];
   taxAmount: Scalars['Float']['input'];
   taxRate: Scalars['Float']['input'];

@@ -1,17 +1,10 @@
 import dateFormat from "@/_app/common/utils/dateFormat";
 import {
-    InventoryInvoicePayment,
-    MatchOperator,
+  InventoryInvoicePayment,
+  MatchOperator,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import {
-    Divider,
-    Paper,
-    Skeleton,
-    Table,
-    Text,
-    Title
-} from "@mantine/core";
+import { Divider, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
 import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from "../utils/query.invoice-payments";
 
 const InventoryInvoicePaymentDetails: React.FC<{
@@ -81,7 +74,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Basic Info</Title>
           <Divider />
@@ -120,7 +113,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Client</Title>
           <Divider />
@@ -157,7 +150,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Paying Invoice</Title>
           <Divider />
@@ -187,7 +180,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Purchase Date:</span>
             {dateFormat(
-              data?.accounting__InventoryInvoicePayment.invoice?.purchaseDate
+              data?.accounting__InventoryInvoicePayment.invoice?.date
             )}
           </Text>
         </Paper>

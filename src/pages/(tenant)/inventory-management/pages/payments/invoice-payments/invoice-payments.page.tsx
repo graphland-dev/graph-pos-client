@@ -39,8 +39,6 @@ const InvoicePaymentsPage = () => {
     },
   });
 
-  console.log(data);
-
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
@@ -84,7 +82,11 @@ const InvoicePaymentsPage = () => {
             openDrawer: false,
           })
         }
-        title={<Text className="text-2xl font-semibold">Inventory Invoice Payments Details</Text>}
+        title={
+          <Text className="text-2xl font-semibold">
+            Inventory Invoice Payments Details
+          </Text>
+        }
         opened={state.openDrawer}
         size={"95%"}
       >
@@ -112,7 +114,6 @@ const InvoicePaymentsPage = () => {
             </Menu.Item>
           </>
         )}
-      
         loading={loading || state.refetching}
       />
     </>

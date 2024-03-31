@@ -157,6 +157,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             discountAmount: formData?.discountAmount || 0,
             discountMode: formData.discountMode || ProductDiscountMode.Amount,
             discountPercentage: formData.discountPercentage || 0,
+            date: values?.date,
           },
         },
       }).then((invoice) => {

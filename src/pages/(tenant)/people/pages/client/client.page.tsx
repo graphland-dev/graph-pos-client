@@ -6,12 +6,13 @@ import {
   ClientsWithPagination,
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
+import { useSearchParams } from "react-router-dom";
 import ClientCreateForm from "./components/ClientCreateFrom";
 import {
   PEOPLE_CLIENTS_QUERY,
@@ -32,6 +33,9 @@ const ClientPage = () => {
     selectedClient: null,
   });
 
+  const [searchParams] = useSearchParams();
+  const clientId = searchParams.get("clientId");
+
   const {
     data,
     refetch,
@@ -39,6 +43,10 @@ const ClientPage = () => {
   } = useQuery<{
     people__clients: ClientsWithPagination;
   }>(PEOPLE_CLIENTS_QUERY);
+
+  const [searchuser] = useLazyQuery<{
+    people__clients: ClientsWithPagination;
+  }>(PEOPLE_CLIENTS_QUERY, { fetchPolicy: "network-only" });
 
   const [deleteClientMutation] = useMutation(PEOPLE_REMOVE_CLIENT, {
     onCompleted: () => handleRefetch({}),
@@ -87,6 +95,32 @@ const ClientPage = () => {
     ],
     []
   );
+
+  useEffect(() => {
+    if (clientId) {
+      // alert(clientId);
+      drawerHandler.open();
+      searchuser({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: "_id",
+                operator: MatchOperator.Eq,
+                value: clientId,
+              },
+            ],
+          },
+        },
+      }).then((res) => {
+        setState({
+          selectedClient: res.data?.people__clients?.nodes?.[0],
+          action: "EDIT",
+        });
+      });
+    }
+  }, [searchParams]);
+
   return (
     <div>
       <PageTitle title="client" />
