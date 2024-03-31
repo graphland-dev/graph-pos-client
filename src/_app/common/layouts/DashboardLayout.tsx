@@ -1,5 +1,6 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { AppShell, NavLink, Navbar, ScrollArea, Title } from "@mantine/core";
+import { AppShell, NavLink, Navbar, ScrollArea } from "@mantine/core";
+import classNames from "classnames";
 import React from "react";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import CommonHeader from "./componants/CommonHeader";
@@ -24,11 +25,19 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
       header={<CommonHeader />}
+      layout="alt"
       navbar={
-        <Navbar p="md" hiddenBreakpoint="sm" width={{ sm: 200, lg: 300 }}>
+        <Navbar
+          p="md"
+          hiddenBreakpoint="sm"
+          width={{ sm: 200, lg: 300 }}
+          className="app-sidebar"
+        >
           {title && (
             <Navbar.Section p={"sm"}>
-              <Title order={4}>{title}</Title>
+              <p className="font-semibold uppercase app-module-title">
+                {title}
+              </p>
             </Navbar.Section>
           )}
           <Navbar.Section grow mt="md" component={ScrollArea}>
@@ -40,10 +49,13 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                 to={linkWithTenant(`${path}/${item?.href}`)}
                 icon={
                   item.icon ? (
-                    <item.icon size="1.2rem" className="text-icon" />
+                    <item.icon
+                      size="1.2rem"
+                      className="app-navbar-item__icon"
+                    />
                   ) : undefined
                 }
-                className="rounded-md "
+                className={classNames("text-white rounded-md app-navbar-item")}
                 active={pathname.includes(item?.href as string)}
               >
                 {item?.children &&
@@ -54,6 +66,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                       component={Link}
                       px={"xs"}
                       py={2}
+                      className="app-navbar-item"
                       active={pathname.startsWith(
                         linkWithTenant(`${path}/${item?.href}/${_item.href}`)
                       )}

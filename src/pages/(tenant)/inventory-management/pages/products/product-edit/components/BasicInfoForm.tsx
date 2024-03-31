@@ -14,7 +14,7 @@ import {
 } from "../utils/productEdit.query";
 
 const BasicInfoForm = () => {
-  const { productId } = useParams();
+  const { productId } = useParams<{ productId: string }>();
   const {
     register,
     setValue,

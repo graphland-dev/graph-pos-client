@@ -8,11 +8,22 @@ const ThemeSwitcherMenu = () => {
 
   return (
     <Menu shadow="md" width={200}>
-      <Menu.Target>
+      {/* <Menu.Target>
         {colorScheme === "dark" ? (
           <IconMoon size={22} className="cursor-pointer" />
         ) : (
           <IconSunHigh size={22} className="cursor-pointer" />
+        )}
+      </Menu.Target> */}
+
+      <Menu.Target>
+        {colorScheme === "dark" ? (
+          <IconMoon size={22} className="cursor-pointer theme-switcher-icon" />
+        ) : (
+          <IconSunHigh
+            size={22}
+            className="cursor-pointer theme-switcher-icon"
+          />
         )}
       </Menu.Target>
 
