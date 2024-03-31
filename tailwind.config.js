@@ -7,6 +7,7 @@ export default {
       keyframes: { "reverse-spin": { from: { transform: "rotate(360deg)" } } },
       colors: {
         base: "var(--base)",
+        icon: 'var(--icon)',
         'light-gray': "var(--light-gray)",
         'text-gray': "var(--text-gray)",
         'text-muted': "var(--text-muted)",

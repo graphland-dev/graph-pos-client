@@ -7,6 +7,64 @@
 // @layer base {
 
 // }
+// [data-active]
+
+$slackDark: #49243e;
+$slackSemiDark: #704264;
+$slackLight: #bb8493;
+$slackBody: #d6c4be;
+
+.theme-switcher-icon {
+  color: $slackBody;
+}
+.app-common-header {
+  background-color: $slackDark;
+
+  &__logo {
+    color: $slackBody;
+  }
+
+  .spotlight {
+    background-color: $slackSemiDark;
+    &__search-icon {
+      color: $slackBody;
+    }
+    &__command-label {
+      background-color: $slackDark;
+      color: $slackBody;
+    }
+  }
+}
+.tenant-dropdown {
+  background-color: $slackSemiDark;
+
+  &__name,
+  &__switch-icon,
+  &__setting-icon {
+    color: $slackBody;
+  }
+}
+
+.app-sidebar {
+  background-color: $slackDark;
+  margin-top: -1px;
+
+  .app-module-title {
+    color: white;
+    font-size: 16px;
+  }
+
+  .app-navbar-item {
+    // background-color: red;
+    color: $slackBody;
+
+    &[data-active],
+    &:hover {
+      background-color: $slackSemiDark !important;
+      @apply transition-colors duration-300;
+    }
+  }
+}
 
 :root {
   --neutral-primary: #1f2937;
@@ -21,6 +79,8 @@
   --text-muted: #d1d5db;
 
   --base: #fff;
+
+  --icon: #475569;
 }
 
 html[data-color-scheme="dark"] {
@@ -37,6 +97,8 @@ html[data-color-scheme="dark"] {
   --text-muted: #374151;
 
   --light-gray: #171717;
+
+  --icon: #94a3b8;
 }
 
 body {

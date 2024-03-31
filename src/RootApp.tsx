@@ -46,9 +46,7 @@ const RootApp = () => {
             globalStyles: (theme) => ({
               body: {
                 backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.gray[9]
-                    : "#F1F5FA",
+                  theme.colorScheme === "dark" ? "#1D1C1D" : "#FED4BE",
               },
             }),
           }}
