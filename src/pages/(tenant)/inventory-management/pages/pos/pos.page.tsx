@@ -189,17 +189,21 @@ const PosPage = () => {
 	const costAmount = watch('costAmount') || 0;
 	const taxRate = watch('taxRate') || 0;
 
+	// product price calculate
 	const productsPrice = getTotalProductsPrice(products);
 	const discountAmount = getDiscount(
 		discountMode,
 		discountValue,
 		productsPrice
 	);
+
+	// sales vat calculate
 	const salesVatAmount = getSalesVat(
 		costAmount + productsPrice - discountAmount,
 		taxRate
 	);
 
+	// net amount calculate
 	const getNetAmount = () => {
 		const sum = productsPrice - discountAmount + costAmount + salesVatAmount;
 
@@ -210,8 +214,8 @@ const PosPage = () => {
 	useEffect(() => {
 		if (selectedInvoice) {
 			setValue('clientId', selectedInvoice?.client?._id as string);
-			setValue('discountMode', selectedInvoice?.discountMode as string);
-			setValue('discountValue', selectedInvoice?.discountAmount as number);
+			setValue('discountMode', selectedInvoice?.discountMode ?? 'PERCENTAGE');
+			setValue('discountValue', selectedInvoice?.discountAmount ?? 0);
 			setValue('costAmount', selectedInvoice?.costAmount as number);
 			setValue('taxRate', selectedInvoice?.taxAmount ?? (0 as number));
 			setValue('products', selectedInvoice?.products as ProductItemReference[]);
@@ -312,6 +316,8 @@ const PosPage = () => {
 			</Flex>
 			<form onSubmit={handleSubmit(onSubmitPOS)} className='p-3'>
 				<div className='flex items-start gap-3'>
+					{' '}
+					{/* {JSON.stringify(errors, null, 2)} */}
 					{/* Left Side */}
 					<div className='lg:w-7/12'>
 						<Paper p={15} withBorder>
@@ -609,6 +615,7 @@ const PosPage = () => {
 									onSuccess={() => {
 										paymentModalHandler.close();
 										refetchProducts();
+										refetchHoldList();
 										reset({
 											clientId: '',
 											discountMode: ProductDiscountMode.Amount,
@@ -635,6 +642,7 @@ const PosPage = () => {
 									size='md'
 									type='submit'
 									leftIcon={<IconCreditCard size={16} />}
+									onClick={() => setAction('PAYMENT')}
 									disabled={!watch('products')?.length || !watch('clientId')}
 								>
 									Payment
