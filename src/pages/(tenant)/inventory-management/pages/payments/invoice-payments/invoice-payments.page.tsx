@@ -73,6 +73,9 @@ const InvoicePaymentsPage = () => {
     });
   };
 
+
+
+
   return (
     <>
       <PageTitle title="purchase-list" />
