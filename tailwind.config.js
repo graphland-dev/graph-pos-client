@@ -8,6 +8,8 @@ export default {
       colors: {
         base: "var(--base)",
         icon: 'var(--icon)',
+        'theme-primary': 'var(--theme-primary)',
+        'theme-light': 'var(--theme-light)',
         'light-gray': "var(--light-gray)",
         'text-gray': "var(--text-gray)",
         'text-muted': "var(--text-muted)",

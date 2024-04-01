@@ -47,7 +47,7 @@ const TenantDropdown = () => {
           <UnstyledButton>
             <IconSwitchVertical
               size={22}
-              className="text-gray-800 tenant-dropdown__switch-icon"
+              className="text-neutral-primary tenant-dropdown__switch-icon"
             />
           </UnstyledButton>
         </Menu.Target>

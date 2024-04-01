@@ -1,11 +1,19 @@
 import { AppNavLink } from "@/_app/models/AppNavLink.type";
-import { AppShell, NavLink, Navbar, ScrollArea } from "@mantine/core";
+import {
+  AppShell,
+  NavLink,
+  Navbar,
+  ScrollArea,
+  UnstyledButton,
+  clsx,
+} from "@mantine/core";
 import classNames from "classnames";
 import React from "react";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import CommonHeader from "./componants/CommonHeader";
 import { navbarIsCollapsedAtom } from "@/_app/states/navbar.atom";
 import { useAtom } from "jotai";
+import { IconChevronLeft } from "@tabler/icons-react";
 
 interface Prop {
   navlinks: AppNavLink[];
@@ -17,7 +25,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const { pathname } = useLocation();
   const params = useParams<{ tenant: string }>();
 
-  const [desktopNavbarCollapsed] = useAtom(navbarIsCollapsedAtom);
+  const [desktopNavbarCollapsed, setDesktopNavbarCollapsed] = useAtom(
+    navbarIsCollapsedAtom
+  );
 
   const linkWithTenant = (link: string) => {
     if (params.tenant) return `/${params.tenant}/${link}`;
@@ -43,9 +53,26 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
           p="md"
           hiddenBreakpoint="sm"
           width={{ sm: 300 }}
-          className="transition-all duration-150 border-0 app-sidebar"
+          className="transition-all duration-300 border-0 app-sidebar"
           left={desktopNavbarCollapsed ? -300 : 0}
         >
+          <UnstyledButton
+            onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
+            className={clsx(
+              "absolute top-14 -right-4 bg-theme-primary text-theme-light",
+              {
+                "-right-6": desktopNavbarCollapsed,
+              }
+            )}
+          >
+            <IconChevronLeft
+              size={30}
+              className={clsx("transition-all duration-300", {
+                "rotate-180": desktopNavbarCollapsed,
+              })}
+            />
+          </UnstyledButton>
+
           {title && (
             <Navbar.Section p={"sm"}>
               <p className="font-semibold uppercase app-module-title">

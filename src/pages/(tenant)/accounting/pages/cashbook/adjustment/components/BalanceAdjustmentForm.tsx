@@ -62,8 +62,7 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
           source: Accounting_Transaction_Source.BalanceAdjustment,
         },
       },
-      onCompleted: (res) => {
-        console.log(res);
+      onCompleted: () => {
         onSubmissionDone();
       },
       onError: (err) => console.log(err),

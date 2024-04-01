@@ -25,7 +25,9 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Title order={4}>Purpose</Title>
           <Divider />
           <Text className="flex justify-between mt-2">
-            <span className="font-semibold text-gray-800">Purpose: </span>
+            <span className="font-semibold text-neutral-primary">
+              Purpose:{" "}
+            </span>
             {expenseDetails?.purpose}
           </Text>
         </Paper>
@@ -38,7 +40,9 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Title order={4}>Account</Title>
           <Divider />
           <Text className="flex justify-between mt-2">
-            <span className="font-semibold text-gray-800">Account: </span>
+            <span className="font-semibold text-neutral-primary">
+              Account:{" "}
+            </span>
             {`${expenseDetails?.account?.name} [${expenseDetails?.account?.referenceNumber}]`}
           </Text>
         </Paper>
@@ -51,7 +55,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Title order={4}>Amount</Title>
           <Divider />
           <Text className="flex justify-between mt-2">
-            <span className="font-semibold text-gray-800">Amount: </span>
+            <span className="font-semibold text-neutral-primary">Amount: </span>
             {currencyNumberFormat(expenseDetails?.amount || 0)} BDT
           </Text>
         </Paper>
@@ -64,7 +68,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Title order={4}>Date</Title>
           <Divider />
           <Text className="flex justify-between mt-2">
-            <span className="font-semibold text-gray-800">Date: </span>
+            <span className="font-semibold text-neutral-primary">Date: </span>
             {dateFormat(expenseDetails?.date)}
           </Text>
         </Paper>
@@ -77,7 +81,9 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Title order={4}>Category</Title>
           <Divider />
           <Text className="flex justify-between mt-2">
-            <span className="font-semibold text-gray-800">Category: </span>
+            <span className="font-semibold text-neutral-primary">
+              Category:{" "}
+            </span>
             {(expenseDetails?.category as { name: string } | undefined)?.name ||
               ""}
           </Text>
@@ -89,11 +95,15 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           className="flex flex-col w-full gap-1"
         >
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Check No: </span>
+            <span className="font-semibold text-neutral-primary">
+              Check No:{" "}
+            </span>
             {expenseDetails?.checkNo}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Voucher No: </span>
+            <span className="font-semibold text-neutral-primary">
+              Voucher No:{" "}
+            </span>
             {expenseDetails?.voucherNo}
           </Text>
         </Paper>
