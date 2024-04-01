@@ -43,6 +43,20 @@ const RootApp = () => {
           withGlobalStyles
           theme={{
             colorScheme,
+            colors: {
+              theme: [
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+                "#49243e",
+              ],
+            },
+            primaryColor: "theme",
             globalStyles: (theme) => ({
               body: {
                 backgroundColor:

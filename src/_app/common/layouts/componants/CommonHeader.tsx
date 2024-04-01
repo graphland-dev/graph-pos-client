@@ -7,17 +7,22 @@ import { Link, useParams } from "react-router-dom";
 import TenantDropdown from "./TenantDropdown";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
+import { useAtom } from "jotai";
+import { navbarIsCollapsedAtom } from "@/_app/states/navbar.atom";
 
 const CommonHeader = () => {
   // const { colorScheme } = useMantineColorScheme();
   const params = useParams<{ tenant: string }>();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  // const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [desktopNavbarCollapsed, setDesktopNavbarCollapsed] = useAtom(
+    navbarIsCollapsedAtom
+  );
 
   return (
     <Header
       height={45}
-      className="flex items-center justify-between px-2 m-2 border-0 app-common-header"
+      className="flex items-center justify-between px-2 border-0 app-common-header"
     >
       <div className="flex items-center gap-2">
         <Burger
@@ -27,10 +32,11 @@ const CommonHeader = () => {
           size="sm"
         />
         <Burger
-          opened={desktopOpened}
-          onClick={toggleDesktop}
+          opened={!desktopNavbarCollapsed}
+          onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
           className="hidden sm:block"
           size="sm"
+          color="white"
         />
         <Link
           className="no-underline uppercase app-common-header__logo"

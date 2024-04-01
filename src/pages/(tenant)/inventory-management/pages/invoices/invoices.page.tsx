@@ -66,7 +66,6 @@ const InvoicesPage = () => {
           const netTotal = originalRow?.netTotal || 0;
 
           const totalDue = netTotal - paidAmount;
-          console.log(totalDue);
 
           let color = "red";
           if (totalDue > 0 && paidAmount !== 0) {

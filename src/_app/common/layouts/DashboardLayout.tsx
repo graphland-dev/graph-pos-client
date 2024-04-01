@@ -4,6 +4,8 @@ import classNames from "classnames";
 import React from "react";
 import { Link, Outlet, useLocation, useParams } from "react-router-dom";
 import CommonHeader from "./componants/CommonHeader";
+import { navbarIsCollapsedAtom } from "@/_app/states/navbar.atom";
+import { useAtom } from "jotai";
 
 interface Prop {
   navlinks: AppNavLink[];
@@ -14,6 +16,8 @@ interface Prop {
 const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const { pathname } = useLocation();
   const params = useParams<{ tenant: string }>();
+
+  const [desktopNavbarCollapsed] = useAtom(navbarIsCollapsedAtom);
 
   const linkWithTenant = (link: string) => {
     if (params.tenant) return `/${params.tenant}/${link}`;
@@ -26,12 +30,21 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       asideOffsetBreakpoint="sm"
       header={<CommonHeader />}
       layout="alt"
+      styles={{
+        root: {
+          "--mantine-navbar-width": desktopNavbarCollapsed ? "1px" : "18.75rem",
+        },
+        main: {
+          // paddingTop: 0,
+        },
+      }}
       navbar={
         <Navbar
           p="md"
           hiddenBreakpoint="sm"
-          width={{ sm: 200, lg: 300 }}
-          className="app-sidebar"
+          width={{ sm: 300 }}
+          className="transition-all duration-150 border-0 app-sidebar"
+          left={desktopNavbarCollapsed ? -300 : 0}
         >
           {title && (
             <Navbar.Section p={"sm"}>

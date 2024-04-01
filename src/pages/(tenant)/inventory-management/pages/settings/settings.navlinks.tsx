@@ -8,17 +8,17 @@ import {
 export const settingsNavlinks: AppNavLink[] = [
   {
     label: "Vat Profiles",
-    icon: <IconReceipt2 />,
+    icon: IconReceipt2,
     href: "vat-profiles",
   },
   {
     label: "Units",
-    icon: <IconRulerMeasure />,
+    icon: IconRulerMeasure,
     href: "units",
   },
   {
     label: "Brands",
-    icon: <IconBrandAbstract />,
+    icon: IconBrandAbstract,
     href: "brands",
   },
 ];
