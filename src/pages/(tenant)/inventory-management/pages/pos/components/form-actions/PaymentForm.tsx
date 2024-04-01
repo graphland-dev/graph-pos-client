@@ -39,6 +39,7 @@ interface ExtendedFormData extends IPosFormType {
 interface IPaymentFormProps {
 	formData: ExtendedFormData;
 	onSuccess: () => void;
+	onRefetchHoldList: () => void;
 	preMadeInvoiceId?: string;
 }
 
@@ -46,6 +47,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 	formData,
 	onSuccess,
 	preMadeInvoiceId,
+	onRefetchHoldList,
 }) => {
 	// accounts API
 	const { data } = useQuery<{
@@ -125,6 +127,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 		{
 			onCompleted: () => {
 				onSuccess();
+				onRefetchHoldList();
 			},
 		}
 	);
@@ -343,7 +346,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 							getTotalPaymentAmount(watch('payments')) > formData?.netTotal
 						}
 					>
-						Make Payment {getTotalPaymentAmount(watch('payments'))}
+						Make Payment
 					</Button>
 				</Group>
 			</form>

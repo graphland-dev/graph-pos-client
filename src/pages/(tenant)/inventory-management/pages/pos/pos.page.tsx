@@ -316,8 +316,6 @@ const PosPage = () => {
 			</Flex>
 			<form onSubmit={handleSubmit(onSubmitPOS)} className='p-3'>
 				<div className='flex items-start gap-3'>
-					{' '}
-					{/* {JSON.stringify(errors, null, 2)} */}
 					{/* Left Side */}
 					<div className='lg:w-7/12'>
 						<Paper p={15} withBorder>
@@ -446,7 +444,6 @@ const PosPage = () => {
 
 						<Paper p={15} withBorder>
 							<div className='grid grid-cols-2 gap-3'>
-								{/* {JSON.stringify(errors, null, 2)} */}
 								<div>
 									<Input.Wrapper
 										size='md'
@@ -572,6 +569,7 @@ const PosPage = () => {
 									}
 									onSuccess={() => {
 										holdModalHandler.close();
+										refetchHoldList();
 										reset({
 											clientId: '',
 											discountValue: 0,
@@ -580,7 +578,6 @@ const PosPage = () => {
 											products: [],
 											costAmount: 0,
 										});
-										refetchHoldList();
 									}}
 								/>
 							</Modal>
@@ -615,7 +612,6 @@ const PosPage = () => {
 									onSuccess={() => {
 										paymentModalHandler.close();
 										refetchProducts();
-										refetchHoldList();
 										reset({
 											clientId: '',
 											discountMode: ProductDiscountMode.Amount,
@@ -626,6 +622,7 @@ const PosPage = () => {
 										});
 									}}
 									preMadeInvoiceId={selectedInvoice?._id}
+									onRefetchHoldList={() => refetchHoldList()}
 								/>
 							</Drawer>
 
