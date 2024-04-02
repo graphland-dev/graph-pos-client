@@ -17,10 +17,21 @@ const RootApp = () => {
     defaultValue: "light",
     getInitialValueInEffect: true,
   });
+
+  const [colorTheme] = useLocalStorage({
+    key: "graph-360--theme",
+    defaultValue: "green",
+    getInitialValueInEffect: true,
+  });
+
   const toggleColorScheme = (value?: ColorScheme) =>
     setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
 
   useHotkeys([["mod+J", () => toggleColorScheme()]]);
+
+  useEffect(() => {
+    document.querySelector("html")?.setAttribute("data-theme", colorTheme);
+  }, [colorTheme]);
 
   useEffect(() => {
     if (colorScheme === "dark") {
@@ -43,14 +54,21 @@ const RootApp = () => {
           withGlobalStyles
           theme={{
             colorScheme,
-            globalStyles: (theme) => ({
-              body: {
-                backgroundColor:
-                  theme.colorScheme === "dark"
-                    ? theme.colors.gray[9]
-                    : "#F1F5FA",
-              },
-            }),
+            colors: {
+              theme: [
+                "color-mix(in srgb, var(--theme-primary), #fff 70%)", // 0
+                "color-mix(in srgb, var(--theme-primary), #fff 60%)", // 1
+                "color-mix(in srgb, var(--theme-primary), #fff 50%)", // 2
+                "color-mix(in srgb, var(--theme-primary), #fff 40%)", // 3
+                "color-mix(in srgb, var(--theme-primary), #fff 30%)", // 4
+                "color-mix(in srgb, var(--theme-primary), #fff 20%)", // 5
+                "color-mix(in srgb, var(--theme-primary), #fff 10%)", // 6
+                "var(--theme-primary)", // 7 Base color
+                "color-mix(in srgb, var(--theme-primary), #000 15%)", // 8
+                "color-mix(in srgb, var(--theme-primary), #000 35%)", // 9
+              ],
+            },
+            primaryColor: "theme",
           }}
         >
           <ModalsProvider>

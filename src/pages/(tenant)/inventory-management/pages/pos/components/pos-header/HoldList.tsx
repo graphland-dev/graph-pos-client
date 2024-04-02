@@ -1,3 +1,4 @@
+import EmptyState from '@/_app/common/EmptyState/EmptyState';
 import { Notify } from '@/_app/common/Notification/Notify';
 import { MatchOperator, ProductInvoice } from '@/_app/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
@@ -53,6 +54,9 @@ const HoldList: React.FC<{
 						))}
 					</tbody>
 				</Table>
+				{!holdList?.length ? (
+					<EmptyState label={'Hold list is empty!'} />
+				) : null}
 			</Drawer>
 		</div>
 	);

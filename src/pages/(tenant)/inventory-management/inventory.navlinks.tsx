@@ -7,23 +7,23 @@ import {
   IconFile3d,
   IconReceipt2,
   IconRulerMeasure,
-  IconShoppingCart
+  IconShoppingCart,
 } from "@tabler/icons-react";
 
 export const inventoryNavlinks: AppNavLink[] = [
   {
     label: "POS",
-    icon: <IconShoppingCart />,
+    icon: IconShoppingCart,
     href: "pos",
   },
   {
     label: "Invoices",
-    icon: <IconFile3d />,
+    icon: IconFile3d,
     href: "invoices",
   },
   {
     label: "Products",
-    icon: <IconBrandProducthunt />,
+    icon: IconBrandProducthunt,
     href: "products",
     children: [
       {
@@ -42,7 +42,7 @@ export const inventoryNavlinks: AppNavLink[] = [
   },
   {
     label: "Purchases",
-    icon: <IconShoppingCart />,
+    icon: IconShoppingCart,
     href: "purchases",
     children: [
       {
@@ -61,7 +61,7 @@ export const inventoryNavlinks: AppNavLink[] = [
   },
   {
     label: "Payments",
-    icon: <IconCoin />,
+    icon: IconCoin,
     href: "payments",
     children: [
       {
@@ -76,22 +76,22 @@ export const inventoryNavlinks: AppNavLink[] = [
   },
   {
     label: "Settings",
-    icon: <IconAdjustments />,
+    icon: IconAdjustments,
     href: "settings",
     children: [
       {
         label: "Vat Profiles",
-        icon: <IconReceipt2 />,
+        icon: IconReceipt2,
         href: "vat-profiles",
       },
       {
         label: "Units",
-        icon: <IconRulerMeasure />,
+        icon: IconRulerMeasure,
         href: "units",
       },
       {
         label: "Brands",
-        icon: <IconBrandAbstract />,
+        icon: IconBrandAbstract,
         href: "brands",
       },
     ],

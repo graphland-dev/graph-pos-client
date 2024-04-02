@@ -19,7 +19,7 @@ const TenantDropdown = () => {
   }
 
   return (
-    <div className="flex items-center gap-2 px-2 py-1 rounded-md bg-green-200/70">
+    <div className="flex items-center gap-2 px-2 py-1 rounded-md tenant-dropdown">
       <Flex gap={"xs"} align={"center"}>
         {getTenantByUId(params.tenant!)?.logo?.path ? (
           <Image
@@ -37,7 +37,7 @@ const TenantDropdown = () => {
           />
         )}
 
-        <p className="text-gray-800">
+        <p className="tenant-dropdown__name">
           {getTenantByUId(params.tenant!)?.name || "Select tenant"}
         </p>
       </Flex>
@@ -45,7 +45,10 @@ const TenantDropdown = () => {
       <Menu shadow="md" width={200}>
         <Menu.Target>
           <UnstyledButton>
-            <IconSwitchVertical size={22} className="text-gray-800" />
+            <IconSwitchVertical
+              size={22}
+              className="text-neutral-primary tenant-dropdown__switch-icon"
+            />
           </UnstyledButton>
         </Menu.Target>
 
@@ -64,7 +67,7 @@ const TenantDropdown = () => {
       </Menu>
 
       <Link to={`/${params.tenant}/tenant-settings`}>
-        <IconSettings size={22} className="text-gray-800" />
+        <IconSettings size={22} className="tenant-dropdown__setting-icon" />
       </Link>
     </div>
   );

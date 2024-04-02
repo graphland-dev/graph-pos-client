@@ -1,5 +1,5 @@
 import CommonHeader from "@/_app/common/layouts/componants/CommonHeader";
-import { Text } from "@mantine/core";
+import { Button, Text } from "@mantine/core";
 import {
   IconBuildingWarehouse,
   IconPremiumRights,
@@ -47,12 +47,25 @@ const ModulesPage = () => {
           <div
             key={key}
             onClick={() => navigate(`/${params?.tenant}/${module.path}`)}
-            className="flex flex-col  cursor-pointer bg-base border-2 border-stone-300 rounded  p-5 py-12  justify-center items-center gap-2"
+            className="flex flex-col items-center justify-center gap-2 p-5 py-12 border-2 rounded cursor-pointer bg-base border-stone-300"
           >
             <module.icon />
-            <Text className=" text-xl">{module.label}</Text>
+            <Text className="text-xl ">{module.label}</Text>
           </div>
         ))}
+      </div>
+
+      <div className="flex gap-3 p-10">
+        <Button color="theme.0">Button 0</Button>
+        <Button color="theme.1">Button 1</Button>
+        <Button color="theme.2">Button 2</Button>
+        <Button color="theme.3">Button 3</Button>
+        <Button color="theme.4">Button 4</Button>
+        <Button color="theme.5">Button 5</Button>
+        <Button color="theme.6">Button 6</Button>
+        <Button color="theme.7">Button 7</Button>
+        <Button color="theme.8">Button 8</Button>
+        <Button color="theme.9">Button 9</Button>
       </div>
     </>
   );

@@ -2,10 +2,12 @@ import { Notify } from "@/_app/common/Notification/Notify";
 import {
   AccountsWithPagination,
   ProductDiscountMode,
+  Purchase_Invoice_Status,
 } from "@/_app/graphql-models/graphql";
 import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query";
 import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
   Group,
@@ -23,6 +25,8 @@ import {
   Create_Invoice_Payment,
   Create_Product_Invoice,
 } from "../../utils/query.payment";
+import { Update_Invoice_Status } from "../../utils/query.pos";
+import { Payment_Form_Validation } from "../../utils/validations/paymentForm.validation";
 
 interface ExtendedFormData extends IPosFormType {
   subTotal: number;
@@ -35,6 +39,7 @@ interface ExtendedFormData extends IPosFormType {
 interface IPaymentFormProps {
   formData: ExtendedFormData;
   onSuccess: () => void;
+  onRefetchHoldList: () => void;
   preMadeInvoiceId?: string;
 }
 
@@ -42,6 +47,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   formData,
   onSuccess,
   preMadeInvoiceId,
+  onRefetchHoldList,
 }) => {
   // accounts API
   const { data } = useQuery<{
@@ -86,6 +92,8 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
         },
       ],
     },
+    resolver: yupResolver(Payment_Form_Validation),
+    mode: "onChange",
   });
 
   // form fields array
@@ -111,6 +119,17 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
         });
       },
     })
+  );
+
+  // payment mutation
+  const [updateInvoice, { loading: __updating__invoice }] = useMutation(
+    Update_Invoice_Status,
+    {
+      onCompleted: () => {
+        onSuccess();
+        onRefetchHoldList();
+      },
+    }
   );
 
   // create invoice mutation
@@ -139,6 +158,16 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             date: values?.date,
           },
         },
+      }).finally(() => {
+        updateInvoice({
+          variables: {
+            invoiceId: preMadeInvoiceId,
+            status:
+              getTotalPaymentAmount(watch("payments")) === formData?.netTotal
+                ? Purchase_Invoice_Status.Paid
+                : Purchase_Invoice_Status.PartiallyPaid,
+          },
+        });
       });
     } else {
       createInvoice({
@@ -182,6 +211,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 
   return (
     <div>
+      {/* {JSON.stringify(errors, null, 2)} */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input.Wrapper
           label="Reference"
@@ -229,9 +259,10 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             <Input.Wrapper
               withAsterisk
               label="Account"
+              size="md"
               error={
                 <ErrorMessage
-                  name={`paymentCount.${idx}.account`}
+                  name={`payments.${idx}.accountId`}
                   errors={errors}
                 />
               }
@@ -247,13 +278,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             </Input.Wrapper>
             <Space h={5} />
             <Input.Wrapper
+              size="md"
               label="Payment Type"
               withAsterisk
               error={
-                <ErrorMessage
-                  name={`paymentCount.${idx}.paymentType`}
-                  errors={errors}
-                />
+                <ErrorMessage name={`payments.${idx}.type`} errors={errors} />
               }
             >
               <Select
@@ -267,9 +296,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             <Space h={5} />
             <Input.Wrapper
               label="Amount"
+              size="md"
               error={
                 <ErrorMessage name={`payments.${idx}.amount`} errors={errors} />
               }
+              withAsterisk
             >
               <NumberInput
                 placeholder="Amount"
@@ -308,7 +339,12 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 
           <Button
             type="submit"
-            loading={__creatingInvoice || __payment__inprogress}
+            loading={
+              __creatingInvoice || __payment__inprogress || __updating__invoice
+            }
+            disabled={
+              getTotalPaymentAmount(watch("payments")) > formData?.netTotal
+            }
           >
             Make Payment
           </Button>
@@ -319,3 +355,12 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 };
 
 export default PaymentForm;
+
+const getTotalPaymentAmount = (payments: any): number => {
+  let totalPaymentAmount = 0;
+  payments?.map(
+    (payment: any) =>
+      (totalPaymentAmount = totalPaymentAmount + payment?.amount)
+  );
+  return totalPaymentAmount;
+};

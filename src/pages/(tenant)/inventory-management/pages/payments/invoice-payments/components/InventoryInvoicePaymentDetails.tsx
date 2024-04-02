@@ -99,31 +99,42 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Basic Info</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Payment UID:</span>{" "}
+            <span className="font-semibold text-neutral-primary">
+              Payment UID:
+            </span>{" "}
             {
               data?.accounting__InventoryInvoicePayment
                 .inventoryInvoicePaymentUID
             }
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Po Reference:</span>
+            <span className="font-semibold text-neutral-primary">
+              Po Reference:
+            </span>
 
             {data?.accounting__InventoryInvoicePayment.poReference}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Recept No:</span>
+            <span className="font-semibold text-neutral-primary">
+              Recept No:
+            </span>
             {data?.accounting__InventoryInvoicePayment.receptNo}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Reference:</span>
+            <span className="font-semibold text-neutral-primary">
+              Reference:
+            </span>
             {data?.accounting__InventoryInvoicePayment.reference}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Date:</span>
+            <span className="font-semibold text-neutral-primary">Date:</span>
             {dateFormat(data?.accounting__InventoryInvoicePayment.date)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Net Amount:</span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Net Amount:
+            </span>
             {data?.accounting__InventoryInvoicePayment.netAmount}
           </Text>
         </Paper>
@@ -138,7 +149,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Client</Title>
           <Divider />
           <Text className="flex justify-between">
-            {/* <span className="font-semibold text-gray-800"> Name:</span> */}
+            {/* <span className="font-semibold text-neutral-primary"> Name:</span> */}
 
             {/* <Anchor
               component={Link}
@@ -148,20 +159,22 @@ const InventoryInvoicePaymentDetails: React.FC<{
             </Anchor> */}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Name: </span>
+            <span className="font-semibold text-neutral-primary"> Name: </span>
 
             {data?.accounting__InventoryInvoicePayment.client?.name}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Email: </span>
+            <span className="font-semibold text-neutral-primary">Email: </span>
             {data?.accounting__InventoryInvoicePayment.client?.email}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Address:</span>
+            <span className="font-semibold text-neutral-primary">Address:</span>
             {data?.accounting__InventoryInvoicePayment.client?.name}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Contact Number:</span>
+            <span className="font-semibold text-neutral-primary">
+              Contact Number:
+            </span>
             {data?.accounting__InventoryInvoicePayment?.client?.name}
           </Text>
         </Paper>
@@ -175,7 +188,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Paying Invoice</Title>
           <Divider />
           <Text className="flex justify-between">
-            {/* <span className="font-semibold text-gray-800"> Name:</span> */}
+            {/* <span className="font-semibold text-neutral-primary"> Name:</span> */}
 
             {/* <Anchor
               component={Link}
@@ -185,20 +198,29 @@ const InventoryInvoicePaymentDetails: React.FC<{
             </Anchor> */}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Invoice UID: </span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Invoice UID:{" "}
+            </span>
 
             {data?.accounting__InventoryInvoicePayment.invoice?.invoiceUID}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Paid Amount: </span>
+            <span className="font-semibold text-neutral-primary">
+              Paid Amount:{" "}
+            </span>
             {data?.accounting__InventoryInvoicePayment.invoice?.paidAmount}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Net Total:</span>
+            <span className="font-semibold text-neutral-primary">
+              Net Total:
+            </span>
             {data?.accounting__InventoryInvoicePayment.invoice?.netTotal}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Purchase Date:</span>
+            <span className="font-semibold text-neutral-primary">
+              Purchase Date:
+            </span>
             {dateFormat(
               data?.accounting__InventoryInvoicePayment.invoice?.date
             )}

@@ -10,7 +10,7 @@ const NotFoundPage = () => {
           <p className="p-3 text-sm font-medium ">
             <IconMoodEmpty size={55} />
           </p>
-          <h1 className="mt-3 text-2xl font-semibold text-gray-800 md:text-3xl">
+          <h1 className="mt-3 text-2xl font-semibold text-neutral-primary md:text-3xl">
             Page not found
           </h1>
           <p className="mt-4 text-gray-500 dark:text-gray-400">

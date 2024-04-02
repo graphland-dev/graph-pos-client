@@ -1,21 +1,26 @@
-import { Header, UnstyledButton, useMantineColorScheme } from "@mantine/core";
+import { Header, UnstyledButton } from "@mantine/core";
 import { spotlight } from "@mantine/spotlight";
 import { IconSearch } from "@tabler/icons-react";
 import classnames from "classnames";
 import { Link, useParams } from "react-router-dom";
+import TenantDropdown from "./TenantDropdown";
 import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
-import TenantDropdown from "./TenantDropdown";
 
 const CommonHeader = () => {
-  const { colorScheme } = useMantineColorScheme();
+  // const { colorScheme } = useMantineColorScheme();
   const params = useParams<{ tenant: string }>();
+  // const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  // const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   return (
-    <Header height={45} className="flex items-center justify-between px-10">
+    <Header
+      height={45}
+      className="flex items-center justify-between px-2 border-0 app-common-header"
+    >
       <div className="flex items-center gap-2">
         <Link
-          className="no-underline"
+          className="no-underline uppercase app-common-header__logo"
           to={params?.tenant ? `/${params.tenant}/` : "/"}
         >
           Graph360
@@ -26,25 +31,14 @@ const CommonHeader = () => {
         <UnstyledButton
           onClick={() => spotlight.open()}
           className={classnames(
-            "flex items-center w-[200px] justify-between px-2 py-1 border border-solid rounded-md",
-            {
-              "border-gray-200": colorScheme == "light",
-              "border-gray-700": colorScheme == "dark",
-            }
+            "flex items-center w-[200px] justify-between px-2 py-1 rounded-md spotlight"
           )}
         >
-          <IconSearch
-            className={classnames({
-              "text-gray-400": colorScheme == "light",
-              "text-gray-700": colorScheme == "dark",
-            })}
-            size={15}
-          />
+          <IconSearch className="spotlight__search-icon" size={15} />
           <div
-            className={classnames("p-1 text-xs rounded-md", {
-              "bg-gray-100": colorScheme === "light",
-              "bg-gray-700": colorScheme === "dark",
-            })}
+            className={classnames(
+              "p-1 text-xs rounded-md spotlight__command-label"
+            )}
           >
             ⌘ + k
           </div>

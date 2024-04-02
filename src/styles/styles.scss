@@ -4,41 +4,74 @@
 @tailwind components;
 @tailwind utilities;
 
-// @layer base {
+@import "theme";
 
-// }
-
-:root {
-  --neutral-primary: #1f2937;
-  --neutral-secondary: #4b5563;
-  --neutral-muted: #9ca3af;
-
-  --card-header: #e5e7eb;
-
-  // text
-  --text-base: #0a0a0a;
-  --text-gray: #9ca3af;
-  --text-muted: #d1d5db;
-
-  --base: #fff;
-}
-
-html[data-color-scheme="dark"] {
-  --base: #18181b;
-  --neutral-primary: #d1d5db;
-  --neutral-secondary: #d1d5db;
-  --neutral-muted: #9ca3af;
-
-  --card-header: #18181b;
-
-  // text
-  --text-base: #e4e4e7;
-  --text-gray: #9ca3af;
-  --text-muted: #374151;
-
-  --light-gray: #171717;
-}
-
+.mantine-AppShell-main,
 body {
-  color: var(--text-base);
+  background-color: var(--theme-body);
+}
+
+// Surface
+.mantine-Drawer-header {
+  background-color: var(--theme-primary);
+  margin-bottom: 20px;
+}
+.mantine-Drawer-title {
+  color: var(--theme-light);
+}
+.mantine-Drawer-content {
+  background-color: var(--theme-surface);
+}
+
+.theme-switcher-icon {
+  color: var(--theme-light);
+}
+
+.app-common-header {
+  background-color: var(--theme-primary);
+
+  &__logo {
+    color: var(--theme-light);
+  }
+
+  .spotlight {
+    background-color: var(--theme-primary-variant);
+    &__search-icon {
+      color: var(--theme-light);
+    }
+    &__command-label {
+      background-color: var(--theme-primary);
+      color: var(--theme-light);
+    }
+  }
+}
+
+.tenant-dropdown {
+  background-color: var(--theme-primary-variant);
+
+  &__name,
+  &__switch-icon,
+  &__setting-icon {
+    color: var(--theme-light);
+  }
+}
+
+.app-sidebar {
+  background-color: var(--theme-primary);
+  margin-top: -1px;
+
+  .app-module-title {
+    color: white;
+    font-size: 16px;
+  }
+
+  .app-navbar-item {
+    color: var(--theme-light);
+
+    &[data-active],
+    &:hover {
+      background-color: var(--theme-primary-variant) !important;
+      @apply transition-colors duration-300;
+    }
+  }
 }

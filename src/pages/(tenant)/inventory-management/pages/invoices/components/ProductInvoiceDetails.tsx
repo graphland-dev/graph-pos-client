@@ -124,36 +124,46 @@ const ProductInvoiceDetails: React.FC<{
             {currencyNumberFormat(details?.taxAmount)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold text-neutral-primary">
               Discount Amount:
             </span>
             {details?.discountAmount}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold text-neutral-primary">
               {" "}
               Discount Percentage:
             </span>
             {details?.discountPercentage}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Discount Mode:</span>
+            <span className="font-semibold text-neutral-primary">
+              Discount Mode:
+            </span>
             {details?.discountMode}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Sub Total:</span>
+            <span className="font-semibold text-neutral-primary">
+              Sub Total:
+            </span>
             {details?.subTotal}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Cost Amount:</span>
+            <span className="font-semibold text-neutral-primary">
+              Cost Amount:
+            </span>
             {details?.costAmount}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Net Total:</span>
+            <span className="font-semibold text-neutral-primary">
+              Net Total:
+            </span>
             {details?.netTotal}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Sub Total:</span>
+            <span className="font-semibold text-neutral-primary">
+              Sub Total:
+            </span>
             {details?.subTotal}
           </Text>
         </Paper>
@@ -168,7 +178,7 @@ const ProductInvoiceDetails: React.FC<{
           <Title order={4}>Client</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Name:</span>
+            <span className="font-semibold text-neutral-primary"> Name:</span>
 
             <Anchor
               component={Link}
@@ -178,22 +188,24 @@ const ProductInvoiceDetails: React.FC<{
             </Anchor>
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Email: </span>
+            <span className="font-semibold text-neutral-primary"> Email: </span>
 
             {details?.client?.email}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold text-neutral-primary">
               Contact Number:{" "}
             </span>
             {details?.client?.contactNumber}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Address:</span>
+            <span className="font-semibold text-neutral-primary">Address:</span>
             {details?.client?.address}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">create Date:</span>
+            <span className="font-semibold text-neutral-primary">
+              create Date:
+            </span>
             {dateFormat(details.client?.createdAt)}
           </Text>
         </Paper>
