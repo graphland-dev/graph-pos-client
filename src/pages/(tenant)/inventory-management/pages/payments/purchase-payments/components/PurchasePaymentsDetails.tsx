@@ -17,7 +17,6 @@ const PurchasePaymentsDetails: React.FC<{
   purchasePaymentsRow: PurchasePayment;
   loading: boolean;
 }> = ({ purchasePaymentsRow, loading }) => {
-  
   const elements = purchasePaymentsRow?.items;
   const totalAmount = useMemo(
     () =>
@@ -96,24 +95,35 @@ const PurchasePaymentsDetails: React.FC<{
           <Title order={4}>Basic Info</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Payment UID:</span>{" "}
+            <span className="font-semibold text-neutral-primary">
+              Payment UID:
+            </span>{" "}
             {purchasePaymentsRow?.paymentUID}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Paid Amount:</span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Paid Amount:
+            </span>
 
             {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Check Number:</span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Check Number:
+            </span>
             {purchasePaymentsRow?.checkNo}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Recept No:</span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Recept No:
+            </span>
             {purchasePaymentsRow?.receptNo}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Note:</span>
+            <span className="font-semibold text-neutral-primary"> Note:</span>
             {purchasePaymentsRow?.note}
           </Text>
         </Paper>
@@ -128,7 +138,7 @@ const PurchasePaymentsDetails: React.FC<{
           <Title order={4}>Supplier</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Name:</span>
+            <span className="font-semibold text-neutral-primary"> Name:</span>
 
             <Anchor
               component={Link}
@@ -138,16 +148,22 @@ const PurchasePaymentsDetails: React.FC<{
             </Anchor>
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Company Name: </span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Company Name:{" "}
+            </span>
 
             {purchasePaymentsRow?.supplier?.companyName}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Email: </span>
+            <span className="font-semibold text-neutral-primary">Email: </span>
             {purchasePaymentsRow?.supplier.email}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800"> Contact:</span>
+            <span className="font-semibold text-neutral-primary">
+              {" "}
+              Contact:
+            </span>
             {purchasePaymentsRow?.supplier.contactNumber}
           </Text>
         </Paper>
@@ -162,7 +178,7 @@ const PurchasePaymentsDetails: React.FC<{
         <Title order={4}>Account</Title>
         <Divider />
         <Text className="flex justify-between">
-          <span className="font-semibold text-gray-800">Name:</span>{" "}
+          <span className="font-semibold text-neutral-primary">Name:</span>{" "}
           <Anchor
             component={Link}
             to={`/${purchasePaymentsRow.account.tenant}/accounting/cashbook/accounts?accountId=${purchasePaymentsRow?.account?._id}`}
@@ -171,7 +187,10 @@ const PurchasePaymentsDetails: React.FC<{
           </Anchor>{" "}
         </Text>
         <Text className="flex justify-between">
-          <span className="font-semibold text-gray-800"> Company Name:</span>{" "}
+          <span className="font-semibold text-neutral-primary">
+            {" "}
+            Company Name:
+          </span>{" "}
           <span>
             {" "}
             {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
@@ -179,6 +198,7 @@ const PurchasePaymentsDetails: React.FC<{
         </Text>
       </Paper>
 
+    
       <Table mt={"md"} withColumnBorders captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>

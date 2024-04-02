@@ -65,8 +65,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({
         variables: {
           body: data,
         },
-        onCompleted: (res) => {
-          console.log(res);
+        onCompleted: () => {
           onSubmissionDone();
         },
         onError: (err) => console.log(err),
@@ -83,8 +82,7 @@ const AccountForm: React.FC<IAccountFormProps> = ({
           },
           body: data,
         },
-        onCompleted: (res) => {
-          console.log(res);
+        onCompleted: () => {
           onSubmissionDone();
         },
         onError: (err) => console.log(err),

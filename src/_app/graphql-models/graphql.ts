@@ -599,6 +599,7 @@ export type Mutation = {
   inventory__removeProductInvoice: Scalars['Boolean']['output'];
   inventory__removeProductPurchase: Scalars['Boolean']['output'];
   inventory__removeProductStock: Scalars['Boolean']['output'];
+  inventory__syncInvoiceItemsStock: Scalars['Boolean']['output'];
   inventory__updateProduct: Scalars['Boolean']['output'];
   inventory__updateProductCategory: Scalars['Boolean']['output'];
   people__createClient: CommonMutationResponse;
@@ -828,6 +829,12 @@ export type MutationInventory__RemoveProductPurchaseArgs = {
 
 export type MutationInventory__RemoveProductStockArgs = {
   where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__SyncInvoiceItemsStockArgs = {
+  invoiceId: Scalars['String']['input'];
+  status: Scalars['String']['input'];
 };
 
 

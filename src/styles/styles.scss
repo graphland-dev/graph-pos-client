@@ -4,49 +4,60 @@
 @tailwind components;
 @tailwind utilities;
 
-// @layer base {
+@import "theme";
 
-// }
-// [data-active]
+.mantine-AppShell-main,
+body {
+  background-color: var(--theme-body);
+}
 
-$themeDark: #49243e;
-$themeSemiDark: #704264;
-$themeLight: #bb8493;
-$themeWhite: #d6c4be;
+// Surface
+.mantine-Drawer-header {
+  background-color: var(--theme-primary);
+  margin-bottom: 20px;
+}
+.mantine-Drawer-title {
+  color: var(--theme-light);
+}
+.mantine-Drawer-content {
+  background-color: var(--theme-surface);
+}
 
 .theme-switcher-icon {
-  color: $themeWhite;
+  color: var(--theme-light);
 }
+
 .app-common-header {
-  background-color: $themeDark;
+  background-color: var(--theme-primary);
 
   &__logo {
-    color: $themeWhite;
+    color: var(--theme-light);
   }
 
   .spotlight {
-    background-color: $themeSemiDark;
+    background-color: var(--theme-primary-variant);
     &__search-icon {
-      color: $themeWhite;
+      color: var(--theme-light);
     }
     &__command-label {
-      background-color: $themeDark;
-      color: $themeWhite;
+      background-color: var(--theme-primary);
+      color: var(--theme-light);
     }
   }
 }
+
 .tenant-dropdown {
-  background-color: $themeSemiDark;
+  background-color: var(--theme-primary-variant);
 
   &__name,
   &__switch-icon,
   &__setting-icon {
-    color: $themeWhite;
+    color: var(--theme-light);
   }
 }
 
 .app-sidebar {
-  background-color: $themeDark;
+  background-color: var(--theme-primary);
   margin-top: -1px;
 
   .app-module-title {
@@ -55,52 +66,12 @@ $themeWhite: #d6c4be;
   }
 
   .app-navbar-item {
-    // background-color: red;
-    color: $themeWhite;
+    color: var(--theme-light);
 
     &[data-active],
     &:hover {
-      background-color: $themeSemiDark !important;
+      background-color: var(--theme-primary-variant) !important;
       @apply transition-colors duration-300;
     }
   }
-}
-
-:root {
-  --neutral-primary: #1f2937;
-  --neutral-secondary: #4b5563;
-  --neutral-muted: #9ca3af;
-
-  --card-header: #e5e7eb;
-
-  // text
-  --text-base: #0a0a0a;
-  --text-gray: #9ca3af;
-  --text-muted: #d1d5db;
-
-  --base: #fff;
-
-  --icon: #475569;
-}
-
-html[data-color-scheme="dark"] {
-  --base: #18181b;
-  --neutral-primary: #d1d5db;
-  --neutral-secondary: #d1d5db;
-  --neutral-muted: #9ca3af;
-
-  --card-header: #18181b;
-
-  // text
-  --text-base: #e4e4e7;
-  --text-gray: #9ca3af;
-  --text-muted: #374151;
-
-  --light-gray: #171717;
-
-  --icon: #94a3b8;
-}
-
-body {
-  color: var(--text-base);
 }

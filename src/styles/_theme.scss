@@ -1,0 +1,83 @@
+@function theme-darken($color, $percentage: 30%) {
+  @return color-mix(in srgb, $color, #000 $percentage);
+}
+
+@function theme-lighten($color, $percentage: 10%) {
+  @return color-mix(in srgb, $color, #fff $percentage);
+}
+
+:root {
+  --neutral-primary: #1f2937;
+  --neutral-secondary: #4b5563;
+  --neutral-muted: #9ca3af;
+  --card-header: #e5e7eb;
+
+  // text
+  --text-base: #0a0a0a;
+  --text-gray: #9ca3af;
+  --text-muted: #d1d5db;
+
+  // Theme
+  --theme-light: #f1fada;
+  --theme-body: #f6fff8;
+  --theme-surface: #fff;
+
+  // https://stackoverflow.com/a/55330103/3705299
+  --theme-primary: #265073;
+  --theme-primary-temp: #265073;
+  --theme-primary-variant: color-mix(in srgb, var(--theme-primary), #000 10%);
+}
+
+html[data-color-scheme="dark"] {
+  --base: #18181b;
+  --neutral-primary: #d1d5db;
+  --neutral-secondary: #d1d5db;
+  --neutral-muted: #9ca3af;
+  --card-header: #18181b;
+
+  // text
+  --text-base: #e4e4e7;
+  --text-gray: #9ca3af;
+  --text-muted: #374151;
+  --light-gray: #171717;
+
+  // Theme
+
+  --theme-light: #f1fada;
+  --theme-body: #f6fff8;
+  --theme-surface: #2c394b;
+
+  --theme-primary: color-mix(
+    in srgb,
+    var(--theme-primary-temp),
+    #000 10%
+  ) !important;
+
+  --theme-body: #22223b;
+}
+
+html[data-theme="aubergine"] {
+  --theme-primary: #704264;
+  --theme-primary-temp: #704264;
+  --theme-body: #ecf8f6;
+  --theme-light: #f1fada;
+  --theme-surface: #fff;
+}
+html[data-theme="aubergine"][data-color-scheme="dark"] {
+  --theme-body: #1e0f19;
+  --theme-light: #f1fada;
+  --theme-surface: #1e0f19;
+}
+
+html[data-theme="green"] {
+  --theme-primary: #008170;
+  --theme-primary-temp: #008170;
+  --theme-body: #e6f2f1;
+  --theme-light: #f1fada;
+  --theme-surface: #e6f2f1;
+}
+html[data-theme="green"][data-color-scheme="dark"] {
+  --theme-body: #021916;
+  --theme-light: #f1fada;
+  --theme-surface: #021916;
+}

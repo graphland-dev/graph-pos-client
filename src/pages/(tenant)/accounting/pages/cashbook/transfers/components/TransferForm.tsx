@@ -95,8 +95,7 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
           },
           body: data,
         },
-        onCompleted: (res) => {
-          console.log(res);
+        onCompleted: () => {
           onSubmissionDone();
         },
         onError: (err) => console.log(err),
