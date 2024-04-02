@@ -3,17 +3,19 @@ import PageTitle from "@/_app/common/PageTitle";
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
 import {
+  MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
 } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { Badge, Drawer, Menu, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
 import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
+import { useSearchParams } from "react-router-dom";
 interface IState {
   refetching: boolean;
   openDrawer: boolean;
@@ -36,7 +38,14 @@ const InvoicesPage = () => {
     },
   });
 
-  //   console.log(data);
+  const [searchParams] = useSearchParams();
+  const invoiceId = searchParams.get("invoiceId");
+
+  const [productInvoice] = useLazyQuery<{
+    inventory__productInvoices: ProductInvoicesWithPagination;
+  }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
+    fetchPolicy: "network-only",
+  });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -66,7 +75,6 @@ const InvoicesPage = () => {
           const netTotal = originalRow?.netTotal || 0;
 
           const totalDue = netTotal - paidAmount;
-          
 
           let color = "red";
           if (totalDue > 0 && paidAmount !== 0) {
@@ -111,6 +119,31 @@ const InvoicesPage = () => {
       setState({ refetching: false });
     });
   };
+
+  useEffect(() => {
+    console.log(invoiceId);
+    if (invoiceId) {
+      // alert(invoiceId);
+      productInvoice({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: "_id",
+                operator: MatchOperator.Eq,
+                value: invoiceId,
+              },
+            ],
+          },
+        },
+      }).then((res) => {
+        setInvoiceDetails(res.data?.inventory__productInvoices?.nodes?.[0]);
+        setState({
+          openDrawer: true,
+        });
+      });
+    }
+  }, [searchParams]);
 
   return (
     <>

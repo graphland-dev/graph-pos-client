@@ -30,6 +30,9 @@ interface IState {
 const SuppliersPage = () => {
   const [openedDrawer, drawerHandler] = useDisclosure();
   const [searchParams] = useSearchParams();
+
+  const supplierId = searchParams.get("supplierId");
+
   const [state, setState] = useSetState<IState>({
     refetching: false,
     action: "CREATE",
@@ -43,7 +46,7 @@ const SuppliersPage = () => {
   const {
     data,
     refetch,
-    loading: fetchingPeople,
+    loading: fetchingClient,
   } = useQuery<{
     people__suppliers: SuppliersWithPagination;
   }>(PEOPLE_SUPPLIERS_QUERY);
@@ -101,7 +104,6 @@ const SuppliersPage = () => {
   );
 
   useEffect(() => {
-    const supplierId = searchParams.get("supplierId");
     if (supplierId) {
       const row = data?.people__suppliers?.nodes?.find(
         (item) => item._id == supplierId
@@ -109,10 +111,10 @@ const SuppliersPage = () => {
 
       if (row) {
         setState({ viewModal: true });
-        setSupplierViewDetails(row!);
+        setSupplierViewDetails(row);
       }
     }
-  }, [searchParams]);
+  }, [supplierId, fetchingClient]);
 
   return (
     <div>
@@ -169,7 +171,7 @@ const SuppliersPage = () => {
             </Button>
           </>
         }
-        loading={fetchingPeople || state.refetching}
+        loading={fetchingClient || state.refetching}
       />
 
       <Drawer

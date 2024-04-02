@@ -1,8 +1,10 @@
 import DataTable from "@/_app/common/data-table/DataTable";
 import PageTitle from "@/_app/common/PageTitle";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
+import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   InventoryInvoicePayment,
-  InventoryInvoicePaymentsWithPagination,
+  InventoryInvoicePaymentsWithPagination
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import { Drawer, Menu, Text } from "@mantine/core";
@@ -10,10 +12,8 @@ import { useSetState } from "@mantine/hooks";
 import { IconFileInfo } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
-import { INVENTORY_INVOICE_PAYMENTS_QUERY } from "./utils/query.invoice-payments";
-import dateFormat from "@/_app/common/utils/dateFormat";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import InventoryInvoicePaymentDetails from "./components/InventoryInvoicePaymentDetails";
+import { INVENTORY_INVOICE_PAYMENTS_QUERY } from "./utils/query.invoice-payments";
 
 interface IState {
   refetching: boolean;
@@ -39,6 +39,7 @@ const InvoicePaymentsPage = () => {
     },
   });
 
+ 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
@@ -72,8 +73,6 @@ const InvoicePaymentsPage = () => {
       setState({ refetching: false });
     });
   };
-
-
 
 
   return (
