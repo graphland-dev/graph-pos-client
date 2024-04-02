@@ -179,6 +179,7 @@ const PurchasePaymentsDetails: React.FC<{
         </Text>
       </Paper>
 
+    
       <Table mt={"md"} withColumnBorders captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>

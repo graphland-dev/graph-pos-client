@@ -12,6 +12,7 @@ import {
 } from "@mantine/core";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
+import ProductInvoiceDetailsTable from "./ProductInvoiceDetailsTable";
 
 const ProductInvoiceDetails: React.FC<{
   details: ProductInvoice;
@@ -38,6 +39,7 @@ const ProductInvoiceDetails: React.FC<{
       <th>Net Amount</th>
     </tr>
   );
+
   const tfs = (
     <tr>
       <th></th>
@@ -70,6 +72,7 @@ const ProductInvoiceDetails: React.FC<{
       </tr>
     ));
 
+ 
   const rows = details.products?.map((element) => (
     <tr key={element.referenceId}>
       <td>
@@ -196,11 +199,18 @@ const ProductInvoiceDetails: React.FC<{
         </Paper>
       </div>
 
-      <Table mt={"md"} withColumnBorders withBorder captionSide="bottom">
-        <thead className="bg-card-header">{ths}</thead>
-        <tbody>{loading ? trSkeleton : rows}</tbody>
-        <tfoot>{tfs}</tfoot>
-      </Table>
+      <Paper>
+        <Title order={4}>Items</Title>
+        <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
+          <thead className="bg-card-header">{ths}</thead>
+          <tbody>{loading ? trSkeleton : rows}</tbody>
+          <tfoot>{tfs}</tfoot>
+        </Table>
+      </Paper>
+
+      <ProductInvoiceDetailsTable id={ details.invoiceUID || ""} />
+
+     
 
       {/* <Attachments
         attachments={details.attachments ?? []}
