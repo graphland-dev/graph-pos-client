@@ -6,6 +6,8 @@ import {
 import { useQuery } from "@apollo/client";
 import { Divider, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
 import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from "../utils/query.invoice-payments";
+import currencyNumberFormat from "@/_app/common/utils/commaNumber";
+import { useMemo } from "react";
 
 const InventoryInvoicePaymentDetails: React.FC<{
   id: string;
@@ -22,11 +24,29 @@ const InventoryInvoicePaymentDetails: React.FC<{
     },
   });
 
+  const totalAmount = useMemo(
+    () =>
+      data?.accounting__InventoryInvoicePayment?.payments?.reduce(
+        (total, current) => total + (current?.amount ?? 0),
+        0
+      ),
+    [data?.accounting__InventoryInvoicePayment?.payments]
+  );
+
   const ths = (
     <tr>
       <th>Payment Type</th>
       <th>Account</th>
       <th>Amount</th>
+    </tr>
+  );
+
+  const tfs = (
+    <tr>
+      <th></th>
+      <th></th>
+      <th className="!text-center">Total Amount</th>
+      <th>{currencyNumberFormat(totalAmount!)}</th>
     </tr>
   );
 
@@ -211,6 +231,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
       <Table mt={"md"} withColumnBorders withBorder captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>
+        <tfoot>{tfs}</tfoot>
       </Table>
 
       {/* <Attachments

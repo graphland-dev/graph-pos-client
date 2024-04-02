@@ -67,3 +67,20 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
     }
   }
 `;
+
+export const ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY = gql`
+  query Accounting__inventoryInvoicePayments($where: CommonPaginationDto) {
+    accounting__inventoryInvoicePayments(where: $where) {
+      nodes {
+        _id
+        inventoryInvoicePaymentUID
+        date
+        client {
+          _id
+          name
+        }
+        netAmount
+      }
+    }
+  }
+`;

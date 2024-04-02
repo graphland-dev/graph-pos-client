@@ -66,6 +66,7 @@ const InvoicesPage = () => {
           const netTotal = originalRow?.netTotal || 0;
 
           const totalDue = netTotal - paidAmount;
+          
 
           let color = "red";
           if (totalDue > 0 && paidAmount !== 0) {
@@ -113,7 +114,8 @@ const InvoicesPage = () => {
 
   return (
     <>
-      <PageTitle title="purchase-list" />
+      <PageTitle title="invoice-details" />
+
       <Drawer
         onClose={() =>
           setState({
@@ -126,7 +128,7 @@ const InvoicesPage = () => {
       >
         <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
       </Drawer>
-      {/* <pre>{ JSON.stringify(data,  null, 2)}</pre> */}
+      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <DataTable
         columns={columns}
         data={data?.inventory__productInvoices.nodes ?? []}
