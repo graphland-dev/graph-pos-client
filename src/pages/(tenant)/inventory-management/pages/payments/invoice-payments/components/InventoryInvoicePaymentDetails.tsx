@@ -4,10 +4,11 @@ import {
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Divider, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
+import { Anchor, Divider, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
 import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from "../utils/query.invoice-payments";
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import { useMemo } from "react";
+import { Link } from "react-router-dom";
 
 const InventoryInvoicePaymentDetails: React.FC<{
   id: string;
@@ -43,7 +44,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
 
   const tfs = (
     <tr>
-      <th></th>
+      
       <th></th>
       <th className="!text-center">Total Amount</th>
       <th>{currencyNumberFormat(totalAmount!)}</th>
@@ -149,19 +150,13 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Title order={4}>Client</Title>
           <Divider />
           <Text className="flex justify-between">
-            {/* <span className="font-semibold text-neutral-primary"> Name:</span> */}
-
-            {/* <Anchor
-              component={Link}
-              to={`/${details?.client?.tenant}/people/client?clientId=${details?.client?._id}`}
-            >
-              {details?.client?.name}
-            </Anchor> */}
-          </Text>
-          <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary"> Name: </span>
-
-            {data?.accounting__InventoryInvoicePayment.client?.name}
+            <Anchor
+              component={Link}
+              to={`/${data?.accounting__InventoryInvoicePayment?.tenant}/people/client?clientId=${data?.accounting__InventoryInvoicePayment.client?._id}`}
+            >
+              {data?.accounting__InventoryInvoicePayment.client?.name}
+            </Anchor>
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">Email: </span>
@@ -199,11 +194,14 @@ const InventoryInvoicePaymentDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              {" "}
               Invoice UID:{" "}
             </span>
-
-            {data?.accounting__InventoryInvoicePayment.invoice?.invoiceUID}
+            <Anchor
+              component={Link}
+              to={`/${data?.accounting__InventoryInvoicePayment?.tenant}/inventory-management/invoices?invoiceId=${data?.accounting__InventoryInvoicePayment.invoice?._id}`}
+            >
+              {data?.accounting__InventoryInvoicePayment.invoice?.invoiceUID}
+            </Anchor>
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">

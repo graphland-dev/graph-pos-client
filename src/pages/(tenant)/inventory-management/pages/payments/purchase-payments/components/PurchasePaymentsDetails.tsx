@@ -69,6 +69,7 @@ const PurchasePaymentsDetails: React.FC<{
       <td>
         <Anchor
           component={Link}
+          //inventory-management/purchases/
           to={`/${purchasePaymentsRow.account.tenant}/inventory-management/purchases?purchasesUId=${element.purchaseUID}`}
         >
           {element.purchaseUID}
