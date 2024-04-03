@@ -69,13 +69,14 @@ const PosPage = () => {
 	const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
 	const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
 	const params = useParams<{ tenant: string }>();
-
+	const [page, setPage] = useState(1);
 	const [category, setCategory] = useState('');
 	const [brand, setBrand] = useState('');
+	const [productsViewList, setProductsViewList] = useState<Product[]>([]);
 
 	// products fetching
 	const {
-		data: productsData,
+		// data: productsData,
 		loading: productsFetching,
 		refetch: refetchProducts,
 	} = useQuery<{
@@ -85,6 +86,7 @@ const PosPage = () => {
 		variables: {
 			where: {
 				limit: 20,
+				page,
 				filters: [
 					{
 						key: 'category',
@@ -99,7 +101,24 @@ const PosPage = () => {
 				],
 			},
 		},
+		onCompleted: (res) => {
+			setProductsViewList((prevProducts) => [
+				...prevProducts!,
+				...(res?.inventory__products?.nodes ?? []),
+			]);
+		},
 	});
+
+	// on end screen refetch
+	const onRefetchProducts = () => {
+		setPage((p) => p + 1);
+		refetchProducts({
+			where: {
+				page: page + 1,
+				limit: 20,
+			},
+		});
+	};
 
 	// hold list data API
 	const { data: holdList, refetch: refetchHoldList } = useQuery<{
@@ -713,14 +732,13 @@ const PosPage = () => {
 					<div className='lg:w-5/12'>
 						<POSProductGlary
 							onSelectProduct={handleAddProductToList}
-							productsList={
-								productsData?.inventory__products?.nodes as Product[]
-							}
+							productsList={productsViewList as Product[]}
 							isProductsFetching={productsFetching}
 							productFilterKeys={{
 								onSetCategory: setCategory,
 								onSetBrand: setBrand,
 							}}
+							onRefetchProducts={onRefetchProducts}
 						/>
 					</div>
 				</div>
