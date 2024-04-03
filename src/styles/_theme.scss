@@ -50,7 +50,7 @@ html[data-color-scheme="dark"] {
   // Theme
 
   --theme-light: #f1fada;
-  --theme-body: #f6fff8;
+  --theme-body: #12da3d;
   --theme-surface: #2c394b;
 
   --theme-primary: color-mix(
@@ -65,14 +65,14 @@ html[data-color-scheme="dark"] {
 html[data-theme="aubergine"] {
   --theme-primary: #704264;
   --theme-primary-temp: #704264;
-  --theme-body: #ecf8f6;
+  --theme-body: #e7e5e7;
   --theme-light: #f1fada;
-  --theme-surface: #fff;
+  --theme-surface: #faf3f8;
 }
 html[data-theme="aubergine"][data-color-scheme="dark"] {
   --theme-body: #1e0f19;
   --theme-light: #f1fada;
-  --theme-surface: #1e0f19;
+  --theme-surface: #382933;
 }
 
 html[data-theme="green"] {
