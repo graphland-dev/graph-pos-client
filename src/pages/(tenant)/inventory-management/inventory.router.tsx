@@ -16,6 +16,7 @@ import UnitPage from "./pages/settings/pages/unit/unit.page";
 import BrandPage from "./pages/settings/pages/brand/brand.page";
 import InvoicesPage from "./pages/invoices/invoices.page";
 import InvoicePaymentsPage from "./pages/payments/invoice-payments/invoice-payments.page";
+import InventoryManagementRoot from "./module-root.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
@@ -32,6 +33,10 @@ export const inventoryModuleRouter: RouteObject[] = [
       />
     ),
     children: [
+      {
+        path: "",
+        element: <InventoryManagementRoot />,
+      },
       {
         path: "invoices",
         element: <InvoicesPage />,

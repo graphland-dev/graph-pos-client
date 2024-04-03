@@ -1,48 +1,13 @@
+import ModuleMenu from "@/_app/common/components/Modulemenu";
 import CommonHeader from "@/_app/common/layouts/componants/CommonHeader";
-import { Button, Text } from "@mantine/core";
-import {
-  IconBuildingWarehouse,
-  IconPremiumRights,
-  IconReportAnalytics,
-  IconUsers,
-} from "@tabler/icons-react";
-import { useNavigate, useParams } from "react-router-dom";
-
-const modules = [
-  {
-    path: "accounting",
-    label: "Accounting",
-    icon: IconPremiumRights,
-  },
-  {
-    path: "inventory-management",
-    label: "Inventory Management",
-    icon: IconBuildingWarehouse,
-  },
-  {
-    path: "people",
-    label: "People",
-    icon: IconUsers,
-  },
-  {
-    path: "reports",
-    label: "Reports",
-    icon: IconReportAnalytics,
-  },
-  // {
-  //   path: "settings",
-  //   label: "Settings",
-  //   icon: IconAdjustments,
-  // },
-];
+import { useParams } from "react-router-dom";
 
 const ModulesPage = () => {
-  const navigate = useNavigate();
   const params = useParams<{ tenant: string }>();
   return (
     <>
       <CommonHeader />
-      <div className="grid gap-5 p-10 lg:grid-cols-4">
+      {/* <div className="grid gap-5 p-10 lg:grid-cols-4">
         {modules.map((module, key) => (
           <div
             key={key}
@@ -53,9 +18,41 @@ const ModulesPage = () => {
             <Text className="text-xl ">{module.label}</Text>
           </div>
         ))}
+      </div> */}
+      <div className="m-10">
+        <ModuleMenu
+          moduleName={"Graph360 Apps"}
+          items={[
+            {
+              name: "Accounting",
+              iconPath: "/menu-icons/budget.png",
+              linkPath: `/${params.tenant}/accounting`,
+            },
+            {
+              name: "Inventory",
+              iconPath: "/menu-icons/warehouse.png",
+              linkPath: `/${params.tenant}/inventory-management`,
+            },
+            {
+              name: "Products",
+              iconPath: "/menu-icons/warehouse.png",
+              linkPath: `/${params.tenant}/inventory-management/products/products-list`,
+            },
+            {
+              name: "People",
+              iconPath: "/menu-icons/supplier.png",
+              linkPath: `/${params.tenant}/people`,
+            },
+            {
+              name: "Reports",
+              iconPath: "/menu-icons/report.png",
+              linkPath: `/${params.tenant}/reports`,
+            },
+          ]}
+        />
       </div>
 
-      <div className="flex gap-3 p-10">
+      {/* <div className="flex gap-3 p-10">
         <Button color="theme.0">Button 0</Button>
         <Button color="theme.1">Button 1</Button>
         <Button color="theme.2">Button 2</Button>
@@ -66,7 +63,7 @@ const ModulesPage = () => {
         <Button color="theme.7">Button 7</Button>
         <Button color="theme.8">Button 8</Button>
         <Button color="theme.9">Button 9</Button>
-      </div>
+      </div> */}
     </>
   );
 };

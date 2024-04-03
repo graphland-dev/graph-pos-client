@@ -123,7 +123,6 @@ const InvoicesPage = () => {
   useEffect(() => {
     console.log(invoiceId);
     if (invoiceId) {
-      // alert(invoiceId);
       productInvoice({
         variables: {
           where: {

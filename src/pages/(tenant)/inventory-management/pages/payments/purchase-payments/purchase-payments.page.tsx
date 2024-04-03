@@ -64,7 +64,7 @@ const PurchasePaymentPage = () => {
         //   if (totalAmount - row.paidAmount > 0) {
         //     color = "yellow"
         //   }
-          
+
         //   return <Badge color={color}>{row.paidAmount}</Badge>;
         // },
         header: "Paid Amount",
@@ -110,7 +110,7 @@ const PurchasePaymentPage = () => {
   return (
     <>
       <PageTitle title="Purchase Payment-list" />
-      <DataTable 
+      <DataTable
         columns={columns}
         data={data?.accounting__purchasePayments.nodes ?? []}
         refetch={handleRefetch}
@@ -122,7 +122,6 @@ const PurchasePaymentPage = () => {
               onClick={() => {
                 setState({
                   purchasePaymentsRow: row,
-                 
                 });
                 detailsDrawerHandler.open();
               }}

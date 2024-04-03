@@ -3,7 +3,7 @@ import { Icon3dRotate, IconFriends, IconUsersGroup } from "@tabler/icons-react";
 
 export const peopleNavlinks: AppNavLink[] = [
   {
-    label: "Client",
+    label: "Clients",
     icon: IconFriends,
     href: "client",
   },

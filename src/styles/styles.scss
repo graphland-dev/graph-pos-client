@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 @layer tailwind {
   @tailwind base;
 }
@@ -9,6 +10,10 @@
 .mantine-AppShell-main,
 body {
   background-color: var(--theme-body);
+  font-family: "Lexend", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
 }
 
 // Surface

@@ -53,15 +53,15 @@ const PurchaseListPage = () => {
     }
   );
 
-//  const [searchParams] = useSearchParams();
-//   const purchasesUId = searchParams.get("purchasesUId");
-//   // console.log(purchasesUId);
+  //  const [searchParams] = useSearchParams();
+  //   const purchasesUId = searchParams.get("purchasesUId");
+  //   // console.log(purchasesUId);
 
-//  const [productPurchase] = useLazyQuery<{
-//    inventory__productPurchases: ProductPurchasesWithPagination;
-//  }>(Inventory__product_Purchases_Query, {
-//    fetchPolicy: "network-only",
-//  });
+  //  const [productPurchase] = useLazyQuery<{
+  //    inventory__productPurchases: ProductPurchasesWithPagination;
+  //  }>(Inventory__product_Purchases_Query, {
+  //    fetchPolicy: "network-only",
+  //  });
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -109,13 +109,13 @@ const PurchaseListPage = () => {
       {
         accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductPurchase) => {
-           const totalDue =
-             originalRow?.netTotal - (originalRow?.paidAmount || 0);
+          const totalDue =
+            originalRow?.netTotal - (originalRow?.paidAmount || 0);
           let color = "red";
-          if (totalDue  === 0) {
+          if (totalDue === 0) {
             color = "green";
           }
-          if (totalDue  > 0) {
+          if (totalDue > 0) {
             color = "yellow";
           }
           return (
@@ -143,32 +143,31 @@ const PurchaseListPage = () => {
     []
   );
 
-    // useEffect(() => {
-    //   // console.log(purchasesUId);
-    //   if (purchasesUId) {
-    //     // alert(invoiceId);
-    //     productPurchase({
-    //       variables: {
-    //         where: {
-    //           filters: [
-    //             {
-    //               key: "purchasesUId",
-    //               operator: MatchOperator.Eq,
-    //               value: purchasesUId,
-    //             },
-    //           ],
-    //         },
-    //       },
-    //     }).then((res) => {
-    //       console.log(res);
-    //       setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
-    //       setState({
-    //         openDrawer: true,
-    //       });
-    //     });
-    //   }
-    // }, [searchParams]);
-
+  // useEffect(() => {
+  //   // console.log(purchasesUId);
+  //   if (purchasesUId) {
+  //     // alert(invoiceId);
+  //     productPurchase({
+  //       variables: {
+  //         where: {
+  //           filters: [
+  //             {
+  //               key: "purchasesUId",
+  //               operator: MatchOperator.Eq,
+  //               value: purchasesUId,
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     }).then((res) => {
+  //       console.log(res);
+  //       setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
+  //       setState({
+  //         openDrawer: true,
+  //       });
+  //     });
+  //   }
+  // }, [searchParams]);
 
   return (
     <>
