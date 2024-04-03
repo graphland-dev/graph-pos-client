@@ -34,9 +34,9 @@ const ModulesPage = () => {
               linkPath: `/${params.tenant}/inventory-management`,
             },
             {
-              name: "Products",
-              iconPath: "/menu-icons/warehouse.png",
-              linkPath: `/${params.tenant}/inventory-management/products/products-list`,
+              name: "Pos",
+              iconPath: "/menu-icons/pos-terminal.png",
+              linkPath: `/${params.tenant}/inventory-management/pos`,
             },
             {
               name: "People",
