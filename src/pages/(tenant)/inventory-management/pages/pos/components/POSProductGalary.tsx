@@ -19,6 +19,7 @@ import {
 } from '@mantine/core';
 import { showNotification } from '@mantine/notifications';
 import React from 'react';
+import { VisibilityObserver } from 'reactjs-visibility';
 import { getSelectInputData } from '../../products/product-edit/components/AssignmentForm';
 import { Pos_Brands_Query, Pos_Categories_Query } from '../utils/query.pos';
 import { getProductReferenceByQuantity } from '../utils/utils.calc';
@@ -31,6 +32,7 @@ interface IProp {
 		onSetCategory: (state: string) => void;
 		onSetBrand: (state: string) => void;
 	};
+	onRefetchProducts: () => void;
 }
 
 const POSProductGlary: React.FC<IProp> = ({
@@ -38,7 +40,18 @@ const POSProductGlary: React.FC<IProp> = ({
 	productsList,
 	isProductsFetching,
 	productFilterKeys: { onSetBrand, onSetCategory },
+	onRefetchProducts,
 }) => {
+	const handleChangeVisibility = (visible: any) => {
+		if (visible) {
+			onRefetchProducts();
+		}
+	};
+
+	const options = {
+		rootMargin: '200px',
+	};
+
 	// categories query
 	const { data: categories, loading: loadingCategories } = useQuery<{
 		inventory__productCategories: ProductCategorysWithPagination;
@@ -66,6 +79,7 @@ const POSProductGlary: React.FC<IProp> = ({
 		onSelectProduct(getProductReferenceByQuantity(product, 1));
 	};
 
+	// get stock
 	const getStock = (product: Product) => {
 		const _in = product.stockInQuantity || 0;
 		const _out = product.stockOutQuantity || 0;
@@ -172,6 +186,13 @@ const POSProductGlary: React.FC<IProp> = ({
 			{!productsList?.length && !isProductsFetching && (
 				<EmptyState label={'No products found with your filter!'} />
 			)}
+
+			<VisibilityObserver
+				onChangeVisibility={handleChangeVisibility}
+				options={options}
+			>
+				{/* <Text>Load more...</Text> */}
+			</VisibilityObserver>
 		</Paper>
 	);
 };
