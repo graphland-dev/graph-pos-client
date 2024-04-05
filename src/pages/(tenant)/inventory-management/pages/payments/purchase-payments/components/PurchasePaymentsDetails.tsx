@@ -91,7 +91,7 @@ const PurchasePaymentsDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Basic Info</Title>
           <Divider />
@@ -134,7 +134,7 @@ const PurchasePaymentsDetails: React.FC<{
           radius={5}
           shadow="sm"
           withBorder
-          className="w-full flex flex-col gap-1"
+          className="flex flex-col w-full gap-1"
         >
           <Title order={4}>Supplier</Title>
           <Divider />
@@ -174,7 +174,7 @@ const PurchasePaymentsDetails: React.FC<{
         radius={5}
         shadow="sm"
         withBorder
-        className="w-6/12 flex flex-col gap-1"
+        className="flex flex-col w-6/12 gap-1"
       >
         <Title order={4}>Account</Title>
         <Divider />
@@ -199,7 +199,6 @@ const PurchasePaymentsDetails: React.FC<{
         </Text>
       </Paper>
 
-    
       <Table mt={"md"} withColumnBorders captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>

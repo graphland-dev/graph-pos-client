@@ -10,6 +10,7 @@ export default {
         icon: 'var(--icon)',
         'theme-primary': 'var(--theme-primary)',
         'theme-light': 'var(--theme-light)',
+        'theme-surface': "var(--theme-surface)",
         'light-gray': "var(--light-gray)",
         'text-gray': "var(--text-gray)",
         'text-muted': "var(--text-muted)",

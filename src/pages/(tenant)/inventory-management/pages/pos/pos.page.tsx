@@ -26,6 +26,7 @@ import {
 	Select,
 	Space,
 	Table,
+	Text,
 	Title,
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -68,13 +69,14 @@ const PosPage = () => {
 	const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
 	const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
 	const params = useParams<{ tenant: string }>();
-
+	const [page, setPage] = useState(1);
 	const [category, setCategory] = useState('');
 	const [brand, setBrand] = useState('');
+	const [productsViewList, setProductsViewList] = useState<Product[]>([]);
 
 	// products fetching
 	const {
-		data: productsData,
+		// data: productsData,
 		loading: productsFetching,
 		refetch: refetchProducts,
 	} = useQuery<{
@@ -84,6 +86,7 @@ const PosPage = () => {
 		variables: {
 			where: {
 				limit: 20,
+				page,
 				filters: [
 					{
 						key: 'category',
@@ -98,7 +101,24 @@ const PosPage = () => {
 				],
 			},
 		},
+		onCompleted: (res) => {
+			setProductsViewList((prevProducts) => [
+				...prevProducts!,
+				...(res?.inventory__products?.nodes ?? []),
+			]);
+		},
 	});
+
+	// on end screen refetch
+	const onRefetchProducts = () => {
+		setPage((p) => p + 1);
+		refetchProducts({
+			where: {
+				page: page + 1,
+				limit: 20,
+			},
+		});
+	};
 
 	// hold list data API
 	const { data: holdList, refetch: refetchHoldList } = useQuery<{
@@ -536,10 +556,51 @@ const PosPage = () => {
 
 							<Space h={'sm'} />
 
-							<div className='p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm'>
-								Net Total: {currencyNumberFormat(getNetAmount())}
-								BDT
-							</div>
+							<Paper withBorder p={'sm'} mb={'xl'}>
+								{/* <Flex justify={'space-between'}> */}
+								<Flex justify={'space-between'}>
+									<Text fw={'bold'}>Tax rate</Text>
+									<Text>{watch('taxRate') || 0} %</Text>
+								</Flex>
+								<Flex justify={'space-between'}>
+									<Text fw={'bold'}>Tax amount</Text>
+									<Text>{currencyNumberFormat(salesVatAmount) || 0} BDT</Text>
+								</Flex>
+								{/* </Flex> */}
+								{/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
+
+								<Flex justify={'space-between'}>
+									<Text fw={'bold'}>Cost Amount</Text>
+									<Text>{currencyNumberFormat(costAmount) || 0} BDT</Text>
+								</Flex>
+
+								{/* <hr /> */}
+
+								<Flex justify={'space-between'}>
+									<Text fw={'bold'}>Sub total (Product + Cost)</Text>
+									<Text>
+										{currencyNumberFormat(productsPrice + costAmount) || 0} BDT
+									</Text>
+								</Flex>
+								<Flex justify={'space-between'}>
+									<Text fw={'bold'}>
+										Discount
+										{watch('discountMode') === 'PERCENTAGE' &&
+											` (${watch('discountValue')}%)`}
+									</Text>
+									<Text>
+										{currencyNumberFormat(
+											getDiscount(discountMode, discountValue, productsPrice)
+										) || 0}{' '}
+										BDT
+									</Text>
+								</Flex>
+								<Space h={'sm'} />
+								<div className='p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm flex justify-between'>
+									<div>Net Total (Subtotal - Discount)</div>{' '}
+									<div>{currencyNumberFormat(getNetAmount())} BDT</div>
+								</div>
+							</Paper>
 
 							<Space h={15} />
 
@@ -671,14 +732,13 @@ const PosPage = () => {
 					<div className='lg:w-5/12'>
 						<POSProductGlary
 							onSelectProduct={handleAddProductToList}
-							productsList={
-								productsData?.inventory__products?.nodes as Product[]
-							}
+							productsList={productsViewList as Product[]}
 							isProductsFetching={productsFetching}
 							productFilterKeys={{
 								onSetCategory: setCategory,
 								onSetBrand: setBrand,
 							}}
+							onRefetchProducts={onRefetchProducts}
 						/>
 					</div>
 				</div>

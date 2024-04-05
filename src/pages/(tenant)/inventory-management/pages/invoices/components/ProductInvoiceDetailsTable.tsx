@@ -75,7 +75,7 @@ const ProductInvoiceDetailsTable: React.FC<IProps> = ({ id }) => {
 
   return (
     <div>
-      <Paper mb={"lg"}>
+      <Paper mb={"lg"} p={"sm"}>
         <Title order={4}>Payments</Title>
         <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
           <thead className="bg-card-header">{paymentsThs}</thead>

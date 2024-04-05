@@ -54,6 +54,7 @@ const RootApp = () => {
           withGlobalStyles
           theme={{
             colorScheme,
+            fontFamily: '"Lexend", sans-serif',
             colors: {
               theme: [
                 "color-mix(in srgb, var(--theme-primary), #fff 70%)", // 0

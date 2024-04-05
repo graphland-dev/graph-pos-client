@@ -42,13 +42,9 @@ const ProductInvoiceDetails: React.FC<{
 
   const tfs = (
     <tr>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th></th>
-      <th className="!text-center">Total Amount</th>
+      <th className="!text-right" colSpan={7}>
+        Total Amount
+      </th>
       <th>{currencyNumberFormat(totalAmount!)}</th>
     </tr>
   );
@@ -72,7 +68,6 @@ const ProductInvoiceDetails: React.FC<{
       </tr>
     ));
 
- 
   const rows = details.products?.map((element) => (
     <tr key={element.referenceId}>
       <td>
@@ -113,7 +108,7 @@ const ProductInvoiceDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Date:</span>{" "}
-            {details.date}
+            {dateFormat(details.date)}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-gray-800">Tax Rate:</span>
@@ -211,7 +206,7 @@ const ProductInvoiceDetails: React.FC<{
         </Paper>
       </div>
 
-      <Paper>
+      <Paper p={"sm"}>
         <Title order={4}>Items</Title>
         <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
           <thead className="bg-card-header">{ths}</thead>
@@ -220,9 +215,7 @@ const ProductInvoiceDetails: React.FC<{
         </Table>
       </Paper>
 
-      <ProductInvoiceDetailsTable id={ details.invoiceUID || ""} />
-
-     
+      <ProductInvoiceDetailsTable id={details.invoiceUID || ""} />
 
       {/* <Attachments
         attachments={details.attachments ?? []}

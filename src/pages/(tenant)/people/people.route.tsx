@@ -1,5 +1,6 @@
 import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
-import { Navigate, RouteObject } from "react-router-dom";
+import { RouteObject } from "react-router-dom";
+import PeopleModuleRoot from "./module-root.page";
 import ClientPage from "./pages/client/client.page";
 import Departments from "./pages/employees/departments/departments.page";
 import Employees from "./pages/employees/employees/employees.page";
@@ -16,7 +17,7 @@ export const peopleModuleRouter: RouteObject[] = [
     children: [
       {
         path: "",
-        element: <Navigate to={"client"} />,
+        element: <PeopleModuleRoot />,
       },
       {
         path: "client",

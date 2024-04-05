@@ -109,13 +109,13 @@ const PurchaseListPage = () => {
       {
         accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductPurchase) => {
-           const totalDue =
-             originalRow?.netTotal - (originalRow?.paidAmount || 0);
+          const totalDue =
+            originalRow?.netTotal - (originalRow?.paidAmount || 0);
           let color = "red";
-          if (totalDue  === 0) {
+          if (totalDue === 0) {
             color = "green";
           }
-          if (totalDue  > 0) {
+          if (totalDue > 0) {
             color = "yellow";
           }
           return (
@@ -168,7 +168,6 @@ const PurchaseListPage = () => {
         });
       }
     }, [searchParams]);
-
 
   return (
     <>

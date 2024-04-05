@@ -8,6 +8,7 @@ import StatementPage from "./pages/cashbook/statements/statements.page";
 import TransferPage from "./pages/cashbook/transfers/transfer.page";
 import ExpenseCategoryPage from "./pages/expense/expenseCategory/expenseCategory.page";
 import ExpenseListPage from "./pages/expense/expenseList/expenseList.page";
+import AccountingRoot from "./module-root.page";
 export const accountingModuleRouter: RouteObject[] = [
   {
     path: "",
@@ -19,10 +20,10 @@ export const accountingModuleRouter: RouteObject[] = [
       />
     ),
     children: [
-      // {
-      //   path: "",
-      //   element: <Navigate to={"/accounting/cashbook/accounts"} />,
-      // },
+      {
+        path: "",
+        element: <AccountingRoot />,
+      },
       {
         path: "cashbook",
         children: [
