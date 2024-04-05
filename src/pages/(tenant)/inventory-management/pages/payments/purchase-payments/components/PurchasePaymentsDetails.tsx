@@ -69,12 +69,12 @@ const PurchasePaymentsDetails: React.FC<{
       <td>
         <Anchor
           component={Link}
-          //inventory-management/purchases/
-          to={`/${purchasePaymentsRow.account.tenant}/inventory-management/purchases?purchasesUId=${element.purchaseUID}`}
+          
+          to={`/${purchasePaymentsRow.account.tenant}/inventory-management/purchases?purchaseId=${element.purchase._id}`}
         >
           {element.purchaseUID}
         </Anchor>
-        {}
+        
       </td>
       <td>{dateFormat(element.purchase.purchaseDate)} </td>
       <td>{currencyNumberFormat(element.purchase.netTotal)}</td>

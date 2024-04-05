@@ -10,6 +10,7 @@ export const PURCHASE_PAYMENTS_QUERY = gql`
         hasNextPage
       }
       nodes {
+        _id
         checkNo
         account {
           _id

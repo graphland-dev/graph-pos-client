@@ -6,7 +6,7 @@ import {
   EmployeesWithPagination,
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconEye, IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -21,6 +21,7 @@ import {
 import ViewEmployeeDetails from "./components/ViewEmployeeDetails";
 import { Subject } from "rxjs";
 import PageTitle from "@/_app/common/PageTitle";
+import { useSearchParams } from "react-router-dom";
 
 interface IState {
   viewModal: boolean;
@@ -60,6 +61,15 @@ const Employees = () => {
   const [deleteEmployeeMutation] = useMutation(
     PEOPLE_EMPLOYEES_DELETE_MUTATION
   );
+
+  const [searchParams] = useSearchParams();
+  const employeeId = searchParams.get("employeeId");
+
+  const [fetchEmployee] = useLazyQuery<{
+    people__employees: EmployeesWithPagination;
+  }>(PEOPLE_EMPLOYEES_QUERY_LIST, {
+    fetchPolicy: "network-only",
+  });
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -118,6 +128,31 @@ const Employees = () => {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (employeeId) {
+      // alert(invoiceId);
+      fetchEmployee({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: "_id",
+                operator: MatchOperator.Eq,
+                value: employeeId,
+              },
+            ],
+          },
+        },
+        onError: (err) => console.log(err),
+      }).then((res) => {
+        if (res.data?.people__employees?.nodes?.[0]) {
+          setState({ viewModal: true });
+          setViewDetails(res.data?.people__employees?.nodes?.[0]);
+        }
+      });
+    }
+  }, [searchParams]);
 
   return (
     <>
