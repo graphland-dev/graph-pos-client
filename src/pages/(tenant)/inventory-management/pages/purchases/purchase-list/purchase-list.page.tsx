@@ -8,13 +8,13 @@ import {
   ProductPurchase,
   ProductPurchasesWithPagination,
 } from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import PurchaseDetails from "./components/PurchaseDetails";
 import {
   Inventory__Remove_Product_Purchase,
@@ -53,15 +53,15 @@ const PurchaseListPage = () => {
     }
   );
 
-  //  const [searchParams] = useSearchParams();
-  //   const purchasesUId = searchParams.get("purchasesUId");
-  //   // console.log(purchasesUId);
+ const [searchParams] = useSearchParams();
+  const purchaseId = searchParams.get("purchaseId");
+  // console.log(purchasesUId);
 
-  //  const [productPurchase] = useLazyQuery<{
-  //    inventory__productPurchases: ProductPurchasesWithPagination;
-  //  }>(Inventory__product_Purchases_Query, {
-  //    fetchPolicy: "network-only",
-  //  });
+ const [productPurchase] = useLazyQuery<{
+   inventory__productPurchases: ProductPurchasesWithPagination;
+ }>(Inventory__product_Purchases_Query, {
+   fetchPolicy: "network-only",
+ });
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -143,31 +143,31 @@ const PurchaseListPage = () => {
     []
   );
 
-  // useEffect(() => {
-  //   // console.log(purchasesUId);
-  //   if (purchasesUId) {
-  //     // alert(invoiceId);
-  //     productPurchase({
-  //       variables: {
-  //         where: {
-  //           filters: [
-  //             {
-  //               key: "purchasesUId",
-  //               operator: MatchOperator.Eq,
-  //               value: purchasesUId,
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     }).then((res) => {
-  //       console.log(res);
-  //       setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
-  //       setState({
-  //         openDrawer: true,
-  //       });
-  //     });
-  //   }
-  // }, [searchParams]);
+    useEffect(() => {
+      // console.log(purchasesUId);
+      if (purchaseId) {
+        // alert(invoiceId);
+        productPurchase({
+          variables: {
+            where: {
+              filters: [
+                {
+                  key: "_id",
+                  operator: MatchOperator.Eq,
+                  value: purchaseId,
+                },
+              ],
+            },
+          },
+        }).then((res) => {
+          console.log(res);
+          setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
+          setState({
+            openDrawer: true,
+          });
+        });
+      }
+    }, [searchParams]);
 
   return (
     <>

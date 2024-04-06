@@ -4,14 +4,16 @@ import currencyNumberFormat from "@/_app/common/utils/commaNumber";
 import dateFormat from "@/_app/common/utils/dateFormat";
 import {
   InventoryInvoicePayment,
-  InventoryInvoicePaymentsWithPagination
+  InventoryInvoicePaymentsWithPagination,
+  MatchOperator
 } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { Drawer, Menu, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import InventoryInvoicePaymentDetails from "./components/InventoryInvoicePaymentDetails";
 import { INVENTORY_INVOICE_PAYMENTS_QUERY } from "./utils/query.invoice-payments";
 
@@ -38,6 +40,15 @@ const InvoicePaymentsPage = () => {
       },
     },
   });
+
+    const [searchParams] = useSearchParams();
+    const invoicePaymentId = searchParams.get("invoicePaymentId");
+
+    const [invoicePayment] = useLazyQuery<{
+      accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
+    }>(INVENTORY_INVOICE_PAYMENTS_QUERY, {
+      fetchPolicy: "network-only",
+    });
 
  
   const columns = useMemo<MRT_ColumnDef<any>[]>(
@@ -73,6 +84,31 @@ const InvoicePaymentsPage = () => {
       setState({ refetching: false });
     });
   };
+
+      useEffect(() => {
+        if (invoicePaymentId) {
+          // alert(invoiceId);
+          invoicePayment({
+            variables: {
+              where: {
+                filters: [
+                  {
+                    key: "_id",
+                    operator: MatchOperator.Eq,
+                    value: invoicePaymentId,
+                  },
+                ],
+              },
+            },
+            onError: (err) => console.log(err),
+          }).then((res) => {
+             setInvoicePaymentsDetails(res.data?.accounting__inventoryInvoicePayments?.nodes?.[0]);
+             setState({
+               openDrawer: true,
+             });
+          });
+        }
+      }, [searchParams]);
 
 
   return (

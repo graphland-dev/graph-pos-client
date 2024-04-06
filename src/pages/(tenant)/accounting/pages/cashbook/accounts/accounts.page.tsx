@@ -5,13 +5,13 @@ import {
   AccountsWithPagination,
   MatchOperator,
 } from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import AccountForm from "./components/AccountForm";
 import {
   ACCOUNTING_ACCOUNTS_LIST,
@@ -19,6 +19,7 @@ import {
 } from "./utils/query";
 import PageTitle from "@/_app/common/PageTitle";
 import currencyNumberFormat from "@/_app/common/utils/commaNumber";
+import { useSearchParams } from "react-router-dom";
 
 interface IState {
   modalOpened: boolean;
@@ -52,6 +53,14 @@ const AccountsPage = () => {
     ACCOUNTING_ACCOUNT_DELETE_MUTATION,
     { onCompleted: () => handleRefetch({}) }
   );
+  const [searchParams] = useSearchParams();
+  const accountId = searchParams.get("accountId");
+
+  const [fetchEmployee] = useLazyQuery<{
+    accounting__accounts: AccountsWithPagination;
+  }>(ACCOUNTING_ACCOUNTS_LIST, {
+    fetchPolicy: "network-only",
+  });
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -109,6 +118,33 @@ const AccountsPage = () => {
     ],
     []
   );
+
+   useEffect(() => {
+     if (accountId) {
+       // alert(invoiceId);
+       fetchEmployee({
+         variables: {
+           where: {
+             filters: [
+               {
+                 key: "_id",
+                 operator: MatchOperator.Eq,
+                 value: accountId,
+               },
+             ],
+           },
+         },
+         onError: (err) => console.log(err),
+       }).then((res) => {
+         setState({
+           modalOpened: true,
+           operationType: "update",
+           operationId: res.data?.accounting__accounts.nodes?.[0]._id,
+           operationPayload: res.data?.accounting__accounts.nodes?.[0],
+         });
+       });
+     }
+   }, [searchParams]);
 
   return (
     <>

@@ -1,16 +1,17 @@
 import PageTitle from "@/_app/common/PageTitle";
 import DataTable from "@/_app/common/data-table/DataTable";
 import {
+  MatchOperator,
   PurchasePayment,
   PurchasePaymentsWithPagination,
 } from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
+import { useLazyQuery, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { IconListDetails, IconPlus } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useEffect, useMemo } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import PurchasePaymentsDetails from "./components/PurchasePaymentsDetails";
 import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
 
@@ -32,6 +33,16 @@ const PurchasePaymentPage = () => {
   }>(PURCHASE_PAYMENTS_QUERY, {
     variables: { where: { limit: 100, page: 1 } },
   });
+
+  const [searchParams] = useSearchParams();
+  const purchasePaymentId = searchParams.get("purchasePaymentId");
+
+
+    const [productPurchase] = useLazyQuery<{
+      accounting__purchasePayments: PurchasePaymentsWithPagination;
+    }>(PURCHASE_PAYMENTS_QUERY, {
+      fetchPolicy: "network-only",
+    });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -106,6 +117,34 @@ const PurchasePaymentPage = () => {
       setState({ refetching: false });
     });
   };
+
+    useEffect(() => {
+   
+      if (purchasePaymentId) {
+        // alert(invoiceId);
+        productPurchase({
+          variables: {
+            where: {
+              filters: [
+                {
+                  key: "_id",
+                  operator: MatchOperator.Eq,
+                  value: purchasePaymentId,
+                },
+              ],
+            },
+          },
+          onError: (err) => console.log(err)
+        }).then((res) => {
+         
+          setState({
+            purchasePaymentsRow:
+              res.data?.accounting__purchasePayments?.nodes?.[0],
+          });
+          detailsDrawerHandler.open();
+        });
+      }
+    }, [searchParams]);
 
   return (
     <>
