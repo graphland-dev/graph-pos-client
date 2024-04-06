@@ -2,6 +2,7 @@ import { Notify } from '@/_app/common/Notification/Notify';
 import {
 	AccountsWithPagination,
 	ProductDiscountMode,
+	ProductItemReference,
 	Purchase_Invoice_Status,
 } from '@/_app/graphql-models/graphql';
 import { ACCOUNTING_ACCOUNTS_LIST } from '@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query';
@@ -47,6 +48,7 @@ interface IPaymentFormProps {
 	onRefetchHoldList: () => void;
 	preMadeInvoiceId?: string;
 	summaryCard: JSX.Element;
+	productsList: ProductItemReference[];
 }
 
 const PaymentForm: React.FC<IPaymentFormProps> = ({
@@ -55,6 +57,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 	preMadeInvoiceId,
 	onRefetchHoldList,
 	summaryCard,
+	productsList,
 }) => {
 	const componentRef = useRef(null);
 
@@ -256,30 +259,24 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 						<thead>
 							<tr className='!text-center'>
 								<th className='!text-center'>Items</th>
+								<th className='!text-center'>Price</th>
 								<th className='!text-center'>Qty</th>
 								<th className='!text-center'>Tax</th>
 								<th className='!text-center'>Net Total</th>
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>Mehedi</td>
-								<td>1</td>
-								<td>34</td>
-								<td>244 BDT</td>
-							</tr>
-							<tr>
-								<td>Mehedi</td>
-								<td>1</td>
-								<td>34</td>
-								<td>244 BDT</td>
-							</tr>
-							<tr>
-								<td>Mehedi</td>
-								<td>1</td>
-								<td>34</td>
-								<td>244 BDT</td>
-							</tr>
+							{productsList?.map(
+								(product: ProductItemReference, idx: number) => (
+									<tr key={idx}>
+										<td>{product?.name}</td>
+										<td>{product?.unitPrice} BDT</td>
+										<td>{product?.quantity}</td>
+										<td>{product?.taxAmount}</td>
+										<td>{product?.netAmount} BDT</td>
+									</tr>
+								)
+							)}
 						</tbody>
 					</Table>
 				</Paper>

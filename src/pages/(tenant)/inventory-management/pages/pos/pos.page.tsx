@@ -652,6 +652,7 @@ const PosPage = () => {
 								position='right'
 							>
 								<PaymentForm
+									productsList={watch('products')!}
 									formData={{
 										clientId: watch('clientId'),
 										products,
