@@ -684,6 +684,61 @@ const PosPage = () => {
 									}}
 									preMadeInvoiceId={selectedInvoice?._id}
 									onRefetchHoldList={() => refetchHoldList()}
+									summaryCard={
+										<Paper withBorder p={'sm'} mb={'xl'}>
+											{/* <Flex justify={'space-between'}> */}
+											<Flex justify={'space-between'}>
+												<Text fw={'bold'}>Tax rate</Text>
+												<Text>{watch('taxRate') || 0} %</Text>
+											</Flex>
+											<Flex justify={'space-between'}>
+												<Text fw={'bold'}>Tax amount</Text>
+												<Text>
+													{currencyNumberFormat(salesVatAmount) || 0} BDT
+												</Text>
+											</Flex>
+											{/* </Flex> */}
+											{/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
+
+											<Flex justify={'space-between'}>
+												<Text fw={'bold'}>Cost Amount</Text>
+												<Text>{currencyNumberFormat(costAmount) || 0} BDT</Text>
+											</Flex>
+
+											{/* <hr /> */}
+
+											<Flex justify={'space-between'}>
+												<Text fw={'bold'}>Sub total (Product + Cost)</Text>
+												<Text>
+													{currencyNumberFormat(productsPrice + costAmount) ||
+														0}{' '}
+													BDT
+												</Text>
+											</Flex>
+											<Flex justify={'space-between'}>
+												<Text fw={'bold'}>
+													Discount
+													{watch('discountMode') === 'PERCENTAGE' &&
+														` (${watch('discountValue')}%)`}
+												</Text>
+												<Text>
+													{currencyNumberFormat(
+														getDiscount(
+															discountMode,
+															discountValue,
+															productsPrice
+														)
+													) || 0}{' '}
+													BDT
+												</Text>
+											</Flex>
+											<Space h={'sm'} />
+											<div className='p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm flex justify-between'>
+												<div>Net Total (Subtotal - Discount)</div>{' '}
+												<div>{currencyNumberFormat(getNetAmount())} BDT</div>
+											</div>
+										</Paper>
+									}
 								/>
 							</Drawer>
 
