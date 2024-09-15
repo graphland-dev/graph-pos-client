@@ -11,7 +11,7 @@
     "generate:gql": "graphql-codegen -c src/_app/configs/codegen.config.ts"
   },
   "dependencies": {
-    "@apollo/client": "^3.9.9",
+    "@apollo/client": "^3.11.8",
     "@emotion/react": "^11.11.4",
     "@headlessui/react": "^2.1.8",
     "@hookform/error-message": "^2.0.1",
@@ -24,11 +24,11 @@
     "@mantine/notifications": "^6.0.21",
     "@mantine/spotlight": "^6.0.21",
     "@tabler/icons-react": "^3.1.0",
-    "axios": "^1.6.8",
+    "axios": "^1.7.7",
     "classnames": "^2.5.1",
     "dayjs": "^1.11.10",
     "export-to-csv": "^1.2.4",
-    "jotai": "^2.7.1",
+    "jotai": "^2.9.3",
     "mantine-react-table": "^1.3.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
