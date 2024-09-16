@@ -1,7 +1,7 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { getAccountBalance } from "@/_app/common/utils/getBalance";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { ACCOUNTS_LIST_DROPDOWN } from '@/_app/common/common-gql';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import { getAccountBalance } from '@/_app/utils/getBalance';
 import {
   AccountsWithPagination,
   MatchOperator,
@@ -9,11 +9,11 @@ import {
   ProductPurchasesWithPagination,
   Supplier,
   SuppliersWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+} from '@/_app/graphql-models/graphql';
+import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   ActionIcon,
   Badge,
@@ -28,29 +28,29 @@ import {
   Text,
   Textarea,
   Title,
-} from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import SuppliersCardList from "../../purchases/create-purchase/components/SuppliersCardList";
-import PurchaseCardList from "./components/PurchaseCardList";
+} from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import { IconX } from '@tabler/icons-react';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import SuppliersCardList from '../../purchases/create-purchase/components/SuppliersCardList';
+import PurchaseCardList from './components/PurchaseCardList';
 import {
   Accounting__Create_Purchase_Payment,
   Inventory__Product_Purchases,
-} from "./utils/query";
+} from './utils/query';
 import {
   IPurchasePaymentFormState,
   Purchase_Payment_Schema_Validation,
-} from "./utils/validation";
+} from './utils/validation';
 
 const CreatePurchasePayment = () => {
   const navigate = useNavigate();
   const params = useParams<{ tenant: string }>();
   const [searchParams] = useSearchParams();
-  const supplierId = searchParams.get("supplierId");
-  const purchaseId = searchParams.get("purchaseId");
+  const supplierId = searchParams.get('supplierId');
+  const purchaseId = searchParams.get('purchaseId');
 
   const [supplierPage, onChangeSupplierPage] = useState(1);
   const [purchasePage, onChangePurchasePage] = useState(1);
@@ -73,7 +73,7 @@ const CreatePurchasePayment = () => {
       // taxRate: 0,
     },
     resolver: yupResolver(Purchase_Payment_Schema_Validation),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const {
@@ -81,12 +81,12 @@ const CreatePurchasePayment = () => {
     fields: itemsFields,
     remove: removeItem,
   } = useFieldArray({
-    name: "items",
+    name: 'items',
     control,
   });
 
   const netPaymentAmount = () => {
-    return watch("items").reduce((total, i) => total + i.amount || 0, 0);
+    return watch('items').reduce((total, i) => total + i.amount || 0, 0);
   };
 
   const {
@@ -115,37 +115,37 @@ const CreatePurchasePayment = () => {
       where: {
         filters: [
           {
-            key: "supplier",
+            key: 'supplier',
             operator: MatchOperator.Eq,
-            value: watch("supplierId"),
+            value: watch('supplierId'),
           },
         ],
       },
     },
-    skip: !watch("supplierId"),
+    skip: !watch('supplierId'),
   });
 
   const [createPayment, { loading: creatingPayment }] = useMutation(
     Accounting__Create_Purchase_Payment,
     Notify({
-      sucTitle: "Payment created successfully!",
+      sucTitle: 'Payment created successfully!',
       onSuccess: () => {
         navigate(
-          `/${params.tenant}/inventory-management/payments/purchase-payments`
+          `/${params.tenant}/inventory-management/payments/purchase-payments`,
         );
       },
-    })
+    }),
   );
 
   useEffect(() => {
-    if (supplierId) setValue("supplierId", supplierId!);
+    if (supplierId) setValue('supplierId', supplierId!);
 
     if (purchaseId) {
       setValue(
         `items`,
         purchases?.inventory__productPurchases?.nodes?.filter(
-          (purchase: ProductPurchase) => purchase?._id === purchaseId
-        ) || []
+          (purchase: ProductPurchase) => purchase?._id === purchaseId,
+        ) || [],
       );
     }
   }, [supplierId, purchaseId, purchases]);
@@ -182,13 +182,13 @@ const CreatePurchasePayment = () => {
     (item) => ({
       value: item?._id,
       label: `${item?.name} [${item?.referenceNumber}]`,
-    })
+    }),
   );
 
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Flex justify={"space-between"} align={"center"}>
+        <Flex justify={'space-between'} align={'center'}>
           <div>
             <Title order={4}>
               Select supplier <span className="text-red-500">*</span>
@@ -196,7 +196,7 @@ const CreatePurchasePayment = () => {
             <Text color="red">{errors?.supplierId?.message}</Text>
           </div>
         </Flex>
-        <Space h={"md"} />
+        <Space h={'md'} />
         <SuppliersCardList
           isFetchingSuppliers={isFetchingSuppliers}
           setValue={setValue}
@@ -207,8 +207,8 @@ const CreatePurchasePayment = () => {
           onChangeSupplierPage={onChangeSupplierPage}
         />
 
-        <Space h={"md"} />
-        <Flex justify={"space-between"} align={"center"}>
+        <Space h={'md'} />
+        <Flex justify={'space-between'} align={'center'}>
           <div>
             <Title order={4}>
               Select purchases to pay <span className="text-red-500">*</span>
@@ -217,7 +217,7 @@ const CreatePurchasePayment = () => {
           </div>
         </Flex>
 
-        <Space h={"md"} />
+        <Space h={'md'} />
 
         <PurchaseCardList
           hasNextPage={
@@ -236,7 +236,7 @@ const CreatePurchasePayment = () => {
         <Space h={40} />
 
         <Title order={4}>Items</Title>
-        <Space h={"md"} />
+        <Space h={'md'} />
 
         {itemsFields?.length ? (
           <Table withBorder withColumnBorders>
@@ -255,7 +255,7 @@ const CreatePurchasePayment = () => {
                   <td className="font-medium">{item?.purchaseUID}</td>
                   <td className="font-medium">
                     {currencyNumberFormat(
-                      (item?.netTotal || 0) - (item?.paidAmount || 0)
+                      (item?.netTotal || 0) - (item?.paidAmount || 0),
                     )}
                   </td>
                   <td className="font-medium">
@@ -272,7 +272,7 @@ const CreatePurchasePayment = () => {
                     <ActionIcon
                       variant="filled"
                       color="red"
-                      size={"sm"}
+                      size={'sm'}
                       onClick={() => {
                         removeItem(idx);
                       }}
@@ -302,66 +302,66 @@ const CreatePurchasePayment = () => {
           searchable
           withAsterisk
           onChange={(fromAccountId) =>
-            setValue("accountId", fromAccountId || "", { shouldValidate: true })
+            setValue('accountId', fromAccountId || '', { shouldValidate: true })
           }
           label="Select account"
           placeholder="Select Account"
           data={accountListForDrop || []}
-          value={watch("accountId")}
+          value={watch('accountId')}
         />
         <p className="text-red-500">
           <ErrorMessage errors={errors} name="accountId" />
         </p>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
-        {watch("accountId") && (
-          <Badge p={"md"}>
-            Available Balance:{" "}
+        {watch('accountId') && (
+          <Badge p={'md'}>
+            Available Balance:{' '}
             {getAccountBalance(
               accountData?.accounting__accounts?.nodes || [],
-              watch("accountId")
+              watch('accountId'),
             )}
           </Badge>
         )}
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Check no"
           error={<ErrorMessage errors={errors} name="checkNo" />}
         >
-          <Input placeholder="Write check no" {...register("checkNo")} />
+          <Input placeholder="Write check no" {...register('checkNo')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Recept no"
           error={<ErrorMessage errors={errors} name="receptNo" />}
         >
-          <Input placeholder="Write recept no" {...register("receptNo")} />
+          <Input placeholder="Write recept no" {...register('receptNo')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Payment Date"
           error={<ErrorMessage errors={errors} name="date" />}
         >
           <DateInput
-            value={watch("date")}
-            onChange={(date) => setValue("date", date!)}
+            value={watch('date')}
+            onChange={(date) => setValue('date', date!)}
           />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Note"
           error={<ErrorMessage errors={errors} name="note" />}
         >
-          <Textarea placeholder="Write note" {...register("note")} />
+          <Textarea placeholder="Write note" {...register('note')} />
         </Input.Wrapper>
 
         <Space h={30} />

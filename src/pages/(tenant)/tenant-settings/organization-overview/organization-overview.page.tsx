@@ -1,5 +1,5 @@
-import { getFileUrl } from "@/_app/common/utils/getFileUrl";
-import { ErrorMessage } from "@hookform/error-message";
+import { getFileUrl } from '@/_app/utils/getFileUrl';
+import { ErrorMessage } from '@hookform/error-message';
 import {
   Button,
   Flex,
@@ -12,26 +12,26 @@ import {
   Title,
   clsx,
   rem,
-} from "@mantine/core";
-import { Dropzone } from "@mantine/dropzone";
-import { IconPhoto } from "@tabler/icons-react";
-import { FaCamera } from "react-icons/fa";
-import { ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION } from "../utils/overview.query.gql";
-import { useMutation } from "@apollo/client";
+} from '@mantine/core';
+import { Dropzone } from '@mantine/dropzone';
+import { IconPhoto } from '@tabler/icons-react';
+import { FaCamera } from 'react-icons/fa';
+import { ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION } from '../utils/overview.query.gql';
+import { useMutation } from '@apollo/client';
 import {
   IOrganizationFormType,
   ORGANIZATION_OVERVIEW_FORM_VALIDATION_SCHEMA,
-} from "../utils/form.validation";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import { useAtom } from "jotai";
-import { useServerFile } from "@/_app/hooks/use-upload-file";
-import { useEffect, useRef, useState } from "react";
-import { userTenantsAtom } from "@/_app/states/user.atom";
-import { Notify } from "@/_app/common/Notification/Notify";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
-import { $triggerRefetchMe } from "@/_app/rxjs-controllers";
+} from '../utils/form.validation';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { useEffect, useRef, useState } from 'react';
+import { userTenantsAtom } from '@/_app/states/user.atom';
+import { Notify } from '@/_app/common/Notification/Notify';
+import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { $triggerRefetchMe } from '@/_app/rxjs-controllers';
 
 const OrganizationOverviewPage: React.FC = () => {
   const params = useParams<{ tenant: string }>();
@@ -54,21 +54,21 @@ const OrganizationOverviewPage: React.FC = () => {
 
   // prefill form with previous values
   useEffect(() => {
-    setValue("name", tenant?.name || "");
-    setValue("address", tenant?.address);
-    setValue("businessPhoneNumber", tenant?.businessPhoneNumber);
-    setValue("description", tenant?.description);
+    setValue('name', tenant?.name || '');
+    setValue('address', tenant?.address);
+    setValue('businessPhoneNumber', tenant?.businessPhoneNumber);
+    setValue('description', tenant?.description);
   }, [tenant]);
 
   // update mutation
   const [updateOrganizationInfo, { loading }] = useMutation(
     ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION,
     Notify({
-      sucTitle: "Organization information updated.",
+      sucTitle: 'Organization information updated.',
       onSuccess() {
         $triggerRefetchMe.next(true);
       },
-    })
+    }),
   );
 
   // submit form with update mutation
@@ -100,7 +100,7 @@ const OrganizationOverviewPage: React.FC = () => {
         <Space h={20} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex align={"center"} gap={20}>
+          <Flex align={'center'} gap={20}>
             <Dropzone
               onDrop={async (files) => {
                 const res = await uploadFile({
@@ -114,7 +114,7 @@ const OrganizationOverviewPage: React.FC = () => {
               loading={uploading}
               maxSize={3 * 1024 ** 2}
               className={clsx(
-                "flex items-center justify-center group p-0 m-0 h-[200px] w-[200px] rounded-full"
+                'flex items-center justify-center group p-0 m-0 h-[200px] w-[200px] rounded-full',
               )}
             >
               {!organizationLogo?.path && !file?.path ? (
@@ -122,7 +122,7 @@ const OrganizationOverviewPage: React.FC = () => {
                   style={{
                     width: rem(80),
                     height: rem(80),
-                    color: "var(--mantine-color-blue-6)",
+                    color: 'var(--mantine-color-blue-6)',
                   }}
                   stroke={1.5}
                 />
@@ -137,8 +137,8 @@ const OrganizationOverviewPage: React.FC = () => {
                       organizationLogo?.path
                         ? getFileUrl(organizationLogo)
                         : file?.path
-                        ? getFileUrl(file)
-                        : ""
+                          ? getFileUrl(file)
+                          : ''
                     }
                   />
 
@@ -147,13 +147,13 @@ const OrganizationOverviewPage: React.FC = () => {
                     color="white"
                     className="absolute shadow-xl opacity-0 group-hover:opacity-100"
                     style={{
-                      transform: "translate(-50%, -50%)",
-                      top: "50%",
-                      left: "50%",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      transition: "all 0.5s ease-in-out",
+                      transform: 'translate(-50%, -50%)',
+                      top: '50%',
+                      left: '50%',
+                      borderRadius: '5px',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      transition: 'all 0.5s ease-in-out',
                     }}
                   />
                 </div>
@@ -163,16 +163,16 @@ const OrganizationOverviewPage: React.FC = () => {
             <Text fw={500}>Organization Logo</Text>
           </Flex>
 
-          <Space h={"sm"} />
+          <Space h={'sm'} />
 
           <Input.Wrapper
             label="Name"
             error={<ErrorMessage name="name" errors={errors} />}
           >
-            <Input placeholder="Organization name" {...register("name")} />
+            <Input placeholder="Organization name" {...register('name')} />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper label="Organization Uid">
             <Input
@@ -182,7 +182,7 @@ const OrganizationOverviewPage: React.FC = () => {
             />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper
             label="Business phone number"
@@ -190,29 +190,29 @@ const OrganizationOverviewPage: React.FC = () => {
           >
             <Input
               placeholder="Business phone number"
-              {...register("businessPhoneNumber")}
+              {...register('businessPhoneNumber')}
             />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper
             label="Address"
             error={<ErrorMessage name="address" errors={errors} />}
           >
-            <Input placeholder="Address" {...register("address")} />
+            <Input placeholder="Address" {...register('address')} />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper
             label="Description"
             error={<ErrorMessage name="description" errors={errors} />}
           >
-            <Textarea placeholder="Description" {...register("description")} />
+            <Textarea placeholder="Description" {...register('description')} />
           </Input.Wrapper>
 
-          <Space h={"sm"} />
+          <Space h={'sm'} />
 
           <Button ref={saveButtonRef} type="submit" loading={loading}>
             Save

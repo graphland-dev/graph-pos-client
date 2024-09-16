@@ -1,4 +1,4 @@
-import { Notify } from "@/_app/common/Notification/Notify";
+import { Notify } from '@/_app/common/Notification/Notify';
 import {
   MatchOperator,
   Product,
@@ -9,12 +9,12 @@ import {
   SuppliersWithPagination,
   Vat,
   VatsWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
+} from '@/_app/graphql-models/graphql';
+import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query';
 
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   ActionIcon,
   Button,
@@ -29,37 +29,37 @@ import {
   Text,
   Textarea,
   Title,
-} from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import { useDisclosure } from "@mantine/hooks";
-import { IconMinus, IconPlus, IconX } from "@tabler/icons-react";
-import classNames from "classnames";
-import { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+} from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import { useDisclosure } from '@mantine/hooks';
+import { IconMinus, IconPlus, IconX } from '@tabler/icons-react';
+import classNames from 'classnames';
+import { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
 import {
   calculateTaxAmount,
   getTotalCostAmount,
   getTotalProductsPrice,
   getTotalTaxAmount,
   getVatProfileSelectInputData,
-} from "./utils/helpers";
+} from './utils/helpers';
 
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
-import CreateProductForm from "./components/CreateProductForm";
-import CreateSupplierForm from "./components/CreateSupplierForm";
-import ProductsCardList from "./components/ProductsCardList";
-import SummaryCard from "./components/SummaryCard";
-import SuppliersCardList from "./components/SuppliersCardList";
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { SETTINGS_VAT_QUERY } from '../../settings/pages/vat/utils/query';
+import CreateProductForm from './components/CreateProductForm';
+import CreateSupplierForm from './components/CreateSupplierForm';
+import ProductsCardList from './components/ProductsCardList';
+import SummaryCard from './components/SummaryCard';
+import SuppliersCardList from './components/SuppliersCardList';
 import {
   CREATE_INVENTORY_PRODUCT_PURCHASE,
   PURCHASE_PRODUCT_LIST,
-} from "./utils/products.query";
+} from './utils/products.query';
 import {
   ICreatePurchaseFormState,
   Schema_Validation,
-} from "./utils/validation";
+} from './utils/validation';
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);
@@ -104,9 +104,9 @@ const CreatePurchasePage = () => {
             // key: "price",
             // operator: MatchOperator.Gte,
             // value: `${0}`,
-            key: "_id",
+            key: '_id',
             operator: MatchOperator.Eq,
-            value: searchParams.get("productId"),
+            value: searchParams.get('productId'),
           },
         ],
       },
@@ -159,7 +159,7 @@ const CreatePurchasePage = () => {
       // taxRate: 0,
     },
     resolver: yupResolver(Schema_Validation),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const {
@@ -167,7 +167,7 @@ const CreatePurchasePage = () => {
     fields: productFields,
     remove: removeProduct,
   } = useFieldArray({
-    name: "products",
+    name: 'products',
     control,
   });
 
@@ -176,7 +176,7 @@ const CreatePurchasePage = () => {
     fields: costsFields,
     remove: removeCosts,
   } = useFieldArray({
-    name: "costs",
+    name: 'costs',
     control,
   });
 
@@ -186,7 +186,7 @@ const CreatePurchasePage = () => {
 
     // Check the product is already exits in productsFields
     const locationIndex = productFields.findIndex(
-      (p) => p?.referenceId === product?._id
+      (p) => p?.referenceId === product?._id,
     );
     if (locationIndex == -1) {
       appendProduct({
@@ -203,7 +203,7 @@ const CreatePurchasePage = () => {
     } else {
       setValue(
         `products.${locationIndex}.quantity`,
-        watch(`products.${locationIndex}.quantity`) + 1
+        watch(`products.${locationIndex}.quantity`) + 1,
       );
     }
   }
@@ -211,15 +211,15 @@ const CreatePurchasePage = () => {
   const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
     CREATE_INVENTORY_PRODUCT_PURCHASE,
     Notify({
-      sucTitle: "Inventory product added to purchase",
+      sucTitle: 'Inventory product added to purchase',
       onSuccess(res) {
-        const supplierId = watch("supplierId");
+        const supplierId = watch('supplierId');
         const purchaseId = res?.inventory__createProductPurchase?._id;
         navigate(
-          `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`
+          `/${params.tenant}/inventory-management/payments/create-purchase-payment?supplierId=${supplierId}&purchaseId=${purchaseId}`,
         );
       },
-    })
+    }),
   );
 
   const onSubmit = (v: any) => {
@@ -228,22 +228,22 @@ const CreatePurchasePage = () => {
         body: {
           ...v,
           taxAmount:
-            ((getTotalProductsPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
+            ((getTotalProductsPrice(watch('products')!) +
+              getTotalCostAmount(watch('costs')!)) *
+              watch('taxRate')) /
             100,
 
           // Prices
-          costAmount: getTotalCostAmount(watch("costs")!),
+          costAmount: getTotalCostAmount(watch('costs')!),
           subTotal:
-            getTotalProductsPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!), // products.netAmount + costs.amount
+            getTotalProductsPrice(watch('products')!) +
+            getTotalCostAmount(watch('costs')!), // products.netAmount + costs.amount
           netTotal:
-            getTotalProductsPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!) +
-            ((getTotalProductsPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
+            getTotalProductsPrice(watch('products')!) +
+            getTotalCostAmount(watch('costs')!) +
+            ((getTotalProductsPrice(watch('products')!) +
+              getTotalCostAmount(watch('costs')!)) *
+              watch('taxRate')) /
               100, // subTotal + taxAmount
         },
       },
@@ -253,7 +253,7 @@ const CreatePurchasePage = () => {
   useEffect(() => {
     if (
       !isFetchingProducts &&
-      typeof searchParams.get("productId") === "string" &&
+      typeof searchParams.get('productId') === 'string' &&
       productsData?.inventory__products?.nodes &&
       productsData?.inventory__products?.nodes?.length > 0
     ) {
@@ -293,7 +293,7 @@ const CreatePurchasePage = () => {
 
       <Paper radius={10} p={10}>
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex justify={"space-between"} align={"center"}>
+          <Flex justify={'space-between'} align={'center'}>
             <div>
               <Title order={4}>
                 Select supplier <span className="text-red-500">*</span>
@@ -309,7 +309,7 @@ const CreatePurchasePage = () => {
               Add new
             </Button>
           </Flex>
-          <Space h={"md"} />
+          <Space h={'md'} />
           <SuppliersCardList
             isFetchingSuppliers={isFetchingSuppliers}
             setValue={setValue}
@@ -320,8 +320,8 @@ const CreatePurchasePage = () => {
             onChangeSupplierPage={onChangeSupplierPage}
           />
 
-          <Space h={"md"} />
-          <Flex justify={"space-between"} align={"center"} mt={"lg"}>
+          <Space h={'md'} />
+          <Flex justify={'space-between'} align={'center'} mt={'lg'}>
             <div>
               <Title order={4}>
                 Select product <span className="text-red-500">*</span>
@@ -336,7 +336,7 @@ const CreatePurchasePage = () => {
               Add new
             </Button>
           </Flex>
-          <Space h={"md"} />
+          <Space h={'md'} />
 
           {/* Product List to select */}
           <ProductsCardList
@@ -354,7 +354,7 @@ const CreatePurchasePage = () => {
           <Space h={50} />
 
           <Title order={4}>Items</Title>
-          <Space h={"md"} />
+          <Space h={'md'} />
 
           {Boolean(productFields?.length) && (
             <>
@@ -383,7 +383,7 @@ const CreatePurchasePage = () => {
                             onChange={(v) =>
                               setValue(
                                 `products.${idx}.quantity`,
-                                parseInt(v as string)
+                                parseInt(v as string),
                               )
                             }
                             min={1}
@@ -396,7 +396,7 @@ const CreatePurchasePage = () => {
                             onChange={(v) =>
                               setValue(
                                 `products.${idx}.unitPrice`,
-                                parseInt(v as string)
+                                parseInt(v as string),
                               )
                             }
                             min={1}
@@ -406,27 +406,27 @@ const CreatePurchasePage = () => {
                         <td className="font-medium text-center">
                           {currencyNumberFormat(
                             watch(`products.${idx}.quantity`) *
-                              watch(`products.${idx}.unitPrice`)
+                              watch(`products.${idx}.unitPrice`),
                           )}
                         </td>
                         <td className="font-medium">{product?.taxRate || 0}</td>
                         <td className="font-medium">
                           {currencyNumberFormat(
-                            calculateTaxAmount(watch(`products.${idx}`))
+                            calculateTaxAmount(watch(`products.${idx}`)),
                           )}
                         </td>
                         <td className="font-medium">
                           {currencyNumberFormat(
                             calculateTaxAmount(watch(`products.${idx}`)) +
                               watch(`products.${idx}.quantity`) *
-                                watch(`products.${idx}.unitPrice`)
+                                watch(`products.${idx}.unitPrice`),
                           )}
                         </td>
                         <td className="font-medium">
                           <ActionIcon
                             variant="filled"
                             color="red"
-                            size={"sm"}
+                            size={'sm'}
                             onClick={() => {
                               removeProduct(idx);
                             }}
@@ -435,17 +435,17 @@ const CreatePurchasePage = () => {
                           </ActionIcon>
                         </td>
                       </tr>
-                    )
+                    ),
                   )}
 
                   <tr>
                     <td colSpan={5} className="font-semibold text-right">
                       Total
                     </td>
-                    <td>{getTotalTaxAmount(watch("products") || [])}</td>
+                    <td>{getTotalTaxAmount(watch('products') || [])}</td>
                     <td>
                       {currencyNumberFormat(
-                        getTotalProductsPrice(watch("products")!)
+                        getTotalProductsPrice(watch('products')!),
                       )}
                     </td>
                     <td></td>
@@ -458,32 +458,32 @@ const CreatePurchasePage = () => {
           <Input.Wrapper
             label="Purchase date"
             withAsterisk
-            error={<ErrorMessage errors={errors} name={"purchaseDate"} />}
+            error={<ErrorMessage errors={errors} name={'purchaseDate'} />}
           >
             <DateInput
-              onChange={(d) => setValue("purchaseDate", d!)}
+              onChange={(d) => setValue('purchaseDate', d!)}
               placeholder="Pick a date"
             />
           </Input.Wrapper>
-          <Space h={"sm"} />
+          <Space h={'sm'} />
           <Input.Wrapper
             label="Purchase order date"
             withAsterisk
             error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
           >
             <DateInput
-              onChange={(d) => setValue("purchaseOrderDate", d!)}
+              onChange={(d) => setValue('purchaseOrderDate', d!)}
               placeholder="Pick a date"
             />
           </Input.Wrapper>
-          <Space h={"sm"} />
+          <Space h={'sm'} />
           <Input.Wrapper
             label="Note"
             error={<ErrorMessage errors={errors} name={`note`} />}
           >
-            <Textarea {...register("note")} placeholder="Write note" />
+            <Textarea {...register('note')} placeholder="Write note" />
           </Input.Wrapper>
-          <Space h={"sm"} />
+          <Space h={'sm'} />
           <Input.Wrapper
             withAsterisk
             label="Select VAT profile"
@@ -491,17 +491,17 @@ const CreatePurchasePage = () => {
           >
             <Select
               data={getVatProfileSelectInputData(
-                vatProfile?.setup__vats?.nodes as Vat[]
+                vatProfile?.setup__vats?.nodes as Vat[],
               )}
-              onChange={(v) => setValue("taxRate", parseInt(v!))}
+              onChange={(v) => setValue('taxRate', parseInt(v!))}
               placeholder="Select vat profile"
               disabled={vatProfileLoading}
             />
           </Input.Wrapper>
 
-          <Space h={"xl"} />
+          <Space h={'xl'} />
 
-          <Flex justify={"space-between"} align={"center"}>
+          <Flex justify={'space-between'} align={'center'}>
             <Title order={4}>Extra cost</Title>
             <Button
               variant="light"
@@ -509,8 +509,8 @@ const CreatePurchasePage = () => {
               onClick={() =>
                 appendCosts({
                   amount: 0,
-                  note: "",
-                  name: "",
+                  note: '',
+                  name: '',
                 })
               }
             >
@@ -518,21 +518,21 @@ const CreatePurchasePage = () => {
             </Button>
           </Flex>
 
-          <Space h={"md"} />
+          <Space h={'md'} />
 
           {costsFields?.map((_, idx) => (
             <div
               key={idx}
               className={classNames(
-                "relative p-2 mt-5 mb-2 rounded-sm bg-gray-100",
+                'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
                 {
-                  "bg-gray-100": true,
-                }
+                  'bg-gray-100': true,
+                },
               )}
             >
               <ActionIcon
                 color="red"
-                size={"sm"}
+                size={'sm'}
                 radius={100}
                 variant="filled"
                 className="absolute -top-2 -right-1"
@@ -554,7 +554,7 @@ const CreatePurchasePage = () => {
                 />
               </Input.Wrapper>
 
-              <Space h={"xs"} />
+              <Space h={'xs'} />
               <Input.Wrapper
                 label="Cost amount"
                 withAsterisk
@@ -574,7 +574,7 @@ const CreatePurchasePage = () => {
                   min={0}
                 />
               </Input.Wrapper>
-              <Space h={"xs"} />
+              <Space h={'xs'} />
               <Input.Wrapper
                 label="Note"
                 error={

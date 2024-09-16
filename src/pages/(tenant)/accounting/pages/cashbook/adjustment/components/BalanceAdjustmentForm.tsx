@@ -1,18 +1,15 @@
 import {
   Account,
   Accounting_Transaction_Source,
-} from "@/_app/graphql-models/graphql";
-import { useMutation } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Badge, Button, Input, Select, Space, Title } from "@mantine/core";
-import { useForm } from "react-hook-form";
-import * as yup from "yup";
-import { TRANSACTION_CREATE_MUTATION } from "../utils/query";
-import {
-  getAccountBalance,
-  getAccountDetails,
-} from "@/_app/common/utils/getBalance";
+} from '@/_app/graphql-models/graphql';
+import { useMutation } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Badge, Button, Input, Select, Space, Title } from '@mantine/core';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { TRANSACTION_CREATE_MUTATION } from '../utils/query';
+import { getAccountBalance, getAccountDetails } from '@/_app/utils/getBalance';
 
 interface BalanceAdjustmentFormProps {
   onSubmissionDone: () => void;
@@ -35,9 +32,9 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
   } = useForm({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      accountId: "",
+      accountId: '',
       amount: 0,
-      type: "",
+      type: '',
     },
   });
 
@@ -47,7 +44,7 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
   }));
 
   const [createMutation, { loading: creating }] = useMutation(
-    TRANSACTION_CREATE_MUTATION
+    TRANSACTION_CREATE_MUTATION,
   );
 
   const onSubmit = (data: any) => {
@@ -55,8 +52,8 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
       variables: {
         body: {
           ...data,
-          note: `Balance ${watch("type")} to [${
-            getAccountDetails(accounts ?? [], watch("accountId"))
+          note: `Balance ${watch('type')} to [${
+            getAccountDetails(accounts ?? [], watch('accountId'))
               ?.referenceNumber
           }]`,
           source: Accounting_Transaction_Source.BalanceAdjustment,
@@ -72,65 +69,65 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
   return (
     <div>
       <Title order={4}>
-        <span className="capitalize">{"Create Adjustment"}</span>
+        <span className="capitalize">{'Create Adjustment'}</span>
       </Title>
-      <Space h={"lg"} />
+      <Space h={'lg'} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Select
           searchable
           withAsterisk
           onChange={(fromAccountId) =>
-            setValue("accountId", fromAccountId || "")
+            setValue('accountId', fromAccountId || '')
           }
           label="Select account"
           placeholder="Select Account"
           data={accountListForDrop || []}
-          value={watch("accountId")}
+          value={watch('accountId')}
         />
 
-        {watch("accountId") && (
-          <Badge p={"md"}>
-            Available Balance:{" "}
-            {getAccountBalance(accounts || [], watch("accountId"))}
+        {watch('accountId') && (
+          <Badge p={'md'}>
+            Available Balance:{' '}
+            {getAccountBalance(accounts || [], watch('accountId'))}
           </Badge>
         )}
 
         <Input.Wrapper
           label="Action type"
           withAsterisk
-          error={<ErrorMessage name={"type"} errors={errors} />}
+          error={<ErrorMessage name={'type'} errors={errors} />}
         >
           <Select
             data={[
               {
-                label: "Add Balance",
-                value: "CREDIT",
+                label: 'Add Balance',
+                value: 'CREDIT',
               },
               {
-                label: "Remove Balance",
-                value: "DEBIT",
+                label: 'Remove Balance',
+                value: 'DEBIT',
               },
             ]}
             placeholder="Pick action"
-            onChange={(type) => setValue("type", type!)}
+            onChange={(type) => setValue('type', type!)}
           />
         </Input.Wrapper>
 
         <Input.Wrapper
           withAsterisk
-          error={<ErrorMessage name={"amount"} errors={errors} />}
+          error={<ErrorMessage name={'amount'} errors={errors} />}
           label="Amount"
         >
-          <Input placeholder="Amount" type="number" {...register("amount")} />
+          <Input placeholder="Amount" type="number" {...register('amount')} />
         </Input.Wrapper>
 
         <Button
           loading={creating}
           type="submit"
           disabled={
-            watch("type") === "DEBIT" &&
-            getAccountBalance(accounts || [], watch("accountId")) <
-              watch("amount")
+            watch('type') === 'DEBIT' &&
+            getAccountBalance(accounts || [], watch('accountId')) <
+              watch('amount')
           }
         >
           Save
@@ -143,7 +140,7 @@ const BalanceAdjustmentForm: React.FC<BalanceAdjustmentFormProps> = ({
 export default BalanceAdjustmentForm;
 
 const validationSchema = yup.object({
-  accountId: yup.string().required().label("Bank Name"),
-  type: yup.string().required().label(""),
-  amount: yup.number().required().label("Amount of Balance"),
+  accountId: yup.string().required().label('Bank Name'),
+  type: yup.string().required().label(''),
+  amount: yup.number().required().label('Amount of Balance'),
 });

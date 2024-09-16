@@ -1,16 +1,16 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
 import {
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
-import { useDisclosure, useSetState } from "@mantine/hooks";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import React, { useMemo } from "react";
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Drawer, Menu } from '@mantine/core';
+import { useDisclosure, useSetState } from '@mantine/hooks';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import React, { useMemo } from 'react';
 // import {
 //   INCREMENTS_QUERY,
 //   INCREMENT_DELETE_MUTATION,
@@ -19,9 +19,9 @@ import React, { useMemo } from "react";
 import {
   INCREMENTS_QUERY,
   INCREMENT_DELETE_MUTATION,
-} from "../../../increments/utils/increment.query";
-import EmployeeIncrementsForm from "./employee_details_form/EmployeeIncrementsForm";
-import dateFormat from "@/_app/common/utils/dateFormat";
+} from '../../../increments/utils/increment.query';
+import EmployeeIncrementsForm from './employee_details_form/EmployeeIncrementsForm';
+import dateFormat from '@/_app/utils/dateFormat';
 
 interface IState {
   refetching: boolean;
@@ -50,8 +50,8 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
       where: {
         filters: [
           {
-            key: "employee",
-            operator: "eq",
+            key: 'employee',
+            operator: 'eq',
             value: id,
           },
         ],
@@ -72,13 +72,13 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
 
   const handleDeleteIncrement = (_id: string) => {
     confirmModal({
-      title: "Sure to delete account?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete account?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteIncrementMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -88,20 +88,20 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "amount",
-        header: "Increment Amount",
+        accessorKey: 'amount',
+        header: 'Increment Amount',
       },
       {
-        accessorKey: "note",
-        header: "Note",
+        accessorKey: 'note',
+        header: 'Note',
       },
       {
         accessorFn: (row: EmployeeIncrement) => dateFormat(row?.date),
-        accessorKey: "date",
-        header: "Date",
+        accessorKey: 'date',
+        header: 'Date',
       },
     ],
-    []
+    [],
   );
 
   return (
@@ -115,7 +115,7 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
         }
         filters={[
           {
-            key: "employee",
+            key: 'employee',
             operator: MatchOperator.Eq,
             value: id,
           },

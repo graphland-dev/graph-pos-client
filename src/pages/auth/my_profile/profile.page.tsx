@@ -1,5 +1,5 @@
 import { Notify } from '@/_app/common/Notification/Notify';
-import { getFileUrl } from '@/_app/common/utils/getFileUrl';
+import { getFileUrl } from '@/_app/utils/getFileUrl';
 import { useServerFile } from '@/_app/hooks/use-upload-file';
 import { FOLDER__NAME } from '@/_app/models/FolderName';
 import { userAtom } from '@/_app/states/user.atom';

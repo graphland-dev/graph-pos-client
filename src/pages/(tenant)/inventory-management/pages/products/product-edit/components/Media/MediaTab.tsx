@@ -1,15 +1,15 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { getFileUrl } from "@/_app/common/utils/getFileUrl";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { getFileUrl } from '@/_app/utils/getFileUrl';
 import {
   MatchOperator,
   Product,
   ServerFileInput,
   ServerFileReference,
-} from "@/_app/graphql-models/graphql";
-import { useServerFile } from "@/_app/hooks/use-upload-file";
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+} from '@/_app/graphql-models/graphql';
+import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Button,
   Card,
@@ -19,20 +19,20 @@ import {
   Space,
   Text,
   Title,
-} from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
-import { showNotification } from "@mantine/notifications";
-import { IconPlus, IconX } from "@tabler/icons-react";
-import React, { useEffect, useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { FiUpload } from "react-icons/fi";
-import { HiOutlinePhotograph } from "react-icons/hi";
-import { useParams } from "react-router-dom";
-import * as Yup from "yup";
+} from '@mantine/core';
+import { openConfirmModal } from '@mantine/modals';
+import { showNotification } from '@mantine/notifications';
+import { IconPlus, IconX } from '@tabler/icons-react';
+import React, { useEffect, useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { FiUpload } from 'react-icons/fi';
+import { HiOutlinePhotograph } from 'react-icons/hi';
+import { useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 import {
   INVENTORY_PRODUCT_MEDIA_QUERY,
   INVENTORY_PRODUCT_UPDATE,
-} from "../../utils/productEdit.query";
+} from '../../utils/productEdit.query';
 
 // import 'react-image-crop/dist/ReactCrop.css';
 
@@ -44,7 +44,7 @@ const MediaTab: React.FC = () => {
   }>(INVENTORY_PRODUCT_MEDIA_QUERY, {
     variables: {
       where: {
-        key: "_id",
+        key: '_id',
         operator: MatchOperator.Eq,
         value: productId,
       },
@@ -64,38 +64,38 @@ const MediaTab: React.FC = () => {
     defaultValues: {
       gallery: [
         {
-          meta: "",
-          path: "",
-          provider: "",
+          meta: '',
+          path: '',
+          provider: '',
         },
       ],
     },
     resolver: yupResolver(UPLOAD_PHOTOS_FORM),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const { append, fields, remove } = useFieldArray({
     control,
-    name: "gallery",
+    name: 'gallery',
   });
 
   const { uploadFile, deleteFiles, deleting } = useServerFile();
 
   function handleDeleteFile(index: number) {
     openConfirmModal({
-      title: "Sure to delete this file?",
+      title: 'Sure to delete this file?',
       labels: {
-        confirm: "Yes, delete",
-        cancel: "No, keep",
+        confirm: 'Yes, delete',
+        cancel: 'No, keep',
       },
       onConfirm: () => {
         const sFile = galleryPhotos[index];
         deleteFiles([sFile.path as string])
           .then(() => {
             showNotification({
-              title: "File deleted",
-              message: "",
-              color: "green",
+              title: 'File deleted',
+              message: '',
+              color: 'green',
             });
             setGalleryPhotos((prev) => prev.filter((_, i) => i !== index));
             // onUploadDone?.(galleryPhotos.filter((_, i) => i !== index));
@@ -103,9 +103,9 @@ const MediaTab: React.FC = () => {
           })
           .catch(() => {
             showNotification({
-              title: "Failed to delete file",
-              message: "",
-              color: "red",
+              title: 'Failed to delete file',
+              message: '',
+              color: 'red',
             });
           });
       },
@@ -115,12 +115,12 @@ const MediaTab: React.FC = () => {
   // prefill with prev data
   useEffect(() => {
     setValue(
-      "gallery",
+      'gallery',
       mediaData?.inventory__product?.gallery?.map((g) => ({
         path: g?.path,
         meta: g?.meta,
         provider: g?.provider,
-      })) as any
+      })) as any,
     );
     setThumbnail({
       path: mediaData?.inventory__product?.thumbnail?.path,
@@ -133,11 +133,11 @@ const MediaTab: React.FC = () => {
   const [saveMedia, { loading: savingMedia }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
     Notify({
-      sucTitle: "Media galleries saved!",
+      sucTitle: 'Media galleries saved!',
       onSuccess() {
         refetch();
       },
-    })
+    }),
   );
 
   const onSubmit = (values: any) => {
@@ -148,8 +148,8 @@ const MediaTab: React.FC = () => {
           gallery: values?.gallery,
         },
         where: {
-          key: "_id",
-          operator: "eq",
+          key: '_id',
+          operator: 'eq',
           value: productId,
         },
       },
@@ -159,14 +159,14 @@ const MediaTab: React.FC = () => {
 
   return (
     <Card title="Vendor Images" shadow="sm">
-      <Card.Section p={"xs"} withBorder>
+      <Card.Section p={'xs'} withBorder>
         <Text>Upload thumbnail and gallery</Text>
       </Card.Section>
-      <Space h={"lg"} />
+      <Space h={'lg'} />
       <Title order={4} fw={500}>
         Medias
       </Title>
-      <Space h={"md"} />
+      <Space h={'md'} />
       <Input.Wrapper label="Thumbnail" size="md">
         <Space h={5} />
         <div className="relative w-6/12 overflow-hidden bg-gray-300 rounded-md">
@@ -180,7 +180,7 @@ const MediaTab: React.FC = () => {
             ) : (
               <HiOutlinePhotograph
                 size={50}
-                style={{ color: "var(--theme-primary)" }}
+                style={{ color: 'var(--theme-primary)' }}
               />
             )}
           </div>
@@ -195,17 +195,17 @@ const MediaTab: React.FC = () => {
               onChange={async (files) => {
                 uploadFile({
                   files: [files!],
-                  folder: "Inventory_Product_Thumbnail",
+                  folder: 'Inventory_Product_Thumbnail',
                 })
                   .then((res) => {
                     setThumbnail(res.data[0]);
                   })
                   .catch(() =>
                     showNotification({
-                      title: "Failed to upload files to server",
-                      message: "",
-                      color: "red",
-                    })
+                      title: 'Failed to upload files to server',
+                      message: '',
+                      color: 'red',
+                    }),
                   );
               }}
               accept="image/png,image/jpeg"
@@ -223,9 +223,9 @@ const MediaTab: React.FC = () => {
           </div>
         </div>
       </Input.Wrapper>
-      <Space h={"xl"} />
+      <Space h={'xl'} />
 
-      <Flex justify={"space-between"} align="center">
+      <Flex justify={'space-between'} align="center">
         <Title order={4} fw={500}>
           Upload Gallery Photos
         </Title>
@@ -234,16 +234,16 @@ const MediaTab: React.FC = () => {
           variant="light"
           onClick={() =>
             append({
-              meta: "",
-              path: "",
-              provider: "",
+              meta: '',
+              path: '',
+              provider: '',
             })
           }
         >
           Add new
         </Button>
       </Flex>
-      <Space h={"md"} />
+      <Space h={'md'} />
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-3 gap-3">
@@ -263,7 +263,7 @@ const MediaTab: React.FC = () => {
                     <img
                       src={
                         getFileUrl(
-                          watch(`gallery.${idx}`) as ServerFileReference
+                          watch(`gallery.${idx}`) as ServerFileReference,
                         )!
                       }
                       alt="Thumbnail"
@@ -292,7 +292,7 @@ const MediaTab: React.FC = () => {
                     onChange={async (files) => {
                       uploadFile({
                         files: [files!],
-                        folder: "Inventory_Product_Gallery",
+                        folder: 'Inventory_Product_Gallery',
                       })
                         .then((res) => {
                           setGalleryPhotos((prev) => {
@@ -303,10 +303,10 @@ const MediaTab: React.FC = () => {
                         })
                         .catch(() =>
                           showNotification({
-                            title: "Failed to upload files to server",
-                            message: "",
-                            color: "red",
-                          })
+                            title: 'Failed to upload files to server',
+                            message: '',
+                            color: 'red',
+                          }),
                         );
                     }}
                     accept="image/png,image/jpeg"
@@ -322,7 +322,7 @@ const MediaTab: React.FC = () => {
             </Input.Wrapper>
           ))}
         </div>
-        <Space h={"md"} />
+        <Space h={'md'} />
         <div>
           <Button type="submit" loading={savingMedia}>
             Save
@@ -339,8 +339,8 @@ export const UPLOAD_PHOTOS_FORM = Yup.object().shape({
   gallery: Yup.array().of(
     Yup.object().shape({
       meta: Yup.string().required(),
-      path: Yup.string().required("File is not uploaded"),
+      path: Yup.string().required('File is not uploaded'),
       provider: Yup.string().required(),
-    })
+    }),
   ),
 });

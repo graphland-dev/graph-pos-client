@@ -1,21 +1,21 @@
-import DataTable from "@/_app/common/data-table/DataTable";
-import PageTitle from "@/_app/common/PageTitle";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import dateFormat from "@/_app/common/utils/dateFormat";
+import DataTable from '@/_app/common/data-table/DataTable';
+import PageTitle from '@/_app/common/PageTitle';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import dateFormat from '@/_app/utils/dateFormat';
 import {
   InventoryInvoicePayment,
   InventoryInvoicePaymentsWithPagination,
-  MatchOperator
-} from "@/_app/graphql-models/graphql";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Drawer, Menu, Text } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconFileInfo } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import InventoryInvoicePaymentDetails from "./components/InventoryInvoicePaymentDetails";
-import { INVENTORY_INVOICE_PAYMENTS_QUERY } from "./utils/query.invoice-payments";
+  MatchOperator,
+} from '@/_app/graphql-models/graphql';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { Drawer, Menu, Text } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import { IconFileInfo } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import InventoryInvoicePaymentDetails from './components/InventoryInvoicePaymentDetails';
+import { INVENTORY_INVOICE_PAYMENTS_QUERY } from './utils/query.invoice-payments';
 
 interface IState {
   refetching: boolean;
@@ -41,41 +41,40 @@ const InvoicePaymentsPage = () => {
     },
   });
 
-    const [searchParams] = useSearchParams();
-    const invoicePaymentId = searchParams.get("invoicePaymentId");
+  const [searchParams] = useSearchParams();
+  const invoicePaymentId = searchParams.get('invoicePaymentId');
 
-    const [invoicePayment] = useLazyQuery<{
-      accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
-    }>(INVENTORY_INVOICE_PAYMENTS_QUERY, {
-      fetchPolicy: "network-only",
-    });
+  const [invoicePayment] = useLazyQuery<{
+    accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
+  }>(INVENTORY_INVOICE_PAYMENTS_QUERY, {
+    fetchPolicy: 'network-only',
+  });
 
- 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "inventoryInvoicePaymentUID",
-        header: "Invoice Payment UID",
+        accessorKey: 'inventoryInvoicePaymentUID',
+        header: 'Invoice Payment UID',
       },
 
       {
-        accessorKey: "client.name",
-        header: "Client",
+        accessorKey: 'client.name',
+        header: 'Client',
       },
       {
-        accessorKey: "date",
+        accessorKey: 'date',
         accessorFn: (row: InventoryInvoicePayment) =>
-          row?.date ? dateFormat(row?.date) : "",
-        header: "Date",
+          row?.date ? dateFormat(row?.date) : '',
+        header: 'Date',
       },
       {
-        accessorKey: "netAmount",
+        accessorKey: 'netAmount',
         accessorFn: (originalRow: InventoryInvoicePayment) =>
           `${currencyNumberFormat(originalRow?.netAmount || 0)} BDT`,
-        header: "Net Total",
+        header: 'Net Total',
       },
     ],
-    []
+    [],
   );
 
   const handleRefetch = (variables: any) => {
@@ -85,31 +84,32 @@ const InvoicePaymentsPage = () => {
     });
   };
 
-      useEffect(() => {
-        if (invoicePaymentId) {
-          // alert(invoiceId);
-          invoicePayment({
-            variables: {
-              where: {
-                filters: [
-                  {
-                    key: "_id",
-                    operator: MatchOperator.Eq,
-                    value: invoicePaymentId,
-                  },
-                ],
+  useEffect(() => {
+    if (invoicePaymentId) {
+      // alert(invoiceId);
+      invoicePayment({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: '_id',
+                operator: MatchOperator.Eq,
+                value: invoicePaymentId,
               },
-            },
-            onError: (err) => console.log(err),
-          }).then((res) => {
-             setInvoicePaymentsDetails(res.data?.accounting__inventoryInvoicePayments?.nodes?.[0]);
-             setState({
-               openDrawer: true,
-             });
-          });
-        }
-      }, [searchParams]);
-
+            ],
+          },
+        },
+        onError: (err) => console.log(err),
+      }).then((res) => {
+        setInvoicePaymentsDetails(
+          res.data?.accounting__inventoryInvoicePayments?.nodes?.[0],
+        );
+        setState({
+          openDrawer: true,
+        });
+      });
+    }
+  }, [searchParams]);
 
   return (
     <>
@@ -126,7 +126,7 @@ const InvoicePaymentsPage = () => {
           </Text>
         }
         opened={state.openDrawer}
-        size={"95%"}
+        size={'95%'}
       >
         <InventoryInvoicePaymentDetails id={`${invoicePaymentsDetails?._id}`} />
       </Drawer>

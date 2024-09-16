@@ -20,7 +20,7 @@ import {
   IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
   Organization__Employees__Query,
 } from './utils/query.gql';
-import { getFileUrl } from '@/_app/common/utils/getFileUrl';
+import { getFileUrl } from '@/_app/utils/getFileUrl';
 import { useParams } from 'react-router-dom';
 
 interface IState {

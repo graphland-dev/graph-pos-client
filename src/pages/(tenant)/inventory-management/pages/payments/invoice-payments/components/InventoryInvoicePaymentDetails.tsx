@@ -1,14 +1,22 @@
-import dateFormat from "@/_app/common/utils/dateFormat";
+import dateFormat from '@/_app/utils/dateFormat';
 import {
   InventoryInvoicePayment,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
-import { Anchor, Divider, Paper, Skeleton, Table, Text, Title } from "@mantine/core";
-import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from "../utils/query.invoice-payments";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { useMemo } from "react";
-import { Link } from "react-router-dom";
+} from '@/_app/graphql-models/graphql';
+import { useQuery } from '@apollo/client';
+import {
+  Anchor,
+  Divider,
+  Paper,
+  Skeleton,
+  Table,
+  Text,
+  Title,
+} from '@mantine/core';
+import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from '../utils/query.invoice-payments';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import { useMemo } from 'react';
+import { Link } from 'react-router-dom';
 
 const InventoryInvoicePaymentDetails: React.FC<{
   id: string;
@@ -18,7 +26,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
   }>(INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY, {
     variables: {
       where: {
-        key: "_id",
+        key: '_id',
         operator: MatchOperator.Eq,
         value: id,
       },
@@ -29,9 +37,9 @@ const InventoryInvoicePaymentDetails: React.FC<{
     () =>
       data?.accounting__InventoryInvoicePayment?.payments?.reduce(
         (total, current) => total + (current?.amount ?? 0),
-        0
+        0,
       ),
-    [data?.accounting__InventoryInvoicePayment?.payments]
+    [data?.accounting__InventoryInvoicePayment?.payments],
   );
 
   const ths = (
@@ -44,7 +52,6 @@ const InventoryInvoicePaymentDetails: React.FC<{
 
   const tfs = (
     <tr>
-      
       <th></th>
       <th className="!text-center">Total Amount</th>
       <th>{currencyNumberFormat(totalAmount!)}</th>
@@ -85,7 +92,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
         <td>{element?.account?.name} </td>
         <td>{element.amount} </td>
       </tr>
-    )
+    ),
   );
   return (
     <div className="flex flex-col gap-4">
@@ -102,7 +109,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
               Payment UID:
-            </span>{" "}
+            </span>{' '}
             {
               data?.accounting__InventoryInvoicePayment
                 .inventoryInvoicePaymentUID
@@ -133,7 +140,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              {" "}
+              {' '}
               Net Amount:
             </span>
             {data?.accounting__InventoryInvoicePayment.netAmount}
@@ -194,7 +201,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              Invoice UID:{" "}
+              Invoice UID:{' '}
             </span>
             <Anchor
               component={Link}
@@ -205,7 +212,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              Paid Amount:{" "}
+              Paid Amount:{' '}
             </span>
             {data?.accounting__InventoryInvoicePayment.invoice?.paidAmount}
           </Text>
@@ -220,13 +227,13 @@ const InventoryInvoicePaymentDetails: React.FC<{
               Purchase Date:
             </span>
             {dateFormat(
-              data?.accounting__InventoryInvoicePayment.invoice?.date
+              data?.accounting__InventoryInvoicePayment.invoice?.date,
             )}
           </Text>
         </Paper>
       </div>
 
-      <Table mt={"md"} withColumnBorders withBorder captionSide="bottom">
+      <Table mt={'md'} withColumnBorders withBorder captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>
         <tfoot>{tfs}</tfoot>

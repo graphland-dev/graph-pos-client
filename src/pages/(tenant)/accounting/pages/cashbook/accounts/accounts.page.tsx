@@ -1,29 +1,29 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
 import {
   Account,
   AccountsWithPagination,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo } from "react";
-import AccountForm from "./components/AccountForm";
+} from '@/_app/graphql-models/graphql';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { Button, Drawer, Menu } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useEffect, useMemo } from 'react';
+import AccountForm from './components/AccountForm';
 import {
   ACCOUNTING_ACCOUNTS_LIST,
   ACCOUNTING_ACCOUNT_DELETE_MUTATION,
-} from "./utils/query";
-import PageTitle from "@/_app/common/PageTitle";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { useSearchParams } from "react-router-dom";
+} from './utils/query';
+import PageTitle from '@/_app/common/PageTitle';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import { useSearchParams } from 'react-router-dom';
 
 interface IState {
   modalOpened: boolean;
-  operationType: "create" | "update";
+  operationType: 'create' | 'update';
   operationId?: string | null;
   operationPayload?: any;
   refetching: boolean;
@@ -32,7 +32,7 @@ interface IState {
 const AccountsPage = () => {
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
-    operationType: "create",
+    operationType: 'create',
     operationId: null,
     operationPayload: {},
     refetching: false,
@@ -51,15 +51,15 @@ const AccountsPage = () => {
 
   const [deleteAccountMutation] = useMutation(
     ACCOUNTING_ACCOUNT_DELETE_MUTATION,
-    { onCompleted: () => handleRefetch({}) }
+    { onCompleted: () => handleRefetch({}) },
   );
   const [searchParams] = useSearchParams();
-  const accountId = searchParams.get("accountId");
+  const accountId = searchParams.get('accountId');
 
   const [fetchEmployee] = useLazyQuery<{
     accounting__accounts: AccountsWithPagination;
   }>(ACCOUNTING_ACCOUNTS_LIST, {
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   });
 
   const handleRefetch = (variables: any) => {
@@ -71,13 +71,13 @@ const AccountsPage = () => {
 
   const handleDeleteAccount = (_id: string) => {
     confirmModal({
-      title: "Sure to delete account?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete account?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteAccountMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -87,64 +87,64 @@ const AccountsPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Account Name",
+        accessorKey: 'name',
+        header: 'Account Name',
       },
       {
-        accessorKey: "referenceNumber",
-        header: "Reference",
+        accessorKey: 'referenceNumber',
+        header: 'Reference',
       },
       {
         accessorFn: (row: Account) =>
           currencyNumberFormat(
-            (row?.creditAmount || 0) - (row?.debitAmount || 0)
+            (row?.creditAmount || 0) - (row?.debitAmount || 0),
           ),
-        header: "Balance",
+        header: 'Balance',
       },
       {
-        accessorKey: "note",
-        header: "Note",
+        accessorKey: 'note',
+        header: 'Note',
       },
       {
         accessorFn: (row: Account) =>
-          dayjs(row?.openedAt).format("MMMM D, YYYY h:mm A"),
-        accessorKey: "openedAt",
-        header: "Date",
+          dayjs(row?.openedAt).format('MMMM D, YYYY h:mm A'),
+        accessorKey: 'openedAt',
+        header: 'Date',
       },
       {
-        accessorKey: "brunchName",
-        header: "Brunch Name",
+        accessorKey: 'brunchName',
+        header: 'Brunch Name',
       },
     ],
-    []
+    [],
   );
 
-   useEffect(() => {
-     if (accountId) {
-       // alert(invoiceId);
-       fetchEmployee({
-         variables: {
-           where: {
-             filters: [
-               {
-                 key: "_id",
-                 operator: MatchOperator.Eq,
-                 value: accountId,
-               },
-             ],
-           },
-         },
-         onError: (err) => console.log(err),
-       }).then((res) => {
-         setState({
-           modalOpened: true,
-           operationType: "update",
-           operationId: res.data?.accounting__accounts.nodes?.[0]._id,
-           operationPayload: res.data?.accounting__accounts.nodes?.[0],
-         });
-       });
-     }
-   }, [searchParams]);
+  useEffect(() => {
+    if (accountId) {
+      // alert(invoiceId);
+      fetchEmployee({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: '_id',
+                operator: MatchOperator.Eq,
+                value: accountId,
+              },
+            ],
+          },
+        },
+        onError: (err) => console.log(err),
+      }).then((res) => {
+        setState({
+          modalOpened: true,
+          operationType: 'update',
+          operationId: res.data?.accounting__accounts.nodes?.[0]._id,
+          operationPayload: res.data?.accounting__accounts.nodes?.[0],
+        });
+      });
+    }
+  }, [searchParams]);
 
   return (
     <>
@@ -175,7 +175,7 @@ const AccountsPage = () => {
               onClick={() =>
                 setState({
                   modalOpened: true,
-                  operationType: "update",
+                  operationType: 'update',
                   operationId: row._id,
                   operationPayload: row,
                 })
@@ -197,7 +197,7 @@ const AccountsPage = () => {
             <Button
               leftIcon={<IconPlus size={16} />}
               onClick={() =>
-                setState({ modalOpened: true, operationType: "create" })
+                setState({ modalOpened: true, operationType: 'create' })
               }
               size="sm"
             >

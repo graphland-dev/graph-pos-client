@@ -1,5 +1,5 @@
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import { ProductPurchase } from "@/_app/graphql-models/graphql";
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import { ProductPurchase } from '@/_app/graphql-models/graphql';
 import {
   Button,
   Group,
@@ -8,8 +8,8 @@ import {
   Space,
   Text,
   clsx,
-} from "@mantine/core";
-import React, { useMemo } from "react";
+} from '@mantine/core';
+import React, { useMemo } from 'react';
 
 const PurchaseCardList: React.FC<{
   purchases: ProductPurchase[];
@@ -43,8 +43,8 @@ const PurchaseCardList: React.FC<{
             key={idx}
             p={10}
             withBorder
-            className={clsx("relative cursor-pointer", {
-              "bg-red-200 !cursor-not-allowed": dueAmount(purchase) <= 0,
+            className={clsx('relative cursor-pointer', {
+              'bg-red-200 !cursor-not-allowed': dueAmount(purchase) <= 0,
             })}
             onClick={() => {
               if (dueAmount(purchase) <= 0) return;
@@ -55,15 +55,15 @@ const PurchaseCardList: React.FC<{
               });
             }}
           >
-            <Text size={"md"} fw={700}>
+            <Text size={'md'} fw={700}>
               {purchase?.purchaseUID}
             </Text>
-            <Text size={"sm"}>
+            <Text size={'sm'}>
               Due amount: {currencyNumberFormat(dueAmount(purchase))}
               BDT
             </Text>
-            <Text size={"sm"}>
-              Net total: {currencyNumberFormat(purchase?.netTotal || 0)} BDT{" "}
+            <Text size={'sm'}>
+              Net total: {currencyNumberFormat(purchase?.netTotal || 0)} BDT{' '}
             </Text>
           </Paper>
         ))}
@@ -71,12 +71,12 @@ const PurchaseCardList: React.FC<{
       {isFetchingPurchases && (
         <div className="grid grid-cols-3 gap-3">
           {new Array(6).fill(6).map((_, idx) => (
-            <Skeleton key={idx} h={90} radius={"sm"} />
+            <Skeleton key={idx} h={90} radius={'sm'} />
           ))}
         </div>
       )}
 
-      <Space h={"md"} />
+      <Space h={'md'} />
 
       <Group position="left">
         <Button
@@ -86,7 +86,7 @@ const PurchaseCardList: React.FC<{
           onClick={() => onChangePurchasePage(purchasePage - 1)}
         >
           Load Previous
-        </Button>{" "}
+        </Button>{' '}
         <Button
           variant="subtle"
           disabled={!hasNextPage}

@@ -1,9 +1,9 @@
-import { userTenantsAtom } from "@/_app/states/user.atom";
-import { Flex, Image, Menu, UnstyledButton } from "@mantine/core";
-import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
-import { useAtom } from "jotai";
-import { Link, useParams } from "react-router-dom";
-import { getFileUrl } from "../../utils/getFileUrl";
+import { userTenantsAtom } from '@/_app/states/user.atom';
+import { Flex, Image, Menu, UnstyledButton } from '@mantine/core';
+import { IconSettings, IconSwitchVertical } from '@tabler/icons-react';
+import { useAtom } from 'jotai';
+import { Link, useParams } from 'react-router-dom';
+import { getFileUrl } from '../../../utils/getFileUrl';
 
 const TenantDropdown = () => {
   const params = useParams<{ tenant: string }>();
@@ -20,10 +20,10 @@ const TenantDropdown = () => {
 
   return (
     <div className="flex items-center gap-2 px-2 py-1 rounded-md tenant-dropdown">
-      <Flex gap={"xs"} align={"center"}>
+      <Flex gap={'xs'} align={'center'}>
         {getTenantByUId(params.tenant!)?.logo?.path ? (
           <Image
-            radius={"lg"}
+            radius={'lg'}
             width={25}
             height={25}
             src={getFileUrl(getTenantByUId(params.tenant!)?.logo ?? {})}
@@ -33,12 +33,12 @@ const TenantDropdown = () => {
             src="https://freelogopng.com/images/all_img/1657952440google-logo-png-transparent.png"
             width={25}
             height={25}
-            radius={"lg"}
+            radius={'lg'}
           />
         )}
 
         <p className="tenant-dropdown__name">
-          {getTenantByUId(params.tenant!)?.name || "Select tenant"}
+          {getTenantByUId(params.tenant!)?.name || 'Select tenant'}
         </p>
       </Flex>
 

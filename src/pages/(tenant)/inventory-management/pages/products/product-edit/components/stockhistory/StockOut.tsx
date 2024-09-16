@@ -1,7 +1,7 @@
-import dateFormat from "@/_app/common/utils/dateFormat";
-import { ProductStock } from "@/_app/graphql-models/graphql";
-import { Table } from "@mantine/core";
-import { IconTrash } from "@tabler/icons-react";
+import dateFormat from '@/_app/utils/dateFormat';
+import { ProductStock } from '@/_app/graphql-models/graphql';
+import { Table } from '@mantine/core';
+import { IconTrash } from '@tabler/icons-react';
 
 interface IStockProps {
   data: ProductStock[];

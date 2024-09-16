@@ -1,29 +1,29 @@
-import PageTitle from "@/_app/common/PageTitle";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
-import dateFormat from "@/_app/common/utils/dateFormat";
+import PageTitle from '@/_app/common/PageTitle';
+import { ACCOUNTS_LIST_DROPDOWN } from '@/_app/common/common-gql';
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
+import dateFormat from '@/_app/utils/dateFormat';
 import {
   AccountsWithPagination,
   MatchOperator,
   Transfer,
   TransfersWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
-import TransferForm from "./components/TransferForm";
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Drawer, Menu } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useMemo } from 'react';
+import TransferForm from './components/TransferForm';
 import {
   ACCOUNTING_DELETE_TRANSFER_MUTATION,
   ACCOUNTING_TRANSFER_QUERY_LIST,
-} from "./ulits/query";
+} from './ulits/query';
 
 interface IState {
   modalOpened: boolean;
-  operationType: "create" | "update";
+  operationType: 'create' | 'update';
   operationId?: string | null;
   operationPayload?: any;
   refetching: boolean;
@@ -32,7 +32,7 @@ interface IState {
 const TransferPage = () => {
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
-    operationType: "create",
+    operationType: 'create',
     operationId: null,
     operationPayload: {},
     refetching: false,
@@ -59,18 +59,18 @@ const TransferPage = () => {
 
   const [deleteAccountMutation] = useMutation(
     ACCOUNTING_DELETE_TRANSFER_MUTATION,
-    { onCompleted: () => handleRefetch({}) }
+    { onCompleted: () => handleRefetch({}) },
   );
 
   const handleDeleteAccount = (_id: string) => {
     confirmModal({
-      title: "Sure to delete?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteAccountMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -91,25 +91,25 @@ const TransferPage = () => {
         accessorFn(row) {
           return row?.fromAccount?.name;
         },
-        header: "From Account",
+        header: 'From Account',
       },
       {
         accessorFn(row: Transfer) {
           return row?.toAccount?.name;
         },
-        header: "To Account",
+        header: 'To Account',
       },
       {
-        accessorKey: "amount",
-        header: "Amount",
+        accessorKey: 'amount',
+        header: 'Amount',
       },
       {
         accessorFn: (row: Transfer) => dateFormat(row?.date),
-        accessorKey: "date",
-        header: "Date",
+        accessorKey: 'date',
+        header: 'Date',
       },
     ],
-    []
+    [],
   );
   return (
     <>

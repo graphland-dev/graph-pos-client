@@ -1,9 +1,9 @@
-import { getFileUrl } from "@/_app/common/utils/getFileUrl";
-import { TenantsWithPagination } from "@/_app/graphql-models/graphql";
-import { gql, useQuery } from "@apollo/client";
-import { Image, LoadingOverlay, Text, Title } from "@mantine/core";
-import { IconPlus } from "@tabler/icons-react";
-import { Link } from "react-router-dom";
+import { getFileUrl } from '@/_app/utils/getFileUrl';
+import { TenantsWithPagination } from '@/_app/graphql-models/graphql';
+import { gql, useQuery } from '@apollo/client';
+import { Image, LoadingOverlay, Text, Title } from '@mantine/core';
+import { IconPlus } from '@tabler/icons-react';
+import { Link } from 'react-router-dom';
 
 const MY_TENANTS = gql`
   query Identity__myTenants {
@@ -28,9 +28,9 @@ const SelectOrganization = () => {
     MY_TENANTS,
     {
       onError() {
-        window.location.href = "/auth/login";
+        window.location.href = '/auth/login';
       },
-    }
+    },
   );
 
   return (

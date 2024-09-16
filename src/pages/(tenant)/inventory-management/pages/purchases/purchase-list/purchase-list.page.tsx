@@ -1,25 +1,25 @@
-import PageTitle from "@/_app/common/PageTitle";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import dateFormat from "@/_app/common/utils/dateFormat";
+import PageTitle from '@/_app/common/PageTitle';
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import dateFormat from '@/_app/utils/dateFormat';
 import {
   MatchOperator,
   ProductPurchase,
   ProductPurchasesWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
-import { Badge, Button, Drawer, Menu } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
-import PurchaseDetails from "./components/PurchaseDetails";
+} from '@/_app/graphql-models/graphql';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
+import { Badge, Button, Drawer, Menu } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import { IconFileInfo, IconPlus, IconTrash } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
+import PurchaseDetails from './components/PurchaseDetails';
 import {
   Inventory__Remove_Product_Purchase,
   Inventory__product_Purchases_Query,
-} from "./utils/query";
+} from './utils/query';
 
 interface IState {
   refetching: boolean;
@@ -50,18 +50,18 @@ const PurchaseListPage = () => {
     Inventory__Remove_Product_Purchase,
     {
       onCompleted: () => handleRefetch({}),
-    }
+    },
   );
 
- const [searchParams] = useSearchParams();
-  const purchaseId = searchParams.get("purchaseId");
+  const [searchParams] = useSearchParams();
+  const purchaseId = searchParams.get('purchaseId');
   // console.log(purchasesUId);
 
- const [productPurchase] = useLazyQuery<{
-   inventory__productPurchases: ProductPurchasesWithPagination;
- }>(Inventory__product_Purchases_Query, {
-   fetchPolicy: "network-only",
- });
+  const [productPurchase] = useLazyQuery<{
+    inventory__productPurchases: ProductPurchasesWithPagination;
+  }>(Inventory__product_Purchases_Query, {
+    fetchPolicy: 'network-only',
+  });
 
   const handleRefetch = (variables: any) => {
     setState({ refetching: true });
@@ -72,13 +72,13 @@ const PurchaseListPage = () => {
 
   const handleDeleteAccount = (_id: string) => {
     confirmModal({
-      title: "Sure to delete product?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete product?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteProductMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -88,86 +88,86 @@ const PurchaseListPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "purchaseUID",
-        header: "Purchase UID",
+        accessorKey: 'purchaseUID',
+        header: 'Purchase UID',
       },
       {
-        accessorKey: "supplier.name",
-        header: "Supplier Name",
+        accessorKey: 'supplier.name',
+        header: 'Supplier Name',
       },
       {
-        accessorKey: "purchaseDate",
+        accessorKey: 'purchaseDate',
         accessorFn: (row: ProductPurchase) => dateFormat(row?.purchaseDate),
-        header: "Purchase Date",
+        header: 'Purchase Date',
       },
       {
-        accessorKey: "purchaseOrderDate",
+        accessorKey: 'purchaseOrderDate',
         accessorFn: (row: ProductPurchase) =>
           dateFormat(row?.purchaseOrderDate),
-        header: "Order Date",
+        header: 'Order Date',
       },
       {
-        accessorKey: "dueAmount",
+        accessorKey: 'dueAmount',
         accessorFn: (originalRow: ProductPurchase) => {
           const totalDue =
             originalRow?.netTotal - (originalRow?.paidAmount || 0);
-          let color = "red";
+          let color = 'red';
           if (totalDue === 0) {
-            color = "green";
+            color = 'green';
           }
           if (totalDue > 0) {
-            color = "yellow";
+            color = 'yellow';
           }
           return (
             <Badge color={color}>{`${currencyNumberFormat(
-              originalRow?.netTotal - (originalRow?.paidAmount || 0)
+              originalRow?.netTotal - (originalRow?.paidAmount || 0),
             )} BDT`}</Badge>
           );
         },
 
-        header: "Due Amount",
+        header: 'Due Amount',
       },
       {
-        accessorKey: "paidAmount",
+        accessorKey: 'paidAmount',
         accessorFn: (originalRow: ProductPurchase) =>
           `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
-        header: "Paid Amount",
+        header: 'Paid Amount',
       },
       {
-        accessorKey: "netTotal",
+        accessorKey: 'netTotal',
         accessorFn: (originalRow: ProductPurchase) =>
           `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Net Total",
+        header: 'Net Total',
       },
     ],
-    []
+    [],
   );
 
-    useEffect(() => {
-      // console.log(purchasesUId);
-      if (purchaseId) {
-        // alert(invoiceId);
-        productPurchase({
-          variables: {
-            where: {
-              filters: [
-                {
-                  key: "_id",
-                  operator: MatchOperator.Eq,
-                  value: purchaseId,
-                },
-              ],
-            },
+  useEffect(() => {
+    // console.log(purchasesUId);
+    if (purchaseId) {
+      // alert(invoiceId);
+      productPurchase({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: '_id',
+                operator: MatchOperator.Eq,
+                value: purchaseId,
+              },
+            ],
           },
-        }).then((res) => {
-          console.log(res);
-          setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
-          setState({
-            openDrawer: true,
-          });
+        },
+      }).then((res) => {
+        console.log(res);
+        setPurchaseDetails(res.data?.inventory__productPurchases.nodes?.[0]);
+        setState({
+          openDrawer: true,
         });
-      }
-    }, [searchParams]);
+      });
+    }
+  }, [searchParams]);
 
   return (
     <>
@@ -180,7 +180,7 @@ const PurchaseListPage = () => {
         }
         title="Product items in purchase"
         opened={state.openDrawer}
-        size={"90%"}
+        size={'90%'}
       >
         <PurchaseDetails details={purchaseDetails!} />
       </Drawer>

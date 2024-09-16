@@ -1,26 +1,26 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
 import {
   Employee,
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
   EmployeesWithPagination,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
-import { useDisclosure, useSetState } from "@mantine/hooks";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
-import IncrementForm from "./components/IncrementForm";
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Drawer, Menu } from '@mantine/core';
+import { useDisclosure, useSetState } from '@mantine/hooks';
+import { IconPlus, IconTrash } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useMemo } from 'react';
+import IncrementForm from './components/IncrementForm';
 import {
   INCREMENTS_QUERY,
   INCREMENT_DELETE_MUTATION,
   INCREMENT_EMPLOYEE_QUERY,
-} from "./utils/increment.query";
-import PageTitle from "@/_app/common/PageTitle";
-import dateFormat from "@/_app/common/utils/dateFormat";
+} from './utils/increment.query';
+import PageTitle from '@/_app/common/PageTitle';
+import dateFormat from '@/_app/utils/dateFormat';
 
 interface IState {
   refetching: boolean;
@@ -57,13 +57,13 @@ const Increments = () => {
 
   const handleDeleteIncrement = (_id: string) => {
     confirmModal({
-      title: "Sure to delete account?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete account?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteIncrementMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -73,24 +73,24 @@ const Increments = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "employee.name",
-        header: "Employee Name",
+        accessorKey: 'employee.name',
+        header: 'Employee Name',
       },
       {
-        accessorKey: "amount",
-        header: "Increment Amount",
+        accessorKey: 'amount',
+        header: 'Increment Amount',
       },
       {
-        accessorKey: "note",
-        header: "Note",
+        accessorKey: 'note',
+        header: 'Note',
       },
       {
         accessorFn: (row: EmployeeIncrement) => dateFormat(row?.date),
-        accessorKey: "date",
-        header: "Date",
+        accessorKey: 'date',
+        header: 'Date',
       },
     ],
-    []
+    [],
   );
   return (
     <div>

@@ -1,9 +1,9 @@
-import Attachments from "@/_app/common/components/Attachments";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import dateFormat from "@/_app/common/utils/dateFormat";
-import { Expense } from "@/_app/graphql-models/graphql";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
-import { Divider, Paper, Text, Title } from "@mantine/core";
+import Attachments from '@/_app/common/components/Attachments';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import dateFormat from '@/_app/utils/dateFormat';
+import { Expense } from '@/_app/graphql-models/graphql';
+import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { Divider, Paper, Text, Title } from '@mantine/core';
 
 interface IExpenseDetailsProps {
   expenseDetails: Expense | null;
@@ -26,7 +26,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">
-              Purpose:{" "}
+              Purpose:{' '}
             </span>
             {expenseDetails?.purpose}
           </Text>
@@ -41,7 +41,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">
-              Account:{" "}
+              Account:{' '}
             </span>
             {`${expenseDetails?.account?.name} [${expenseDetails?.account?.referenceNumber}]`}
           </Text>
@@ -82,10 +82,10 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">
-              Category:{" "}
+              Category:{' '}
             </span>
             {(expenseDetails?.category as { name: string } | undefined)?.name ||
-              ""}
+              ''}
           </Text>
         </Paper>
         <Paper
@@ -96,13 +96,13 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
         >
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              Check No:{" "}
+              Check No:{' '}
             </span>
             {expenseDetails?.checkNo}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              Voucher No:{" "}
+              Voucher No:{' '}
             </span>
             {expenseDetails?.voucherNo}
           </Text>

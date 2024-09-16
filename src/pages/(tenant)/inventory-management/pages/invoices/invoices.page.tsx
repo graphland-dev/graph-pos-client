@@ -1,21 +1,21 @@
-import DataTable from "@/_app/common/data-table/DataTable";
-import PageTitle from "@/_app/common/PageTitle";
-import currencyNumberFormat from "@/_app/common/utils/commaNumber";
-import dateFormat from "@/_app/common/utils/dateFormat";
+import DataTable from '@/_app/common/data-table/DataTable';
+import PageTitle from '@/_app/common/PageTitle';
+import currencyNumberFormat from '@/_app/utils/commaNumber';
+import dateFormat from '@/_app/utils/dateFormat';
 import {
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Badge, Drawer, Menu, Text } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconFileInfo } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo, useState } from "react";
-import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
-import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
-import { useSearchParams } from "react-router-dom";
+} from '@/_app/graphql-models/graphql';
+import { useLazyQuery, useQuery } from '@apollo/client';
+import { Badge, Drawer, Menu, Text } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import { IconFileInfo } from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useEffect, useMemo, useState } from 'react';
+import { INVENTORY_PRODUCT_INVOICES_QUERY } from './utils/query.invoices';
+import ProductInvoiceDetails from './components/ProductInvoiceDetails';
+import { useSearchParams } from 'react-router-dom';
 interface IState {
   refetching: boolean;
   openDrawer: boolean;
@@ -39,78 +39,78 @@ const InvoicesPage = () => {
   });
 
   const [searchParams] = useSearchParams();
-  const invoiceId = searchParams.get("invoiceId");
+  const invoiceId = searchParams.get('invoiceId');
 
   const [productInvoice] = useLazyQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
   }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
-    fetchPolicy: "network-only",
+    fetchPolicy: 'network-only',
   });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "invoiceUID",
-        header: "Invoice UID",
+        accessorKey: 'invoiceUID',
+        header: 'Invoice UID',
       },
       {
-        accessorKey: "client.name",
-        header: "Client Name",
+        accessorKey: 'client.name',
+        header: 'Client Name',
       },
       {
         accessorFn: (row: ProductInvoice) =>
-          row?.date ? dateFormat(row?.date) : "",
-        header: "Purchase Date",
+          row?.date ? dateFormat(row?.date) : '',
+        header: 'Purchase Date',
       },
       {
-        accessorKey: "subTotal",
+        accessorKey: 'subTotal',
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Sub Total",
+        header: 'Sub Total',
       },
       {
-        accessorKey: "dueAmount",
+        accessorKey: 'dueAmount',
         accessorFn: (originalRow: ProductInvoice) => {
           const paidAmount = originalRow?.paidAmount || 0;
           const netTotal = originalRow?.netTotal || 0;
 
           const totalDue = netTotal - paidAmount;
 
-          let color = "red";
+          let color = 'red';
           if (totalDue > 0 && paidAmount !== 0) {
-            color = "yellow";
+            color = 'yellow';
           }
           if (totalDue === 0 && paidAmount !== 0) {
-            color = "green";
+            color = 'green';
           }
 
           return (
             <Badge color={color}>{`${currencyNumberFormat(
-              originalRow?.netTotal - (originalRow?.paidAmount || 0)
+              originalRow?.netTotal - (originalRow?.paidAmount || 0),
             )} BDT`}</Badge>
           );
         },
 
-        header: "Due Amount",
+        header: 'Due Amount',
       },
       {
-        accessorKey: "paidAmount",
+        accessorKey: 'paidAmount',
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
-        header: "Paid Amount",
+        header: 'Paid Amount',
       },
       {
-        accessorKey: "netTotal",
+        accessorKey: 'netTotal',
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Net Total",
+        header: 'Net Total',
       },
       {
-        accessorKey: "source",
-        header: "Source",
+        accessorKey: 'source',
+        header: 'Source',
       },
     ],
-    []
+    [],
   );
 
   const handleRefetch = (variables: any) => {
@@ -128,7 +128,7 @@ const InvoicesPage = () => {
           where: {
             filters: [
               {
-                key: "_id",
+                key: '_id',
                 operator: MatchOperator.Eq,
                 value: invoiceId,
               },
@@ -156,7 +156,7 @@ const InvoicesPage = () => {
         }
         title={<Text className="text-2xl font-semibold">Invoice Details</Text>}
         opened={state.openDrawer}
-        size={"90%"}
+        size={'90%'}
       >
         <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
       </Drawer>
