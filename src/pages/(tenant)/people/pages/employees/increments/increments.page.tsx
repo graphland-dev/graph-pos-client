@@ -1,12 +1,12 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
   Employee,
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
   EmployeesWithPagination,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
@@ -19,8 +19,8 @@ import {
   INCREMENT_DELETE_MUTATION,
   INCREMENT_EMPLOYEE_QUERY,
 } from './utils/increment.query';
-import PageTitle from '@/_app/common/PageTitle';
-import dateFormat from '@/_app/utils/dateFormat';
+import PageTitle from '@/commons/components/PageTitle';
+import dateFormat from '@/commons/utils/dateFormat';
 
 interface IState {
   refetching: boolean;

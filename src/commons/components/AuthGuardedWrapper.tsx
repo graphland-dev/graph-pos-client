@@ -2,13 +2,13 @@ import {
   RolePermission,
   TenantsWithPagination,
   User,
-} from "@/_app/graphql-models/graphql";
-import { $triggerRefetchMe } from "@/_app/rxjs-controllers";
+} from "@/commons/graphql-models/graphql.ts";
+import { $triggerRefetchMe } from "@/commons/rxjs-controllers.ts";
 import {
   userAtom,
   userPermissionsAtom,
   userTenantsAtom,
-} from "@/_app/states/user.atom";
+} from "@/commons/states/user.atom.ts";
 import { gql, useQuery } from "@apollo/client";
 import { LoadingOverlay } from "@mantine/core";
 import { useAtom } from "jotai";

@@ -1,4 +1,4 @@
-import { Account, Product } from "@/_app/graphql-models/graphql";
+import { Account, Product } from "@/commons/graphql-models/graphql";
 
 export const getAccountBalance = (
   accounts: Account[],

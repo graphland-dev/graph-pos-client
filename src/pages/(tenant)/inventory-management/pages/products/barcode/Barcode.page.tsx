@@ -1,7 +1,7 @@
 import {
   MatchOperator,
   ProductsWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import {
   Button,
@@ -19,9 +19,9 @@ import {
 import Barcode from "react-jsbarcode";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.query";
 // import JsBarcode from "jsbarcode";
-import PageTitle from "@/_app/common/PageTitle";
-import AutoComplete from "@/_app/common/components/AutoComplete";
-import { Generate_Barcode_Type } from "@/_app/models/barcode.type";
+import PageTitle from "@/commons/components/PageTitle";
+import AutoComplete from "@/commons/components/AutoComplete.tsx";
+import { Generate_Barcode_Type } from "@/commons/models/barcode.type";
 import { useDebouncedState } from "@mantine/hooks";
 import { IconPrinter, IconTrash } from "@tabler/icons-react";
 import { useRef, useState } from "react";

@@ -1,5 +1,5 @@
-import dateFormat from '@/_app/utils/dateFormat';
-import { ProductPurchase } from '@/_app/graphql-models/graphql';
+import dateFormat from '@/commons/utils/dateFormat';
+import { ProductPurchase } from '@/commons/graphql-models/graphql';
 import { Flex, Paper, Space, Text, Title } from '@mantine/core';
 import React from 'react';
 

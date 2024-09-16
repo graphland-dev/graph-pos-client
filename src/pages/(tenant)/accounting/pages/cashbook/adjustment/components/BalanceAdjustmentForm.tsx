@@ -1,7 +1,7 @@
 import {
   Account,
   Accounting_Transaction_Source,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -9,7 +9,7 @@ import { Badge, Button, Input, Select, Space, Title } from '@mantine/core';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { TRANSACTION_CREATE_MUTATION } from '../utils/query';
-import { getAccountBalance, getAccountDetails } from '@/_app/utils/getBalance';
+import { getAccountBalance, getAccountDetails } from '@/commons/utils/getBalance';
 
 interface BalanceAdjustmentFormProps {
   onSubmissionDone: () => void;

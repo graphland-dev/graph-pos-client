@@ -1,4 +1,4 @@
-import ModuleMenu from "@/_app/common/components/Modulemenu";
+import ModuleMenu from "@/commons/components/Modulemenu.tsx";
 import { useParams } from "react-router-dom";
 
 const AccountingRoot = () => {

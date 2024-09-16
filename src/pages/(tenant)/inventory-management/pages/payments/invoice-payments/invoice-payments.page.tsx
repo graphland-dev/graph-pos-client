@@ -1,12 +1,12 @@
-import DataTable from '@/_app/common/data-table/DataTable';
-import PageTitle from '@/_app/common/PageTitle';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
-import dateFormat from '@/_app/utils/dateFormat';
+import DataTable from '@/commons/components/DataTable.tsx';
+import PageTitle from '@/commons/components/PageTitle';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
+import dateFormat from '@/commons/utils/dateFormat';
 import {
   InventoryInvoicePayment,
   InventoryInvoicePaymentsWithPagination,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useLazyQuery, useQuery } from '@apollo/client';
 import { Drawer, Menu, Text } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';

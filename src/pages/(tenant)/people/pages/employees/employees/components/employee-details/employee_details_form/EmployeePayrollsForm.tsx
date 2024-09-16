@@ -1,6 +1,6 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { getAccountBalance, getAccountDetails } from '@/_app/utils/getBalance';
-import { Account, Employee, Month_Name } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { getAccountBalance, getAccountDetails } from '@/commons/utils/getBalance';
+import { Account, Employee, Month_Name } from '@/commons/graphql-models/graphql';
 import { CREATE_PAYROLL_MUTATION } from '@/pages/(tenant)/accounting/pages/cashbook/payroll/utils/payroll.query';
 import { getSelectInputData } from '@/pages/(tenant)/inventory-management/pages/products/product-edit/components/AssignmentForm';
 import { useMutation } from '@apollo/client';
@@ -87,7 +87,7 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({
 
   const [createPayroll, { loading: creating }] = useMutation(
     CREATE_PAYROLL_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Create payroll done!',
       onSuccess() {
         onFormSubmitted();

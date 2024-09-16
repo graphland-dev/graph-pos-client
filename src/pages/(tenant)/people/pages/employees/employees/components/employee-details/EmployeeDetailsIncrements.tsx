@@ -1,10 +1,10 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
   EmployeeIncrement,
   EmployeeIncrementsWithPagination,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useDisclosure, useSetState } from '@mantine/hooks';
@@ -21,7 +21,7 @@ import {
   INCREMENT_DELETE_MUTATION,
 } from '../../../increments/utils/increment.query';
 import EmployeeIncrementsForm from './employee_details_form/EmployeeIncrementsForm';
-import dateFormat from '@/_app/utils/dateFormat';
+import dateFormat from '@/commons/utils/dateFormat';
 
 interface IState {
   refetching: boolean;

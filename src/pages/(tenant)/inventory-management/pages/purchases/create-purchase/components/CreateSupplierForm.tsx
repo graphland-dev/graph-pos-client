@@ -1,4 +1,4 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,7 +19,7 @@ const CreateSupplierForm: React.FC<ICreateSupplierFormProps> = ({
 }) => {
   const [createSupplier, { loading: creatingSupplier }] = useMutation(
     PURCHASE__SUPPLIER_CREATE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Purchase supplier created successfully!',
       onSuccess() {
         onRefetchSuppliers();

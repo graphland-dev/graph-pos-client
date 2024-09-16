@@ -1,7 +1,7 @@
 import { Navigate, createHashRouter } from 'react-router-dom';
 import NotFoundPage from './pages/_404.page';
 
-import { AuthGuardedWrapper } from './_app/common/components/AuthGuardedWrapper';
+import { AuthGuardedWrapper } from '@/commons/components/AuthGuardedWrapper.tsx';
 import { accountingModuleRouter } from './pages/(tenant)/accounting/accounting.router';
 import { inventoryModuleRouter } from './pages/(tenant)/inventory-management/inventory.router';
 import ModulesPage from './pages/(tenant)/modules.page';
@@ -12,7 +12,7 @@ import { tenantSettingRouter } from './pages/(tenant)/tenant-settings/tenant-set
 import { authRouter } from './pages/auth/auth.router';
 import DesignSystem from './pages/design-system.page';
 import SelectOrganization from './pages/select-organization.page';
-import SpotlightWrapper from './_app/common/SpotlightWrapper';
+import SpotlightWrapper from '@/commons/components/SpotlightWrapper';
 
 export const rootRouter = createHashRouter([
   {

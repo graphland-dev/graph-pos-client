@@ -1,4 +1,4 @@
-// import { Forgot__Password__Mutation } from "@/_app/common/modules/auth/utils/query.auth";
+// import { Forgot__Password__Mutation } from "@/commons/components/modules/auth/utils/query.auth";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input, Paper, Text } from "@mantine/core";
@@ -25,7 +25,7 @@ const ForgetPasswordPage = () => {
   // forget password mutation
   //   const [sendRequest, { loading: sending__request }] = useMutation(
   //     Forgot__Password__Mutation,
-  //     Notify({
+  //     CommonNotifierCallback({
   //       successTitle: "Reset Password has been sent to your email!",
   //       successMessage: "Please check your email inbox.",
   //       errorTitle: "Failed to send reset password to your email!",

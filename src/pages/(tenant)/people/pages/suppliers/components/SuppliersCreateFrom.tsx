@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { MatchOperator, Supplier } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { MatchOperator, Supplier } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -50,7 +50,7 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
 
   const [createSupplier, { loading: creating }] = useMutation(
     PEOPLE_CREATE_SUPPLIERS,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Supplier successfully created!',
       onSuccess() {
         reset();
@@ -61,7 +61,7 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
 
   const [updateSupplier, { loading: updating }] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Supplier successfully updated!',
       onSuccess() {
         reset();

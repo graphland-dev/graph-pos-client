@@ -1,5 +1,5 @@
-import Attachments from '@/_app/common/components/Attachments';
-import { Payroll } from '@/_app/graphql-models/graphql';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
+import { Payroll } from '@/commons/graphql-models/graphql';
 import { Paper, Space, Table, Text, Title } from '@mantine/core';
 
 const PayrollDetails: React.FC<{ payRollRow: Payroll }> = ({ payRollRow }) => {

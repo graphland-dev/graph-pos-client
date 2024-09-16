@@ -1,4 +1,4 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -41,7 +41,7 @@ const EmployeeIncrementsForm: React.FC<IIncrementDetailsFormProps> = ({
 
   const [createIncrement, { loading: creating }] = useMutation(
     CREATE_INCREMENT_MUTATION_QUERY,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Increment done!',
       onSuccess() {
         onFormSubmitted();

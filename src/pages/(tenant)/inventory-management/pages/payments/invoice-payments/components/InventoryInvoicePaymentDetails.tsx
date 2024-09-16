@@ -1,8 +1,8 @@
-import dateFormat from '@/_app/utils/dateFormat';
+import dateFormat from '@/commons/utils/dateFormat';
 import {
   InventoryInvoicePayment,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import {
   Anchor,
@@ -14,7 +14,7 @@ import {
   Title,
 } from '@mantine/core';
 import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from '../utils/query.invoice-payments';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 

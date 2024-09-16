@@ -1,5 +1,5 @@
-import DataTable from "@/_app/common/data-table/DataTable";
-import { MatchOperator, ProductPurchase, ProductPurchasesWithPagination, Supplier } from "@/_app/graphql-models/graphql";
+import DataTable from "@/commons/components/DataTable.tsx";
+import { MatchOperator, ProductPurchase, ProductPurchasesWithPagination, Supplier } from "@/commons/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";

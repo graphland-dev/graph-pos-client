@@ -1,4 +1,4 @@
-import { AppNavLink } from "@/_app/models/AppNavLink.type";
+import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import { Icon3dRotate, IconFriends, IconUsersGroup } from "@tabler/icons-react";
 
 export const peopleNavlinks: AppNavLink[] = [

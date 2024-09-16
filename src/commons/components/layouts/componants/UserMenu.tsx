@@ -1,4 +1,4 @@
-import { userAtom } from '@/_app/states/user.atom';
+import { userAtom } from '@/commons/states/user.atom';
 import { Avatar, Image, Menu } from '@mantine/core';
 import { openConfirmModal } from '@mantine/modals';
 import { useAtom } from 'jotai';

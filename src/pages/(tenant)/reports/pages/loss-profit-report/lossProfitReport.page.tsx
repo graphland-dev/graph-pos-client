@@ -1,4 +1,4 @@
-import PageTitle from "@/_app/common/PageTitle";
+import PageTitle from "@/commons/components/PageTitle";
 
 const LossProfitReport = () => {
   return (

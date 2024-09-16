@@ -1,14 +1,14 @@
-import Attachments from '@/_app/common/components/Attachments';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
 import {
   Employee,
   MatchOperator,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import React from 'react';
 import { PEOPLE_EMPLOYEES_UPDATE_MUTATION } from '../../utils/query';
 import { useMutation } from '@apollo/client';
-import { Notify } from '@/_app/common/Notification/Notify';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
 
 interface IDocumentsDetailsProps {
   employeeDetails: Employee | null;
@@ -27,7 +27,7 @@ const EmployeeDetailsDocuments: React.FC<IDocumentsDetailsProps> = ({
 
   const [updateEmployeeWithAttachments] = useMutation(
     PEOPLE_EMPLOYEES_UPDATE_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Attachments saved successfully!',
       onSuccess() {
         refetch();

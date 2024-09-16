@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { Role } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { Role } from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -52,7 +52,7 @@ const RolesPage = () => {
 
   const [cloneRole, { loading: cloningOrCreating }] = useMutation(
     CREATE_OR_CLONE_ROLE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'New role created successfully.',
       onSuccess() {
         refetch();

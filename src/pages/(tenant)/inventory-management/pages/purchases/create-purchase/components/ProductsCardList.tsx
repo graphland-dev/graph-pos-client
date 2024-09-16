@@ -1,4 +1,4 @@
-import { Product } from "@/_app/graphql-models/graphql";
+import { Product } from "@/commons/graphql-models/graphql";
 import { Button, Group, Paper, Skeleton, Space, Text } from "@mantine/core";
 import { IconSquareCheckFilled } from "@tabler/icons-react";
 import React from "react";

@@ -2,7 +2,7 @@ import {
   CommonFindDocumentDto,
   MatchOperator,
   SortType,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql.ts";
 import { ActionIcon, Flex, Menu, UnstyledButton, rem } from "@mantine/core";
 import {
   IconCsv,

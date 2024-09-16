@@ -1,5 +1,5 @@
-import ViewDashboardLayout from "@/_app/common/layouts/ViewDashboard";
-import { Employee, EmployeeDepartment } from "@/_app/graphql-models/graphql";
+import ViewDashboardLayout from "@/commons/components/layouts/ViewDashboard";
+import { Employee, EmployeeDepartment } from "@/commons/graphql-models/graphql";
 import { NavLink, Paper, Text, Title } from "@mantine/core";
 import {
   IconChartArrowsVertical,

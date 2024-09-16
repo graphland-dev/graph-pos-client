@@ -1,4 +1,4 @@
-import { Account, MatchOperator } from '@/_app/graphql-models/graphql';
+import { Account, MatchOperator } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -19,7 +19,7 @@ import {
   ACCOUNT_CREATE_TRANSFER_MUTATION,
   ACCOUNT_UPDATE_TRANSFER_MUTATION,
 } from '../ulits/query';
-import { getAccountBalance } from '@/_app/utils/getBalance';
+import { getAccountBalance } from '@/commons/utils/getBalance';
 
 interface IAccountTransferFormProps {
   onSubmissionDone: () => void;

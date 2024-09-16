@@ -1,5 +1,5 @@
-import currencyNumberFormat from '@/_app/utils/commaNumber';
-import { ProductPurchase } from '@/_app/graphql-models/graphql';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { ProductPurchase } from '@/commons/graphql-models/graphql';
 import {
   Button,
   Group,

@@ -1,13 +1,13 @@
-import PageTitle from '@/_app/common/PageTitle';
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
-import dateFormat from '@/_app/utils/dateFormat';
+import PageTitle from '@/commons/components/PageTitle';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
+import dateFormat from '@/commons/utils/dateFormat';
 import {
   MatchOperator,
   ProductPurchase,
   ProductPurchasesWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Badge, Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';

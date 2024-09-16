@@ -1,4 +1,4 @@
-import { getFileUrl } from '@/_app/utils/getFileUrl';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
 import { ErrorMessage } from '@hookform/error-message';
 import {
   Button,
@@ -26,12 +26,12 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { useServerFile } from '@/commons/hooks/use-upload-file';
 import { useEffect, useRef, useState } from 'react';
-import { userTenantsAtom } from '@/_app/states/user.atom';
-import { Notify } from '@/_app/common/Notification/Notify';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
-import { $triggerRefetchMe } from '@/_app/rxjs-controllers';
+import { userTenantsAtom } from '@/commons/states/user.atom';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
+import { $triggerRefetchMe } from '@/commons/rxjs-controllers';
 
 const OrganizationOverviewPage: React.FC = () => {
   const params = useParams<{ tenant: string }>();
@@ -63,7 +63,7 @@ const OrganizationOverviewPage: React.FC = () => {
   // update mutation
   const [updateOrganizationInfo, { loading }] = useMutation(
     ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Organization information updated.',
       onSuccess() {
         $triggerRefetchMe.next(true);

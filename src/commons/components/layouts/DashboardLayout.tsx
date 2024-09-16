@@ -1,4 +1,4 @@
-import { AppNavLink } from '@/_app/models/AppNavLink.type';
+import { AppNavLink } from '@/commons/models/AppNavLink.type';
 import {
   AppShell,
   NavLink,
@@ -11,7 +11,7 @@ import classNames from 'classnames';
 import React from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import CommonHeader from './componants/CommonHeader';
-import { navbarIsCollapsedAtom } from '@/_app/states/navbar.atom';
+import { navbarIsCollapsedAtom } from '@/commons/states/navbar.atom';
 import { useAtom } from 'jotai';
 import { IconChevronLeft } from '@tabler/icons-react';
 

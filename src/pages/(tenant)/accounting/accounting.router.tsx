@@ -1,4 +1,4 @@
-import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
+import DashboardLayout from "@/commons/components/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
 import { accountingNavlinks } from "./accounting.navlinks";
 import AccountsPage from "./pages/cashbook/accounts/accounts.page";

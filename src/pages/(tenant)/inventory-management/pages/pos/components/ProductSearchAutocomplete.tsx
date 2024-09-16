@@ -1,9 +1,9 @@
-import AutoComplete from '@/_app/common/components/AutoComplete';
+import AutoComplete from '@/commons/components/AutoComplete.tsx';
 import {
 	MatchOperator,
 	ProductItemReference,
 	ProductsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { Input, Text } from '@mantine/core';

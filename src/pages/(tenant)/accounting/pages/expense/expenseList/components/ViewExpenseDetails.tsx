@@ -1,8 +1,8 @@
-import Attachments from '@/_app/common/components/Attachments';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
-import dateFormat from '@/_app/utils/dateFormat';
-import { Expense } from '@/_app/graphql-models/graphql';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
+import dateFormat from '@/commons/utils/dateFormat';
+import { Expense } from '@/commons/graphql-models/graphql';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
 import { Divider, Paper, Text, Title } from '@mantine/core';
 
 interface IExpenseDetailsProps {

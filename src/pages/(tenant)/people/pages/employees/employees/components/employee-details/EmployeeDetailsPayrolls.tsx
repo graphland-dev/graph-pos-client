@@ -1,4 +1,4 @@
-import DataTable from "@/_app/common/data-table/DataTable";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   Account,
   AccountsWithPagination,
@@ -6,7 +6,7 @@ import {
   MatchOperator,
   Payroll,
   PayrollsWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import {
   PAYROLL_ACCOUNTS_QUERY,
   PAYROLL_QUERY,
@@ -20,7 +20,7 @@ import dayjs from "dayjs";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import EmployeePayrollsForm from "./employee_details_form/EmployeePayrollsForm";
-import { confirmModal } from "@/_app/common/confirm/confirm";
+import { confirmModal } from "@/commons/components/confirm.tsx";
 
 interface IPayrollDetailsProps {
   employeeDetails: Employee | null;

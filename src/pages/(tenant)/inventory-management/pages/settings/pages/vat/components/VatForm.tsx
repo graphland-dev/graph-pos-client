@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import {useEffect} from "react";
 import { SETTINGS_VAT_CREATE_MUTATION, SETTINGS_VAT_UPDATE_MUTATION } from "../utils/query";
-import { MatchOperator } from "@/_app/graphql-models/graphql";
+import { MatchOperator } from "@/commons/graphql-models/graphql";
 
 interface IVatFormProps {
   onSubmissionDone: () => void;

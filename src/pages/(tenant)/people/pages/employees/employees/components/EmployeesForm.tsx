@@ -2,8 +2,8 @@ import {
   EmployeeDepartment,
   MatchOperator,
   User_Gender,
-} from "@/_app/graphql-models/graphql";
-import { IReligion } from "@/_app/models/religion.model";
+} from "@/commons/graphql-models/graphql";
+import { IReligion } from "@/commons/models/religion.model";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";

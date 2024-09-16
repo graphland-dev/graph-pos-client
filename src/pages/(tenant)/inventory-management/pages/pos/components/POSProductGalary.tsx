@@ -1,12 +1,12 @@
-import EmptyState from '@/_app/common/EmptyState/EmptyState';
-import { getFileUrl } from '@/_app/utils/getFileUrl';
+import EmptyState from '@/commons/components/EmptyState.tsx';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
 import {
   BrandsWithPagination,
   Product,
   ProductCategorysWithPagination,
   ProductItemReference,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import {
   Badge,

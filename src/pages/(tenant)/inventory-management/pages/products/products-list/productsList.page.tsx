@@ -1,11 +1,11 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
   MatchOperator,
   Product,
   ProductsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -23,7 +23,7 @@ import {
   INVENTORY_PRODUCT_CREATE,
   INVENTORY_PRODUCT_REMOVE,
 } from './utils/product.query';
-import PageTitle from '@/_app/common/PageTitle';
+import PageTitle from '@/commons/components/PageTitle';
 
 interface IState {
   refetching: boolean;
@@ -50,7 +50,7 @@ const ProductListPage = () => {
 
   const [createProduct, { loading: creatingProduct }] = useMutation(
     INVENTORY_PRODUCT_CREATE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Inventory product created successfully!',
       onSuccess(res) {
         navigate(

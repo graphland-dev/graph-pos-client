@@ -1,9 +1,9 @@
-import Attachments from "@/_app/common/components/Attachments";
+import Attachments from "@/commons/components/Attactment/Attachments.tsx";
 import {
   EmployeeDepartment,
   MatchOperator,
   ServerFileReference,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,7 +15,7 @@ import {
   CREATE_EMPLOYEE_DEPARTMENT,
   UPDATE_EMPLOYEE_DEPARTMENT,
 } from "../utils/query";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
+import { FOLDER__NAME } from "@/commons/models/FolderName";
 
 interface IDepartmentFormProps {
   onFormSubmitted: () => void;

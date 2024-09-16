@@ -1,4 +1,4 @@
-import { AppNavLink } from "@/_app/models/AppNavLink.type";
+import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import { IconExchange, IconTableShare } from "@tabler/icons-react";
 
 export const accountingNavlinks: AppNavLink[] = [

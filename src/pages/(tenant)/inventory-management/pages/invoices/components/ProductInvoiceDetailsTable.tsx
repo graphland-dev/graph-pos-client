@@ -1,6 +1,6 @@
-import dateFormat from '@/_app/utils/dateFormat';
+import dateFormat from '@/commons/utils/dateFormat';
 import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from '../utils/query.invoices';
-import { InventoryInvoicePaymentsWithPagination } from '@/_app/graphql-models/graphql';
+import { InventoryInvoicePaymentsWithPagination } from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import { Anchor, Paper, Skeleton, Table, Title } from '@mantine/core';
 import { Link } from 'react-router-dom';

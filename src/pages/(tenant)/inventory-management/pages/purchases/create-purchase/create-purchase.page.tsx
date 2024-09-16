@@ -1,4 +1,4 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import {
   MatchOperator,
   Product,
@@ -9,7 +9,7 @@ import {
   SuppliersWithPagination,
   Vat,
   VatsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query';
 
 import { useMutation, useQuery } from '@apollo/client';
@@ -44,7 +44,7 @@ import {
   getVatProfileSelectInputData,
 } from './utils/helpers';
 
-import currencyNumberFormat from '@/_app/utils/commaNumber';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { SETTINGS_VAT_QUERY } from '../../settings/pages/vat/utils/query';
 import CreateProductForm from './components/CreateProductForm';
@@ -210,7 +210,7 @@ const CreatePurchasePage = () => {
 
   const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
     CREATE_INVENTORY_PRODUCT_PURCHASE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Inventory product added to purchase',
       onSuccess(res) {
         const supplierId = watch('supplierId');

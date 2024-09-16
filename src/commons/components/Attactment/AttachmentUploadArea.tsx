@@ -6,8 +6,8 @@ import {
   Payroll,
   ServerFileReference,
   Supplier,
-} from '@/_app/graphql-models/graphql';
-import { useServerFile } from '@/_app/hooks/use-upload-file';
+} from '@/commons/graphql-models/graphql.ts';
+import { useServerFile } from '@/commons/hooks/use-upload-file.ts';
 import {
   ActionIcon,
   Button,
@@ -28,7 +28,7 @@ import {
   IconUpload,
   IconX,
 } from '@tabler/icons-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 interface IAttachmentUploadProps {
   details: Supplier | Employee | Client | EmployeeDepartment | Payroll | null;

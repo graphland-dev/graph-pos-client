@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { SETTINGS_BRAND_CREATE_MUTATION, SETTING_BRAND_UPDATE_MUTATION } from '../utils/query';
 import { useMutation } from '@apollo/client';
-import { MatchOperator } from '@/_app/graphql-models/graphql';
+import { MatchOperator } from '@/commons/graphql-models/graphql';
 
 interface IBrandFormProps {
   onSubmissionDone: () => void;

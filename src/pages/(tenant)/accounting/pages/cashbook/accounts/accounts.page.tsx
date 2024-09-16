@@ -1,10 +1,10 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
   Account,
   AccountsWithPagination,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -17,8 +17,8 @@ import {
   ACCOUNTING_ACCOUNTS_LIST,
   ACCOUNTING_ACCOUNT_DELETE_MUTATION,
 } from './utils/query';
-import PageTitle from '@/_app/common/PageTitle';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
+import PageTitle from '@/commons/components/PageTitle';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
 import { useSearchParams } from 'react-router-dom';
 
 interface IState {

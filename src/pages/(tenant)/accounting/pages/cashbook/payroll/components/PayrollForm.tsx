@@ -1,12 +1,12 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import Attachments from '@/_app/common/components/Attachments';
-import { getAccountBalance, getAccountDetails } from '@/_app/utils/getBalance';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
+import { getAccountBalance, getAccountDetails } from '@/commons/utils/getBalance';
 import {
   Account,
   Employee,
   Month_Name,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -84,7 +84,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
 
   const [createPayroll, { loading: creating }] = useMutation(
     CREATE_PAYROLL_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Create payroll done!',
       onSuccess() {
         onFormSubmitted();

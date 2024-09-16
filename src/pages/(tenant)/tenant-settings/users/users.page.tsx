@@ -1,5 +1,5 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import { User, UsersWithPagination } from '@/_app/graphql-models/graphql';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import { User, UsersWithPagination } from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import {
   Avatar,
@@ -20,7 +20,7 @@ import {
   IDENTITY_REMOVE_CURRENT_TENANT_USER_ROLE,
   Organization__Employees__Query,
 } from './utils/query.gql';
-import { getFileUrl } from '@/_app/utils/getFileUrl';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
 import { useParams } from 'react-router-dom';
 
 interface IState {

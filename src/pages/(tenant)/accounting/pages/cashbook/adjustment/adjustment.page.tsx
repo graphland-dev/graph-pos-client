@@ -1,6 +1,6 @@
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { ACCOUNTS_LIST_DROPDOWN } from "@/commons/components/common-gql";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   Account,
   Accounting_Transaction_Source,
@@ -8,7 +8,7 @@ import {
   MatchOperator,
   Transaction,
   TransactionsWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
@@ -21,7 +21,7 @@ import {
   ACCOUNT_REMOVE_TRANSACTION,
 } from "./utils/query";
 import dayjs from "dayjs";
-import PageTitle from "@/_app/common/PageTitle";
+import PageTitle from "@/commons/components/PageTitle";
 
 interface IState {
   modalOpened: boolean;

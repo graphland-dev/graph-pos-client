@@ -1,12 +1,12 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { getFileUrl } from '@/_app/utils/getFileUrl';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
 import {
   MatchOperator,
   Product,
   ServerFileInput,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
-import { useServerFile } from '@/_app/hooks/use-upload-file';
+} from '@/commons/graphql-models/graphql';
+import { useServerFile } from '@/commons/hooks/use-upload-file';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -132,7 +132,7 @@ const MediaTab: React.FC = () => {
   // save media
   const [saveMedia, { loading: savingMedia }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Media galleries saved!',
       onSuccess() {
         refetch();

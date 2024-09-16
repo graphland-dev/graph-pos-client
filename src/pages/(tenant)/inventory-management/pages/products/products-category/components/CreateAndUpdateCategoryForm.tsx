@@ -1,4 +1,4 @@
-import { MatchOperator } from '@/_app/graphql-models/graphql';
+import { MatchOperator } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';

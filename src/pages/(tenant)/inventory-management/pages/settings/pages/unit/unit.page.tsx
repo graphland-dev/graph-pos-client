@@ -1,11 +1,11 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
 	MatchOperator,
 	Transfer,
 	Unit,
 	UnitsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -17,7 +17,7 @@ import { useMemo } from 'react';
 import { IconPencil } from '@tabler/icons-react';
 import CreateAndUpdateUnitForm from './components/CreateAndUpdateUnitForm';
 import { SETUP_REMOVE_UNIT, SETUP_UNITS_QUERY } from './utils/units.query';
-import PageTitle from '@/_app/common/PageTitle';
+import PageTitle from '@/commons/components/PageTitle';
 
 interface IState {
 	modalOpened: boolean;

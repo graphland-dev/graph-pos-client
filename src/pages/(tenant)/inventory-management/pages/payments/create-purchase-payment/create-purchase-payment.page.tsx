@@ -1,7 +1,7 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { ACCOUNTS_LIST_DROPDOWN } from '@/_app/common/common-gql';
-import currencyNumberFormat from '@/_app/utils/commaNumber';
-import { getAccountBalance } from '@/_app/utils/getBalance';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { ACCOUNTS_LIST_DROPDOWN } from '@/commons/components/common-gql';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { getAccountBalance } from '@/commons/utils/getBalance';
 import {
   AccountsWithPagination,
   MatchOperator,
@@ -9,7 +9,7 @@ import {
   ProductPurchasesWithPagination,
   Supplier,
   SuppliersWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { PEOPLE_SUPPLIERS_QUERY } from '@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
@@ -127,7 +127,7 @@ const CreatePurchasePayment = () => {
 
   const [createPayment, { loading: creatingPayment }] = useMutation(
     Accounting__Create_Purchase_Payment,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Payment created successfully!',
       onSuccess: () => {
         navigate(

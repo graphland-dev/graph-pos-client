@@ -1,5 +1,5 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import { EmployeeDepartment } from "@/_app/graphql-models/graphql";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import { EmployeeDepartment } from "@/commons/graphql-models/graphql";
 import {
   ActionIcon,
   Flex,

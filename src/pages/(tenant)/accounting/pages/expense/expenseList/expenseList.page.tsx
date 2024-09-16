@@ -1,13 +1,13 @@
-import PageTitle from "@/_app/common/PageTitle";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/_app/common/common-gql";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import PageTitle from "@/commons/components/PageTitle";
+import { ACCOUNTS_LIST_DROPDOWN } from "@/commons/components/common-gql";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   AccountsWithPagination,
   Expense,
   ExpensesWithPagination,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";

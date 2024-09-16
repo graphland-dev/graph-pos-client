@@ -1,6 +1,6 @@
-import EmptyState from '@/_app/common/EmptyState/EmptyState';
-import { Notify } from '@/_app/common/Notification/Notify';
-import { MatchOperator, ProductInvoice } from '@/_app/graphql-models/graphql';
+import EmptyState from '@/commons/components/EmptyState.tsx';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { MatchOperator, ProductInvoice } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { Button, Drawer, Table, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -73,7 +73,7 @@ const TableRow: React.FC<{
 
   const [removeInvoice, { loading }] = useMutation(
     Remove_Invoice,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Invoice removed',
       onSuccess() {
         onRefetchHoldList();

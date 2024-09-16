@@ -1,5 +1,5 @@
-import ModuleMenu from "@/_app/common/components/Modulemenu";
-import CommonHeader from "@/_app/common/layouts/componants/CommonHeader";
+import ModuleMenu from "@/commons/components/Modulemenu.tsx";
+import CommonHeader from "@/commons/components/layouts/componants/CommonHeader";
 import { useParams } from "react-router-dom";
 
 const ModulesPage = () => {

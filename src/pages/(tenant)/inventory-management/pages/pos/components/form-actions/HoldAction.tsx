@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { Purchase_Invoice_Status } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { Purchase_Invoice_Status } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { Button, Input, Space, Text, Title } from '@mantine/core';
 import React, { useState } from 'react';
@@ -25,7 +25,7 @@ const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
   // create invoice mutation
   const [createInvoiceAsHold, { loading: creating }] = useMutation(
     Create_Product_Invoice,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Added to hold list',
       onSuccess() {
         onSuccess();

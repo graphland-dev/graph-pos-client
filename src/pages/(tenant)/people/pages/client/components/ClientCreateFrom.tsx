@@ -1,11 +1,11 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import Attachments from '@/_app/common/components/Attachments';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
 import {
   Client,
   MatchOperator,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
+} from '@/commons/graphql-models/graphql';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -58,14 +58,14 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
 
   const [createClient, { loading: creating }] = useMutation(
     PEOPLE_CREATE_CLIENT,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Client successfully created!',
     }),
   );
 
   const [updateClient, { loading: updating }] = useMutation(
     PEOPLE_UPDATE_CLIENT,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Client successfully updated!',
     }),
   );

@@ -1,6 +1,6 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
-import { MatchOperator, Vat, VatsWithPagination } from "@/_app/graphql-models/graphql";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import DataTable from "@/commons/components/DataTable.tsx";
+import { MatchOperator, Vat, VatsWithPagination } from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
@@ -9,7 +9,7 @@ import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 import VatForm from "./components/VatForm";
 import { SETTINGS_VAT_QUERY, SETTING_VAT_REMOVE_MUTATION } from "./utils/query";
-import PageTitle from "@/_app/common/PageTitle";
+import PageTitle from "@/commons/components/PageTitle";
 
 interface IState {
   modalOpened: boolean;

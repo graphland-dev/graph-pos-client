@@ -1,10 +1,10 @@
-import { confirmModal } from '@/_app/common/confirm/confirm';
-import DataTable from '@/_app/common/data-table/DataTable';
+import { confirmModal } from '@/commons/components/confirm.tsx';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
 	MatchOperator,
 	ProductCategory,
 	ProductCategorysWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Menu } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -16,7 +16,7 @@ import {
 	INVENTORY_PRODUCT_CATEGORIES_QUERY,
 	INVENTORY_PRODUCT_CATEGORY_REMOVE,
 } from './utils/category.query';
-import PageTitle from '@/_app/common/PageTitle';
+import PageTitle from '@/commons/components/PageTitle';
 
 interface IState {
 	modalOpened: boolean;

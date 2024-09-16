@@ -1,7 +1,7 @@
 import { FileIcon, defaultStyles } from 'react-file-icon';
 
-import { ServerFileReference } from '@/_app/graphql-models/graphql';
-import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { ServerFileReference } from '@/commons/graphql-models/graphql.ts';
+import { useServerFile } from '@/commons/hooks/use-upload-file.ts';
 import {
   Flex,
   LoadingOverlay,
@@ -20,7 +20,7 @@ import {
   IconUpload,
 } from '@tabler/icons-react';
 import React, { useState } from 'react';
-import { getFileUrl } from '../../utils/getFileUrl';
+import { getFileUrl } from '../../utils/getFileUrl.ts';
 
 interface IAttachmentUploadProps {
   attachments: ServerFileReference[];

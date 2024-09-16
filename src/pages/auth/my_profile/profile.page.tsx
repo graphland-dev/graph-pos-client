@@ -1,8 +1,8 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { getFileUrl } from '@/_app/utils/getFileUrl';
-import { useServerFile } from '@/_app/hooks/use-upload-file';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
-import { userAtom } from '@/_app/states/user.atom';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
+import { useServerFile } from '@/commons/hooks/use-upload-file';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
+import { userAtom } from '@/commons/states/user.atom';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -32,7 +32,7 @@ import {
   Profile__Form__Validation,
 } from './utils/form.validation';
 import { UPDATE_MY_PASSWORD, UPDATE_PROFILE_MUTATION } from './utils/query.gql';
-import { $triggerRefetchMe } from '@/_app/rxjs-controllers';
+import { $triggerRefetchMe } from '@/commons/rxjs-controllers';
 
 const MyProfilePage = () => {
   const navigate = useNavigate();
@@ -70,7 +70,7 @@ const MyProfilePage = () => {
   // update mutation
   const [updateProfileInfo, { loading }] = useMutation(
     UPDATE_PROFILE_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Profile information updated.',
       onSuccess() {
         $triggerRefetchMe.next(true);
@@ -80,7 +80,7 @@ const MyProfilePage = () => {
   // update PASSWORD mutation
   const [updatePassword, { loading: updatePasswordLoading }] = useMutation(
     UPDATE_MY_PASSWORD,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Profile information updated.',
       onSuccess() {
         reset();

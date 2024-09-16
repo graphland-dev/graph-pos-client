@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import * as yup from "yup";
 import { PRODUCT_STOCK_CREATE_MUTATION } from '../../utils/productEdit.query';
 import { useParams } from 'react-router-dom';
-import { ProductStockType } from '@/_app/graphql-models/graphql';
+import { ProductStockType } from '@/commons/graphql-models/graphql';
 
 interface IStockAddFormProps {
   onSubmissionDone: () => void;

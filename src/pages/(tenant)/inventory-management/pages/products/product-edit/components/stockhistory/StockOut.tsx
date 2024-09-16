@@ -1,5 +1,5 @@
-import dateFormat from '@/_app/utils/dateFormat';
-import { ProductStock } from '@/_app/graphql-models/graphql';
+import dateFormat from '@/commons/utils/dateFormat';
+import { ProductStock } from '@/commons/graphql-models/graphql';
 import { Table } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 

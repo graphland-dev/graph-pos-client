@@ -1,4 +1,4 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
+import { confirmModal } from "@/commons/components/confirm.tsx";
 import {
   Account,
   AccountsWithPagination,
@@ -7,13 +7,13 @@ import {
   MatchOperator,
   Payroll,
   PayrollsWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { useDisclosure, useSetState } from "@mantine/hooks";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo } from "react";
 
-import DataTable from "@/_app/common/data-table/DataTable";
+import DataTable from "@/commons/components/DataTable.tsx";
 import { INCREMENT_EMPLOYEE_QUERY } from "@/pages/(tenant)/people/pages/employees/increments/utils/increment.query";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { IconListDetails, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -25,7 +25,7 @@ import {
   PAYROLL_QUERY,
   REMOVE_PAYROLL_MUTATION,
 } from "./utils/payroll.query";
-import PageTitle from "@/_app/common/PageTitle";
+import PageTitle from "@/commons/components/PageTitle";
 
 interface IState {
   refetching: boolean;

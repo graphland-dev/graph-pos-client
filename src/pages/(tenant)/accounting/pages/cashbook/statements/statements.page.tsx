@@ -1,9 +1,9 @@
-import PageTitle from '@/_app/common/PageTitle';
-import DataTable from '@/_app/common/data-table/DataTable';
+import PageTitle from '@/commons/components/PageTitle';
+import DataTable from '@/commons/components/DataTable.tsx';
 import {
   Transaction,
   TransactionsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
 import { Badge, Tooltip } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';

@@ -10,7 +10,7 @@ interface INotification {
   onError?: (res: any) => void;
 }
 
-export const Notify = ({
+export const commonNotifierCallback = ({
   successTitle,
   successMessage,
   errorMessage,

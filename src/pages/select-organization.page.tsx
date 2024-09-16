@@ -1,5 +1,5 @@
-import { getFileUrl } from '@/_app/utils/getFileUrl';
-import { TenantsWithPagination } from '@/_app/graphql-models/graphql';
+import { getFileUrl } from '@/commons/utils/getFileUrl';
+import { TenantsWithPagination } from '@/commons/graphql-models/graphql';
 import { gql, useQuery } from '@apollo/client';
 import { Image, LoadingOverlay, Text, Title } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';

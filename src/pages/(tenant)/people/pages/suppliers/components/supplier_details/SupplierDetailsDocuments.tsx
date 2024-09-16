@@ -1,11 +1,11 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import Attachments from '@/_app/common/components/Attachments';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import Attachments from '@/commons/components/Attactment/Attachments.tsx';
 import {
   MatchOperator,
   ServerFileReference,
   Supplier,
-} from '@/_app/graphql-models/graphql';
-import { FOLDER__NAME } from '@/_app/models/FolderName';
+} from '@/commons/graphql-models/graphql';
+import { FOLDER__NAME } from '@/commons/models/FolderName';
 import { useMutation } from '@apollo/client';
 import React from 'react';
 import { PEOPLE_UPDATE_SUPPLIERS } from '../../utils/suppliers.query';
@@ -29,7 +29,7 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
   // update suppliers
   const [updateAttachmentsMutation] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Attachments saved successfully!',
       onSuccess() {
         refetch();

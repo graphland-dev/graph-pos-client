@@ -1,4 +1,4 @@
-import { ProductItemReference } from "@/_app/graphql-models/graphql";
+import { ProductItemReference } from "@/commons/graphql-models/graphql";
 
 export interface ProductItemReferenceWithStockQuantity
   extends ProductItemReference {

@@ -9,7 +9,7 @@ import {
   ACCOUNT_CREATE_MUTATION,
   ACCOUNT_UPDATE_MUTATION,
 } from "../utils/query";
-import { MatchOperator } from "@/_app/graphql-models/graphql";
+import { MatchOperator } from "@/commons/graphql-models/graphql";
 import { useEffect } from "react";
 
 interface IAccountFormProps {

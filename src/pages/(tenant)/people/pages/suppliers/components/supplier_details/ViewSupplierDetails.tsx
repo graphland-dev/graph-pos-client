@@ -1,5 +1,5 @@
-import ViewDashboardLayout from "@/_app/common/layouts/ViewDashboard";
-import { Supplier } from "@/_app/graphql-models/graphql";
+import ViewDashboardLayout from "@/commons/components/layouts/ViewDashboard";
+import { Supplier } from "@/commons/graphql-models/graphql";
 import { NavLink, Paper, Text, Title } from "@mantine/core";
 import {
   IconPaperclip,

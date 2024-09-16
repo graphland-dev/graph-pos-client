@@ -2,7 +2,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Button, Input, Paper, PasswordInput, Text } from '@mantine/core';
 import * as yup from 'yup';
 
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { SubmitHandler, useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ const LoginPage = () => {
 
   const [mutate, { loading }] = useMutation(
     LOGIN_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Login success',
       onSuccess(res) {
         localStorage.setItem(

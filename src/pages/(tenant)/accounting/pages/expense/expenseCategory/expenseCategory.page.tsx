@@ -1,5 +1,5 @@
-import DataTable from "@/_app/common/data-table/DataTable";
-import { ExpenseCategory, ExpenseCategorysWithPagination, MatchOperator } from "@/_app/graphql-models/graphql";
+import DataTable from "@/commons/components/DataTable.tsx";
+import { ExpenseCategory, ExpenseCategorysWithPagination, MatchOperator } from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
@@ -8,8 +8,8 @@ import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { ACCOUNTING_EXPENSE_CATEGORY_DELETE_MUTATION, ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "./utils/query";
 import ExpenseCategoryForm from "./components/ExpenseCategoryForm";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import PageTitle from "@/_app/common/PageTitle";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import PageTitle from "@/commons/components/PageTitle";
 
 interface IState {
   modalOpened: boolean;

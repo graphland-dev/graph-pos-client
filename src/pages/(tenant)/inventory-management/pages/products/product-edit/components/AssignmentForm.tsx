@@ -1,4 +1,4 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import {
   BrandsWithPagination,
   MatchOperator,
@@ -6,7 +6,7 @@ import {
   ProductCategorysWithPagination,
   UnitsWithPagination,
   VatsWithPagination,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -72,7 +72,7 @@ const AssignmentForm = () => {
 
   const [saveForm, { loading: savingInfo }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Assignment information saved!',
       onSuccess() {
         refetch();

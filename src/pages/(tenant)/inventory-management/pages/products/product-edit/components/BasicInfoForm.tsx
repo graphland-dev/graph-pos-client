@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { MatchOperator, Product } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { MatchOperator, Product } from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -45,7 +45,7 @@ const BasicInfoForm = () => {
 
   const [saveForm, { loading: savingInfo }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Basic information saved!',
       onSuccess() {
         refetch();

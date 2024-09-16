@@ -1,4 +1,4 @@
-import { AppNavLink } from "@/_app/models/AppNavLink.type";
+import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import {
   IconExplicit,
   IconFileInvoice,

@@ -1,4 +1,4 @@
-import DataTable from "@/_app/common/data-table/DataTable";
+import DataTable from "@/commons/components/DataTable.tsx";
 import BrandsForm from "./components/BrandsForm";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
@@ -7,9 +7,9 @@ import { useMemo } from "react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMutation, useQuery } from "@apollo/client";
 import { SETTING_BRAND_DELETE_MUTATION, SETTING_BRAND_QUERY } from "./utils/query";
-import { Brand, BrandsWithPagination, MatchOperator } from "@/_app/graphql-models/graphql";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import PageTitle from "@/_app/common/PageTitle";
+import { Brand, BrandsWithPagination, MatchOperator } from "@/commons/graphql-models/graphql";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import PageTitle from "@/commons/components/PageTitle";
 
 interface IState {
   modalOpened: boolean;

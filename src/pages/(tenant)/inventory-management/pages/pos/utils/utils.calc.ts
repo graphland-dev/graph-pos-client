@@ -2,7 +2,7 @@ import {
   Product,
   ProductDiscountMode,
   ProductTaxType,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { ProductItemReferenceWithStockQuantity } from "./pos.types";
 
 // get discount

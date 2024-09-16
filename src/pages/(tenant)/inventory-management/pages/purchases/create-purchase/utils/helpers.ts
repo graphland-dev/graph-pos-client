@@ -2,7 +2,7 @@ import {
   CostItemReference,
   ProductItemReference,
   Vat,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 
 export const calculateTaxAmount = (product: ProductItemReference) => {
   const percentage = product?.taxRate || 0;

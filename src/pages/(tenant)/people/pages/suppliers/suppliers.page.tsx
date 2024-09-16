@@ -1,10 +1,10 @@
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   MatchOperator,
   Supplier,
   SuppliersWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
@@ -17,7 +17,7 @@ import {
   PEOPLE_SUPPLIERS_QUERY,
 } from "./utils/suppliers.query";
 import SuppliersCreateFrom from "./components/SuppliersCreateFrom";
-import PageTitle from "@/_app/common/PageTitle";
+import PageTitle from "@/commons/components/PageTitle";
 import { useSearchParams } from "react-router-dom";
 
 interface IState {

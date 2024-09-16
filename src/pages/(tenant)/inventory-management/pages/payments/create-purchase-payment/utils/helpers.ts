@@ -1,4 +1,4 @@
-import { ProductPurchase } from "@/_app/graphql-models/graphql";
+import { ProductPurchase } from "@/commons/graphql-models/graphql";
 
 export const getRemainingDuesAmount = (payload: ProductPurchase[]) => {
   const remainingDues =

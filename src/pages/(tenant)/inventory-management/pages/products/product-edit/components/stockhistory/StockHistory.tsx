@@ -10,12 +10,12 @@ import {
 import {
   MatchOperator,
   ProductStocksWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
 import StockIn from "./StockIn";
 import StockOut from "./StockOut";
 import { useMemo } from "react";
-import { confirmModal } from "@/_app/common/confirm/confirm";
+import { confirmModal } from "@/commons/components/confirm.tsx";
 
 interface IState {
   modalOpened: boolean;

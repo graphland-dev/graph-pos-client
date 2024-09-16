@@ -1,11 +1,11 @@
-import PageTitle from "@/_app/common/PageTitle";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import PageTitle from "@/commons/components/PageTitle";
+import { confirmModal } from "@/commons/components/confirm.tsx";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   Client,
   ClientsWithPagination,
   MatchOperator,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";

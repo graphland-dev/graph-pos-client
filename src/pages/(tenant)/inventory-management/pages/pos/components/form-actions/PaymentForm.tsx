@@ -1,9 +1,9 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import {
   AccountsWithPagination,
   ProductDiscountMode,
   Purchase_Invoice_Status,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { ACCOUNTING_ACCOUNTS_LIST } from '@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
@@ -105,7 +105,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   // payment mutation
   const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
     Create_Invoice_Payment,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Payment successful',
       onSuccess() {
         onSuccess();

@@ -1,7 +1,7 @@
 import {
   ServerFileProvider,
   ServerFileReference,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 
 export const getFileUrl = (file: ServerFileReference) => {
   const path = file?.path;

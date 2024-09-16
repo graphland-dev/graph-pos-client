@@ -1,4 +1,4 @@
-import { Employee, EmployeeDepartment } from '@/_app/graphql-models/graphql';
+import { Employee, EmployeeDepartment } from '@/commons/graphql-models/graphql';
 import { Divider, Drawer, Paper, Text, Title } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
 import { IconBrandBadoo, IconNote } from '@tabler/icons-react';
@@ -38,7 +38,7 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 	
 	// const [updateEmployeeWithAttachments, { loading }] = useMutation(
 	// 	PEOPLE_EMPLOYEES_UPDATE_MUTATION,
-	// 	Notify({
+	// 	CommonNotifierCallback({
 	// 		sucTitle: 'Attachments saved successfully!',
 	// 		onSuccess() {
 	// 			refetch();

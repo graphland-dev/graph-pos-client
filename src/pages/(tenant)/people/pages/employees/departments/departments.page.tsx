@@ -2,7 +2,7 @@ import {
 	EmployeeDepartment,
 	EmployeeDepartmentWithPagination,
 	MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import {
 	ActionIcon,
@@ -23,7 +23,7 @@ import {
 	GET_EMPLOYEE_DEPARTMENT,
 	REMOVE_EMPLOYEE_DEPARTMENT,
 } from './utils/query';
-import PageTitle from '@/_app/common/PageTitle';
+import PageTitle from '@/commons/components/PageTitle';
 
 const Departments = () => {
 	const [openedDrawer, drawerHandler] = useDisclosure();

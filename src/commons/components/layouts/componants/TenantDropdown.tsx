@@ -1,4 +1,4 @@
-import { userTenantsAtom } from '@/_app/states/user.atom';
+import { userTenantsAtom } from '@/commons/states/user.atom';
 import { Flex, Image, Menu, UnstyledButton } from '@mantine/core';
 import { IconSettings, IconSwitchVertical } from '@tabler/icons-react';
 import { useAtom } from 'jotai';

@@ -1,6 +1,6 @@
-import { Text, Title } from "@mantine/core";
+import {Text, Title} from "@mantine/core";
 import React from "react";
-import { Link } from "react-router-dom";
+import {Link} from "react-router-dom";
 
 interface IModuleMenu {
   moduleName: string;
@@ -24,7 +24,7 @@ const ModuleMenu: React.FC<IModuleMenu> = ({ moduleName, items }) => {
           >
             <img
               src={item.iconPath}
-              className="bg-theme-surface  h-[70px] w-[70px] p-3 rounded-md shadow flex-none"
+              className="bg-theme-surface h-[70px] w-[70px] p-3 rounded-md shadow flex-none"
             />
             <Text>{item.name}</Text>
           </Link>

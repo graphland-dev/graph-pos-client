@@ -1,10 +1,10 @@
-import PageTitle from "@/_app/common/PageTitle";
-import DataTable from "@/_app/common/data-table/DataTable";
+import PageTitle from "@/commons/components/PageTitle";
+import DataTable from "@/commons/components/DataTable.tsx";
 import {
   MatchOperator,
   PurchasePayment,
   PurchasePaymentsWithPagination,
-} from "@/_app/graphql-models/graphql";
+} from "@/commons/graphql-models/graphql";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { Button, Drawer, Menu, Title } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";

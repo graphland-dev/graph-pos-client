@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { Role, User } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { Role, User } from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -53,7 +53,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
 
   const [roleUpdateMutation, { loading: updating }] = useMutation(
     IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'User role successfully updated!',
       onSuccess() {
         reset();
@@ -64,7 +64,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
 
   const [createUser, { loading: creating }] = useMutation(
     IDENTITY_ADD_USER_TO_CURRENT_TENANT,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'User successfully created!',
       onSuccess() {
         reset();

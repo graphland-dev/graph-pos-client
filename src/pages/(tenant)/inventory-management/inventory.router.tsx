@@ -1,4 +1,4 @@
-import DashboardLayout from "@/_app/common/layouts/DashboardLayout";
+import DashboardLayout from "@/commons/components/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
 import { inventoryNavlinks } from "./inventory.navlinks";
 import CreatePurchasePayment from "./pages/payments/create-purchase-payment/create-purchase-payment.page";

@@ -1,9 +1,9 @@
-import { Notify } from '@/_app/common/Notification/Notify';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import {
   Client,
   ClientsWithPagination,
   MatchOperator,
-} from '@/_app/graphql-models/graphql';
+} from '@/commons/graphql-models/graphql';
 import { PEOPLE_CREATE_CLIENT } from '@/pages/(tenant)/people/pages/client/utils/client.query';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
@@ -31,7 +31,7 @@ interface ClientFormType {
   contactNumber: string;
 }
 
-import AutoComplete from '@/_app/common/components/AutoComplete';
+import AutoComplete from '@/commons/components/AutoComplete.tsx';
 import React, { useState } from 'react';
 
 const ClientSearchAutocomplete: React.FC<{
@@ -122,7 +122,7 @@ const ClientSearchAutocomplete: React.FC<{
   // client create mutation
   const [createClient, { loading: creatingClient }] = useMutation(
     PEOPLE_CREATE_CLIENT,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Client created',
       onSuccess: (res) => {
         reset({

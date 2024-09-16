@@ -1,5 +1,5 @@
-// import { Reset__Password__Mutation } from "@/_app/common/modules/auth/utils/query.auth";
-// import { Notify } from "@/_app/utils/Notify";
+// import { Reset__Password__Mutation } from "@/commons/components/modules/auth/utils/query.auth";
+// import { CommonNotifierCallback } from "@/commons/utils/CommonNotifierCallback";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Input, Paper, PasswordInput, Text } from "@mantine/core";
@@ -37,7 +37,7 @@ const ResetPasswordPage = () => {
   // reset password mutation
   //   const [resetPassword, { loading: resetting_password }] = useMutation(
   //     Reset__Password__Mutation,
-  //     Notify({
+  //     CommonNotifierCallback({
   //       successTitle: "Password reset successfully!",
   //       successMessage: "Please login using new password.",
   //       errorTitle: "Failed to reset password!",

@@ -1,5 +1,5 @@
-import { Notify } from '@/_app/common/Notification/Notify';
-import { MatchOperator, RolePermission } from '@/_app/graphql-models/graphql';
+import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { MatchOperator, RolePermission } from '@/commons/graphql-models/graphql';
 import { useMutation } from '@apollo/client';
 import { Button, Checkbox, Flex, Space, Title } from '@mantine/core';
 import { useEffect } from 'react';
@@ -97,7 +97,7 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
   // update role permissions mutation
   const [updatePermissions, { loading }] = useMutation(
     UPDATE_ROLE_PERMISSIONS_MUTATION,
-    Notify({
+    commonNotifierCallback({
       successTitle: 'Role permissions updated successfully.',
       errorMessage: 'Role permissions update failed!',
     }),

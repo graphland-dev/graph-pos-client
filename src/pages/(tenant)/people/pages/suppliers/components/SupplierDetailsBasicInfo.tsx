@@ -1,4 +1,4 @@
-import { Supplier } from "@/_app/graphql-models/graphql";
+import { Supplier } from "@/commons/graphql-models/graphql";
 import { Divider, Paper, Text, Title } from "@mantine/core";
 import { IconNote } from "@tabler/icons-react";
 import dayjs from "dayjs";
