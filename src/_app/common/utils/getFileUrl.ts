@@ -1,7 +1,7 @@
 import {
   ServerFileProvider,
   ServerFileReference,
-} from "@/_app/graphql-models/graphql";
+} from '@/_app/graphql-models/graphql';
 
 export const getFileUrl = (file: ServerFileReference) => {
   const path = file?.path;
@@ -12,7 +12,6 @@ export const getFileUrl = (file: ServerFileReference) => {
   }
 
   if (provider === ServerFileProvider.S3) {
-    const meta = JSON.parse(file?.meta || "{}");
-    return `https://${meta.bucket}.s3.${meta.region}.amazonaws.com/${path}`;
+    return `https://graph-pos.s3.ap-southeast-1.amazonaws.com/${path}`;
   }
 };
