@@ -1,4 +1,4 @@
-import { Notify } from "@/_app/common/Notification/Notify";
+import { Notify } from '@/_app/common/Notification/Notify';
 import {
   BrandsWithPagination,
   MatchOperator,
@@ -6,15 +6,15 @@ import {
   ProductCategorysWithPagination,
   UnitsWithPagination,
   VatsWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, Select, Space } from "@mantine/core";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import * as Yup from "yup";
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Input, Select, Space } from '@mantine/core';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import * as Yup from 'yup';
 import {
   BRANDS_QUERY,
   CATEGORIES_QUERY,
@@ -22,7 +22,7 @@ import {
   INVENTORY_PRODUCT_UPDATE,
   UNITS_QUERY,
   VATS_QUERY,
-} from "../utils/productEdit.query";
+} from '../utils/productEdit.query';
 
 const AssignmentForm = () => {
   const { productId } = useParams();
@@ -33,10 +33,10 @@ const AssignmentForm = () => {
     watch,
   } = useForm({
     defaultValues: {
-      categoryId: "",
-      brandId: "",
-      vatId: "",
-      unitId: "",
+      categoryId: '',
+      brandId: '',
+      vatId: '',
+      unitId: '',
     },
 
     resolver: yupResolver(ASSIGNMENT_FORM_SCHEMA),
@@ -47,7 +47,7 @@ const AssignmentForm = () => {
   }>(INVENTORY_PRODUCT_ASSIGNMENT_QUERY, {
     variables: {
       where: {
-        key: "_id",
+        key: '_id',
         operator: MatchOperator.Eq,
         value: productId,
       },
@@ -73,31 +73,31 @@ const AssignmentForm = () => {
   const [saveForm, { loading: savingInfo }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
     Notify({
-      sucTitle: "Assignment information saved!",
+      successTitle: 'Assignment information saved!',
       onSuccess() {
         refetch();
       },
-    })
+    }),
   );
 
   useEffect(() => {
     setValue(
-      "categoryId",
-      assignmentInfo?.inventory__product?.category?._id as string
+      'categoryId',
+      assignmentInfo?.inventory__product?.category?._id as string,
     );
     setValue(
-      "brandId",
-      assignmentInfo?.inventory__product?.brand?._id as string
+      'brandId',
+      assignmentInfo?.inventory__product?.brand?._id as string,
     );
-    setValue("unitId", assignmentInfo?.inventory__product?.unit?._id as string);
-    setValue("vatId", assignmentInfo?.inventory__product?.vat?._id as string);
+    setValue('unitId', assignmentInfo?.inventory__product?.unit?._id as string);
+    setValue('vatId', assignmentInfo?.inventory__product?.vat?._id as string);
   }, [assignmentInfo]);
 
   const onSubmit = (value: IAssignmentInfoFormState) => {
     saveForm({
       variables: {
         where: {
-          key: "_id",
+          key: '_id',
           operator: MatchOperator.Eq,
           value: productId,
         },
@@ -120,54 +120,54 @@ const AssignmentForm = () => {
         >
           <Select
             placeholder="Pick a category"
-            value={watch("categoryId")}
+            value={watch('categoryId')}
             data={getSelectInputData(
-              categories?.inventory__productCategories?.nodes
+              categories?.inventory__productCategories?.nodes,
             )}
             disabled={categories__loading}
-            onChange={(v) => setValue("categoryId", v as string)}
+            onChange={(v) => setValue('categoryId', v as string)}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
         <Input.Wrapper
           label="Brand"
           error={<ErrorMessage errors={errors} name="brandId" />}
         >
           <Select
             placeholder="Pick a brand"
-            value={watch("brandId")}
+            value={watch('brandId')}
             data={getSelectInputData(brands?.setup__brands?.nodes)}
             disabled={brands__loading}
-            onChange={(v) => setValue("brandId", v as string)}
+            onChange={(v) => setValue('brandId', v as string)}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
         <Input.Wrapper
           label="Unit"
           error={<ErrorMessage errors={errors} name="unitId" />}
         >
           <Select
             placeholder="Pick a unit"
-            value={watch("unitId")}
+            value={watch('unitId')}
             data={getSelectInputData(units?.setup__units?.nodes)}
             disabled={units__loading}
-            onChange={(v) => setValue("unitId", v as string)}
+            onChange={(v) => setValue('unitId', v as string)}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
         <Input.Wrapper
           label="Vat profile"
           error={<ErrorMessage errors={errors} name="vatId" />}
         >
           <Select
             placeholder="Pick a vat profile"
-            value={watch("vatId")}
+            value={watch('vatId')}
             data={getSelectInputData(vats?.setup__vats?.nodes)}
             disabled={vats__loading}
-            onChange={(v) => setValue("vatId", v as string)}
+            onChange={(v) => setValue('vatId', v as string)}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Button type="submit" loading={savingInfo}>
           Save
@@ -186,17 +186,17 @@ export const getSelectInputData = (data: any) => {
     result.push({
       label: d.name ?? d?._id,
       value: d._id,
-    })
+    }),
   );
 
   return result;
 };
 
 const ASSIGNMENT_FORM_SCHEMA = Yup.object().shape({
-  categoryId: Yup.string().optional().label("Category"),
-  brandId: Yup.string().optional().nullable().label("Brand"),
-  vatId: Yup.string().optional().nullable().label("Vat profile"),
-  unitId: Yup.string().optional().nullable().label("Unit"),
+  categoryId: Yup.string().optional().label('Category'),
+  brandId: Yup.string().optional().nullable().label('Brand'),
+  vatId: Yup.string().optional().nullable().label('Vat profile'),
+  unitId: Yup.string().optional().nullable().label('Unit'),
 });
 
 export interface IAssignmentInfoFormState

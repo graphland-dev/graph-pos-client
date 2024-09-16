@@ -71,7 +71,7 @@ const MyProfilePage = () => {
   const [updateProfileInfo, { loading }] = useMutation(
     UPDATE_PROFILE_MUTATION,
     Notify({
-      sucTitle: 'Profile information updated.',
+      successTitle: 'Profile information updated.',
       onSuccess() {
         $triggerRefetchMe.next(true);
       },
@@ -81,7 +81,7 @@ const MyProfilePage = () => {
   const [updatePassword, { loading: updatePasswordLoading }] = useMutation(
     UPDATE_MY_PASSWORD,
     Notify({
-      sucTitle: 'Profile information updated.',
+      successTitle: 'Profile information updated.',
       onSuccess() {
         reset();
       },

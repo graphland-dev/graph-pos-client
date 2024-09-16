@@ -1,14 +1,14 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { Employee } from "@/_app/graphql-models/graphql";
-import { useMutation } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, Select, Space, Textarea } from "@mantine/core";
-import { DateInput } from "@mantine/dates";
-import React from "react";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
-import { CREATE_INCREMENT_MUTATION_QUERY } from "../utils/increment.query";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { Employee } from '@/_app/graphql-models/graphql';
+import { useMutation } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Input, Select, Space, Textarea } from '@mantine/core';
+import { DateInput } from '@mantine/dates';
+import React from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { CREATE_INCREMENT_MUTATION_QUERY } from '../utils/increment.query';
 
 interface IIncrementFormProps {
   employees: Employee[];
@@ -27,8 +27,8 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
   } = useForm({
     defaultValues: {
       amount: 1000,
-      employeeId: "",
-      note: "",
+      employeeId: '',
+      note: '',
       date: new Date(),
     },
     resolver: yupResolver(formValidationSchema),
@@ -37,11 +37,11 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
   const [createIncrement, { loading: creating }] = useMutation(
     CREATE_INCREMENT_MUTATION_QUERY,
     Notify({
-      sucTitle: "Increment done!",
+      successTitle: 'Increment done!',
       onSuccess() {
         onFormSubmitted();
       },
-    })
+    }),
   );
 
   const onSubmit = (values: IINCREMENTFORM) => {
@@ -70,12 +70,12 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
             withAsterisk
             placeholder="Pick employee"
             disabled={!employees?.length}
-            onChange={(e) => setValue("employeeId", e!)}
+            onChange={(e) => setValue('employeeId', e!)}
             data={getSelectInputData(employees as Employee[])}
           />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Amount"
@@ -85,11 +85,11 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
           <Input
             type="number"
             placeholder="Write amount"
-            {...register("amount")}
+            {...register('amount')}
           />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Date"
@@ -98,22 +98,22 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
         >
           <DateInput
             placeholder="Pick a date"
-            defaultValue={watch("date")}
-            onChange={(d) => setValue("date", d!)}
+            defaultValue={watch('date')}
+            onChange={(d) => setValue('date', d!)}
           />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Note"
           withAsterisk
           error={<ErrorMessage errors={errors} name="note" />}
         >
-          <Textarea placeholder="Write a note..." {...register("note")} />
+          <Textarea placeholder="Write a note..." {...register('note')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Button type="submit" loading={creating} fullWidth>
           Save
@@ -126,10 +126,10 @@ const IncrementForm: React.FC<IIncrementFormProps> = ({
 export default IncrementForm;
 
 export const formValidationSchema = Yup.object().shape({
-  amount: Yup.number().required().label("Amount"),
-  employeeId: Yup.string().required().label("Employee"),
-  date: Yup.date().required().label("Date"),
-  note: Yup.string().required().label("Note"),
+  amount: Yup.number().required().label('Amount'),
+  employeeId: Yup.string().required().label('Employee'),
+  date: Yup.date().required().label('Date'),
+  note: Yup.string().required().label('Note'),
 });
 
 interface IINCREMENTFORM {
@@ -146,7 +146,7 @@ const getSelectInputData = (payload: Employee[]) => {
     data.push({
       label: item.name,
       value: item._id,
-    })
+    }),
   );
 
   return data;

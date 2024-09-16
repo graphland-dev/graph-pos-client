@@ -64,7 +64,7 @@ const OrganizationOverviewPage: React.FC = () => {
   const [updateOrganizationInfo, { loading }] = useMutation(
     ORGANIZATION_OVERVIEW_INFO_UPDATE_MUTATION,
     Notify({
-      sucTitle: 'Organization information updated.',
+      successTitle: 'Organization information updated.',
       onSuccess() {
         $triggerRefetchMe.next(true);
       },

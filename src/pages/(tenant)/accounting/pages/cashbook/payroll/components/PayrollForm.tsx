@@ -85,7 +85,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
   const [createPayroll, { loading: creating }] = useMutation(
     CREATE_PAYROLL_MUTATION,
     Notify({
-      sucTitle: 'Create payroll done!',
+      successTitle: 'Create payroll done!',
       onSuccess() {
         onFormSubmitted();
       },

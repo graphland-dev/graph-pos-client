@@ -1,22 +1,22 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { Role, User } from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, MultiSelect, Space, Title } from "@mantine/core";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
-import * as Yup from "yup";
-import { CURRENT__TENANT__ROLES } from "../../roles/utils/query.gql";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { Role, User } from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Input, MultiSelect, Space, Title } from '@mantine/core';
+import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { useParams } from 'react-router-dom';
+import * as Yup from 'yup';
+import { CURRENT__TENANT__ROLES } from '../../roles/utils/query.gql';
 import {
   IDENTITY_ADD_USER_TO_CURRENT_TENANT,
   IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
-} from "../utils/query.gql";
+} from '../utils/query.gql';
 
 interface IUserFormProps {
   onSubmissionDone: () => void;
-  operationType: "create" | "update";
+  operationType: 'create' | 'update';
   operationId?: string | null;
   formData?: User;
 }
@@ -35,7 +35,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "",
+      email: '',
       roles: [],
     },
     resolver: yupResolver(formValidationSchema),
@@ -48,43 +48,43 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
   }>(CURRENT__TENANT__ROLES);
 
   const userRoles = formData?.memberships?.find(
-    (membership) => membership?.tenant === tenant
+    (membership) => membership?.tenant === tenant,
   );
 
   const [roleUpdateMutation, { loading: updating }] = useMutation(
     IDENTITY_UPDATE_CURRENT_TENANT_USER_ROLE,
     Notify({
-      sucTitle: "User role successfully updated!",
+      successTitle: 'User role successfully updated!',
       onSuccess() {
         reset();
         onSubmissionDone();
       },
-    })
+    }),
   );
 
   const [createUser, { loading: creating }] = useMutation(
     IDENTITY_ADD_USER_TO_CURRENT_TENANT,
     Notify({
-      sucTitle: "User successfully created!",
+      successTitle: 'User successfully created!',
       onSuccess() {
         reset();
         onSubmissionDone();
       },
-    })
+    }),
   );
 
   useEffect(() => {
-    if (operationType === "update") {
-      setValue("email", formData?.email || "");
-      setValue("roles", userRoles?.roles || []);
+    if (operationType === 'update') {
+      setValue('email', formData?.email || '');
+      setValue('roles', userRoles?.roles || []);
     } else {
-      setValue("email", "");
-      setValue("roles", []);
+      setValue('email', '');
+      setValue('roles', []);
     }
   }, [formData, userRoles]);
 
   const onSubmit = (values: IUserForm) => {
-    if (operationType == "create") {
+    if (operationType == 'create') {
       createUser({
         variables: {
           input: {
@@ -108,29 +108,29 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
       <Title order={4}>
         <span className="capitalize">{operationType} Employee roles </span>
       </Title>
-      <Space h={"md"} />
+      <Space h={'md'} />
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <Input.Wrapper
           label="Email"
           error={<ErrorMessage name="email" errors={errors} />}
         >
           <Input
-            disabled={operationType === "update"}
+            disabled={operationType === 'update'}
             placeholder="Write email"
-            {...register("email")}
+            {...register('email')}
           />
         </Input.Wrapper>
 
         <Input.Wrapper
           label="Select Roles"
           withAsterisk
-          error={<ErrorMessage name={"departmentId"} errors={errors} />}
+          error={<ErrorMessage name={'departmentId'} errors={errors} />}
         >
           <MultiSelect
             searchable
             clearable
             onChange={(roles) => {
-              setValue("roles", roles || "", {
+              setValue('roles', roles || '', {
                 shouldValidate: true,
               });
             }}
@@ -139,7 +139,7 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
               roleData?.identity__currentTenantRoles.map((role) => role.name) ||
               []
             }
-            value={watch("roles")}
+            value={watch('roles')}
           />
         </Input.Wrapper>
 
@@ -154,8 +154,8 @@ const UserCreateForm: React.FC<IUserFormProps> = ({
 export default UserCreateForm;
 
 export const formValidationSchema = Yup.object().shape({
-  email: Yup.string().email().required().label("Email"),
-  roles: Yup.array().of(Yup.string().required("At least one Role is required")),
+  email: Yup.string().email().required().label('Email'),
+  roles: Yup.array().of(Yup.string().required('At least one Role is required')),
 });
 
 interface IUserForm {

@@ -7,78 +7,78 @@ import { IPosFormType } from '../../pos.page';
 import { Create_Product_Invoice } from '../../utils/query.payment';
 
 interface ExtendedFormData extends IPosFormType {
-	subTotal: number;
-	netTotal: number;
+  subTotal: number;
+  netTotal: number;
 
-	discountAmount: number;
-	discountPercentage: number;
+  discountAmount: number;
+  discountPercentage: number;
 }
 
 interface IHoldActionProps {
-	formData: ExtendedFormData;
-	onSuccess: () => void;
+  formData: ExtendedFormData;
+  onSuccess: () => void;
 }
 
 const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
-	const [reference, setReference] = useState('');
+  const [reference, setReference] = useState('');
 
-	// create invoice mutation
-	const [createInvoiceAsHold, { loading: creating }] = useMutation(
-		Create_Product_Invoice,
-		Notify({
-			sucTitle: 'Added to hold list',
-			onSuccess() {
-				onSuccess();
-			},
-		})
-	);
+  // create invoice mutation
+  const [createInvoiceAsHold, { loading: creating }] = useMutation(
+    Create_Product_Invoice,
+    Notify({
+      successTitle: 'Added to hold list',
+      onSuccess() {
+        onSuccess();
+      },
+    }),
+  );
 
-	// console.log({ formData });
-	return (
-		<div>
-			<Title order={3}>Hold Invoice</Title>
+  // console.log({ formData });
+  return (
+    <div>
+      <Title order={3}>Hold Invoice</Title>
 
-			<Space h={'sm'} />
+      <Space h={'sm'} />
 
-			<Text fw={500}>
-				Give a reference <br /> to quick payment
-			</Text>
+      <Text fw={500}>
+        Give a reference <br /> to quick payment
+      </Text>
 
-			<Space h={'sm'} />
-			<Input
-				placeholder='Reference'
-				onChange={(e) => setReference(e?.target?.value)}
-				required
-			/>
+      <Space h={'sm'} />
+      <Input
+        placeholder="Reference"
+        onChange={(e) => setReference(e?.target?.value)}
+        required
+      />
 
-			<Space h={'sm'} />
+      <Space h={'sm'} />
 
-			<Button
-				disabled={!reference}
-				loading={creating}
-				onClick={() =>
-					createInvoiceAsHold({
-						variables: {
-							input: {
-								clientId: formData?.clientId,
-								note: 'A simple note',
-								products: formData?.products,
-								taxRate: formData?.taxRate || 0,
-								taxAmount: formData?.taxAmount,
-								costAmount: formData?.costAmount || 0,
-								subTotal: formData?.subTotal,
-								netTotal: formData?.netTotal,
-								status: Purchase_Invoice_Status.Hold,
-								reference,
-							},
-						},
-					})
-				}
-			>
-				Hold
-			</Button>
-		</div>
-	);
+      <Button
+        disabled={!reference}
+        loading={creating}
+        onClick={() =>
+          createInvoiceAsHold({
+            variables: {
+              input: {
+                clientId: formData?.clientId,
+                note: 'A simple note',
+                products: formData?.products,
+                taxRate: formData?.taxRate || 0,
+                taxAmount: formData?.taxAmount,
+                costAmount: formData?.costAmount || 0,
+                subTotal: formData?.subTotal,
+                netTotal: formData?.netTotal,
+                status: Purchase_Invoice_Status.Hold,
+                reference,
+              },
+            },
+          })
+        }
+      >
+        Hold
+      </Button>
+    </div>
+  );
 };
 
 export default HoldAction;

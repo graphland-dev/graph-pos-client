@@ -1,27 +1,27 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import Attachments from "@/_app/common/components/Attachments";
+import { Notify } from '@/_app/common/Notification/Notify';
+import Attachments from '@/_app/common/components/Attachments';
 import {
   Client,
   MatchOperator,
   ServerFileReference,
-} from "@/_app/graphql-models/graphql";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
-import { useMutation } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, Space, Textarea } from "@mantine/core";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
+} from '@/_app/graphql-models/graphql';
+import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { useMutation } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Input, Space, Textarea } from '@mantine/core';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 import {
   PEOPLE_CREATE_CLIENT,
   PEOPLE_UPDATE_CLIENT,
-} from "../utils/client.query";
+} from '../utils/client.query';
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
   formData?: Client;
-  action: "CREATE" | "EDIT";
+  action: 'CREATE' | 'EDIT';
 }
 
 const ClientCreateForm: React.FC<IClientFormProps> = ({
@@ -37,10 +37,10 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
     reset,
   } = useForm({
     defaultValues: {
-      name: "",
-      contactNumber: "",
-      email: "",
-      address: "",
+      name: '',
+      contactNumber: '',
+      email: '',
+      address: '',
     },
     resolver: yupResolver(formValidationSchema),
   });
@@ -50,28 +50,28 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
   >([]);
 
   useEffect(() => {
-    setValue("name", formData?.name as string);
-    setValue("email", formData?.email as string);
-    setValue("address", formData?.address as string);
-    setValue("contactNumber", formData?.contactNumber as string);
+    setValue('name', formData?.name as string);
+    setValue('email', formData?.email as string);
+    setValue('address', formData?.address as string);
+    setValue('contactNumber', formData?.contactNumber as string);
   }, [formData]);
 
   const [createClient, { loading: creating }] = useMutation(
     PEOPLE_CREATE_CLIENT,
     Notify({
-      sucTitle: "Client successfully created!",
-    })
+      successTitle: 'Client successfully created!',
+    }),
   );
 
   const [updateClient, { loading: updating }] = useMutation(
     PEOPLE_UPDATE_CLIENT,
     Notify({
-      sucTitle: "Client successfully updated!",
-    })
+      successTitle: 'Client successfully updated!',
+    }),
   );
 
   const onSubmit = async (values: ICLIENTCREATEFORM) => {
-    if (action === "CREATE") {
+    if (action === 'CREATE') {
       await createClient({
         variables: {
           body: {
@@ -89,7 +89,7 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
       await updateClient({
         variables: {
           where: {
-            key: "_id",
+            key: '_id',
             operator: MatchOperator.Eq,
             value: formData?._id,
           },
@@ -112,19 +112,19 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
           label="Name"
           error={<ErrorMessage name="name" errors={errors} />}
         >
-          <Input placeholder="Write client name" {...register("name")} />
+          <Input placeholder="Write client name" {...register('name')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Email"
           error={<ErrorMessage name="email" errors={errors} />}
         >
-          <Input placeholder="Write email" {...register("email")} />
+          <Input placeholder="Write email" {...register('email')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Contact number"
@@ -132,30 +132,30 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
         >
           <Input
             placeholder="Write contact number"
-            {...register("contactNumber")}
+            {...register('contactNumber')}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Address"
           error={<ErrorMessage name="address" errors={errors} />}
         >
-          <Textarea placeholder="Write address" {...register("address")} />
+          <Textarea placeholder="Write address" {...register('address')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <div className="my-6">
           <Attachments
             attachments={formData?.attachments || []}
             enableUploader
             onUploadDone={(files) => {
-              if (action === "EDIT") {
+              if (action === 'EDIT') {
                 return updateClient({
                   variables: {
                     where: {
-                      key: "_id",
+                      key: '_id',
                       operator: MatchOperator.Eq,
                       value: formData?._id,
                     },
@@ -174,7 +174,7 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
                   path: file.path,
                   provider: file.provider,
                   meta: file.meta,
-                }))
+                })),
               );
             }}
             folder={FOLDER__NAME.CLIENT_ATTACHMENTS}
@@ -192,10 +192,10 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
 export default ClientCreateForm;
 
 export const formValidationSchema = Yup.object().shape({
-  name: Yup.string().required().label("Name"),
-  contactNumber: Yup.string().required().label("Contact number"),
-  email: Yup.string().email().required().label("Email"),
-  address: Yup.string().required().label("Address"),
+  name: Yup.string().required().label('Name'),
+  contactNumber: Yup.string().required().label('Contact number'),
+  email: Yup.string().email().required().label('Email'),
+  address: Yup.string().required().label('Address'),
 });
 
 interface ICLIENTCREATEFORM {

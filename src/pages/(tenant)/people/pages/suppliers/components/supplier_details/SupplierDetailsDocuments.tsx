@@ -1,14 +1,14 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import Attachments from "@/_app/common/components/Attachments";
+import { Notify } from '@/_app/common/Notification/Notify';
+import Attachments from '@/_app/common/components/Attachments';
 import {
   MatchOperator,
   ServerFileReference,
   Supplier,
-} from "@/_app/graphql-models/graphql";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
-import { useMutation } from "@apollo/client";
-import React from "react";
-import { PEOPLE_UPDATE_SUPPLIERS } from "../../utils/suppliers.query";
+} from '@/_app/graphql-models/graphql';
+import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { useMutation } from '@apollo/client';
+import React from 'react';
+import { PEOPLE_UPDATE_SUPPLIERS } from '../../utils/suppliers.query';
 
 interface ISupplierDetailsProps {
   supplierDetails: Supplier | null;
@@ -26,23 +26,22 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
       provider: file.provider,
     })) ?? [];
 
-  
   // update suppliers
   const [updateAttachmentsMutation] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
     Notify({
-      sucTitle: "Attachments saved successfully!",
+      successTitle: 'Attachments saved successfully!',
       onSuccess() {
         refetch();
       },
-    })
+    }),
   );
 
   const handleUpload = (files: ServerFileReference[]) => {
     updateAttachmentsMutation({
       variables: {
         where: {
-          key: "_id",
+          key: '_id',
           operator: MatchOperator.Eq,
           value: supplierDetails?._id,
         },

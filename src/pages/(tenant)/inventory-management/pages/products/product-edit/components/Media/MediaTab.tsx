@@ -133,7 +133,7 @@ const MediaTab: React.FC = () => {
   const [saveMedia, { loading: savingMedia }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
     Notify({
-      sucTitle: 'Media galleries saved!',
+      successTitle: 'Media galleries saved!',
       onSuccess() {
         refetch();
       },

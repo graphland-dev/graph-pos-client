@@ -211,7 +211,7 @@ const CreatePurchasePage = () => {
   const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
     CREATE_INVENTORY_PRODUCT_PURCHASE,
     Notify({
-      sucTitle: 'Inventory product added to purchase',
+      successTitle: 'Inventory product added to purchase',
       onSuccess(res) {
         const supplierId = watch('supplierId');
         const purchaseId = res?.inventory__createProductPurchase?._id;

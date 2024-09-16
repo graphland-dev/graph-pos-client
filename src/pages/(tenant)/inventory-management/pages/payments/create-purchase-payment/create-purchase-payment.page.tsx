@@ -128,7 +128,7 @@ const CreatePurchasePayment = () => {
   const [createPayment, { loading: creatingPayment }] = useMutation(
     Accounting__Create_Purchase_Payment,
     Notify({
-      sucTitle: 'Payment created successfully!',
+      successTitle: 'Payment created successfully!',
       onSuccess: () => {
         navigate(
           `/${params.tenant}/inventory-management/payments/purchase-payments`,

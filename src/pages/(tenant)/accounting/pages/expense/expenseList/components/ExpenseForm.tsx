@@ -53,7 +53,7 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
   const [, { loading: updating }] = useMutation(
     ACCOUNTING_EXPENSE_CREATE_MUTATION,
     Notify({
-      sucTitle: 'Expense updated successfully',
+      successTitle: 'Expense updated successfully',
       onSuccess() {
         onSubmissionDone();
       },

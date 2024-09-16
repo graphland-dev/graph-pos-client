@@ -1,24 +1,29 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { confirmModal } from "@/_app/common/confirm/confirm";
-import DataTable from "@/_app/common/data-table/DataTable";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { confirmModal } from '@/_app/common/confirm/confirm';
+import DataTable from '@/_app/common/data-table/DataTable';
 import {
   MatchOperator,
   Product,
   ProductsWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useMutation, useQuery } from "@apollo/client";
-import { Button, Menu } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconBrandProducthunt, IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+} from '@/_app/graphql-models/graphql';
+import { useMutation, useQuery } from '@apollo/client';
+import { Button, Menu } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import {
+  IconBrandProducthunt,
+  IconFileInfo,
+  IconPlus,
+  IconTrash,
+} from '@tabler/icons-react';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useMemo } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   INVENTORY_PRODUCTS_LIST_QUERY,
   INVENTORY_PRODUCT_CREATE,
   INVENTORY_PRODUCT_REMOVE,
-} from "./utils/product.query";
-import PageTitle from "@/_app/common/PageTitle";
+} from './utils/product.query';
+import PageTitle from '@/_app/common/PageTitle';
 
 interface IState {
   refetching: boolean;
@@ -46,14 +51,14 @@ const ProductListPage = () => {
   const [createProduct, { loading: creatingProduct }] = useMutation(
     INVENTORY_PRODUCT_CREATE,
     Notify({
-      sucTitle: "Inventory product created successfully!",
+      successTitle: 'Inventory product created successfully!',
       onSuccess(res) {
         navigate(
-          `/${params.tenant}/inventory-management/products/${res?.inventory__createProduct?._id}`
+          `/${params.tenant}/inventory-management/products/${res?.inventory__createProduct?._id}`,
         );
         refetch();
       },
-    })
+    }),
   );
 
   const [deleteProductMutation] = useMutation(INVENTORY_PRODUCT_REMOVE, {
@@ -69,13 +74,13 @@ const ProductListPage = () => {
 
   const handleDeleteAccount = (_id: string) => {
     confirmModal({
-      title: "Sure to delete product?",
-      description: "Be careful!! Once you deleted, it can not be undone",
+      title: 'Sure to delete product?',
+      description: 'Be careful!! Once you deleted, it can not be undone',
       isDangerous: true,
       onConfirm() {
         deleteProductMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: { key: '_id', operator: MatchOperator.Eq, value: _id },
           },
         });
       },
@@ -85,15 +90,15 @@ const ProductListPage = () => {
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
+        accessorKey: 'name',
+        header: 'Name',
       },
       {
-        accessorKey: "code",
-        header: "Code",
+        accessorKey: 'code',
+        header: 'Code',
       },
       {
-        header: "Stock Quantity",
+        header: 'Stock Quantity',
         accessorFn(originalRow: Product) {
           return (
             originalRow?.stockInQuantity - originalRow?.stockOutQuantity || 0
@@ -101,15 +106,15 @@ const ProductListPage = () => {
         },
       },
       {
-        accessorKey: "category.name",
-        header: "Category",
+        accessorKey: 'category.name',
+        header: 'Category',
       },
       {
-        accessorKey: "price",
-        header: "Price",
+        accessorKey: 'price',
+        header: 'Price',
       },
     ],
-    []
+    [],
   );
 
   return (

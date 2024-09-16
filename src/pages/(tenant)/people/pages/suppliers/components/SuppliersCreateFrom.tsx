@@ -1,21 +1,21 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { MatchOperator, Supplier } from "@/_app/graphql-models/graphql";
-import { useMutation } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { Button, Input, Space, Textarea } from "@mantine/core";
-import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import * as Yup from "yup";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { MatchOperator, Supplier } from '@/_app/graphql-models/graphql';
+import { useMutation } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { Button, Input, Space, Textarea } from '@mantine/core';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
 import {
   PEOPLE_CREATE_SUPPLIERS,
   PEOPLE_UPDATE_SUPPLIERS,
-} from "../utils/suppliers.query";
+} from '../utils/suppliers.query';
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
   formData?: Supplier;
-  action: "CREATE" | "EDIT";
+  action: 'CREATE' | 'EDIT';
 }
 
 const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
@@ -31,47 +31,47 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
     reset,
   } = useForm({
     defaultValues: {
-      name: "",
-      companyName: "",
-      contactNumber: "",
-      email: "",
-      address: "",
+      name: '',
+      companyName: '',
+      contactNumber: '',
+      email: '',
+      address: '',
     },
     resolver: yupResolver(formValidationSchema),
   });
 
   useEffect(() => {
-    setValue("name", formData?.name as string);
-    setValue("companyName", formData?.companyName as string);
-    setValue("email", formData?.email as string);
-    setValue("address", formData?.address as string);
-    setValue("contactNumber", formData?.contactNumber as string);
+    setValue('name', formData?.name as string);
+    setValue('companyName', formData?.companyName as string);
+    setValue('email', formData?.email as string);
+    setValue('address', formData?.address as string);
+    setValue('contactNumber', formData?.contactNumber as string);
   }, [formData]);
 
   const [createSupplier, { loading: creating }] = useMutation(
     PEOPLE_CREATE_SUPPLIERS,
     Notify({
-      sucTitle: "Supplier successfully created!",
+      successTitle: 'Supplier successfully created!',
       onSuccess() {
         reset();
         onFormSubmitted();
       },
-    })
+    }),
   );
 
   const [updateSupplier, { loading: updating }] = useMutation(
     PEOPLE_UPDATE_SUPPLIERS,
     Notify({
-      sucTitle: "Supplier successfully updated!",
+      successTitle: 'Supplier successfully updated!',
       onSuccess() {
         reset();
         onFormSubmitted();
       },
-    })
+    }),
   );
 
   const onSubmit = (values: ISUPPLIERSCREATEFORM) => {
-    if (action === "CREATE") {
+    if (action === 'CREATE') {
       createSupplier({
         variables: {
           body: {
@@ -87,7 +87,7 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
       updateSupplier({
         variables: {
           where: {
-            key: "_id",
+            key: '_id',
             operator: MatchOperator.Eq,
             value: formData?._id,
           },
@@ -110,10 +110,10 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
           label="Name"
           error={<ErrorMessage name="name" errors={errors} />}
         >
-          <Input placeholder="Write client name" {...register("name")} />
+          <Input placeholder="Write client name" {...register('name')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Company name"
@@ -121,20 +121,20 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
         >
           <Input
             placeholder="Write company name"
-            {...register("companyName")}
+            {...register('companyName')}
           />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Email"
           error={<ErrorMessage name="email" errors={errors} />}
         >
-          <Input placeholder="Write email" {...register("email")} />
+          <Input placeholder="Write email" {...register('email')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Contact number"
@@ -142,19 +142,19 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
         >
           <Input
             placeholder="Write contact number"
-            {...register("contactNumber")}
+            {...register('contactNumber')}
           />
         </Input.Wrapper>
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Input.Wrapper
           label="Address"
           error={<ErrorMessage name="address" errors={errors} />}
         >
-          <Textarea placeholder="Write address" {...register("address")} />
+          <Textarea placeholder="Write address" {...register('address')} />
         </Input.Wrapper>
 
-        <Space h={"sm"} />
+        <Space h={'sm'} />
 
         <Button type="submit" loading={creating || updating} fullWidth>
           Save
@@ -167,11 +167,11 @@ const SuppliersCreateFrom: React.FC<IClientFormProps> = ({
 export default SuppliersCreateFrom;
 
 export const formValidationSchema = Yup.object().shape({
-  name: Yup.string().required().label("Name"),
-  companyName: Yup.string().required().label("Company Name"),
-  contactNumber: Yup.string().required().label("Contact number"),
-  email: Yup.string().email().required().label("Email"),
-  address: Yup.string().required().label("Address"),
+  name: Yup.string().required().label('Name'),
+  companyName: Yup.string().required().label('Company Name'),
+  contactNumber: Yup.string().required().label('Contact number'),
+  email: Yup.string().email().required().label('Email'),
+  address: Yup.string().required().label('Address'),
 });
 
 interface ISUPPLIERSCREATEFORM {
