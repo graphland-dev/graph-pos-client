@@ -1,30 +1,30 @@
-import PageTitle from "@/_app/common/PageTitle";
-import DataTable from "@/_app/common/data-table/DataTable";
+import PageTitle from '@/_app/common/PageTitle';
+import DataTable from '@/_app/common/data-table/DataTable';
 import {
   Transaction,
   TransactionsWithPagination,
-} from "@/_app/graphql-models/graphql";
-import { useQuery } from "@apollo/client";
-import { Badge, Tooltip } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import dayjs from "dayjs";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
-import { ACCOUNTING_STATEMENTS_QUERY_LIST } from "./ulits/query";
+} from '@/_app/graphql-models/graphql';
+import { useQuery } from '@apollo/client';
+import { Badge, Tooltip } from '@mantine/core';
+import { useSetState } from '@mantine/hooks';
+import dayjs from 'dayjs';
+import { MRT_ColumnDef } from 'mantine-react-table';
+import { useMemo } from 'react';
+import { ACCOUNTING_STATEMENTS_QUERY_LIST } from './ulits/query';
 
 interface IState {
   modalOpened: boolean;
   operationId?: string | null;
   operationPayload?: any;
   refetching: boolean;
-  operationType: "create" | "update";
+  operationType: 'create' | 'update';
 }
 
 const StatementPage = () => {
   const [state, setState] = useSetState<IState>({
     operationId: null,
     modalOpened: false,
-    operationType: "create",
+    operationType: 'create',
     operationPayload: {},
     refetching: false,
   });
@@ -45,9 +45,9 @@ const StatementPage = () => {
     () => [
       {
         accessorFn: (row: Transaction) =>
-          dayjs(row?.createdAt).format("MMMM D, YYYY h:mm A"),
-        accessorKey: "createdAt",
-        header: "Date",
+          dayjs(row?.createdAt).format('MMMM D, YYYY h:mm A'),
+        accessorKey: 'createdAt',
+        header: 'Date',
       },
       {
         accessorFn: (row: Transaction) => (
@@ -60,46 +60,42 @@ const StatementPage = () => {
             transitionProps={{ duration: 200 }}
             label={row.note}
           >
-            <div className="text-ellipsis overflow-hidden w-32">{ row.note}</div>
+            <div className="w-32 overflow-hidden text-ellipsis">{row.note}</div>
           </Tooltip>
         ),
-        accessorKey: "note",
-        header: "Note",
+        accessorKey: 'note',
+        header: 'Note',
       },
       {
         accessorFn: (row: Transaction) =>
           `${row?.account?.name}${
             row?.account?.referenceNumber
               ? ` [${row?.account?.referenceNumber}]`
-              : ""
+              : ''
           }`,
-        header: "Account",
+        header: 'Account',
       },
       {
         accessorFn: (row: Transaction) => row?.amount,
-        accessorKey: "amount",
-        header: "Amount",
+        accessorKey: 'amount',
+        header: 'Amount',
       },
       {
-        accessorKey: "source",
-        header: "Source",
+        accessorKey: 'source',
+        header: 'Source',
       },
       {
         accessorFn: (row: Transaction) =>
-          row?.type === "DEBIT" ? (
+          row?.type === 'DEBIT' ? (
             <Badge color="red">Debit</Badge>
           ) : (
             <Badge color="green">Credit</Badge>
           ),
-        accessorKey: "type",
-        header: "Type",
-      },
-      {
-        accessorKey: "source",
-        header: "Source",
+        accessorKey: 'type',
+        header: 'Type',
       },
     ],
-    []
+    [],
   );
   return (
     <>

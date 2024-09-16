@@ -1,24 +1,24 @@
-import { RouteObject } from "react-router-dom";
-import ForgetPasswordPage from "./forget_password/forget_password.page";
-import LoginPage from "./login/login.page";
-import ResetPasswordPage from "./reset_password/reset_password.page";
-import MyProfilePage from "./my_profile/profile.page";
+import { RouteObject } from 'react-router-dom';
+import ForgetPasswordPage from './forget_password/forget_password.page';
+import LoginPage from './login/login.page';
+import ResetPasswordPage from './reset_password/reset_password.page';
+import MyProfilePage from './my_profile/profile.page';
 
 export const authRouter: RouteObject[] = [
   {
-    path: "login",
+    path: 'login',
     element: <LoginPage />,
   },
   {
-    path: "forget-password",
+    path: 'forget-password',
     element: <ForgetPasswordPage />,
   },
   {
-    path: "reset-password",
+    path: 'reset-password',
     element: <ResetPasswordPage />,
   },
   {
-    path: "my-profile",
+    path: 'my-profile',
     element: <MyProfilePage />,
   },
 ];

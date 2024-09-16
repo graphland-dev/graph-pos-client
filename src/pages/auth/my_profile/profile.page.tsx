@@ -1,11 +1,11 @@
-import { Notify } from "@/_app/common/Notification/Notify";
-import { getFileUrl } from "@/_app/common/utils/getFileUrl";
-import { useServerFile } from "@/_app/hooks/use-upload-file";
-import { FOLDER__NAME } from "@/_app/models/FolderName";
-import { userAtom } from "@/_app/states/user.atom";
-import { useMutation } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { Notify } from '@/_app/common/Notification/Notify';
+import { getFileUrl } from '@/_app/common/utils/getFileUrl';
+import { useServerFile } from '@/_app/hooks/use-upload-file';
+import { FOLDER__NAME } from '@/_app/models/FolderName';
+import { userAtom } from '@/_app/states/user.atom';
+import { useMutation } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   Button,
   Flex,
@@ -17,21 +17,22 @@ import {
   Text,
   Title,
   rem,
-} from "@mantine/core";
-import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
-import { IconArrowLeft, IconUpload } from "@tabler/icons-react";
-import { useAtom } from "jotai";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { FaCamera } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+} from '@mantine/core';
+import { Dropzone, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { IconArrowLeft, IconUpload } from '@tabler/icons-react';
+import { useAtom } from 'jotai';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { FaCamera } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 import {
   IPasswordUpdateFormType,
   IProfileFormType,
   Password__update__Form__Validation,
   Profile__Form__Validation,
-} from "./utils/form.validation";
-import { UPDATE_MY_PASSWORD, UPDATE_PROFILE_MUTATION } from "./utils/query.gql";
+} from './utils/form.validation';
+import { UPDATE_MY_PASSWORD, UPDATE_PROFILE_MUTATION } from './utils/query.gql';
+import { $triggerRefetchMe } from '@/_app/rxjs-controllers';
 
 const MyProfilePage = () => {
   const navigate = useNavigate();
@@ -47,7 +48,6 @@ const MyProfilePage = () => {
     handleSubmit,
     formState: { errors },
     setValue,
-
   } = useForm<IProfileFormType>({
     resolver: yupResolver(Profile__Form__Validation),
   });
@@ -64,25 +64,28 @@ const MyProfilePage = () => {
 
   // prefill form with previous values
   useEffect(() => {
-    setValue("name", user?.name as string);
+    setValue('name', user?.name as string);
   }, [user]);
 
   // update mutation
   const [updateProfileInfo, { loading }] = useMutation(
     UPDATE_PROFILE_MUTATION,
     Notify({
-      sucTitle: "Profile information updated.",
-    })
+      sucTitle: 'Profile information updated.',
+      onSuccess() {
+        $triggerRefetchMe.next(true);
+      },
+    }),
   );
   // update PASSWORD mutation
   const [updatePassword, { loading: updatePasswordLoading }] = useMutation(
     UPDATE_MY_PASSWORD,
     Notify({
-      sucTitle: "Profile information updated.",
+      sucTitle: 'Profile information updated.',
       onSuccess() {
-      reset();
+        reset();
       },
-    })
+    }),
   );
 
   // submit form with update mutation
@@ -110,21 +113,21 @@ const MyProfilePage = () => {
     <div className="mx-auto my-10 lg:w-6/12">
       <Button
         onClick={
-          window.history.state.idx ? () => navigate(-1) : () => navigate("/")
+          window.history.state.idx ? () => navigate(-1) : () => navigate('/')
         }
         leftIcon={<IconArrowLeft />}
         variant="subtle"
       >
         Back
       </Button>
-      <Space h={"lg"} />
+      <Space h={'lg'} />
       <Paper px={20} py={20} radius={10} withBorder>
         <Title order={3}>Profile Settings</Title>
 
         <Space h={20} />
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <Flex align={"center"} gap={20}>
+          <Flex align={'center'} gap={20}>
             <Dropzone
               onDrop={async (files) => {
                 const res = await uploadFile({
@@ -154,13 +157,13 @@ const MyProfilePage = () => {
                     height="100px"
                     width="100px"
                     fit="cover"
-                    className="rounded-full overflow-hidden"
+                    className="overflow-hidden rounded-full"
                     src={
                       profileLogo?.path
                         ? getFileUrl(profileLogo)
                         : user?.avatar?.path
-                        ? getFileUrl(user?.avatar)
-                        : ""
+                          ? getFileUrl(user?.avatar)
+                          : ''
                     }
                   />
 
@@ -169,13 +172,13 @@ const MyProfilePage = () => {
                     color="white"
                     className="absolute shadow-xl opacity-0 group-hover:opacity-100"
                     style={{
-                      transform: "translate(-50%, -50%)",
-                      top: "50%",
-                      left: "50%",
-                      borderRadius: "5px",
-                      fontSize: "12px",
-                      fontWeight: "bold",
-                      transition: "all 0.5s ease-in-out",
+                      transform: 'translate(-50%, -50%)',
+                      top: '50%',
+                      left: '50%',
+                      borderRadius: '5px',
+                      fontSize: '12px',
+                      fontWeight: 'bold',
+                      transition: 'all 0.5s ease-in-out',
                     }}
                   />
                 </div>
@@ -185,16 +188,16 @@ const MyProfilePage = () => {
             <Text fw={500}>Profile Photo</Text>
           </Flex>
 
-          <Space h={"sm"} />
+          <Space h={'sm'} />
 
           <Input.Wrapper
             label="Name"
             error={<ErrorMessage name="name" errors={errors} />}
           >
-            <Input placeholder="Organization name" {...register("name")} />
+            <Input placeholder="Organization name" {...register('name')} />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper label="Email">
             <Input placeholder="Email" disabled value={user?.email as string} />
@@ -209,44 +212,44 @@ const MyProfilePage = () => {
 						<Textarea placeholder='Description' {...register('description')} />
 					</Input.Wrapper> */}
 
-          <Space h={"sm"} />
+          <Space h={'sm'} />
 
           <Button type="submit" loading={loading}>
             Save
           </Button>
         </form>
       </Paper>
-      <Space h={"lg"} />
+      <Space h={'lg'} />
 
       <Paper px={20} py={20} radius={10} withBorder>
         <Title order={4}>Update Password</Title>
 
-        <Space h={"md"} />
+        <Space h={'md'} />
         <form onSubmit={passwordHandleSubmit(onSubmitPassword)}>
           <Input.Wrapper
             label="Current Password"
             error={<ErrorMessage name="password" errors={passwordErrors} />}
           >
             <PasswordInput
-              {...passwordRegister("password")}
+              {...passwordRegister('password')}
               placeholder="Current Password"
               withAsterisk
             />
           </Input.Wrapper>
 
-          <Space h={"xs"} />
+          <Space h={'xs'} />
 
           <Input.Wrapper
             error={<ErrorMessage name="newPassword" errors={passwordErrors} />}
             label="New Password"
           >
             <PasswordInput
-              {...passwordRegister("newPassword")}
+              {...passwordRegister('newPassword')}
               placeholder="New Password"
               withAsterisk
             />
           </Input.Wrapper>
-          <Space h={"xs"} />
+          <Space h={'xs'} />
           <Input.Wrapper
             error={
               <ErrorMessage name="confirmNewPassword" errors={passwordErrors} />
@@ -254,13 +257,13 @@ const MyProfilePage = () => {
             label="Confirm Password"
           >
             <PasswordInput
-              {...passwordRegister("confirmNewPassword")}
+              {...passwordRegister('confirmNewPassword')}
               placeholder="Confirm Password"
               withAsterisk
             />
           </Input.Wrapper>
 
-          <Space h={"sm"} />
+          <Space h={'sm'} />
 
           <Button type="submit" loading={updatePasswordLoading}>
             Save

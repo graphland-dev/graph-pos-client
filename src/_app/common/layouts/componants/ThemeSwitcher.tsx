@@ -6,14 +6,14 @@ import {
   UnstyledButton,
   clsx,
   useMantineColorScheme,
-} from "@mantine/core";
-import { useColorScheme, useDisclosure, useLocalStorage } from "@mantine/hooks";
+} from '@mantine/core';
+import { useColorScheme, useDisclosure, useLocalStorage } from '@mantine/hooks';
 import {
   IconDeviceLaptop,
   IconMoon,
   IconPaint,
   IconSunHigh,
-} from "@tabler/icons-react";
+} from '@tabler/icons-react';
 
 const ThemeSwitcherMenu = () => {
   const preferredColorScheme = useColorScheme();
@@ -22,8 +22,8 @@ const ThemeSwitcherMenu = () => {
     useDisclosure(false);
 
   const [colorTheme, setColorTheme] = useLocalStorage({
-    key: "graph-360--theme",
-    defaultValue: "green",
+    key: 'graph-360--theme',
+    defaultValue: 'green',
     getInitialValueInEffect: true,
   });
 
@@ -35,8 +35,9 @@ const ThemeSwitcherMenu = () => {
         title="Choose Theme"
       >
         <div className="flex flex-col gap-4">
-          {themes.map((theme) => (
+          {themes.map((theme, key) => (
             <ThemeSwatch
+              key={key}
               onClick={(theme) => setColorTheme(theme)}
               active={colorTheme === theme.name}
               {...theme}
@@ -44,7 +45,7 @@ const ThemeSwitcherMenu = () => {
           ))}
         </div>
       </Drawer>
-      <Flex gap={"md"}>
+      <Flex gap={'md'}>
         <Menu shadow="md" width={200}>
           {/* <Menu.Target>
         {colorScheme === "dark" ? (
@@ -55,7 +56,7 @@ const ThemeSwitcherMenu = () => {
           </Menu.Target> */}
 
           <Menu.Target>
-            {colorScheme === "dark" ? (
+            {colorScheme === 'dark' ? (
               <IconMoon
                 size={22}
                 className="cursor-pointer theme-switcher-icon"
@@ -70,13 +71,13 @@ const ThemeSwitcherMenu = () => {
 
           <Menu.Dropdown>
             <Menu.Item
-              onClick={() => toggleColorScheme("light")}
+              onClick={() => toggleColorScheme('light')}
               icon={<IconSunHigh size={14} />}
             >
               Light
             </Menu.Item>
             <Menu.Item
-              onClick={() => toggleColorScheme("dark")}
+              onClick={() => toggleColorScheme('dark')}
               icon={<IconMoon size={14} />}
             >
               Dark
@@ -112,23 +113,23 @@ export default ThemeSwitcherMenu;
 // surface
 const themes = [
   {
-    name: "aubergine",
+    name: 'aubergine',
     colors: [
-      "#704264",
-      "color-mix(in srgb, #704264, #000 10%)",
-      "#ecf8f6",
-      "#f1fada",
-      "#fff",
+      '#704264',
+      'color-mix(in srgb, #704264, #000 10%)',
+      '#ecf8f6',
+      '#f1fada',
+      '#fff',
     ],
   },
   {
-    name: "green",
+    name: 'green',
     colors: [
-      "#008170",
-      "color-mix(in srgb, #008170, #000 10%)",
-      "#ecf8f6",
-      "#f1fada",
-      "#fff",
+      '#008170',
+      'color-mix(in srgb, #008170, #000 10%)',
+      '#ecf8f6',
+      '#f1fada',
+      '#fff',
     ],
   },
 ];
@@ -142,14 +143,14 @@ const ThemeSwatch = (props: {
   return (
     <div
       onClick={() => props.onClick(props.name)}
-      className={clsx("p-2 cursor-pointer bg-neutral-100", {
-        "bg-neutral-200": props.active,
+      className={clsx('p-2 cursor-pointer bg-neutral-100', {
+        'bg-neutral-200': props.active,
       })}
     >
       <p>{props.name}</p>
       <div
         className={clsx(
-          "flex justify-between h-16 overflow-hidden border border-solid rounded-md border-neutral-primary"
+          'flex justify-between h-16 overflow-hidden border border-solid rounded-md border-neutral-primary',
         )}
       >
         {props.colors.map((color) => (

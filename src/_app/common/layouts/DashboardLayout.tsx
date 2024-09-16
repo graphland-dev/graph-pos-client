@@ -1,4 +1,4 @@
-import { AppNavLink } from "@/_app/models/AppNavLink.type";
+import { AppNavLink } from '@/_app/models/AppNavLink.type';
 import {
   AppShell,
   NavLink,
@@ -6,14 +6,14 @@ import {
   ScrollArea,
   UnstyledButton,
   clsx,
-} from "@mantine/core";
-import classNames from "classnames";
-import React from "react";
-import { Link, Outlet, useLocation, useParams } from "react-router-dom";
-import CommonHeader from "./componants/CommonHeader";
-import { navbarIsCollapsedAtom } from "@/_app/states/navbar.atom";
-import { useAtom } from "jotai";
-import { IconChevronLeft } from "@tabler/icons-react";
+} from '@mantine/core';
+import classNames from 'classnames';
+import React from 'react';
+import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
+import CommonHeader from './componants/CommonHeader';
+import { navbarIsCollapsedAtom } from '@/_app/states/navbar.atom';
+import { useAtom } from 'jotai';
+import { IconChevronLeft } from '@tabler/icons-react';
 
 interface Prop {
   navlinks: AppNavLink[];
@@ -26,7 +26,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const params = useParams<{ tenant: string }>();
 
   const [desktopNavbarCollapsed, setDesktopNavbarCollapsed] = useAtom(
-    navbarIsCollapsedAtom
+    navbarIsCollapsedAtom,
   );
 
   const linkWithTenant = (link: string) => {
@@ -42,10 +42,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       layout="alt"
       styles={{
         root: {
-          "--mantine-navbar-width": desktopNavbarCollapsed ? "1px" : "18.75rem",
-        },
-        main: {
-          // paddingTop: 0,
+          '--mantine-navbar-width': desktopNavbarCollapsed ? '1px' : '18.75rem',
         },
       }}
       navbar={
@@ -59,22 +56,22 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
           <UnstyledButton
             onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
             className={clsx(
-              "absolute top-14 -right-4 bg-theme-primary text-theme-light",
+              'absolute top-14 -right-4 bg-theme-primary text-theme-light',
               {
-                "-right-6": desktopNavbarCollapsed,
-              }
+                '-right-6': desktopNavbarCollapsed,
+              },
             )}
           >
             <IconChevronLeft
               size={30}
-              className={clsx("transition-all duration-300", {
-                "rotate-180": desktopNavbarCollapsed,
+              className={clsx('transition-all duration-300', {
+                'rotate-180': desktopNavbarCollapsed,
               })}
             />
           </UnstyledButton>
 
           {title && (
-            <Navbar.Section p={"sm"}>
+            <Navbar.Section p={'sm'}>
               <p className="font-semibold uppercase app-module-title">
                 {title}
               </p>
@@ -95,7 +92,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                     />
                   ) : undefined
                 }
-                className={classNames("text-white rounded-md app-navbar-item")}
+                className={classNames('text-white rounded-md app-navbar-item')}
                 active={pathname.includes(item?.href as string)}
               >
                 {item?.children &&
@@ -104,11 +101,11 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                       key={key}
                       label={_item.label}
                       component={Link}
-                      px={"xs"}
+                      px={'xs'}
                       py={2}
                       className="app-navbar-item"
                       active={pathname.startsWith(
-                        linkWithTenant(`${path}/${item?.href}/${_item.href}`)
+                        linkWithTenant(`${path}/${item?.href}/${_item.href}`),
                       )}
                       to={linkWithTenant(`${path}/${item?.href}/${_item.href}`)}
                     />
