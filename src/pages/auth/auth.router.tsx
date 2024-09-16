@@ -3,6 +3,7 @@ import ForgetPasswordPage from './forget_password/forget_password.page';
 import LoginPage from './login/login.page';
 import ResetPasswordPage from './reset_password/reset_password.page';
 import MyProfilePage from './my_profile/profile.page';
+import { RouteGuardWrapper } from '@/commons/components/wrappers/RouteGuardWrapper.tsx';
 
 export const authRouter: RouteObject[] = [
   {
@@ -19,6 +20,10 @@ export const authRouter: RouteObject[] = [
   },
   {
     path: 'my-profile',
-    element: <MyProfilePage />,
+    element: (
+      <RouteGuardWrapper guard="private">
+        <MyProfilePage />
+      </RouteGuardWrapper>
+    ),
   },
 ];

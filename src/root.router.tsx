@@ -1,7 +1,7 @@
-import { Navigate, createHashRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import NotFoundPage from './pages/_404.page';
 
-import { AuthGuardedWrapper } from '@/commons/components/AuthGuardedWrapper.tsx';
+import { RouteGuardWrapper } from '@/commons/components/wrappers/RouteGuardWrapper.tsx';
 import { accountingModuleRouter } from './pages/(tenant)/accounting/accounting.router';
 import { inventoryModuleRouter } from './pages/(tenant)/inventory-management/inventory.router';
 import ModulesPage from './pages/(tenant)/modules.page';
@@ -14,7 +14,7 @@ import DesignSystem from './pages/design-system.page';
 import SelectOrganization from './pages/select-organization.page';
 import SpotlightWrapper from '@/commons/components/SpotlightWrapper';
 
-export const rootRouter = createHashRouter([
+export const rootRouter = createBrowserRouter([
   {
     path: '/',
     element: <SpotlightWrapper />,
@@ -38,9 +38,9 @@ export const rootRouter = createHashRouter([
       {
         path: '/:tenant',
         element: (
-          <AuthGuardedWrapper>
+          <RouteGuardWrapper guard="private">
             <TenantResolver />
-          </AuthGuardedWrapper>
+          </RouteGuardWrapper>
         ),
         children: [
           {
