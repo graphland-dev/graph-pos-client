@@ -1,0 +1,30 @@
+name: Build and Deploy on Release
+
+on:
+  push:
+    branches:
+      - prod
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Step 1: Checkout the main repository
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Continuous Deployment to Server
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: td
+        password: ${{ secrets.SSH_PASSWORD }}
+        port: 22
+        debug: true
+        script: |
+          cd ./apps/graph-pos
+          git clean -f
+          git pull origin main --ff-only
+          docker compose down
+          docker compose up -d --build
