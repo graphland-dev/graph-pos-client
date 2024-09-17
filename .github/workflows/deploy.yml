@@ -25,6 +25,6 @@ jobs:
         script: |
           cd ./apps/graph-pos
           git clean -f
-          git pull origin main --ff-only
+          git pull origin main --ff-only --recurse-submodules
           docker compose down
           docker compose up -d --build
