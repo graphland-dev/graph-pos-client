@@ -6,7 +6,7 @@ import { commonNotifierCallback } from '@/commons/components/Notification/common
 import { useMutation } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LOGIN_MUTATION } from './utils/query';
 
 const ValidationSchema = yup.object().shape({
@@ -16,7 +16,7 @@ const ValidationSchema = yup.object().shape({
 type IForm = yup.InferType<typeof ValidationSchema>;
 
 const LoginPage = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [mutate, { loading }] = useMutation(
     LOGIN_MUTATION,
@@ -27,7 +27,8 @@ const LoginPage = () => {
           'erp:accessToken',
           res.identity__login.accessToken,
         );
-        navigate('/select-tenant');
+        // navigate('/select-tenant');
+        window.location.href = '/select-tenant';
       },
     }),
   );
