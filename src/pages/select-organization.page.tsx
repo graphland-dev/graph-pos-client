@@ -28,7 +28,7 @@ const SelectOrganization = () => {
     MY_TENANTS,
     {
       onError() {
-        window.location.href = '/auth/login';
+        // window.location.href = '/auth/login';
       },
     },
   );

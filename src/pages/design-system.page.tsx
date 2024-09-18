@@ -17,7 +17,6 @@ const DesignSystem = () => {
       <Paper shadow="md" p={0} withBorder className="overflow-hidden">
         <p className="px-2 py-2 bg-card-header">Header</p>
         <div className="p-2">
-          <p>Text 1</p>
           <p className="text-text-gray">Text 2</p>
           <p className="text-text-muted">Text 3</p>
         </div>

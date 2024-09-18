@@ -14,6 +14,7 @@ const httpLink = new HttpLink({
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
+  console.log(`Bearer ${localStorage.getItem("erp:accessToken")}`);
   // add the authorization to the headers
   operation.setContext(({ headers = {} }) => ({
     headers: {
@@ -30,7 +31,7 @@ export const apolloClient = new ApolloClient({
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  headers: {
-    authorization: `Bearer ${localStorage.getItem("erp:accessToken")}` || "",
-  },
+  // headers: {
+  //   authorization: `Bearer ${localStorage.getItem("erp:accessToken")}` || "",
+  // },
 });

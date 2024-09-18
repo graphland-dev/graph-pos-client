@@ -1,12 +1,10 @@
 import currencyNumberFormat from '@/commons/utils/commaNumber';
 import {
   MatchOperator,
-  Product,
   ProductDiscountMode,
   ProductInvoice,
   ProductInvoicesWithPagination,
   ProductItemReference,
-  ProductsWithPagination,
   Vat,
   VatsWithPagination,
 } from '@/commons/graphql-models/graphql';
@@ -54,13 +52,13 @@ import {
 } from '../purchases/create-purchase/utils/helpers';
 import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
 import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
-import POSProductGlary from './components/POSProductGalary';
+import POSProductGallery from './components/POSProductGalary';
 import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
 import HoldAction from './components/form-actions/HoldAction';
 import PaymentForm from './components/form-actions/PaymentForm';
 import HoldList from './components/pos-header/HoldList';
 import { ProductItemReferenceWithStockQuantity } from './utils/pos.types';
-import { Pos_Hold_List, Pos_Products_Query } from './utils/query.pos';
+import { Pos_Hold_List } from './utils/query.pos';
 import { getDiscount, getSalesVat } from './utils/utils.calc';
 
 const PosPage = () => {
@@ -69,56 +67,6 @@ const PosPage = () => {
   const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
   const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
   const params = useParams<{ tenant: string }>();
-  const [page, setPage] = useState(1);
-  const [category, setCategory] = useState('');
-  const [brand, setBrand] = useState('');
-  const [productsViewList, setProductsViewList] = useState<Product[]>([]);
-
-  // products fetching
-  const {
-    // data: productsData,
-    loading: productsFetching,
-    refetch: refetchProducts,
-  } = useQuery<{
-    inventory__products: ProductsWithPagination;
-  }>(Pos_Products_Query, {
-    nextFetchPolicy: 'network-only',
-    variables: {
-      where: {
-        limit: 20,
-        page,
-        filters: [
-          {
-            key: 'category',
-            operator: MatchOperator.Eq,
-            value: category,
-          },
-          {
-            key: 'brand',
-            operator: MatchOperator.Eq,
-            value: brand,
-          },
-        ],
-      },
-    },
-    onCompleted: (res) => {
-      setProductsViewList((prevProducts) => [
-        ...prevProducts!,
-        ...(res?.inventory__products?.nodes ?? []),
-      ]);
-    },
-  });
-
-  // on end screen refetch
-  const onRefetchProducts = () => {
-    setPage((p) => p + 1);
-    refetchProducts({
-      where: {
-        page: page + 1,
-        limit: 20,
-      },
-    });
-  };
 
   // hold list data API
   const { data: holdList, refetch: refetchHoldList } = useQuery<{
@@ -234,13 +182,16 @@ const PosPage = () => {
   useEffect(() => {
     if (selectedInvoice) {
       setValue('clientId', selectedInvoice?.client?._id as string);
-      setValue('discountMode', selectedInvoice?.discountMode ?? 'PERCENTAGE');
+      setValue(
+        'discountMode',
+        selectedInvoice?.discountMode ?? ProductDiscountMode.Percentage,
+      );
       setValue('discountValue', selectedInvoice?.discountAmount ?? 0);
       setValue('costAmount', selectedInvoice?.costAmount as number);
       setValue('taxRate', selectedInvoice?.taxAmount ?? (0 as number));
       setValue('products', selectedInvoice?.products as ProductItemReference[]);
     }
-  }, [selectedInvoice]);
+  }, [selectedInvoice, setValue]);
 
   // submit pos form
   const onSubmitPOS = () => {
@@ -334,6 +285,7 @@ const PosPage = () => {
           />
         </div>
       </Flex>
+
       <form onSubmit={handleSubmit(onSubmitPOS)} className="p-3">
         <div className="flex items-start gap-3">
           {/* Left Side */}
@@ -725,21 +677,13 @@ const PosPage = () => {
               </Group>
             </Paper>
           </div>
+
           {/*  
-          Right Side
-          --------------------------
+              Right Side
+              --------------------------
           */}
           <div className="lg:w-5/12">
-            <POSProductGlary
-              onSelectProduct={handleAddProductToList}
-              productsList={productsViewList as Product[]}
-              isProductsFetching={productsFetching}
-              productFilterKeys={{
-                onSetCategory: setCategory,
-                onSetBrand: setBrand,
-              }}
-              onRefetchProducts={onRefetchProducts}
-            />
+            <POSProductGallery onSelectProduct={handleAddProductToList} />
           </div>
         </div>
       </form>
