@@ -1,56 +1,68 @@
 import EmptyState from '@/commons/components/EmptyState.tsx';
-import { getFileUrl } from '@/commons/utils/getFileUrl';
 import {
   BrandsWithPagination,
+  MatchOperator,
   Product,
   ProductCategorysWithPagination,
   ProductItemReference,
-  ServerFileReference,
+  ProductsWithPagination,
 } from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
-import {
-  Badge,
-  Input,
-  Paper,
-  Select,
-  Skeleton,
-  Space,
-  Text,
-} from '@mantine/core';
-import { showNotification } from '@mantine/notifications';
-import React from 'react';
-import { VisibilityObserver } from 'reactjs-visibility';
+import { Button, Select, Space } from '@mantine/core';
+import React, { useMemo, useState } from 'react';
 import { getSelectInputData } from '../../products/product-edit/components/AssignmentForm';
-import { Pos_Brands_Query, Pos_Categories_Query } from '../utils/query.pos';
+import {
+  Pos_Brands_Query,
+  Pos_Categories_Query,
+  Pos_Products_Query,
+} from '../utils/query.pos';
 import { getProductReferenceByQuantity } from '../utils/utils.calc';
+import PosItemCard from './PosItemCard';
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
-  productsList: Product[];
-  isProductsFetching: boolean;
-  productFilterKeys: {
-    onSetCategory: (state: string) => void;
-    onSetBrand: (state: string) => void;
-  };
-  onRefetchProducts: () => void;
 }
 
-const POSProductGlary: React.FC<IProp> = ({
-  onSelectProduct,
-  productsList,
-  isProductsFetching,
-  productFilterKeys: { onSetBrand, onSetCategory },
-  onRefetchProducts,
-}) => {
-  const handleChangeVisibility = (visible: any) => {
-    if (visible) {
-      onRefetchProducts();
-    }
-  };
+const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
+  const [itemsGridColumnCount, setItemsGridColumnCount] = useState(4);
+  const [filteredCategoryID, setFilteredCategoryID] = useState('');
+  const [filteredBrandID, setFilteredBrandID] = useState('');
 
-  const options = {
-    rootMargin: '200px',
-  };
+  const buildFilter = useMemo(() => {
+    const filters = [];
+    if (filteredCategoryID) {
+      filters.push({
+        key: 'category',
+        operator: MatchOperator.Eq,
+        value: filteredCategoryID,
+      });
+    }
+    if (filteredBrandID) {
+      filters.push({
+        key: 'brand',
+        operator: MatchOperator.Eq,
+        value: filteredBrandID,
+      });
+    }
+
+    return filters;
+  }, [filteredCategoryID, filteredBrandID]);
+
+  // products fetching
+  const { data: productsData, loading: isProductsFetching } = useQuery<{
+    inventory__products: ProductsWithPagination;
+  }>(Pos_Products_Query, {
+    nextFetchPolicy: 'network-only',
+    variables: {
+      where: {
+        limit: itemsPerPage,
+        page,
+        filters: [...buildFilter],
+      },
+    },
+  });
 
   // categories query
   const { data: categories, loading: loadingCategories } = useQuery<{
@@ -79,122 +91,110 @@ const POSProductGlary: React.FC<IProp> = ({
     onSelectProduct(getProductReferenceByQuantity(product, 1));
   };
 
-  // get stock
-  const getStock = (product: Product) => {
-    const _in = product.stockInQuantity || 0;
-    const _out = product.stockOutQuantity || 0;
-
-    return _in - _out || 0;
-  };
-
   return (
-    <Paper p={15} className=" h-[calc(100vh-44px)] overflow-y-auto">
-      <div className="grid grid-cols-2 gap-2">
-        <Input.Wrapper size="md" label="Category">
-          <Select
-            size="md"
-            radius={0}
-            searchable
-            clearable
-            placeholder="Select a category"
-            data={getSelectInputData(
-              categories?.inventory__productCategories?.nodes,
-            )}
-            onChange={(catId) => onSetCategory(catId!)}
-            disabled={loadingCategories}
-          />
-        </Input.Wrapper>
+    <div className="h-[calc(100vh-44px)]">
+      {/* Filters */}
+      <div className="grid grid-cols-2 gap-2 flex-none">
+        <Select
+          size="md"
+          radius={0}
+          searchable
+          clearable
+          placeholder="Select a category"
+          data={getSelectInputData(
+            categories?.inventory__productCategories?.nodes,
+          )}
+          onChange={(catId) => setFilteredCategoryID(catId!)}
+          disabled={loadingCategories}
+        />
 
-        <Input.Wrapper size="md" label="Brand">
-          <Select
-            size="md"
-            radius={0}
-            searchable
-            clearable
-            placeholder="Select a brand"
-            data={getSelectInputData(brands?.setup__brands?.nodes)}
-            onChange={(brandId) => onSetBrand(brandId!)}
-            disabled={loadingBrands}
-          />
-        </Input.Wrapper>
+        <Select
+          size="md"
+          radius={0}
+          searchable
+          clearable
+          placeholder="Select a brand"
+          data={getSelectInputData(brands?.setup__brands?.nodes)}
+          onChange={(brandId) => setFilteredBrandID(brandId!)}
+          disabled={loadingBrands}
+        />
+
+        <Select
+          size="md"
+          radius={0}
+          placeholder="Items per page"
+          data={[
+            { value: '50', label: '50 items per page' },
+            { value: '100', label: '100 items per page' },
+            { value: '200', label: '200 items per page' },
+            { value: '500', label: '500 items per page' },
+            { value: '1000', label: '1000 items per page' },
+          ]}
+          value={itemsPerPage.toString()}
+          onChange={(value) => {
+            setItemsPerPage(Number(value));
+            setPage(1);
+          }}
+        />
+
+        <Select
+          size="md"
+          radius={0}
+          placeholder="Columns"
+          data={[
+            { value: '2', label: '2 columns' },
+            { value: '3', label: '3 columns' },
+            { value: '4', label: '4 columns' },
+            { value: '5', label: '5 columns' },
+            { value: '6', label: '6 columns' },
+          ]}
+          value={itemsGridColumnCount.toString()}
+          onChange={(value) => {
+            setItemsGridColumnCount(Number(value));
+          }}
+        />
       </div>
 
-      <Space h={20} />
-      <div className="grid grid-cols-4 gap-2">
-        {productsList?.map((product: Product, idx: number) => (
-          <Paper
-            key={idx}
-            radius={5}
-            shadow="sm"
-            pos={'relative'}
-            onClick={() => {
-              if (getStock(product)) {
-                handleEmitProduct(product);
-              } else {
-                showNotification({
-                  message: 'Product not in stock',
-                  color: 'red',
-                });
-              }
-            }}
-            className="overflow-hidden border cursor-pointer border-neutral-muted hover:border-blue-500"
-          >
-            {!getStock(product) && (
-              <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-sm"></div>
-            )}
+      <Space h={8} />
 
-            <Badge
-              pos={'absolute'}
-              top={0}
-              left={0}
-              radius={0}
-              size="lg"
-              variant="filled"
-            >
-              {product.price} BDT
-            </Badge>
-            <img
-              src={getFileUrl(product?.thumbnail as ServerFileReference) ?? ''}
-              alt="product image"
-              className="object-cover p-2 rounded-md"
-            />
-
-            <Space h={5} />
-
-            <div className="p-2">
-              <Text size="xs" fw={500}>
-                CODE: {product?.code}
-              </Text>
-              <Text fz={'md'} fw={500}>
-                {product?.name}
-              </Text>
-              <Text fz={'md'} fw={500}>
-                Stock: {getStock(product)}
-              </Text>
-            </div>
-          </Paper>
-        ))}
-
-        {isProductsFetching && (
-          <>
-            {new Array(12).fill(12).map((_, idx) => (
-              <Skeleton key={idx} radius={5} h={200} />
-            ))}
-          </>
-        )}
-      </div>
-      {!productsList?.length && !isProductsFetching && (
-        <EmptyState label={'No products found with your filter!'} />
-      )}
-
-      <VisibilityObserver
-        onChangeVisibility={handleChangeVisibility}
-        options={options}
+      <div
+        className={`grid grid-columns--${itemsGridColumnCount} gap-2 flex-1 overflow-y-auto`}
       >
-        {/* <Text>Load more...</Text> */}
-      </VisibilityObserver>
-    </Paper>
+        {productsData?.inventory__products.nodes?.map((product) => (
+          <PosItemCard
+            product={product}
+            onClick={(_product) => handleEmitProduct(_product)}
+          />
+        ))}
+      </div>
+
+      {/*Pagination Buttons*/}
+      <div className="flex justify-center gap-2 my-2">
+        <Button
+          onClick={() => {
+            if (page === 1) return;
+            setPage(page - 1);
+          }}
+        >
+          Prev
+        </Button>
+        <Button
+          onClick={() => {
+            if (page === productsData?.inventory__products.meta?.totalPages)
+              return;
+            setPage(page + 1);
+          }}
+        >
+          Next
+        </Button>
+      </div>
+
+      {!productsData?.inventory__products.nodes?.length &&
+        !isProductsFetching && (
+          <EmptyState label={'No products found with your filter!'} />
+        )}
+    </div>
   );
 };
 
-export default POSProductGlary;
+export default POSProductGallery;

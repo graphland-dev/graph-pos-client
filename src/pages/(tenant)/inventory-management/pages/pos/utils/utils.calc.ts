@@ -2,14 +2,14 @@ import {
   Product,
   ProductDiscountMode,
   ProductTaxType,
-} from "@/commons/graphql-models/graphql";
-import { ProductItemReferenceWithStockQuantity } from "./pos.types";
+} from '@/commons/graphql-models/graphql';
+import { ProductItemReferenceWithStockQuantity } from './pos.types';
 
 // get discount
 export const getDiscount = (
   discountType: string,
   discountAmount: number,
-  totalPrice: number
+  totalPrice: number,
 ) => {
   if (discountType === ProductDiscountMode.Amount) {
     return Number(discountAmount) ?? 0;
@@ -24,7 +24,7 @@ export const getSalesVat = (subTotal: number, vatPercentage: number) => {
   return (subTotal / 100) * vatPercentage;
 };
 
-const getStock = (product: Product) => {
+export const getStock = (product: Product) => {
   const _in = product.stockInQuantity || 0;
   const _out = product.stockOutQuantity || 0;
 
@@ -33,7 +33,7 @@ const getStock = (product: Product) => {
 
 export const getProductReferenceByQuantity = (
   product: Product,
-  quantity: number
+  quantity: number,
 ): ProductItemReferenceWithStockQuantity => {
   const taxPercentage = product?.vat?.percentage || 0;
   const taxRate = taxPercentage / 100 || 0;

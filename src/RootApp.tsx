@@ -16,13 +16,13 @@ import { jotaiStore } from '@/commons/configs/jotai.config.ts';
 
 const RootApp = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: 'graph-erp-color-scheme',
+    key: 'graphland.dev.pos.color-scheme',
     defaultValue: 'light',
     getInitialValueInEffect: true,
   });
 
   const [colorTheme] = useLocalStorage({
-    key: 'graph-360--theme',
+    key: 'graphland.dev.pos.color-theme',
     defaultValue: 'green',
     getInitialValueInEffect: true,
   });

@@ -1,6 +1,10 @@
 import { gql, useQuery } from '@apollo/client';
 import { useAtom } from 'jotai/index';
-import { userAtom, userTenantsAtom } from '@/commons/states/user.atom.ts';
+import {
+  loadingUserAtom,
+  userAtom,
+  userTenantsAtom,
+} from '@/commons/states/user.atom.ts';
 import {
   TenantsWithPagination,
   User,
@@ -54,6 +58,7 @@ const RootWrapper: React.FC<PropsWithChildren> = ({ children }) => {
   const [, setGlobalUser] = useAtom(userAtom);
   // const [, setUserPermissions] = useAtom(userPermissionsAtom);
   const [, setUserTenants] = useAtom(userTenantsAtom);
+  const [, setUserLoading] = useAtom(loadingUserAtom);
 
   const { loading, refetch } = useQuery<{
     identity__me: User;
@@ -66,11 +71,14 @@ const RootWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     // },
     onCompleted(data) {
       setGlobalUser(data?.identity__me);
-      // setUserPermissions(data?.identity__myPermissions);
       setUserTenants(data?.identity__myTenants?.nodes || []);
+      setUserLoading(false);
+      // setUserPermissions(data?.identity__myPermissions);
     },
     onError: () => {
-      window.location.href = '/auth/login';
+      setUserLoading(false);
+      // localStorage.removeItem('erp:accessToken');
+      // window.location.href = '/auth/login';
     },
   });
 
