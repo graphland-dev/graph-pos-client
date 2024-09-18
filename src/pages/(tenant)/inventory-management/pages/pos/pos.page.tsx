@@ -206,7 +206,7 @@ const PosPage = () => {
     <div>
       {/* Header */}
       <Flex
-        className="px-3 pb-0 bg-white h-[70px] border-b-slate-100 border-b-[1px]"
+        className="px-3 pb-0 bg-white h-[45px] border-b-slate-100 border-b-[1px]"
         justify={'space-between'}
         align={'center'}
       >
@@ -287,10 +287,10 @@ const PosPage = () => {
       </Flex>
 
       <form onSubmit={handleSubmit(onSubmitPOS)} className="p-3">
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2">
           {/* Left Side */}
           <div className="lg:w-7/12">
-            <Paper p={15} withBorder>
+            <Paper p={8} withBorder>
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   prefilledClientId={
@@ -624,7 +624,6 @@ const PosPage = () => {
                   }}
                   onSuccess={() => {
                     paymentModalHandler.close();
-                    refetchProducts();
                     reset({
                       clientId: '',
                       discountMode: ProductDiscountMode.Amount,
