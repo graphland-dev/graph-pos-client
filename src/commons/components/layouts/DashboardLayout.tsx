@@ -40,6 +40,11 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       asideOffsetBreakpoint="sm"
       header={<CommonHeader />}
       layout="alt"
+      classNames={{
+        root: 'app-layout-root',
+        body: 'app-layout-body',
+        main: 'app-layout-main',
+      }}
       styles={{
         root: {
           '--mantine-navbar-width': desktopNavbarCollapsed ? '1px' : '18.75rem',

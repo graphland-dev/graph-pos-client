@@ -1,16 +1,17 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
-@layer tailwind {
-  @tailwind base;
-}
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+// @layer tailwind {
+//   @tailwind base;
+// }
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "theme";
+@import 'theme';
 
 .mantine-AppShell-main,
 body {
   background-color: var(--theme-body);
-  font-family: "Lexend", sans-serif;
+  font-family: 'Lexend', sans-serif;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
@@ -80,8 +81,6 @@ body {
     }
   }
 }
-
-
 
 // write a for loop 6 times
 @for $i from 1 to 7 {
