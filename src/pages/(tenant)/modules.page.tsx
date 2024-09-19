@@ -9,7 +9,7 @@ const ModulesPage = () => {
       <CommonHeader />
       <div className="m-10">
         <ModuleMenu
-          moduleName={'Graph360 Apps'}
+          moduleName={'Graph POS Apps'}
           items={[
             {
               name: 'Accounting',
