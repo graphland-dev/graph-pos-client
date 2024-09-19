@@ -138,8 +138,9 @@
 
   body,
   .app-shell-root,
-  .app-drawer-content {
+  .app-drawer {
     @apply !bg-background !text-foreground;
+    /* @apply !px-0; */
   }
 
   .app-card {

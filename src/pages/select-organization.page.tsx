@@ -4,6 +4,8 @@ import { gql, useQuery } from '@apollo/client';
 import { Image, LoadingOverlay, Text, Title } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { Link } from 'react-router-dom';
+import { useLocalStorage } from '@mantine/hooks';
+import { useEffect } from 'react';
 
 const MY_TENANTS = gql`
   query Identity__myTenants {
@@ -24,6 +26,17 @@ const MY_TENANTS = gql`
 `;
 
 const SelectOrganization = () => {
+  const [currentTenantFromStorage] = useLocalStorage({
+    key: 'graphland.dev.pos.current-tenant',
+    getInitialValueInEffect: true,
+  });
+
+  useEffect(() => {
+    if (currentTenantFromStorage) {
+      window.location.href = `/${currentTenantFromStorage}`;
+    }
+  }, [currentTenantFromStorage]);
+
   const { data } = useQuery<{ identity__myTenants: TenantsWithPagination }>(
     MY_TENANTS,
     {

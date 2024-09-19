@@ -76,7 +76,8 @@ const RootApp = () => {
                 Drawer: {
                   defaultProps: {
                     classNames: {
-                      content: 'app-drawer-content',
+                      content: 'app-drawer',
+                      body: 'px-0 !pt-2',
                     },
                   },
                 },
