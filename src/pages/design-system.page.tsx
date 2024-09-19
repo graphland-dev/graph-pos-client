@@ -18,6 +18,8 @@ import {
   CardTitle,
 } from '@/commons/shadcn/components/ui/card.tsx';
 import { useDisclosure } from '@mantine/hooks';
+import { Link } from 'react-router-dom';
+import { IconDashboard } from '@tabler/icons-react';
 
 const DesignSystem = () => {
   const { toggleColorScheme } = useMantineColorScheme();
@@ -26,8 +28,23 @@ const DesignSystem = () => {
   return (
     <>
       <CommonHeader />
+
       <div className="p-20">
-        <Button onClick={() => toggleColorScheme()}>Toggle Theme</Button>
+        <Button my={'lg'} onClick={() => toggleColorScheme()}>
+          Toggle Theme
+        </Button>
+
+        <Card className="bg-muted">
+          <CardHeader>
+            <CardTitle className="text-lg">Muted Typography</CardTitle>
+          </CardHeader>
+          <CardContent className="">
+            <Text fw={'bold'}>Heading 1</Text>
+            <p className="text-muted-foreground">
+              Lorem ipsum dolor sit amet consectetur adipisicing elit.
+            </p>
+          </CardContent>
+        </Card>
 
         <Paper title={'Design System'}>
           <Title fw={'normal'} order={4}>
@@ -80,6 +97,17 @@ const DesignSystem = () => {
             <Button color="primary.8">Button Primary 8</Button>
             <Button color="primary.9">Button Primary 9</Button>
             <Button color="primary">Button Primary Default</Button>
+            <Button color="primary" component={Link} to={'/'}>
+              Button Primary Default
+            </Button>
+            <Button
+              variant="subtle"
+              component={Link}
+              to={'/'}
+              leftIcon={<IconDashboard size={16} />}
+            >
+              Dashboard
+            </Button>
           </div>
           <div className="flex gap-3 p-10">
             <Button color="primary">Button Primary</Button>

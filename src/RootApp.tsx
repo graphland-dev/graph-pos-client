@@ -106,6 +106,30 @@ const RootApp = () => {
                   'hsl(var(--secondary-800))', // 8
                   'hsl(var(--secondary-900))', // 9
                 ],
+                accent: [
+                  'hsl(var(--accent-50))', // 0
+                  'hsl(var(--accent-100))', // 1
+                  'hsl(var(--accent-200))', // 2
+                  'hsl(var(--accent-300))', // 3
+                  'hsl(var(--accent-400))', // 4
+                  'hsl(var(--accent-500))', // 5
+                  'hsl(var(--accent-600))', // 6
+                  'hsl(var(--accent-700))', // 7
+                  'hsl(var(--accent-800))', // 8
+                  'hsl(var(--accent-900))', // 9
+                ],
+                muted: [
+                  'hsl(var(--muted-50))', // 0
+                  'hsl(var(--muted-100))', // 1
+                  'hsl(var(--muted-200))', // 2
+                  'hsl(var(--muted-300))', // 3
+                  'hsl(var(--muted-400))', // 4
+                  'hsl(var(--muted-500))', // 5
+                  'hsl(var(--muted-600))', // 6
+                  'hsl(var(--muted-700))', // 7
+                  'hsl(var(--muted-800))', // 8
+                  'hsl(var(--muted-900))', // 9
+                ],
               },
               primaryColor: 'primary',
               primaryShade: 5,

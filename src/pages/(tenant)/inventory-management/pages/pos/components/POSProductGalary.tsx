@@ -8,7 +8,7 @@ import {
   ProductsWithPagination,
 } from '@/commons/graphql-models/graphql';
 import { useQuery } from '@apollo/client';
-import { Button, Select, Space } from '@mantine/core';
+import { Button, Select } from '@mantine/core';
 import React, { useMemo, useState } from 'react';
 import { getSelectInputData } from '../../products/product-edit/components/AssignmentForm';
 import {
@@ -92,9 +92,9 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
   };
 
   return (
-    <div className="h-[calc(100vh-44px)]">
+    <div className="flex flex-col h-[calc(100vh-46px)]">
       {/* Filters */}
-      <div className="grid grid-cols-2 gap-2 flex-none">
+      <div className="grid flex-none h-[40px] place-content-center grid-cols-2 gap-2">
         <Select
           size="md"
           radius={0}
@@ -118,81 +118,88 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
           onChange={(brandId) => setFilteredBrandID(brandId!)}
           disabled={loadingBrands}
         />
-
-        <Select
-          size="md"
-          radius={0}
-          placeholder="Items per page"
-          data={[
-            { value: '50', label: '50 items per page' },
-            { value: '100', label: '100 items per page' },
-            { value: '200', label: '200 items per page' },
-            { value: '500', label: '500 items per page' },
-            { value: '1000', label: '1000 items per page' },
-          ]}
-          value={itemsPerPage.toString()}
-          onChange={(value) => {
-            setItemsPerPage(Number(value));
-            setPage(1);
-          }}
-        />
-
-        <Select
-          size="md"
-          radius={0}
-          placeholder="Columns"
-          data={[
-            { value: '2', label: '2 columns' },
-            { value: '3', label: '3 columns' },
-            { value: '4', label: '4 columns' },
-            { value: '5', label: '5 columns' },
-            { value: '6', label: '6 columns' },
-          ]}
-          value={itemsGridColumnCount.toString()}
-          onChange={(value) => {
-            setItemsGridColumnCount(Number(value));
-          }}
-        />
       </div>
 
-      <Space h={8} />
+      {/* Items */}
 
-      <div
-        className={`grid grid-columns--${itemsGridColumnCount} gap-2 flex-1 overflow-y-auto`}
-      >
-        {productsData?.inventory__products.nodes?.map((product) => (
-          <PosItemCard
-            product={product}
-            onClick={(_product) => handleEmitProduct(_product)}
+      <div className="flex-1 overflow-y-auto">
+        <div className={`grid grid-columns--${itemsGridColumnCount} gap-2`}>
+          {productsData?.inventory__products.nodes?.map((product) => (
+            <PosItemCard
+              product={product}
+              onClick={(_product) => handleEmitProduct(_product)}
+            />
+          ))}
+        </div>
+      </div>
+
+      <EmptyState
+        visible={
+          !productsData?.inventory__products.nodes?.length &&
+          !isProductsFetching
+        }
+        label={'No products found with your filter!'}
+      />
+
+      {/* Bottom Ribon */}
+      <div className="flex-none h-[40px] flex justify-between items-center px-2">
+        <div className="flex">
+          <Select
+            size="md"
+            radius={0}
+            placeholder="Items per page"
+            data={[
+              { value: '50', label: '50 items per page' },
+              { value: '100', label: '100 items per page' },
+              { value: '200', label: '200 items per page' },
+              { value: '500', label: '500 items per page' },
+              { value: '1000', label: '1000 items per page' },
+            ]}
+            value={itemsPerPage.toString()}
+            onChange={(value) => {
+              setItemsPerPage(Number(value));
+              setPage(1);
+            }}
           />
-        ))}
-      </div>
 
-      {/*Pagination Buttons*/}
-      <div className="flex justify-center gap-2 my-2">
-        <Button
-          onClick={() => {
-            if (page === 1) return;
-            setPage(page - 1);
-          }}
-        >
-          Prev
-        </Button>
-        <Button
-          onClick={() => {
-            if (page === productsData?.inventory__products.meta?.totalPages)
-              return;
-            setPage(page + 1);
-          }}
-        >
-          Next
-        </Button>
-      </div>
+          <Select
+            size="md"
+            radius={0}
+            placeholder="Columns"
+            data={[
+              { value: '2', label: '2 columns' },
+              { value: '3', label: '3 columns' },
+              { value: '4', label: '4 columns' },
+              { value: '5', label: '5 columns' },
+              { value: '6', label: '6 columns' },
+            ]}
+            value={itemsGridColumnCount.toString()}
+            onChange={(value) => {
+              setItemsGridColumnCount(Number(value));
+            }}
+          />
+        </div>
 
-      {!productsData?.inventory__products.nodes?.length &&
-        !isProductsFetching && (
-          <EmptyState label={'No products found with your filter!'} />
-        )}
+        <div className="flex justify-center gap-2">
+          <Button
+            onClick={() => {
+              if (page === 1) return;
+              setPage(page - 1);
+            }}
+          >
+            Prev
+          </Button>
+          <Button
+            onClick={() => {
+              if (page === productsData?.inventory__products.meta?.totalPages)
+                return;
+              setPage(page + 1);
+            }}
+          >
+            Next
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
