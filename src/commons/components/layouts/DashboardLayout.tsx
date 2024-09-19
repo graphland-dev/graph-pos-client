@@ -41,9 +41,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       header={<CommonHeader />}
       layout="alt"
       classNames={{
-        root: 'app-layout-root',
-        body: 'app-layout-body',
-        main: 'app-layout-main',
+        root: 'app-shell-root',
+        body: 'app-shell-body',
+        main: 'app-shell-main',
       }}
       styles={{
         root: {
@@ -55,7 +55,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
           p="md"
           hiddenBreakpoint="sm"
           width={{ sm: 300 }}
-          className="transition-all duration-300 border-0 app-sidebar"
+          className="transition-all duration-300 border-0 app-shell__navbar"
           left={desktopNavbarCollapsed ? -300 : 0}
         >
           <UnstyledButton
@@ -97,7 +97,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                     />
                   ) : undefined
                 }
-                className={classNames('text-white rounded-md app-navbar-item')}
+                className={classNames(
+                  'text-white rounded-md app-shell__navbar-item',
+                )}
                 active={pathname.includes(item?.href as string)}
               >
                 {item?.children &&

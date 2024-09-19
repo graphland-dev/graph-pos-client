@@ -24,7 +24,7 @@ const ModuleMenu: React.FC<IModuleMenu> = ({ moduleName, items }) => {
           >
             <img
               src={item.iconPath}
-              className="bg-theme-surface h-[70px] w-[70px] p-3 rounded-md bg-secondary shadow flex-none"
+              className="bg-theme-surface h-[70px] w-[70px] p-3 rounded-md bg-white shadow flex-none"
             />
             <Text>{item.name}</Text>
           </Link>

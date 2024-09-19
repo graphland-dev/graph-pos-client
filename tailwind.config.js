@@ -25,6 +25,9 @@ export default {
           DEFAULT: 'hsl(var(--popover))',
           foreground: 'hsl(var(--popover-foreground))',
         },
+        white: {
+          DEFAULT: 'hsl(var(--white))',
+        },
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           50: 'hsl(var(--primary-50))',
@@ -57,17 +60,6 @@ export default {
         },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
-          50: 'hsl(var(--muted-50))',
-          100: 'hsl(var(--muted-100))',
-          200: 'hsl(var(--muted-200))',
-          300: 'hsl(var(--muted-300))',
-          400: 'hsl(var(--muted-400))',
-          500: 'hsl(var(--muted-500))',
-          600: 'hsl(var(--muted-600))',
-          700: 'hsl(var(--muted-700))',
-          800: 'hsl(var(--muted-800))',
-          900: 'hsl(var(--muted-900))',
-          950: 'hsl(var(--muted-950))',
           foreground: 'hsl(var(--muted-foreground))',
         },
         accent: {
