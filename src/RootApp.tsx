@@ -3,16 +3,16 @@ import {
   ColorSchemeProvider,
   MantineProvider,
 } from '@mantine/core';
-import { Provider as JotaiProvider } from 'jotai';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
+import { Provider as JotaiProvider } from 'jotai';
 
+import RootWrapper from '@/commons/components/wrappers/RootWrapper.tsx';
+import { jotaiStore } from '@/commons/configs/jotai.config.ts';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
 import { useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 import { rootRouter } from './root.router';
-import RootWrapper from '@/commons/components/wrappers/RootWrapper.tsx';
-import { jotaiStore } from '@/commons/configs/jotai.config.ts';
 
 const RootApp = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
@@ -58,22 +58,57 @@ const RootApp = () => {
             withGlobalStyles
             theme={{
               colorScheme,
-              fontFamily: '"Lexend", sans-serif',
+              components: {
+                Paper: {
+                  defaultProps: {
+                    withBorder: true,
+                    className: 'app-card',
+                    p: 'md',
+                  },
+                },
+                Card: {
+                  defaultProps: {
+                    withBorder: true,
+                    className: 'app-card',
+                    p: 'md',
+                  },
+                },
+                Drawer: {
+                  defaultProps: {
+                    classNames: {
+                      content: 'app-drawer-content',
+                    },
+                  },
+                },
+              },
               colors: {
-                theme: [
-                  'color-mix(in srgb, var(--theme-primary), #fff 70%)', // 0
-                  'color-mix(in srgb, var(--theme-primary), #fff 60%)', // 1
-                  'color-mix(in srgb, var(--theme-primary), #fff 50%)', // 2
-                  'color-mix(in srgb, var(--theme-primary), #fff 40%)', // 3
-                  'color-mix(in srgb, var(--theme-primary), #fff 30%)', // 4
-                  'color-mix(in srgb, var(--theme-primary), #fff 20%)', // 5
-                  'color-mix(in srgb, var(--theme-primary), #fff 10%)', // 6
-                  'var(--theme-primary)', // 7 Base color
-                  'color-mix(in srgb, var(--theme-primary), #000 15%)', // 8
-                  'color-mix(in srgb, var(--theme-primary), #000 35%)', // 9
+                primary: [
+                  'hsl(var(--primary-50))', // 0
+                  'hsl(var(--primary-100))', // 1
+                  'hsl(var(--primary-200))', // 2
+                  'hsl(var(--primary-300))', // 3
+                  'hsl(var(--primary-400))', // 4
+                  'hsl(var(--primary-500))', // 5
+                  'hsl(var(--primary-600))', // 6
+                  'hsl(var(--primary-700))', // 7
+                  'hsl(var(--primary-800))', // 8
+                  'hsl(var(--primary-900))', // 9
+                ],
+                secondary: [
+                  'hsl(var(--secondary-50))', // 0
+                  'hsl(var(--secondary-100))', // 1
+                  'hsl(var(--secondary-200))', // 2
+                  'hsl(var(--secondary-300))', // 3
+                  'hsl(var(--secondary-400))', // 4
+                  'hsl(var(--secondary-500))', // 5
+                  'hsl(var(--secondary-600))', // 6
+                  'hsl(var(--secondary-700))', // 7
+                  'hsl(var(--secondary-800))', // 8
+                  'hsl(var(--secondary-900))', // 9
                 ],
               },
-              primaryColor: 'theme',
+              primaryColor: 'primary',
+              primaryShade: 5,
             }}
           >
             <ModalsProvider>
