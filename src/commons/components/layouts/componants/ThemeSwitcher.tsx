@@ -1,19 +1,6 @@
-import {
-  Drawer,
-  Flex,
-  Menu,
-  Tooltip,
-  UnstyledButton,
-  clsx,
-  useMantineColorScheme,
-} from '@mantine/core';
+import { Drawer, Flex, Menu, clsx, useMantineColorScheme } from '@mantine/core';
 import { useColorScheme, useDisclosure, useLocalStorage } from '@mantine/hooks';
-import {
-  IconDeviceLaptop,
-  IconMoon,
-  IconPaint,
-  IconSunHigh,
-} from '@tabler/icons-react';
+import { IconDeviceLaptop, IconMoon, IconSunHigh } from '@tabler/icons-react';
 
 const ThemeSwitcherMenu = () => {
   const preferredColorScheme = useColorScheme();
@@ -91,14 +78,14 @@ const ThemeSwitcherMenu = () => {
           </Menu.Dropdown>
         </Menu>
 
-        <UnstyledButton onClick={themeSettingDrawerHandler.toggle}>
+        {/* <UnstyledButton onClick={themeSettingDrawerHandler.toggle}>
           <Tooltip label="Theme Setting">
             <IconPaint
               size={22}
               className="cursor-pointer theme-switcher-icon"
             />
           </Tooltip>
-        </UnstyledButton>
+        </UnstyledButton> */}
       </Flex>
     </>
   );
