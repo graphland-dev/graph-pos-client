@@ -206,7 +206,7 @@ const PosPage = () => {
     <div>
       {/* Header */}
       <Flex
-        className="px-3 pb-0 bg-white h-[45px] border-b-slate-100 border-b-[1px]"
+        className="px-3 pb-0 h-[45px] border-b"
         justify={'space-between'}
         align={'center'}
       >
@@ -214,7 +214,7 @@ const PosPage = () => {
           <Flex>
             <Button
               variant="subtle"
-              size="xs"
+              color="accent"
               component={Link}
               to={'/'}
               leftIcon={<IconDashboard size={16} />}
@@ -223,7 +223,7 @@ const PosPage = () => {
             </Button>
             <Button
               variant="subtle"
-              size="xs"
+              color="accent"
               leftIcon={<IconList size={16} />}
               component={Link}
               to={`/${params?.tenant}/inventory-management/invoices`}
@@ -232,7 +232,7 @@ const PosPage = () => {
             </Button>
             <Button
               variant="subtle"
-              size="xs"
+              color="accent"
               leftIcon={<IconUsers size={16} />}
               component={Link}
               to={`/${params?.tenant}/people/client`}
@@ -241,7 +241,7 @@ const PosPage = () => {
             </Button>
             <Button
               variant="subtle"
-              size="xs"
+              color="accent"
               leftIcon={<IconBox size={16} />}
               component={Link}
               to={`/${params?.tenant}/inventory-management/products/products-list
@@ -251,7 +251,7 @@ const PosPage = () => {
             </Button>
             <Button
               variant="subtle"
-              size="xs"
+              color="accent"
               leftIcon={<IconCalculator size={16} />}
               onClick={() =>
                 reset({
@@ -286,7 +286,7 @@ const PosPage = () => {
         </div>
       </Flex>
 
-      <form onSubmit={handleSubmit(onSubmitPOS)} className="p-3">
+      <form onSubmit={handleSubmit(onSubmitPOS)}>
         <div className="flex items-start gap-2">
           {/* Left Side */}
           <div className="lg:w-7/12">
@@ -548,7 +548,7 @@ const PosPage = () => {
                   </Text>
                 </Flex>
                 <Space h={'sm'} />
-                <div className="p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm flex justify-between">
+                <div className="flex justify-between p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm">
                   <div>Net Total (Subtotal - Discount)</div>{' '}
                   <div>{currencyNumberFormat(getNetAmount())} BDT</div>
                 </div>
