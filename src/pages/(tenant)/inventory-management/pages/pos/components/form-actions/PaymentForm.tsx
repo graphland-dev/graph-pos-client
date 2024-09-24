@@ -1,16 +1,16 @@
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
-import { AccountsWithPagination, ProductDiscountMode, Purchase_Invoice_Status } from "@/commons/graphql-models/graphql";
+import { AccountsWithPagination, ProductDiscountMode, ProductInvoice, Purchase_Invoice_Status } from "@/commons/graphql-models/graphql";
 import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Button, Group, Input, NumberInput, Paper, Select, Space } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useReactToPrint } from "react-to-print";
 import { IPosFormType } from "../../pos.page";
-import { Create_Invoice_Payment, Create_Product_Invoice } from "../../utils/query.payment";
+import { Create_Invoice_Payment, Create_Product_Invoice, INVENTORY_INVOICE } from "../../utils/query.payment";
 import { Update_Invoice_Status } from "../../utils/query.pos";
 import { Payment_Form_Validation } from "../../utils/validations/paymentForm.validation";
 
@@ -30,6 +30,7 @@ interface IPaymentFormProps {
 }
 
 const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMadeInvoiceId, onRefetchHoldList }) => {
+	const [productInvoice, setProductInvoice] = useState<{ inventory__productInvoice: ProductInvoice } | null>(null);
 	// accounts API
 	const { data } = useQuery<{
 		accounting__accounts: AccountsWithPagination;
@@ -39,6 +40,23 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 				limit: -1,
 				page: 1,
 			},
+		},
+	});
+
+	const [getInvoiceData, { data: invoiceDetails }] = useLazyQuery<{ inventory__productInvoice: ProductInvoice }>(INVENTORY_INVOICE, {
+		onCompleted: (data) => {
+			// console.log(data);
+			// setProductInvoice(data);
+			handlePrint();
+			onSuccess();
+			reset({
+				date: new Date(),
+				paymentTerm: "",
+				poReference: "",
+				receiptNo: "",
+				reference: "",
+				payments: [],
+			});
 		},
 	});
 
@@ -88,25 +106,13 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 		Create_Invoice_Payment,
 		commonNotifierCallback({
 			successTitle: "Payment successful",
-			onSuccess() {
-				handlePrint();
-				onSuccess();
-				reset({
-					date: new Date(),
-					paymentTerm: "",
-					poReference: "",
-					receiptNo: "",
-					reference: "",
-					payments: [],
-				});
-			},
 		})
 	);
 
 	// payment mutation
 	const [updateInvoice, { loading: __updating__invoice }] = useMutation(Update_Invoice_Status, {
 		onCompleted: () => {
-			onSuccess();
+			// onSuccess();
 			onRefetchHoldList();
 		},
 	});
@@ -140,6 +146,15 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 					variables: {
 						invoiceId: preMadeInvoiceId,
 						status: getTotalPaymentAmount(watch("payments")) === formData?.netTotal ? Purchase_Invoice_Status.Paid : Purchase_Invoice_Status.PartiallyPaid,
+					},
+				});
+				getInvoiceData({
+					variables: {
+						where: {
+							key: "_id",
+							operator: "eq",
+							value: preMadeInvoiceId,
+						},
 					},
 				});
 			});
@@ -178,6 +193,16 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 							date: values?.date,
 						},
 					},
+				}).finally(() => {
+					getInvoiceData({
+						variables: {
+							where: {
+								key: "_id",
+								operator: "eq",
+								value: invoice.data?.inventory__createProductInvoice?._id,
+							},
+						},
+					});
 				});
 			});
 		}
@@ -187,7 +212,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 
 	const handlePrint = useReactToPrint({
 		content: () => invoiceSlip.current!,
-		pageStyle: "@page { size: 2.5in 4in }",
+		pageStyle: `@media print{"@page { size: 70mm 56mm; margin: 0; }}`,
 	});
 
 	return (
@@ -282,28 +307,23 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 					</Button>
 				</Group>
 			</form>
-
-			<div className="" ref={invoiceSlip}>
-				<div className="w-[260px] mx-auto">
+			<div className="hidden print:block" ref={invoiceSlip}>
+				<div className="w-[260px]">
 					<div className="text-center border-b-2 border-black">
-						<h2 className="text-2xl font-bold">Apple Burger</h2>
-						<p className="mb-2">Uttara, Dhaka</p>
+						<h2 className="text-2xl font-bold">{invoiceDetails?.inventory__productInvoice?.client?.name}</h2>
+						<p className="mb-2">{invoiceDetails?.inventory__productInvoice?.client?.email}</p>
 					</div>
 					<div className="border-b-2 border-black py-2">
 						<table className="w-full">
 							<tbody>
-								<tr>
-									<td>
-										Spinach Artichoke dip x<span>3</span>
-									</td>
-									<td className="text-right">100 BDT</td>
-								</tr>
-								<tr>
-									<td>
-										Bruschetta x<span>4</span>
-									</td>
-									<td className="text-right">100 BDT</td>
-								</tr>
+								{invoiceDetails?.inventory__productInvoice?.products?.map((item, index) => (
+									<tr key={index}>
+										<td>
+											{item?.name} x<span>{item?.quantity}</span>
+										</td>
+										<td className="text-right">{item?.netAmount} BDT</td>
+									</tr>
+								))}
 							</tbody>
 						</table>
 					</div>
@@ -312,11 +332,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 							<tbody>
 								<tr>
 									<td>Subtotal</td>
-									<td className="text-right">200 BDT</td>
+									<td className="text-right">{invoiceDetails?.inventory__productInvoice?.subTotal} BDT</td>
 								</tr>
 								<tr>
 									<td>Discount</td>
-									<td className="text-right">-10 BDT</td>
+									<td className="text-right">-{invoiceDetails?.inventory__productInvoice?.discountAmount} BDT</td>
 								</tr>
 							</tbody>
 						</table>
@@ -326,11 +346,11 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({ formData, onSuccess, preMade
 							<tbody>
 								<tr>
 									<td>Grand Total</td>
-									<td className="text-right">190 BDT</td>
+									<td className="text-right">{invoiceDetails?.inventory__productInvoice?.netTotal} BDT</td>
 								</tr>
 								<tr>
 									<td>Paid Amount</td>
-									<td className="text-right">190 BDT</td>
+									<td className="text-right">{invoiceDetails?.inventory__productInvoice?.paidAmount} BDT</td>
 								</tr>
 							</tbody>
 						</table>

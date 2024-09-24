@@ -181,10 +181,7 @@ const ProductInvoiceDetails: React.FC<{
 				Print
 			</Button>
 
-			<div className="hidden" ref={invoiceSlip}>
-				<style type="text/css" media="print">{`{"\
-        @page {\ size: 70mm 56mm;\ margin: 0;\ }\
-      "}`}</style>
+			<div className="hidden print:block" ref={invoiceSlip}>
 				<div className="w-[260px]">
 					<div className="text-center border-b-2 border-black">
 						<h2 className="text-2xl font-bold">{details?.client?.name}</h2>
