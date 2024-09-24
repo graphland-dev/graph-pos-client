@@ -44,6 +44,7 @@
     "react-router-dom": "^6.26.2",
     "react-to-print": "^2.15.1",
     "reactjs-visibility": "^0.1.4",
+    "rxjs": "^7.8.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
     "yup": "^1.4.0"
