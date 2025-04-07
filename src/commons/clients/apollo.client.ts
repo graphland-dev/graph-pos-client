@@ -4,22 +4,24 @@ import {
   HttpLink,
   InMemoryCache,
   from,
-} from "@apollo/client";
-import { removeTypenameFromVariables } from "@apollo/client/link/remove-typename";
+} from '@apollo/client';
+import { removeTypenameFromVariables } from '@apollo/client/link/remove-typename';
 
 const removeTypenameLink = removeTypenameFromVariables();
 
+const apiUrl = import.meta.env.VITE_API_URL ?? '';
+
 const httpLink = new HttpLink({
-  uri: `${import.meta.env.VITE_API_URL}/graphql`,
+  uri: `${apiUrl}/graphql`,
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
-  console.log(`Bearer ${localStorage.getItem("erp:accessToken")}`);
+  console.log(`Bearer ${localStorage.getItem('erp:accessToken')}`);
   // add the authorization to the headers
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      authorization: `Bearer ${localStorage.getItem("erp:accessToken")}` || "",
+      authorization: `Bearer ${localStorage.getItem('erp:accessToken')}` || '',
     },
   }));
 

@@ -20,6 +20,7 @@ const ModuleMenu: React.FC<IModuleMenu> = ({ moduleName, items }) => {
         {items.map((item) => (
           <Link
             to={item.linkPath}
+            key={item.linkPath}
             className="flex flex-col gap-1 transition duration-200 hover:-translate-y-1 w-[80px] text-center items-center"
           >
             <img

@@ -2,9 +2,11 @@ import { ApolloClient, ApolloProvider, InMemoryCache } from '@apollo/client';
 import React from 'react';
 import { Outlet, useParams } from 'react-router-dom';
 
+const apiUrl = import.meta.env.VITE_API_URL ?? '';
+
 const apolloClientWithTenant = (tenant: string) => {
   return new ApolloClient({
-    uri: `${import.meta.env.VITE_API_URL}/graphql`,
+    uri: `${apiUrl}/graphql`,
     cache: new InMemoryCache(),
     headers: {
       authorization: `Bearer ${localStorage.getItem('erp:accessToken')}` || '',

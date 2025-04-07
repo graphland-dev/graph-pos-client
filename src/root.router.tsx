@@ -1,23 +1,38 @@
+import { lazy, Suspense } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import NotFoundPage from './pages/_404.page';
-
-import { RouteGuardWrapper } from '@/commons/components/wrappers/RouteGuardWrapper.tsx';
+import LoadingFallback from './commons/components/LoadingFallback';
+import { RouteGuardWrapper } from './commons/components/wrappers/RouteGuardWrapper';
 import { accountingModuleRouter } from './pages/(tenant)/accounting/accounting.router';
 import { inventoryModuleRouter } from './pages/(tenant)/inventory-management/inventory.router';
-import ModulesPage from './pages/(tenant)/modules.page';
 import { peopleModuleRouter } from './pages/(tenant)/people/people.route';
-import { reportsModuleRouter } from './pages/(tenant)/reports/report.router';
-import TenantResolverForApollo from './pages/(tenant)/tenant-resolver-for-apollo.tsx';
+import { reportsModuleRouter } from './pages/(tenant)/reports/in.router';
 import { tenantSettingRouter } from './pages/(tenant)/tenant-settings/tenant-settings.route';
-import { authRouter } from './pages/auth/auth.router';
-import DesignSystem from './pages/design-system.page';
-import SelectOrganization from './pages/select-organization.page';
-import SpotlightWrapper from '@/commons/components/SpotlightWrapper';
+import { authRouter } from './pages/auth/auth.router.tsx';
+
+// Lazy load components
+const NotFoundPage = lazy(() => import('./pages/_404.page'));
+const DesignSystem = lazy(() => import('./pages/design-system.page'));
+const SelectOrganization = lazy(
+  () => import('./pages/select-organization.page'),
+);
+const SpotlightWrapper = lazy(
+  () => import('@/commons/components/SpotlightWrapper'),
+);
+const TenantResolverForApollo = lazy(
+  () => import('./pages/(tenant)/tenant-resolver-for-apollo.tsx'),
+);
+const ModulesPage = lazy(() => import('./pages/(tenant)/modules.page'));
+
+// Import route configurations
 
 export const rootRouter = createBrowserRouter([
   {
     path: '/',
-    element: <SpotlightWrapper />,
+    element: (
+      <Suspense fallback={<LoadingFallback />}>
+        <SpotlightWrapper />
+      </Suspense>
+    ),
     children: [
       {
         path: '/',
@@ -25,13 +40,19 @@ export const rootRouter = createBrowserRouter([
       },
       {
         path: '/design-system',
-        element: <DesignSystem />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <DesignSystem />
+          </Suspense>
+        ),
       },
       {
         path: '/select-tenant',
         element: (
           <RouteGuardWrapper guard="private">
-            <SelectOrganization />
+            <Suspense fallback={<LoadingFallback />}>
+              <SelectOrganization />
+            </Suspense>
           </RouteGuardWrapper>
         ),
       },
@@ -43,13 +64,19 @@ export const rootRouter = createBrowserRouter([
         path: '/:tenant',
         element: (
           <RouteGuardWrapper guard="private">
-            <TenantResolverForApollo />
+            <Suspense fallback={<LoadingFallback />}>
+              <TenantResolverForApollo />
+            </Suspense>
           </RouteGuardWrapper>
         ),
         children: [
           {
             path: '',
-            element: <ModulesPage />,
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <ModulesPage />
+              </Suspense>
+            ),
           },
           {
             path: 'accounting',
@@ -67,10 +94,6 @@ export const rootRouter = createBrowserRouter([
             path: 'reports',
             children: reportsModuleRouter,
           },
-          // {
-          //   path: "settings",
-          //   children: settingModuleRouter,
-          // },
           {
             path: 'tenant-settings',
             children: tenantSettingRouter,
@@ -79,7 +102,11 @@ export const rootRouter = createBrowserRouter([
       },
       {
         path: '*',
-        element: <NotFoundPage />,
+        element: (
+          <Suspense fallback={<LoadingFallback />}>
+            <NotFoundPage />
+          </Suspense>
+        ),
       },
     ],
   },

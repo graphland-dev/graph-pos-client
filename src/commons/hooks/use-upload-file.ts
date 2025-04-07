@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { useState } from 'react';
 
+const fileUploadEndpoint = import.meta.env.VITE_API_URL ?? '';
+
 export const useServerFile = () => {
   const [uploading, setUploading] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<boolean>(false);
@@ -15,14 +17,14 @@ export const useServerFile = () => {
     body?.files?.map((file: File) => fd.append('files', file));
 
     return axios
-      .post(`${import.meta.env.VITE_API_URL}/api/storage`, fd)
+      .post(`${fileUploadEndpoint}/api/storage`, fd)
       .finally(() => setUploading(false));
   };
 
   const deleteFiles = async (keys: string[]) => {
     setDeleting(true);
     return axios
-      .post(`${import.meta.env.VITE_API_URL}/api/storage/delete`, { keys })
+      .post(`${fileUploadEndpoint}/api/storage/delete`, { keys })
       .finally(() => setDeleting(false));
   };
 

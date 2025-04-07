@@ -1,22 +1,22 @@
-import { Drawer, Flex, Menu, clsx, useMantineColorScheme } from '@mantine/core';
-import { useColorScheme, useDisclosure, useLocalStorage } from '@mantine/hooks';
+import { Flex, Menu } from '@mantine/core';
+import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { IconDeviceLaptop, IconMoon, IconSunHigh } from '@tabler/icons-react';
 
 const ThemeSwitcherMenu = () => {
   const preferredColorScheme = useColorScheme();
-  const { colorScheme, toggleColorScheme } = useMantineColorScheme();
-  const [themeSettingDrawerOpened, themeSettingDrawerHandler] =
-    useDisclosure(false);
 
-  const [colorTheme, setColorTheme] = useLocalStorage({
-    key: 'graph-360--theme',
-    defaultValue: 'green',
+  // const [themeSettingDrawerOpened, themeSettingDrawerHandler] =
+  //   useDisclosure(false);
+
+  const [colorScheme, setColorScheme] = useLocalStorage<'dark' | 'light'>({
+    key: 'app.pos.graphland.dev.color-theme',
+    defaultValue: 'light',
     getInitialValueInEffect: true,
   });
 
   return (
     <>
-      <Drawer
+      {/* <Drawer
         opened={themeSettingDrawerOpened}
         onClose={themeSettingDrawerHandler.close}
         title="Choose Theme"
@@ -31,7 +31,7 @@ const ThemeSwitcherMenu = () => {
             />
           ))}
         </div>
-      </Drawer>
+      </Drawer> */}
       <Flex gap={'md'}>
         <Menu shadow="md" width={200}>
           {/* <Menu.Target>
@@ -58,20 +58,20 @@ const ThemeSwitcherMenu = () => {
 
           <Menu.Dropdown>
             <Menu.Item
-              onClick={() => toggleColorScheme('light')}
-              icon={<IconSunHigh size={14} />}
+              onClick={() => setColorScheme('light')}
+              leftSection={<IconSunHigh size={14} />}
             >
               Light
             </Menu.Item>
             <Menu.Item
-              onClick={() => toggleColorScheme('dark')}
-              icon={<IconMoon size={14} />}
+              onClick={() => setColorScheme('dark')}
+              leftSection={<IconMoon size={14} />}
             >
               Dark
             </Menu.Item>
             <Menu.Item
-              onClick={() => toggleColorScheme(preferredColorScheme)}
-              icon={<IconDeviceLaptop size={14} />}
+              onClick={() => setColorScheme(preferredColorScheme)}
+              leftSection={<IconDeviceLaptop size={14} />}
             >
               System
             </Menu.Item>
@@ -98,55 +98,55 @@ export default ThemeSwitcherMenu;
 // body
 // light
 // surface
-const themes = [
-  {
-    name: 'aubergine',
-    colors: [
-      '#704264',
-      'color-mix(in srgb, #704264, #000 10%)',
-      '#ecf8f6',
-      '#f1fada',
-      '#fff',
-    ],
-  },
-  {
-    name: 'green',
-    colors: [
-      '#008170',
-      'color-mix(in srgb, #008170, #000 10%)',
-      '#ecf8f6',
-      '#f1fada',
-      '#fff',
-    ],
-  },
-];
+// const themes = [
+//   {
+//     name: 'aubergine',
+//     colors: [
+//       '#704264',
+//       'color-mix(in srgb, #704264, #000 10%)',
+//       '#ecf8f6',
+//       '#f1fada',
+//       '#fff',
+//     ],
+//   },
+//   {
+//     name: 'green',
+//     colors: [
+//       '#008170',
+//       'color-mix(in srgb, #008170, #000 10%)',
+//       '#ecf8f6',
+//       '#f1fada',
+//       '#fff',
+//     ],
+//   },
+// ];
 
-const ThemeSwatch = (props: {
-  name: string;
-  colors: string[];
-  active?: boolean;
-  onClick: (theme: string) => void;
-}) => {
-  return (
-    <div
-      onClick={() => props.onClick(props.name)}
-      className={clsx('p-2 cursor-pointer bg-neutral-100', {
-        'bg-neutral-200': props.active,
-      })}
-    >
-      <p>{props.name}</p>
-      <div
-        className={clsx(
-          'flex justify-between h-16 overflow-hidden border border-solid rounded-md border-neutral-primary',
-        )}
-      >
-        {props.colors.map((color) => (
-          <div
-            className="flex-1 h-full"
-            style={{ backgroundColor: color }}
-          ></div>
-        ))}
-      </div>
-    </div>
-  );
-};
+// const ThemeSwatch = (props: {
+//   name: string;
+//   colors: string[];
+//   active?: boolean;
+//   onClick: (theme: string) => void;
+// }) => {
+//   return (
+//     <div
+//       onClick={() => props.onClick(props.name)}
+//       className={clsx('p-2 cursor-pointer bg-neutral-100', {
+//         'bg-neutral-200': props.active,
+//       })}
+//     >
+//       <p>{props.name}</p>
+//       <div
+//         className={clsx(
+//           'flex justify-between h-16 overflow-hidden border border-solid rounded-md border-neutral-primary',
+//         )}
+//       >
+//         {props.colors.map((color) => (
+//           <div
+//             className="flex-1 h-full"
+//             style={{ backgroundColor: color }}
+//           ></div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// };

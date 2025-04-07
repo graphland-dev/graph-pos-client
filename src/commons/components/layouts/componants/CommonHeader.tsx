@@ -1,4 +1,4 @@
-import { Header, UnstyledButton } from '@mantine/core';
+import { UnstyledButton } from '@mantine/core';
 import { spotlight } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
 import classnames from 'classnames';
@@ -14,10 +14,7 @@ const CommonHeader = () => {
   // const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
   return (
-    <Header
-      height={45}
-      className="flex items-center justify-between px-2 border-0 app-common-header"
-    >
+    <div className="flex items-center justify-between px-2 border-0 app-common-header">
       <div className="flex items-center gap-2">
         <HamburgerButton />
         <Link
@@ -49,7 +46,7 @@ const CommonHeader = () => {
         <TenantDropdown />
         <UserMenu />
       </div>
-    </Header>
+    </div>
   );
 };
 

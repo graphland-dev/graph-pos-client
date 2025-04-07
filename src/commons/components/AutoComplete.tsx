@@ -1,7 +1,7 @@
-import { Combobox } from "@headlessui/react";
-import { clsx } from "@mantine/core";
-import { useDebouncedState } from "@mantine/hooks";
-import React, { Fragment, useEffect } from "react";
+import { Combobox } from '@headlessui/react';
+import { useDebouncedState } from '@mantine/hooks';
+import clsx from 'clsx';
+import React, { Fragment, useEffect } from 'react';
 
 interface Prop {
   data: any[];
@@ -23,7 +23,7 @@ const AutoComplete: React.FC<Prop> = ({
   loading,
   NoResultComponent,
 }) => {
-  const [searchTerm, setSearchTerm] = useDebouncedState("", 100);
+  const [searchTerm, setSearchTerm] = useDebouncedState('', 100);
 
   useEffect(() => {
     onChange(searchTerm);
@@ -36,7 +36,7 @@ const AutoComplete: React.FC<Prop> = ({
           <Combobox.Input
             placeholder={placeholder}
             onChange={(event) => setSearchTerm(event.target.value)}
-            className={"border border-slate-300 px-2 py-3 rounded-md w-full"}
+            className={'border border-slate-300 px-2 py-3 rounded-md w-full'}
           />
           {loading && (
             <svg
@@ -63,13 +63,13 @@ const AutoComplete: React.FC<Prop> = ({
         </div>
         <Combobox.Options
           className={
-            "absolute top-10 left-0 w-full shadow-lg z-50 rounded-md bg-slate-100"
+            'absolute top-10 left-0 w-full shadow-lg z-50 rounded-md bg-slate-100'
           }
         >
           {data?.map((item: any, idx: number) => (
             <Combobox.Option key={idx} value={item} as={Fragment}>
               {({ active }) => (
-                <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
+                <li className={clsx('px-2 py-1', { 'bg-blue-200': active })}>
                   {item[labelKey]}
                 </li>
               )}
@@ -79,7 +79,7 @@ const AutoComplete: React.FC<Prop> = ({
           {!data.length && !loading && (
             <Combobox.Option value={searchTerm} as={Fragment}>
               {({ active }) => (
-                <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
+                <li className={clsx('px-2 py-1', { 'bg-blue-200': active })}>
                   {NoResultComponent}
                 </li>
               )}

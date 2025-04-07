@@ -10,7 +10,6 @@ import {
   Text,
   Textarea,
   Title,
-  clsx,
   rem,
 } from '@mantine/core';
 import { Dropzone } from '@mantine/dropzone';
@@ -32,6 +31,7 @@ import { userTenantsAtom } from '@/commons/states/user.atom';
 import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
 import { FOLDER__NAME } from '@/commons/models/FolderName';
 import { $triggerRefetchMe } from '@/commons/rxjs-controllers';
+import clsx from 'clsx';
 
 const OrganizationOverviewPage: React.FC = () => {
   const params = useParams<{ tenant: string }>();

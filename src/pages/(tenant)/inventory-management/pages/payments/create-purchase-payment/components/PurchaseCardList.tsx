@@ -1,15 +1,8 @@
 import currencyNumberFormat from '@/commons/utils/commaNumber';
 import { ProductPurchase } from '@/commons/graphql-models/graphql';
-import {
-  Button,
-  Group,
-  Paper,
-  Skeleton,
-  Space,
-  Text,
-  clsx,
-} from '@mantine/core';
+import { Button, Group, Paper, Skeleton, Space, Text } from '@mantine/core';
 import React, { useMemo } from 'react';
+import clsx from 'clsx';
 
 const PurchaseCardList: React.FC<{
   purchases: ProductPurchase[];
@@ -78,7 +71,7 @@ const PurchaseCardList: React.FC<{
 
       <Space h={'md'} />
 
-      <Group position="left">
+      <Group align="left">
         <Button
           variant="subtle"
           size="xs"

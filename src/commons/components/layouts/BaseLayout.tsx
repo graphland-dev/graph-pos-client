@@ -1,4 +1,4 @@
-import { Header } from '@mantine/core';
+import { AppShell } from '@mantine/core';
 import { Link, Outlet } from 'react-router-dom';
 import ThemeSwitcher from './componants/ThemeSwitcher';
 import UserMenu from './componants/UserMenu';
@@ -6,15 +6,15 @@ import UserMenu from './componants/UserMenu';
 const BaseLayout = () => {
   return (
     <>
-      <Header height={45} className="flex items-center justify-between px-10">
+      <AppShell.Header className="flex items-center justify-between px-10">
         <Link className="no-underline" to={'/'}>
-          Graph ERP
+          Graph POS
         </Link>
         <div className="flex items-center gap-4">
           <ThemeSwitcher />
           <UserMenu />
         </div>
-      </Header>
+      </AppShell.Header>
       <Outlet />
     </>
   );

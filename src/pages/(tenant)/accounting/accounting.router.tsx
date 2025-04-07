@@ -1,17 +1,17 @@
-import DashboardLayout from "@/commons/components/layouts/DashboardLayout";
-import { RouteObject } from "react-router-dom";
-import { accountingNavlinks } from "./accounting.navlinks";
-import AccountsPage from "./pages/cashbook/accounts/accounts.page";
-import AdjustmentPage from "./pages/cashbook/adjustment/adjustment.page";
-import PayrollPage from "./pages/cashbook/payroll/payroll.page";
-import StatementPage from "./pages/cashbook/statements/statements.page";
-import TransferPage from "./pages/cashbook/transfers/transfer.page";
-import ExpenseCategoryPage from "./pages/expense/expenseCategory/expenseCategory.page";
-import ExpenseListPage from "./pages/expense/expenseList/expenseList.page";
-import AccountingRoot from "./module-root.page";
+import DashboardLayout from '@/commons/components/layouts/DashboardLayout';
+import { RouteObject } from 'react-router-dom';
+import { accountingNavlinks } from './accounting.navlinks';
+import AccountsPage from './pages/cashbook/accounts/accounts.page';
+import AdjustmentPage from './pages/cashbook/adjustment/adjustment.page';
+import PayrollPage from './pages/cashbook/payroll/payroll.page';
+import StatementPage from './pages/cashbook/statements/statements.page';
+import TransferPage from './pages/cashbook/transfers/transfer.page';
+import ExpenseCategoryPage from './pages/expense/expenseCategory/expenseCategory.page';
+import ExpenseListPage from './pages/expense/expenseList/expenseList.page';
+import AccountingRoot from './module-root.page';
 export const accountingModuleRouter: RouteObject[] = [
   {
-    path: "",
+    path: '',
     element: (
       <DashboardLayout
         navlinks={accountingNavlinks}
@@ -21,47 +21,43 @@ export const accountingModuleRouter: RouteObject[] = [
     ),
     children: [
       {
-        path: "",
+        path: '',
         element: <AccountingRoot />,
       },
       {
-        path: "cashbook",
+        path: 'cashbook',
         children: [
           {
-            path: "accounts",
+            path: 'accounts',
             element: <AccountsPage />,
           },
           {
-            path: "adjustments",
+            path: 'adjustments',
             element: <AdjustmentPage />,
           },
-          // {
-          //   path: "invoice-generator",
-          //   element: <InvoiceGenerator />,
-          // },
           {
-            path: "transfers",
+            path: 'transfers',
             element: <TransferPage />,
           },
           {
-            path: "statements",
+            path: 'statements',
             element: <StatementPage />,
           },
           {
-            path: "payroll",
+            path: 'payroll',
             element: <PayrollPage />,
           },
         ],
       },
       {
-        path: "expense",
+        path: 'expense',
         children: [
           {
-            path: "expense-list",
+            path: 'expense-list',
             element: <ExpenseListPage />,
           },
           {
-            path: "expense-category",
+            path: 'expense-category',
             element: <ExpenseCategoryPage />,
           },
         ],
