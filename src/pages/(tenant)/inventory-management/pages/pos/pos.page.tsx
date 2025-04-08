@@ -1,4 +1,3 @@
-import currencyNumberFormat from '@/commons/utils/commaNumber';
 import {
   MatchOperator,
   ProductDiscountMode,
@@ -8,6 +7,7 @@ import {
   Vat,
   VatsWithPagination,
 } from '@/commons/graphql-models/graphql';
+import currencyNumberFormat from '@/commons/utils/commaNumber';
 import { useQuery } from '@apollo/client';
 import { ErrorMessage } from '@hookform/error-message';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -138,7 +138,10 @@ const PosPage = () => {
     } else {
       const existingStock = watch(`products.${index}.quantity`);
       const newStock = productReference.stock || 0;
-      if (existingStock >= newStock) {
+      if (
+        existingStock >= newStock &&
+        !productReference.isSellableWithoutStock
+      ) {
         showNotification({
           message: 'You can not add more of this item',
           color: 'red',

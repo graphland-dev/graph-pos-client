@@ -2,11 +2,8 @@ import { getStock } from '@/pages/(tenant)/inventory-management/pages/pos/utils/
 import { showNotification } from '@mantine/notifications';
 import { Badge, Paper, Space, Text } from '@mantine/core';
 import { getFileUrl } from '@/commons/utils/getFileUrl.ts';
-import {
-  Product,
-  ServerFileReference,
-} from '@/commons/graphql-models/graphql.ts';
-import React from 'react';
+import React, { useMemo } from 'react';
+import { Product, ServerFileReference } from '@/commons/graphql-models/graphql';
 
 interface IProp {
   product: Product;
@@ -14,11 +11,20 @@ interface IProp {
 }
 
 const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
+  const isStockout = useMemo(() => {
+    return !getStock(product) && !product?.isSellableWithoutStock;
+  }, [product]);
+
   return (
     <Paper
       key={product._id}
       pos={'relative'}
       onClick={() => {
+        if (product.isSellableWithoutStock) {
+          onClick?.(product);
+          return;
+        }
+
         if (getStock(product)) {
           onClick?.(product);
         } else {
@@ -30,7 +36,7 @@ const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
       }}
       className="overflow-hidden border cursor-pointer border-neutral-muted hover:border-blue-500"
     >
-      {!getStock(product) && (
+      {isStockout && (
         <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-sm"></div>
       )}
 

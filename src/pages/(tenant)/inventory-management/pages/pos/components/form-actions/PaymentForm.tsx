@@ -288,7 +288,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
               <Select
                 placeholder="Pick a payment type"
                 withAsterisk
-                data={['Nagad', 'Rocket', 'Bank', 'Cash']}
+                data={['Cash', 'Bank Transfer', 'Card', 'MFS']}
                 onChange={(e) => setValue(`payments.${idx}.type`, e!)}
                 defaultValue={watch(`payments.${idx}.type`)}
               />

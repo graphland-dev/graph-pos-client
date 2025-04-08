@@ -100,6 +100,9 @@ const ProductListPage = () => {
       {
         header: 'Stock Quantity',
         accessorFn(originalRow: Product) {
+          if (originalRow.isSellableWithoutStock) {
+            return 'N/A';
+          }
           return (
             originalRow?.stockInQuantity - originalRow?.stockOutQuantity || 0
           );

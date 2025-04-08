@@ -2,20 +2,20 @@ import {
   CommonFindDocumentDto,
   MatchOperator,
   SortType,
-} from "@/commons/graphql-models/graphql.ts";
-import { ActionIcon, Flex, Menu, UnstyledButton, rem } from "@mantine/core";
+} from '@/commons/graphql-models/graphql.ts';
+import { ActionIcon, Flex, Menu, UnstyledButton, rem } from '@mantine/core';
 import {
   IconCsv,
   IconDownload,
   IconPdf,
   IconRefresh,
-} from "@tabler/icons-react";
-import cls from "classnames";
+} from '@tabler/icons-react';
+import cls from 'classnames';
 import {
   download as downloadCsvFile,
   generateCsv,
   mkConfig,
-} from "export-to-csv";
+} from 'export-to-csv';
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -24,8 +24,8 @@ import {
   MRT_ToggleFullScreenButton,
   MantineReactTable,
   useMantineReactTable,
-} from "mantine-react-table";
-import React, { useEffect, useState } from "react";
+} from 'mantine-react-table';
+import React, { useEffect, useState } from 'react';
 
 interface Prop {
   columns: MRT_ColumnDef<any>[];
@@ -39,8 +39,8 @@ interface Prop {
 }
 
 const csvConfig = mkConfig({
-  fieldSeparator: ",",
-  decimalSeparator: ".",
+  fieldSeparator: ',',
+  decimalSeparator: '.',
   useKeysAsHeaders: true,
 });
 
@@ -71,7 +71,7 @@ const DataTable: React.FC<Prop> = ({
 
   const getTableSortBy = () => {
     if (!sorting) {
-      return "createdAt";
+      return 'createdAt';
     } else {
       return sorting[0]?.id;
     }
@@ -125,13 +125,13 @@ const DataTable: React.FC<Prop> = ({
     manualSorting: true,
     manualFiltering: true,
 
-    paginationDisplayMode: "pages",
+    paginationDisplayMode: 'pages',
     initialState: {
       showGlobalFilter: true,
-      density: "xs",
+      density: 'xs',
     },
     enableRowActions: RowActionMenu ? true : false,
-    positionActionsColumn: "last",
+    positionActionsColumn: 'last',
     renderRowActionMenuItems: (_row) => RowActionMenu?.(_row?.row?.original),
     renderTopToolbar: () => {
       return (
@@ -162,15 +162,15 @@ const DataTable: React.FC<Prop> = ({
               </Menu.Dropdown>
             </Menu>
           </div>
-          <Flex gap={"md"}>
+          <Flex gap={'md'}>
             <ActionIcon
               onClick={() => refetch({ where })}
               variant="outline"
               radius={100}
-              size={"lg"}
+              size={'lg'}
             >
               <IconRefresh
-                className={cls({ "animate-reverse-spin": loading })}
+                className={cls({ 'animate-reverse-spin': loading })}
               />
             </ActionIcon>
             {ActionArea}
