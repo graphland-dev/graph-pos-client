@@ -12,6 +12,6 @@ export const getFileUrl = (file: ServerFileReference) => {
   }
 
   if (provider === ServerFileProvider.S3) {
-    return `https://graph-pos.s3.ap-southeast-1.amazonaws.com/${path}`;
+    return `https://cdn.pos.graphland.dev/${path}`;
   }
 };
