@@ -5,6 +5,7 @@ export const INVENTORY_PRODUCT_BASIC_INFO_QUERY = gql`
     inventory__product(where: $where) {
       name
       code
+      partId
       modelName
       note
     }

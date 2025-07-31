@@ -1,17 +1,17 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
-import { MatchOperator, Product } from '@/commons/graphql-models/graphql';
-import { useMutation, useQuery } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Input, Space, Textarea } from '@mantine/core';
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import * as Yup from 'yup';
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
+import { MatchOperator, Product } from "@/commons/graphql-models/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input, Space, Textarea } from "@mantine/core";
+import { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
+import * as Yup from "yup";
 import {
   INVENTORY_PRODUCT_BASIC_INFO_QUERY,
   INVENTORY_PRODUCT_UPDATE,
-} from '../utils/productEdit.query';
+} from "../utils/productEdit.query";
 
 const BasicInfoForm = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -22,10 +22,11 @@ const BasicInfoForm = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: '',
-      code: '',
-      modelName: '',
-      note: '',
+      name: "",
+      code: "",
+      partId: "",
+      modelName: "",
+      note: "",
     },
 
     resolver: yupResolver(BASIC_FORM_SCHEMA),
@@ -36,7 +37,7 @@ const BasicInfoForm = () => {
   }>(INVENTORY_PRODUCT_BASIC_INFO_QUERY, {
     variables: {
       where: {
-        key: '_id',
+        key: "_id",
         operator: MatchOperator.Eq,
         value: productId,
       },
@@ -46,25 +47,26 @@ const BasicInfoForm = () => {
   const [saveForm, { loading: savingInfo }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
     commonNotifierCallback({
-      successTitle: 'Basic information saved!',
+      successTitle: "Basic information saved!",
       onSuccess() {
         refetch();
       },
-    }),
+    })
   );
 
   useEffect(() => {
-    setValue('name', basicInfo?.inventory__product?.name as string);
-    setValue('code', basicInfo?.inventory__product?.code as string);
-    setValue('modelName', basicInfo?.inventory__product?.modelName as string);
-    setValue('note', basicInfo?.inventory__product?.note as string);
+    setValue("name", basicInfo?.inventory__product?.name ?? "");
+    setValue("code", basicInfo?.inventory__product?.code ?? "");
+    setValue("partId", basicInfo?.inventory__product?.partId ?? "");
+    setValue("modelName", basicInfo?.inventory__product?.modelName ?? "");
+    setValue("note", basicInfo?.inventory__product?.note ?? "");
   }, [basicInfo]);
 
   const onSubmit = (value: IBasicInfoFormState) => {
     saveForm({
       variables: {
         where: {
-          key: '_id',
+          key: "_id",
           operator: MatchOperator.Eq,
           value: productId,
         },
@@ -80,30 +82,37 @@ const BasicInfoForm = () => {
           label="Name"
           error={<ErrorMessage errors={errors} name="name" />}
         >
-          <Input placeholder="Write product name" {...register('name')} />
+          <Input placeholder="Write product name" {...register("name")} />
         </Input.Wrapper>
-        <Space h={'sm'} />
+        <Space h={"sm"} />
         <Input.Wrapper
           label="Code"
           error={<ErrorMessage errors={errors} name="code" />}
         >
-          <Input placeholder="Write product code" {...register('code')} />
+          <Input placeholder="Write product code" {...register("code")} />
         </Input.Wrapper>
-        <Space h={'sm'} />
+        <Space h={"sm"} />
         <Input.Wrapper
           label="Model"
           error={<ErrorMessage errors={errors} name="modelName" />}
         >
-          <Input placeholder="Write product model" {...register('modelName')} />
+          <Input placeholder="Write product model" {...register("modelName")} />
         </Input.Wrapper>
-        <Space h={'sm'} />
+        <Space h={"sm"} />
+        <Input.Wrapper
+          label="Part ID"
+          error={<ErrorMessage errors={errors} name="partId" />}
+        >
+          <Input placeholder="Write product part id" {...register("partId")} />
+        </Input.Wrapper>
+        <Space h={"sm"} />
         <Input.Wrapper
           label="Note"
           error={<ErrorMessage errors={errors} name="note" />}
         >
-          <Textarea placeholder="Write product note" {...register('note')} />
+          <Textarea placeholder="Write product note" {...register("note")} />
         </Input.Wrapper>
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <Button type="submit" loading={savingInfo}>
           Save
@@ -116,10 +125,11 @@ const BasicInfoForm = () => {
 export default BasicInfoForm;
 
 const BASIC_FORM_SCHEMA = Yup.object().shape({
-  name: Yup.string().required().label('Name'),
-  code: Yup.string().optional().nullable().label('Code'),
-  modelName: Yup.string().optional().nullable().label('Model name'),
-  note: Yup.string().optional().nullable().label('Note'),
+  name: Yup.string().required().label("Name"),
+  code: Yup.string().optional().nullable().label("Code"),
+  partId: Yup.string().optional().nullable().label("Code"),
+  modelName: Yup.string().optional().nullable().label("Model name"),
+  note: Yup.string().optional().nullable().label("Note"),
 });
 
 export interface IBasicInfoFormState

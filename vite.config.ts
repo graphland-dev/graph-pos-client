@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -8,22 +8,22 @@ export default defineConfig({
   plugins: [react()],
   // plugins: [react(), VitePWA()],
   resolve: {
-    alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
+    alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
   },
   server: {
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     port: 3000,
     proxy: {
-      '/api': {
-        target: 'http://localhost:9856',
+      "/api": {
+        target: "http://localhost:9856",
         changeOrigin: true,
       },
-      '/socket': {
-        target: 'http://localhost:9856',
+      "/socket": {
+        target: "http://localhost:9856",
         changeOrigin: true,
       },
-      '/graphql': {
-        target: 'http://localhost:9856', // GraphQL endpoint
+      "/graphql": {
+        target: "http://localhost:9856",
         changeOrigin: true,
       },
     },
