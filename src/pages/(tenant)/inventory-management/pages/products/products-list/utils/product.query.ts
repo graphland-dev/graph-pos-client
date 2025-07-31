@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
   query Query($where: CommonPaginationDto) {
@@ -7,6 +7,7 @@ export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
         _id
         name
         code
+        partId
         category {
           _id
           name

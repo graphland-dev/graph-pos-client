@@ -1,22 +1,23 @@
-import { userAtom } from '@/commons/states/user.atom';
-import { Avatar, Image, Menu } from '@mantine/core';
-import { openConfirmModal } from '@mantine/modals';
-import { useAtom } from 'jotai';
-import { Link } from 'react-router-dom';
-import { getFileUrl } from '../../../utils/getFileUrl';
+import { userAtom } from "@/commons/states/user.atom";
+import { Avatar, Image, Menu } from "@mantine/core";
+import { openConfirmModal } from "@mantine/modals";
+import { useAtom } from "jotai";
+import { Link } from "react-router-dom";
+import { getFileUrl } from "../../../utils/getFileUrl";
+import { TokenService } from "@/commons/utils/TokenService";
 
 const UserMenu = () => {
   const [currentUser] = useAtom(userAtom);
   function handleLogout(): void {
     openConfirmModal({
-      title: 'Sure to Logout?',
+      title: "Sure to Logout?",
       labels: {
-        cancel: 'Cancel',
-        confirm: 'Logout',
+        cancel: "Cancel",
+        confirm: "Logout",
       },
       onConfirm: () => {
-        localStorage.removeItem('erp:accessToken');
-        window.location.href = '/auth/login';
+        TokenService.removeToken();
+        window.location.href = "/auth/login";
       },
     });
   }
@@ -31,7 +32,7 @@ const UserMenu = () => {
                 fit="cover"
                 width={32}
                 height={32}
-                className="rounded overflow-hidden"
+                className="overflow-hidden rounded"
                 src={getFileUrl(currentUser?.avatar ?? {})}
               />
             </div>
@@ -45,8 +46,8 @@ const UserMenu = () => {
         </Menu.Target>
 
         <Menu.Dropdown>
-          <Menu.Label>{currentUser?.name || 'No Name'}</Menu.Label>
-          <Menu.Item component={Link} to={'/auth/my-profile'}>
+          <Menu.Label>{currentUser?.name || "No Name"}</Menu.Label>
+          <Menu.Item component={Link} to={"/auth/my-profile"}>
             Profile Settings
           </Menu.Item>
           <Menu.Item onClick={handleLogout}>Logout</Menu.Item>

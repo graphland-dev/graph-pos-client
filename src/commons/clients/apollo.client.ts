@@ -6,6 +6,7 @@ import {
   from,
 } from "@apollo/client";
 import { removeTypenameFromVariables } from "@apollo/client/link/remove-typename";
+import { TokenService } from "../utils/TokenService";
 
 const removeTypenameLink = removeTypenameFromVariables();
 
@@ -14,12 +15,11 @@ const httpLink = new HttpLink({
 });
 
 const authMiddleware = new ApolloLink((operation, forward) => {
-  console.log(`Bearer ${localStorage.getItem("erp:accessToken")}`);
   // add the authorization to the headers
   operation.setContext(({ headers = {} }) => ({
     headers: {
       ...headers,
-      authorization: `Bearer ${localStorage.getItem("erp:accessToken")}` || "",
+      authorization: `Bearer ${TokenService.getToken()}` || "",
     },
   }));
 
@@ -32,6 +32,6 @@ export const apolloClient = new ApolloClient({
     addTypename: false,
   }),
   // headers: {
-  //   authorization: `Bearer ${localStorage.getItem("erp:accessToken")}` || "",
+  //   authorization: `Bearer ${TokenService.getToken()}` || "",
   // },
 });
