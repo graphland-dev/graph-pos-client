@@ -2,20 +2,10 @@ import {
   CommonFindDocumentDto,
   MatchOperator,
   SortType,
-} from '@/commons/graphql-models/graphql.ts';
-import { ActionIcon, Flex, Menu, UnstyledButton, rem } from '@mantine/core';
-import {
-  IconCsv,
-  IconDownload,
-  IconPdf,
-  IconRefresh,
-} from '@tabler/icons-react';
-import cls from 'classnames';
-import {
-  download as downloadCsvFile,
-  generateCsv,
-  mkConfig,
-} from 'export-to-csv';
+} from "@/commons/graphql-models/graphql.ts";
+import { ActionIcon, Flex } from "@mantine/core";
+import { IconRefresh } from "@tabler/icons-react";
+import cls from "classnames";
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -24,8 +14,8 @@ import {
   MRT_ToggleFullScreenButton,
   MantineReactTable,
   useMantineReactTable,
-} from 'mantine-react-table';
-import React, { useEffect, useState } from 'react';
+} from "mantine-react-table";
+import React, { useEffect, useState } from "react";
 
 interface Prop {
   columns: MRT_ColumnDef<any>[];
@@ -38,11 +28,11 @@ interface Prop {
   RowActionMenu?: (row: any) => React.ReactNode;
 }
 
-const csvConfig = mkConfig({
-  fieldSeparator: ',',
-  decimalSeparator: '.',
-  useKeysAsHeaders: true,
-});
+// const csvConfig = mkConfig({
+//   fieldSeparator: ",",
+//   decimalSeparator: ".",
+//   useKeysAsHeaders: true,
+// });
 
 const DataTable: React.FC<Prop> = ({
   columns,
@@ -71,7 +61,7 @@ const DataTable: React.FC<Prop> = ({
 
   const getTableSortBy = () => {
     if (!sorting) {
-      return 'createdAt';
+      return "createdAt";
     } else {
       return sorting[0]?.id;
     }
@@ -96,10 +86,10 @@ const DataTable: React.FC<Prop> = ({
     refetch({ where });
   }, [pagination.pageIndex, pagination.pageSize, sorting, columnFilters]);
 
-  const exportCSV = () => {
-    const csv = generateCsv(csvConfig)(data);
-    downloadCsvFile(csvConfig)(csv);
-  };
+  // const exportCSV = () => {
+  //   const csv = generateCsv(csvConfig)(data);
+  //   downloadCsvFile(csvConfig)(csv);
+  // };
 
   const table = useMantineReactTable({
     columns,
@@ -125,13 +115,13 @@ const DataTable: React.FC<Prop> = ({
     manualSorting: true,
     manualFiltering: true,
 
-    paginationDisplayMode: 'pages',
+    paginationDisplayMode: "pages",
     initialState: {
       showGlobalFilter: true,
-      density: 'xs',
+      density: "xs",
     },
     enableRowActions: RowActionMenu ? true : false,
-    positionActionsColumn: 'last',
+    positionActionsColumn: "last",
     renderRowActionMenuItems: (_row) => RowActionMenu?.(_row?.row?.original),
     renderTopToolbar: () => {
       return (
@@ -141,7 +131,7 @@ const DataTable: React.FC<Prop> = ({
             <MRT_ToggleFiltersButton table={table} />
             <MRT_ToggleFullScreenButton table={table} />
             <MRT_ShowHideColumnsButton table={table} />
-            <Menu shadow="md" width={200}>
+            {/* <Menu shadow="md" width={200}>
               <Menu.Target>
                 <UnstyledButton>
                   <IconDownload color="gray" size={20} />
@@ -160,17 +150,17 @@ const DataTable: React.FC<Prop> = ({
                   Download Excel
                 </Menu.Item>
               </Menu.Dropdown>
-            </Menu>
+            </Menu> */}
           </div>
-          <Flex gap={'md'}>
+          <Flex gap={"md"}>
             <ActionIcon
               onClick={() => refetch({ where })}
               variant="outline"
               radius={100}
-              size={'lg'}
+              size={"lg"}
             >
               <IconRefresh
-                className={cls({ 'animate-reverse-spin': loading })}
+                className={cls({ "animate-reverse-spin": loading })}
               />
             </ActionIcon>
             {ActionArea}
