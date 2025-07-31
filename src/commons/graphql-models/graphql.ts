@@ -374,6 +374,14 @@ export type CreateVatInput = {
   percentage: Scalars['Float']['input'];
 };
 
+export type CsvValidationError = {
+  __typename?: 'CsvValidationError';
+  field: Scalars['String']['output'];
+  message: Scalars['String']['output'];
+  row: Scalars['Int']['output'];
+  value?: Maybe<Scalars['String']['output']>;
+};
+
 export type Employee = {
   __typename?: 'Employee';
   _id: Scalars['ID']['output'];
@@ -618,6 +626,8 @@ export type Mutation = {
   pingMutation: Scalars['String']['output'];
   pingMutationWithInput: Scalars['String']['output'];
   removeEmployee: Scalars['Boolean']['output'];
+  seeder__seedAccounting: Scalars['Boolean']['output'];
+  seeder__seedAll: Scalars['Boolean']['output'];
   seeder__seedRoles: Scalars['Boolean']['output'];
   seeder__seedSetup: Scalars['Boolean']['output'];
   seeder__seedStores: Scalars['Boolean']['output'];
@@ -1061,6 +1071,7 @@ export type Product = {
   modelName?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  partId?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
   stockInQuantity: Scalars['Int']['output'];
   stockOutQuantity: Scalars['Int']['output'];
@@ -1590,11 +1601,17 @@ export type ServerFileReference = {
   meta?: Maybe<Scalars['String']['output']>;
   path?: Maybe<Scalars['String']['output']>;
   provider?: Maybe<ServerFileProvider>;
+  url?: Maybe<Scalars['String']['output']>;
 };
 
 export enum SortType {
   Asc = 'ASC',
   Desc = 'DESC'
+}
+
+export enum SubscriptionType {
+  Free = 'FREE',
+  Paid = 'PAID'
 }
 
 export type Supplier = {
@@ -1621,11 +1638,13 @@ export type Tenant = {
   __typename?: 'Tenant';
   _id: Scalars['ID']['output'];
   address?: Maybe<Scalars['String']['output']>;
+  allowedCollections?: Maybe<Array<Scalars['String']['output']>>;
   businessPhoneNumber?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   description?: Maybe<Scalars['String']['output']>;
   logo?: Maybe<ServerFileReference>;
   name: Scalars['String']['output'];
+  subscriptionType?: Maybe<SubscriptionType>;
   uid?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
