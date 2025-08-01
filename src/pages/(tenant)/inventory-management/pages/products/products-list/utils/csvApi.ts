@@ -60,7 +60,7 @@ export interface ExportResult {
   totalRecords: number;
 }
 
-export const downloadCSVTemplate = async (): Promise<void> => {
+export const downloadCSVTemplate = async (done?: () => void): Promise<void> => {
   try {
     const response = await axios.get<DownloadTempltaeAPIResponse>(
       `${API_BASE_URL}/template`,
@@ -85,6 +85,7 @@ export const downloadCSVTemplate = async (): Promise<void> => {
         link.click();
         document.body.removeChild(link);
         window.URL.revokeObjectURL(url);
+        if (done) done();
       });
   } catch (error) {
     console.error("Failed to download template:", error);
@@ -119,7 +120,8 @@ export const validateCSVFile = async (
 
 export const importCSVFile = async (
   file: File,
-  options: ImportApiPayload
+  options: ImportApiPayload,
+  done?: () => void
 ): Promise<ValidationResult> => {
   try {
     const formData = new FormData();
@@ -144,6 +146,8 @@ export const importCSVFile = async (
         "x-tenant": options.tenantUID,
       },
     });
+
+    if (done) done();
 
     return response.data;
   } catch (error) {

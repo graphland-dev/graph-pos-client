@@ -182,7 +182,7 @@ const ProductListPage = () => {
             >
               Add new
             </Button>
-            <ImportExportCSV />
+            <ImportExportCSV onImportComplete={refetch} />
           </Group>
         }
         loading={loading || state.refetching}

@@ -45,7 +45,9 @@ interface ValidationResult {
   errors: ValidationError[];
 }
 
-const ImportExportCSV: React.FC = () => {
+const ImportExportCSV: React.FC<{
+  onImportComplete?: () => void;
+}> = ({ onImportComplete }) => {
   const [importOpened, { open: openImport, close: closeImport }] =
     useDisclosure(false);
 
@@ -102,6 +104,7 @@ const ImportExportCSV: React.FC = () => {
         setImportFile(null);
         setValidationResult(null);
         // Optionally refresh the product list here
+        if (onImportComplete) onImportComplete();
       }
     } catch (error) {
       console.error("Import failed:", error);
