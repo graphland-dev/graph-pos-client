@@ -1,9 +1,9 @@
-import { getStock } from '@/pages/(tenant)/inventory-management/pages/pos/utils/utils.calc.ts';
-import { showNotification } from '@mantine/notifications';
-import { Badge, Paper, Space, Text } from '@mantine/core';
-import { getFileUrl } from '@/commons/utils/getFileUrl.ts';
-import React, { useMemo } from 'react';
-import { Product, ServerFileReference } from '@/commons/graphql-models/graphql';
+import { getStock } from "@/pages/(tenant)/inventory-management/pages/pos/utils/utils.calc.ts";
+import { showNotification } from "@mantine/notifications";
+import { Badge, Paper, Space, Text } from "@mantine/core";
+import { getFileUrl } from "@/commons/utils/getFileUrl.ts";
+import React, { useMemo } from "react";
+import { Product, ServerFileReference } from "@/commons/graphql-models/graphql";
 
 interface IProp {
   product: Product;
@@ -18,7 +18,7 @@ const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
   return (
     <Paper
       key={product._id}
-      pos={'relative'}
+      pos={"relative"}
       onClick={() => {
         if (product.isSellableWithoutStock) {
           onClick?.(product);
@@ -29,19 +29,19 @@ const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
           onClick?.(product);
         } else {
           showNotification({
-            message: 'Out of stock',
-            color: 'red',
+            message: "Out of stock",
+            color: "red",
           });
         }
       }}
       className="overflow-hidden border cursor-pointer border-neutral-muted hover:border-blue-500"
     >
       {isStockout && (
-        <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-sm"></div>
+        <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-[1px]"></div>
       )}
 
       <Badge
-        pos={'absolute'}
+        pos={"absolute"}
         top={0}
         left={0}
         radius={0}
@@ -50,22 +50,25 @@ const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
       >
         {product.price} BDT
       </Badge>
-      <img
-        src={getFileUrl(product?.thumbnail as ServerFileReference) ?? ''}
-        alt="product image"
-        className="object-cover p-2 rounded-md"
-      />
 
-      <Space h={5} />
+      {product?.thumbnail && (
+        <img
+          src={getFileUrl(product?.thumbnail as ServerFileReference) ?? ""}
+          alt="product image"
+          className="object-cover p-2 rounded-md"
+        />
+      )}
+
+      <Space h={product?.thumbnail ? 0 : 40} />
 
       <div className="p-2">
         <Text size="xs" fw={500}>
           CODE: {product?.code}
         </Text>
-        <Text fz={'md'} fw={500}>
+        <Text fz={"md"} fw={500}>
           {product?.name}
         </Text>
-        <Text fz={'md'} fw={500}>
+        <Text fz={"md"} fw={500}>
           Stock: {getStock(product)}
         </Text>
       </div>
