@@ -1,4 +1,4 @@
-import EmptyState from '@/commons/components/EmptyState.tsx';
+import EmptyState from "@/commons/components/EmptyState.tsx";
 import {
   BrandsWithPagination,
   MatchOperator,
@@ -6,18 +6,18 @@ import {
   ProductCategorysWithPagination,
   ProductItemReference,
   ProductsWithPagination,
-} from '@/commons/graphql-models/graphql';
-import { useQuery } from '@apollo/client';
-import { Button, Select } from '@mantine/core';
-import React, { useMemo, useState } from 'react';
-import { getSelectInputData } from '../../products/product-edit/components/AssignmentForm';
+} from "@/commons/graphql-models/graphql";
+import { useQuery } from "@apollo/client";
+import { Button, Select } from "@mantine/core";
+import React, { useMemo, useState } from "react";
+import { getSelectInputData } from "../../products/product-edit/components/AssignmentForm";
 import {
   Pos_Brands_Query,
   Pos_Categories_Query,
   Pos_Products_Query,
-} from '../utils/query.pos';
-import { getProductReferenceByQuantity } from '../utils/utils.calc';
-import PosItemCard from './PosItemCard';
+} from "../utils/query.pos";
+import { getProductReferenceByQuantity } from "../utils/utils.calc";
+import PosItemCard from "./PosItemCard";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
@@ -27,21 +27,21 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(100);
   const [itemsGridColumnCount, setItemsGridColumnCount] = useState(4);
-  const [filteredCategoryID, setFilteredCategoryID] = useState('');
-  const [filteredBrandID, setFilteredBrandID] = useState('');
+  const [filteredCategoryID, setFilteredCategoryID] = useState("");
+  const [filteredBrandID, setFilteredBrandID] = useState("");
 
   const buildFilter = useMemo(() => {
     const filters = [];
     if (filteredCategoryID) {
       filters.push({
-        key: 'category',
+        key: "category",
         operator: MatchOperator.Eq,
         value: filteredCategoryID,
       });
     }
     if (filteredBrandID) {
       filters.push({
-        key: 'brand',
+        key: "brand",
         operator: MatchOperator.Eq,
         value: filteredBrandID,
       });
@@ -54,7 +54,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
   const { data: productsData, loading: isProductsFetching } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(Pos_Products_Query, {
-    nextFetchPolicy: 'network-only',
+    nextFetchPolicy: "network-only",
     variables: {
       where: {
         limit: itemsPerPage,
@@ -71,7 +71,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
     variables: {
       where: { limit: -1 },
     },
-    nextFetchPolicy: 'network-only',
+    nextFetchPolicy: "network-only",
   });
 
   // // brands query
@@ -81,12 +81,12 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
     variables: {
       where: { limit: -1 },
     },
-    nextFetchPolicy: 'network-only',
+    nextFetchPolicy: "network-only",
   });
 
   // handle emit product
   const handleEmitProduct = (product: Product) => {
-    const audio = new Audio('/beep.mp3');
+    const audio = new Audio("/beep.mp3");
     audio.play();
     onSelectProduct(getProductReferenceByQuantity(product, 1));
   };
@@ -102,7 +102,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
           clearable
           placeholder="Select a category"
           data={getSelectInputData(
-            categories?.inventory__productCategories?.nodes,
+            categories?.inventory__productCategories?.nodes
           )}
           onChange={(catId) => setFilteredCategoryID(catId!)}
           disabled={loadingCategories}
@@ -126,6 +126,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
         <div className={`grid grid-columns--${itemsGridColumnCount} gap-2`}>
           {productsData?.inventory__products.nodes?.map((product) => (
             <PosItemCard
+              key={product._id}
               product={product}
               onClick={(_product) => handleEmitProduct(_product)}
             />
@@ -138,7 +139,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
           !productsData?.inventory__products.nodes?.length &&
           !isProductsFetching
         }
-        label={'No products found with your filter!'}
+        label={"No products found with your filter!"}
       />
 
       {/* Bottom Ribon */}
@@ -149,11 +150,11 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
             radius={0}
             placeholder="Items per page"
             data={[
-              { value: '50', label: '50 items per page' },
-              { value: '100', label: '100 items per page' },
-              { value: '200', label: '200 items per page' },
-              { value: '500', label: '500 items per page' },
-              { value: '1000', label: '1000 items per page' },
+              { value: "50", label: "50 items per page" },
+              { value: "100", label: "100 items per page" },
+              { value: "200", label: "200 items per page" },
+              { value: "500", label: "500 items per page" },
+              { value: "1000", label: "1000 items per page" },
             ]}
             value={itemsPerPage.toString()}
             onChange={(value) => {
@@ -167,11 +168,11 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
             radius={0}
             placeholder="Columns"
             data={[
-              { value: '2', label: '2 columns' },
-              { value: '3', label: '3 columns' },
-              { value: '4', label: '4 columns' },
-              { value: '5', label: '5 columns' },
-              { value: '6', label: '6 columns' },
+              { value: "2", label: "2 columns" },
+              { value: "3", label: "3 columns" },
+              { value: "4", label: "4 columns" },
+              { value: "5", label: "5 columns" },
+              { value: "6", label: "6 columns" },
             ]}
             value={itemsGridColumnCount.toString()}
             onChange={(value) => {

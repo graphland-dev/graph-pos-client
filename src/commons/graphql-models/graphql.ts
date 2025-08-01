@@ -245,9 +245,11 @@ export type CreateProductInput = {
   discountMode?: InputMaybe<ProductDiscountMode>;
   discountPercentage?: InputMaybe<Scalars['Float']['input']>;
   gallery?: InputMaybe<Array<ServerFileInput>>;
+  isSellableWithoutStock?: InputMaybe<Scalars['Boolean']['input']>;
   modelName?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
+  partId?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
   thumbnail?: InputMaybe<ServerFileInput>;
   unitId?: InputMaybe<Scalars['String']['input']>;
@@ -1811,9 +1813,11 @@ export type UpdateProductInput = {
   discountMode?: InputMaybe<ProductDiscountMode>;
   discountPercentage?: InputMaybe<Scalars['Float']['input']>;
   gallery?: InputMaybe<Array<ServerFileInput>>;
+  isSellableWithoutStock?: InputMaybe<Scalars['Boolean']['input']>;
   modelName?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
+  partId?: InputMaybe<Scalars['String']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
   thumbnail?: InputMaybe<ServerFileInput>;
   unitId?: InputMaybe<Scalars['String']['input']>;
