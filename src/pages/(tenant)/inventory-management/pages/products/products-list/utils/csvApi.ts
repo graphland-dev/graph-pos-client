@@ -22,14 +22,24 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
-export interface ImportOptions {
+export interface ImportApiPayload {
   tenantUID: string;
   updateExisting?: boolean;
   previewOnly?: boolean;
   matchField?: string;
 }
 
-export interface ExportOptions {
+export interface DownloadTempltaeAPIResponse {
+  success: boolean;
+  file: {
+    provider: string;
+    url: string;
+    path: string;
+  };
+  totalRecords: number;
+}
+
+export interface ExportApiPayload {
   tenantUID: string;
   fields?: string[];
   categoryId?: string;
@@ -52,22 +62,30 @@ export interface ExportResult {
 
 export const downloadCSVTemplate = async (): Promise<void> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/template`, {
-      responseType: "blob",
-      headers: {
-        Authorization: `Bearer ${TokenService.getToken()}`,
-      },
-    });
+    const response = await axios.get<DownloadTempltaeAPIResponse>(
+      `${API_BASE_URL}/template`,
+      {
+        headers: {
+          Authorization: `Bearer ${TokenService.getToken()}`,
+        },
+      }
+    );
 
-    const blob = new Blob([response.data], { type: "text/csv" });
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "products-template.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(url);
+    const fileUrl = response.data.file.url;
+    axios
+      .get(fileUrl, {
+        responseType: "blob",
+      })
+      .then((fileResponse) => {
+        const blob = new Blob([fileResponse.data], { type: "text/csv" });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = fileUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      });
   } catch (error) {
     console.error("Failed to download template:", error);
     throw error;
@@ -101,7 +119,7 @@ export const validateCSVFile = async (
 
 export const importCSVFile = async (
   file: File,
-  options: ImportOptions
+  options: ImportApiPayload
 ): Promise<ValidationResult> => {
   try {
     const formData = new FormData();
@@ -135,7 +153,7 @@ export const importCSVFile = async (
 };
 
 export const exportCSVFile = async (
-  options: ExportOptions
+  options: ExportApiPayload
 ): Promise<ExportResult> => {
   try {
     const response = await axios.post(
@@ -151,8 +169,8 @@ export const exportCSVFile = async (
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${TokenService.getToken()}`,
           "x-tenant": options.tenantUID,
+          Authorization: `Bearer ${TokenService.getToken()}`,
         },
       }
     );
