@@ -1,16 +1,16 @@
-import { TenantsWithPagination } from '@/commons/graphql-models/graphql';
-import { getFileUrl } from '@/commons/utils/getFileUrl';
-import { gql, useQuery } from '@apollo/client';
+import { TenantsWithPagination } from "@/commons/graphql-models/graphql";
+import { getFileUrl } from "@/commons/utils/getFileUrl";
+import { gql, useQuery } from "@apollo/client";
 import {
   Image,
   LoadingOverlay,
   Text,
   Title,
   UnstyledButton,
-} from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
-import { IconPlus } from '@tabler/icons-react';
-import { useEffect } from 'react';
+} from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
+import { IconPlus } from "@tabler/icons-react";
+import { useEffect } from "react";
 
 const MY_TENANTS = gql`
   query Identity__myTenants {
@@ -32,7 +32,7 @@ const MY_TENANTS = gql`
 
 const SelectOrganization = () => {
   const [currentTenantFromStorage, setTenantToStorage] = useLocalStorage({
-    key: 'graphland.dev.pos.current-tenant',
+    key: "graphland.dev.pos.current-tenant",
     getInitialValueInEffect: true,
   });
 
@@ -48,7 +48,7 @@ const SelectOrganization = () => {
       onError() {
         // window.location.href = '/auth/login';
       },
-    },
+    }
   );
 
   const moveToTenant = (uid: string) => {
@@ -60,7 +60,7 @@ const SelectOrganization = () => {
     <div className="relative p-14">
       <LoadingOverlay visible={!data} overlayBlur={1000} />
       <Title order={2}>Select Organization</Title>
-      <div className="grid content-center gap-4 mt-8 md:grid-cols-3">
+      <div className="grid content-center gap-4 mx-4 mt-8 md:grid-cols-3">
         {data?.identity__myTenants.nodes?.map((tenant, idx) => (
           <UnstyledButton
             key={idx}

@@ -13,7 +13,7 @@ import {
 	Space,
 	Title,
 } from '@mantine/core';
-import cls from 'classnames';
+import { clsx } from 'clsx';
 import { useDisclosure } from '@mantine/hooks';
 import { IconPlus, IconRefresh } from '@tabler/icons-react';
 import { useState } from 'react';
@@ -63,7 +63,7 @@ const Departments = () => {
 						size={'lg'}
 					>
 						<IconRefresh
-							className={cls({
+							className={clsx({
 								'animate-reverse-spin': loading || deleting || isRefetching,
 							})}
 						/>

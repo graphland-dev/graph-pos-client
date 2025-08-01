@@ -21,7 +21,7 @@ import {
 } from '@mantine/core';
 import { DateInput } from '@mantine/dates';
 import { IconMinus, IconPlus } from '@tabler/icons-react';
-import classNames from 'classnames';
+import { clsx } from 'clsx';
 import { useFieldArray, useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 
@@ -195,7 +195,7 @@ const EmployeePayrollsForm: React.FC<IPayrollsDetailsProps> = ({
         {fields?.map((_, idx) => (
           <div
             key={idx}
-            className={classNames('relative p-2 my-2 rounded-sm', {
+            className={clsx('relative p-2 my-2 rounded-sm', {
               'bg-gray-100': colorScheme != 'dark',
               'bg-gray-800': colorScheme == 'dark',
             })}

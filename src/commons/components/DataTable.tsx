@@ -5,7 +5,7 @@ import {
 } from "@/commons/graphql-models/graphql.ts";
 import { ActionIcon, Flex } from "@mantine/core";
 import { IconRefresh } from "@tabler/icons-react";
-import cls from "classnames";
+import { clsx } from "clsx";
 import {
   MRT_ColumnDef,
   MRT_GlobalFilterTextInput,
@@ -160,7 +160,7 @@ const DataTable: React.FC<Prop> = ({
               size={"lg"}
             >
               <IconRefresh
-                className={cls({ "animate-reverse-spin": loading })}
+                className={clsx({ "animate-reverse-spin": loading })}
               />
             </ActionIcon>
             {ActionArea}

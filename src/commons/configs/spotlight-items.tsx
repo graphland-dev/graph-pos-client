@@ -155,7 +155,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Inventory-Management > pos",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href = `/${tenant}/inventory-management/products/pos`;
+        window.location.href = `/${tenant}/inventory-management/pos`;
       },
       icon: <IconCash size="1.2rem" />,
     },
@@ -257,7 +257,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Suppliers",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =  `/${tenant}/people/suppliers`;
+        window.location.href = `/${tenant}/people/suppliers`;
       },
       icon: <Icon3dRotate size="1.2rem" />,
     },
@@ -265,7 +265,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Employees > Departments",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =  `/${tenant}/people/employees/departments`;
+        window.location.href = `/${tenant}/people/employees/departments`;
       },
       icon: <IconUsersGroup size="1.2rem" />,
     },
@@ -273,8 +273,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "People > Employees > Employees",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =
-          `/${tenant}/people/employees/employees`;
+        window.location.href = `/${tenant}/people/employees/employees`;
       },
       icon: <IconUsersGroup size="1.2rem" />,
     },
@@ -291,7 +290,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Reports",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =  `/${tenant}/reports`;
+        window.location.href = `/${tenant}/reports`;
       },
       icon: <IconReport size="1.2rem" />,
     },
@@ -323,7 +322,7 @@ export const getSpotlightItems = (tenant: string) => {
       title: "Report > Reports > Loss-Profit-Report",
       description: "Get full information about current system status",
       onTrigger: () => {
-        window.location.href =`/${tenant}/reports/loss-profit-report`;
+        window.location.href = `/${tenant}/reports/loss-profit-report`;
       },
       icon: <IconReport size="1.2rem" />,
     },

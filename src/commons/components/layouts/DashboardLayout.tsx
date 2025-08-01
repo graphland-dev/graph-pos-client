@@ -7,7 +7,6 @@ import {
   UnstyledButton,
   clsx,
 } from '@mantine/core';
-import classNames from 'classnames';
 import React from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import CommonHeader from './componants/CommonHeader';
@@ -97,7 +96,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
                     />
                   ) : undefined
                 }
-                className={classNames(
+                className={clsx(
                   'text-white rounded-md app-shell__navbar-item',
                 )}
                 active={pathname.includes(item?.href as string)}

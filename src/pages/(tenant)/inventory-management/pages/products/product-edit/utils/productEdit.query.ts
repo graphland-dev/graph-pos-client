@@ -8,6 +8,7 @@ export const INVENTORY_PRODUCT_BASIC_INFO_QUERY = gql`
       partId
       modelName
       note
+      isSellableWithoutStock
     }
   }
 `;

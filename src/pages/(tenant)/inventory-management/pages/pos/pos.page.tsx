@@ -6,11 +6,11 @@ import {
   ProductItemReference,
   Vat,
   VatsWithPagination,
-} from '@/commons/graphql-models/graphql';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
-import { useQuery } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
-import { yupResolver } from '@hookform/resolvers/yup';
+} from "@/commons/graphql-models/graphql";
+import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ActionIcon,
   Button,
@@ -26,9 +26,9 @@ import {
   Table,
   Text,
   Title,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
 import {
   IconArrowsMaximize,
   IconBox,
@@ -39,32 +39,32 @@ import {
   IconRefresh,
   IconUsers,
   IconX,
-} from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { Link, useParams } from 'react-router-dom';
-import * as Yup from 'yup';
+} from "@tabler/icons-react";
+import { useEffect, useState } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { Link, useParams } from "react-router-dom";
+import * as Yup from "yup";
 import {
   calculateTaxAmount,
   getTotalProductsPrice,
   getTotalTaxAmount,
   getVatProfileSelectInputData,
-} from '../purchases/create-purchase/utils/helpers';
-import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
-import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
-import POSProductGallery from './components/POSProductGalary';
-import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
-import HoldAction from './components/form-actions/HoldAction';
-import PaymentForm from './components/form-actions/PaymentForm';
-import HoldList from './components/pos-header/HoldList';
-import { ProductItemReferenceWithStockQuantity } from './utils/pos.types';
-import { Pos_Hold_List } from './utils/query.pos';
-import { getDiscount, getSalesVat } from './utils/utils.calc';
+} from "../purchases/create-purchase/utils/helpers";
+import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
+import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
+import POSProductGallery from "./components/POSProductGalary";
+import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
+import HoldAction from "./components/form-actions/HoldAction";
+import PaymentForm from "./components/form-actions/PaymentForm";
+import HoldList from "./components/pos-header/HoldList";
+import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
+import { Pos_Hold_List } from "./utils/query.pos";
+import { getDiscount, getSalesVat } from "./utils/utils.calc";
 
 const PosPage = () => {
   const [openedHoldModal, holdModalHandler] = useDisclosure();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
-  const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
+  const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
   const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
   const params = useParams<{ tenant: string }>();
 
@@ -76,9 +76,9 @@ const PosPage = () => {
       where: {
         limit: -1,
         filters: {
-          key: 'status',
+          key: "status",
           operator: MatchOperator.Eq,
-          value: 'HOLD',
+          value: "HOLD",
         },
       },
     },
@@ -99,7 +99,7 @@ const PosPage = () => {
       costAmount: 0,
     },
     resolver: yupResolver(Pos_Form_Validation_Schema),
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   const {
@@ -117,17 +117,17 @@ const PosPage = () => {
     remove: removeProduct,
   } = useFieldArray({
     control,
-    name: 'products',
+    name: "products",
   });
 
   // handle add product to list
   function handleAddProductToList(
-    productReference: ProductItemReferenceWithStockQuantity,
+    productReference: ProductItemReferenceWithStockQuantity
   ) {
-    // console.log({ productReference: watch('products') });
-    const productCart: ProductItemReference[] = watch('products');
+    const productCart: ProductItemReference[] = watch("products");
+
     const index = productCart?.findIndex(
-      (item) => item.referenceId == productReference.referenceId,
+      (item) => item.referenceId == productReference.referenceId
     );
 
     if (index == -1) {
@@ -138,40 +138,41 @@ const PosPage = () => {
     } else {
       const existingStock = watch(`products.${index}.quantity`);
       const newStock = productReference.stock || 0;
+
       if (
         existingStock >= newStock &&
         !productReference.isSellableWithoutStock
       ) {
         showNotification({
-          message: 'You can not add more of this item',
-          color: 'red',
+          message: "You can not add more of this item",
+          color: "red",
         });
       } else {
         setValue(
           `products.${index}.quantity`,
-          watch(`products.${index}.quantity`) + 1,
+          watch(`products.${index}.quantity`) + 1
         );
       }
     }
   }
-  const discountMode = watch('discountMode') || ProductDiscountMode.Amount;
-  const discountValue = watch('discountValue') || 0;
-  const products = watch('products') || [];
-  const costAmount = watch('costAmount') || 0;
-  const taxRate = watch('taxRate') || 0;
+  const discountMode = watch("discountMode") || ProductDiscountMode.Amount;
+  const discountValue = watch("discountValue") || 0;
+  const products = watch("products") || [];
+  const costAmount = watch("costAmount") || 0;
+  const taxRate = watch("taxRate") || 0;
 
   // product price calculate
   const productsPrice = getTotalProductsPrice(products);
   const discountAmount = getDiscount(
     discountMode,
     discountValue,
-    productsPrice,
+    productsPrice
   );
 
   // sales vat calculate
   const salesVatAmount = getSalesVat(
     costAmount + productsPrice - discountAmount,
-    taxRate,
+    taxRate
   );
 
   // net amount calculate
@@ -184,21 +185,21 @@ const PosPage = () => {
   // prefill form
   useEffect(() => {
     if (selectedInvoice) {
-      setValue('clientId', selectedInvoice?.client?._id as string);
+      setValue("clientId", selectedInvoice?.client?._id as string);
       setValue(
-        'discountMode',
-        selectedInvoice?.discountMode ?? ProductDiscountMode.Percentage,
+        "discountMode",
+        selectedInvoice?.discountMode ?? ProductDiscountMode.Percentage
       );
-      setValue('discountValue', selectedInvoice?.discountAmount ?? 0);
-      setValue('costAmount', selectedInvoice?.costAmount as number);
-      setValue('taxRate', selectedInvoice?.taxAmount ?? (0 as number));
-      setValue('products', selectedInvoice?.products as ProductItemReference[]);
+      setValue("discountValue", selectedInvoice?.discountAmount ?? 0);
+      setValue("costAmount", selectedInvoice?.costAmount as number);
+      setValue("taxRate", selectedInvoice?.taxAmount ?? (0 as number));
+      setValue("products", selectedInvoice?.products as ProductItemReference[]);
     }
   }, [selectedInvoice, setValue]);
 
   // submit pos form
   const onSubmitPOS = () => {
-    if (action === 'ADD_TO_HOLD_LIST') {
+    if (action === "ADD_TO_HOLD_LIST") {
       holdModalHandler.open();
     } else {
       paymentModalHandler.open();
@@ -210,8 +211,8 @@ const PosPage = () => {
       {/* Header */}
       <Flex
         className="px-3 pb-0 h-[45px] border-b"
-        justify={'space-between'}
-        align={'center'}
+        justify={"space-between"}
+        align={"center"}
       >
         <div className="font-bold">
           <Flex>
@@ -219,7 +220,7 @@ const PosPage = () => {
               variant="subtle"
               color="accent"
               component={Link}
-              to={'/'}
+              to={"/"}
               leftIcon={<IconDashboard size={16} />}
             >
               Dashboard
@@ -258,7 +259,7 @@ const PosPage = () => {
               leftIcon={<IconCalculator size={16} />}
               onClick={() =>
                 reset({
-                  clientId: '',
+                  clientId: "",
                   discountValue: 0,
                   discountMode: ProductDiscountMode.Amount,
                   taxRate: 0,
@@ -297,9 +298,9 @@ const PosPage = () => {
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   prefilledClientId={
-                    watch('clientId') ?? selectedInvoice?.client?._id
+                    watch("clientId") ?? selectedInvoice?.client?._id
                   }
-                  onSelectClientId={(_id) => setValue('clientId', _id)}
+                  onSelectClientId={(_id) => setValue("clientId", _id)}
                 />
 
                 <ProductSearchAutocomplete
@@ -339,7 +340,7 @@ const PosPage = () => {
                                 onChange={(v) =>
                                   setValue(
                                     `products.${idx}.quantity`,
-                                    parseInt(v as string),
+                                    parseInt(v as string)
                                   )
                                 }
                                 min={1}
@@ -352,7 +353,7 @@ const PosPage = () => {
                                 onChange={(v) =>
                                   setValue(
                                     `products.${idx}.unitPrice`,
-                                    parseInt(v as string),
+                                    parseInt(v as string)
                                   )
                                 }
                                 min={1}
@@ -362,7 +363,7 @@ const PosPage = () => {
                             <td className="font-medium text-center">
                               {currencyNumberFormat(
                                 watch(`products.${idx}.quantity`) *
-                                  watch(`products.${idx}.unitPrice`),
+                                  watch(`products.${idx}.unitPrice`)
                               )}
                             </td>
                             <td className="font-medium">
@@ -370,21 +371,21 @@ const PosPage = () => {
                             </td>
                             <td className="font-medium">
                               {currencyNumberFormat(
-                                calculateTaxAmount(watch(`products.${idx}`)),
+                                calculateTaxAmount(watch(`products.${idx}`))
                               )}
                             </td>
                             <td className="font-medium">
                               {currencyNumberFormat(
                                 calculateTaxAmount(watch(`products.${idx}`)) +
                                   watch(`products.${idx}.quantity`) *
-                                    watch(`products.${idx}.unitPrice`),
+                                    watch(`products.${idx}.unitPrice`)
                               )}
                             </td>
                             <td className="font-medium">
                               <ActionIcon
                                 variant="filled"
                                 color="red"
-                                size={'sm'}
+                                size={"sm"}
                                 onClick={() => {
                                   removeProduct(idx);
                                 }}
@@ -393,17 +394,17 @@ const PosPage = () => {
                               </ActionIcon>
                             </td>
                           </tr>
-                        ),
+                        )
                       )}
 
                       <tr>
                         <td colSpan={5} className="font-semibold text-right">
                           Total
                         </td>
-                        <td>{getTotalTaxAmount(watch('products') || [])}</td>
+                        <td>{getTotalTaxAmount(watch("products") || [])}</td>
                         <td>
                           {currencyNumberFormat(
-                            getTotalProductsPrice(watch('products')!),
+                            getTotalProductsPrice(watch("products")!)
                           )}
                         </td>
                         <td></td>
@@ -428,23 +429,23 @@ const PosPage = () => {
                       label="Discount Mode"
                       placeholder="Discount Mode"
                       size="md"
-                      onChange={(e) => setValue('discountMode', e!)}
+                      onChange={(e) => setValue("discountMode", e!)}
                       radius={0}
-                      value={watch('discountMode')}
+                      value={watch("discountMode")}
                       data={[
                         {
-                          label: 'Fixed',
+                          label: "Fixed",
                           value: ProductDiscountMode.Amount,
                         },
                         {
-                          label: 'Percentage (%)',
+                          label: "Percentage (%)",
                           value: ProductDiscountMode.Percentage,
                         },
                       ]}
                     />
                   </Input.Wrapper>
 
-                  <Space h={'sm'} />
+                  <Space h={"sm"} />
 
                   <Input.Wrapper
                     size="md"
@@ -456,9 +457,9 @@ const PosPage = () => {
                       label="Transport Cost"
                       size="md"
                       onChange={(e) =>
-                        setValue('costAmount', parseInt(e as string))
+                        setValue("costAmount", parseInt(e as string))
                       }
-                      defaultValue={watch('costAmount')}
+                      defaultValue={watch("costAmount")}
                       min={0}
                       radius={0}
                       placeholder="Enter transport cost"
@@ -477,15 +478,15 @@ const PosPage = () => {
                       radius={0}
                       size="md"
                       min={0}
-                      defaultValue={watch('discountValue') || 0}
+                      defaultValue={watch("discountValue") || 0}
                       onChange={(e) =>
-                        setValue('discountValue', parseInt(e as string))
+                        setValue("discountValue", parseInt(e as string))
                       }
                       placeholder="Enter discount"
                     />
                   </Input.Wrapper>
 
-                  <Space h={'sm'} />
+                  <Space h={"sm"} />
 
                   <Input.Wrapper
                     size="md"
@@ -497,62 +498,62 @@ const PosPage = () => {
                       size="md"
                       radius={0}
                       disabled={vatProfileLoading}
-                      defaultValue={watch('taxRate')?.toString()}
+                      defaultValue={watch("taxRate")?.toString()}
                       data={getVatProfileSelectInputData(
-                        vatProfile?.setup__vats?.nodes as Vat[],
+                        vatProfile?.setup__vats?.nodes as Vat[]
                       )}
                       onChange={(e) =>
-                        setValue('taxRate', parseInt(e as string)!)
+                        setValue("taxRate", parseInt(e as string)!)
                       }
                     />
                   </Input.Wrapper>
                 </div>
               </div>
 
-              <Space h={'sm'} />
+              <Space h={"sm"} />
 
-              <Paper withBorder p={'sm'} mb={'xl'}>
+              <Paper withBorder p={"sm"} mb={"xl"}>
                 {/* <Flex justify={'space-between'}> */}
-                <Flex justify={'space-between'}>
-                  <Text fw={'bold'}>Tax rate</Text>
-                  <Text>{watch('taxRate') || 0} %</Text>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Tax rate</Text>
+                  <Text>{watch("taxRate") || 0} %</Text>
                 </Flex>
-                <Flex justify={'space-between'}>
-                  <Text fw={'bold'}>Tax amount</Text>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Tax amount</Text>
                   <Text>{currencyNumberFormat(salesVatAmount) || 0} BDT</Text>
                 </Flex>
                 {/* </Flex> */}
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
 
-                <Flex justify={'space-between'}>
-                  <Text fw={'bold'}>Cost Amount</Text>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Cost Amount</Text>
                   <Text>{currencyNumberFormat(costAmount) || 0} BDT</Text>
                 </Flex>
 
                 {/* <hr /> */}
 
-                <Flex justify={'space-between'}>
-                  <Text fw={'bold'}>Sub total (Product + Cost)</Text>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Sub total (Product + Cost)</Text>
                   <Text>
                     {currencyNumberFormat(productsPrice + costAmount) || 0} BDT
                   </Text>
                 </Flex>
-                <Flex justify={'space-between'}>
-                  <Text fw={'bold'}>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>
                     Discount
-                    {watch('discountMode') === 'PERCENTAGE' &&
-                      ` (${watch('discountValue')}%)`}
+                    {watch("discountMode") === "PERCENTAGE" &&
+                      ` (${watch("discountValue")}%)`}
                   </Text>
                   <Text>
                     {currencyNumberFormat(
-                      getDiscount(discountMode, discountValue, productsPrice),
-                    ) || 0}{' '}
+                      getDiscount(discountMode, discountValue, productsPrice)
+                    ) || 0}{" "}
                     BDT
                   </Text>
                 </Flex>
-                <Space h={'sm'} />
+                <Space h={"sm"} />
                 <div className="flex justify-between p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm">
-                  <div>Net Total (Subtotal - Discount)</div>{' '}
+                  <div>Net Total (Subtotal - Discount)</div>{" "}
                   <div>{currencyNumberFormat(getNetAmount())} BDT</div>
                 </div>
               </Paper>
@@ -568,7 +569,7 @@ const PosPage = () => {
                 <HoldAction
                   formData={
                     {
-                      clientId: watch('clientId'),
+                      clientId: watch("clientId"),
                       products,
                       costAmount,
 
@@ -587,7 +588,7 @@ const PosPage = () => {
                     holdModalHandler.close();
                     refetchHoldList();
                     reset({
-                      clientId: '',
+                      clientId: "",
                       discountValue: 0,
                       discountMode: ProductDiscountMode.Amount,
                       taxRate: 0,
@@ -603,12 +604,12 @@ const PosPage = () => {
                 opened={openedPaymentModal}
                 onClose={paymentModalHandler.close}
                 title="Multiple payment to invoice"
-                size={'lg'}
+                size={"lg"}
                 position="right"
               >
                 <PaymentForm
                   formData={{
-                    clientId: watch('clientId'),
+                    clientId: watch("clientId"),
                     products,
                     costAmount,
 
@@ -628,7 +629,7 @@ const PosPage = () => {
                   onSuccess={() => {
                     paymentModalHandler.close();
                     reset({
-                      clientId: '',
+                      clientId: "",
                       discountMode: ProductDiscountMode.Amount,
                       discountValue: 0,
                       taxRate: 0,
@@ -645,8 +646,8 @@ const PosPage = () => {
                 <Button
                   size="md"
                   type="submit"
-                  onClick={() => setAction('ADD_TO_HOLD_LIST')}
-                  disabled={!watch('products')?.length || !watch('clientId')}
+                  onClick={() => setAction("ADD_TO_HOLD_LIST")}
+                  disabled={!watch("products")?.length || !watch("clientId")}
                 >
                   Hold
                 </Button>
@@ -654,8 +655,8 @@ const PosPage = () => {
                   size="md"
                   type="submit"
                   leftIcon={<IconCreditCard size={16} />}
-                  onClick={() => setAction('PAYMENT')}
-                  disabled={!watch('products')?.length || !watch('clientId')}
+                  onClick={() => setAction("PAYMENT")}
+                  disabled={!watch("products")?.length || !watch("clientId")}
                 >
                   Payment
                 </Button>
@@ -663,7 +664,7 @@ const PosPage = () => {
                   size="md"
                   onClick={() =>
                     reset({
-                      clientId: '',
+                      clientId: "",
                       discountMode: ProductDiscountMode.Amount,
                       taxRate: 0,
                       taxAmount: 0,
@@ -696,21 +697,21 @@ const PosPage = () => {
 export default PosPage;
 
 const Pos_Form_Validation_Schema = Yup.object().shape({
-  clientId: Yup.string().required().label('Client'),
+  clientId: Yup.string().required().label("Client"),
   products: Yup.array()
     .required()
-    .min(1, 'You must have to select at least one product')
-    .label('Purchase products'),
+    .min(1, "You must have to select at least one product")
+    .label("Purchase products"),
 
-  discountMode: Yup.string().optional().label('Discount type'),
-  discountValue: Yup.number().optional().label('Discount value'), // amount, %
+  discountMode: Yup.string().optional().label("Discount type"),
+  discountValue: Yup.number().optional().label("Discount value"), // amount, %
   // discountAmount: Yup.number().optional().label("Discount amount"),
   // discountPercentage: Yup.number().optional().label("Discount %"),
 
-  costAmount: Yup.number().optional().label('Transport cost'),
+  costAmount: Yup.number().optional().label("Transport cost"),
 
-  taxRate: Yup.number().optional().label('Tax rate'),
-  taxAmount: Yup.number().optional().label('Tax amount'),
+  taxRate: Yup.number().optional().label("Tax rate"),
+  taxAmount: Yup.number().optional().label("Tax amount"),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;
