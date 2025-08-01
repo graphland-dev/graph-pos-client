@@ -1,4 +1,4 @@
-import { userTenantsAtom } from '@/commons/states/user.atom';
+import { userTenantsAtom } from "@/commons/states/user.atom";
 import {
   ActionIcon,
   Avatar,
@@ -8,15 +8,15 @@ import {
   Image,
   Tooltip,
   UnstyledButton,
-} from '@mantine/core';
-import { useDisclosure, useLocalStorage } from '@mantine/hooks';
-import { IconSettings, IconSwitchVertical } from '@tabler/icons-react';
-import { useAtomValue } from 'jotai';
-import { Link, useParams } from 'react-router-dom';
-import { ArrowDownUp, CircleCheck, Cog } from 'lucide-react';
-import { getFileUrl } from '../../../utils/getFileUrl';
-import clsx from 'clsx';
-import { modals } from '@mantine/modals';
+} from "@mantine/core";
+import { useDisclosure, useLocalStorage } from "@mantine/hooks";
+import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
+import { useAtomValue } from "jotai";
+import { Link, useParams } from "react-router-dom";
+import { ArrowDownUp, CircleCheck, Cog } from "lucide-react";
+import { getFileUrl } from "../../../utils/getFileUrl";
+import clsx from "clsx";
+import { modals } from "@mantine/modals";
 
 const TenantDropdown = () => {
   const params = useParams<{ tenant: string }>();
@@ -24,7 +24,7 @@ const TenantDropdown = () => {
   const [modalOpened, modelHandler] = useDisclosure(false);
 
   const [, setCurrentTenant] = useLocalStorage({
-    key: 'graphland.dev.pos.current-tenant',
+    key: "graphland.dev.pos.current-tenant",
     getInitialValueInEffect: true,
   });
 
@@ -47,10 +47,10 @@ const TenantDropdown = () => {
       <div className="flex items-center gap-2 px-2 py-1 rounded-md tenant-dropdown">
         <UnstyledButton
           onClick={() => modelHandler.open()}
-          className="flex items-center gap-2 px-4 py-1 rounded-md bg-primary-600"
+          className="flex items-center gap-2 px-4 py-1 rounded-md bg-primary-700"
         >
           <p className="text-primary-foreground">
-            {getTenantByUId(params.tenant!)?.name || 'Select tenant'}
+            {getTenantByUId(params.tenant!)?.name || "Select tenant"}
           </p>
 
           <IconSwitchVertical size={22} className="text-primary-foreground" />
@@ -65,12 +65,12 @@ const TenantDropdown = () => {
         onClose={modelHandler.close}
         title="Select Organization"
       >
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 px-4">
           {myTenants?.map((tenant, key) => (
             <div
               key={key}
-              className={clsx('flex items-center gap-2 py-1', {
-                'bg-muted': tenant.uid === params.tenant,
+              className={clsx("flex items-center gap-2 py-1", {
+                "bg-muted": tenant.uid === params.tenant,
               })}
             >
               <Avatar size={55} variant="gradient" className="cursor-pointer">
@@ -115,33 +115,33 @@ const TenantDropdown = () => {
               </div>
             </div>
           ))}
+
+          <Button
+            mt={"lg"}
+            onClick={() =>
+              modals.openConfirmModal({
+                title: "Want to create a new organization?",
+                children: (
+                  <>
+                    <p>
+                      To create new origanization, you need to contact our
+                      support.
+                    </p>
+
+                    <p>
+                      Phone: +880 1836980760 <br />
+                    </p>
+                  </>
+                ),
+                labels: { confirm: "Damnn OK", cancel: "OK" },
+                onCancel: () => console.log("Cancel"),
+                onConfirm: () => console.log("Confirmed"),
+              })
+            }
+          >
+            Create New Organization
+          </Button>
         </div>
-
-        <Button
-          mt={'lg'}
-          onClick={() =>
-            modals.openConfirmModal({
-              title: 'Want to create a new organization?',
-              children: (
-                <>
-                  <p>
-                    To create new origanization, you need to contact our
-                    support.
-                  </p>
-
-                  <p>
-                    Phone: +880 1836980760 <br />
-                  </p>
-                </>
-              ),
-              labels: { confirm: 'Damnn OK', cancel: 'OK' },
-              onCancel: () => console.log('Cancel'),
-              onConfirm: () => console.log('Confirmed'),
-            })
-          }
-        >
-          Create New Organization
-        </Button>
       </Drawer>
     </>
   );

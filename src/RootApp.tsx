@@ -16,13 +16,13 @@ import { rootRouter } from "./root.router";
 
 const RootApp = () => {
   const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "graphland.dev.pos.color-scheme",
+    key: "app.pos.graphland.dev.color-scheme",
     defaultValue: "light",
     getInitialValueInEffect: true,
   });
 
   const [colorTheme] = useLocalStorage({
-    key: "graphland.dev.pos.color-theme",
+    key: "app.pos.graphland.dev.color-theme",
     defaultValue: "green",
     getInitialValueInEffect: true,
   });
@@ -82,44 +82,44 @@ const RootApp = () => {
               },
               colors: {
                 primary: [
-                  "hsl(var(--primary-50))", // 0
-                  "hsl(var(--primary-100))", // 1
-                  "hsl(var(--primary-200))", // 2
-                  "hsl(var(--primary-300))", // 3
-                  "hsl(var(--primary-400))", // 4
-                  "hsl(var(--primary-500))", // 5
-                  "hsl(var(--primary-600))", // 6
-                  "hsl(var(--primary-700))", // 7
-                  "hsl(var(--primary-800))", // 8
-                  "hsl(var(--primary-900))", // 9
+                  "var(--primary-50)", // 0
+                  "var(--primary-100)", // 1
+                  "var(--primary-200)", // 2
+                  "var(--primary-300)", // 3
+                  "var(--primary-400)", // 4
+                  "var(--primary-500)", // 5
+                  "var(--primary-600)", // 6
+                  "var(--primary-700)", // 7
+                  "var(--primary-800)", // 8
+                  "var(--primary-900)", // 9
                 ],
-                secondary: [
-                  "hsl(var(--secondary-50))", // 0
-                  "hsl(var(--secondary-100))", // 1
-                  "hsl(var(--secondary-200))", // 2
-                  "hsl(var(--secondary-300))", // 3
-                  "hsl(var(--secondary-400))", // 4
-                  "hsl(var(--secondary-500))", // 5
-                  "hsl(var(--secondary-600))", // 6
-                  "hsl(var(--secondary-700))", // 7
-                  "hsl(var(--secondary-800))", // 8
-                  "hsl(var(--secondary-900))", // 9
-                ],
-                accent: [
-                  "hsl(var(--accent-50))", // 0
-                  "hsl(var(--accent-100))", // 1
-                  "hsl(var(--accent-200))", // 2
-                  "hsl(var(--accent-300))", // 3
-                  "hsl(var(--accent-400))", // 4
-                  "hsl(var(--accent-500))", // 5
-                  "hsl(var(--accent-600))", // 6
-                  "hsl(var(--accent-700))", // 7
-                  "hsl(var(--accent-800))", // 8
-                  "hsl(var(--accent-900))", // 9
-                ],
+                // secondary: [
+                //   "hsl(var(--secondary-50))", // 0
+                //   "hsl(var(--secondary-100))", // 1
+                //   "hsl(var(--secondary-200))", // 2
+                //   "hsl(var(--secondary-300))", // 3
+                //   "hsl(var(--secondary-400))", // 4
+                //   "hsl(var(--secondary-500))", // 5
+                //   "hsl(var(--secondary-600))", // 6
+                //   "hsl(var(--secondary-700))", // 7
+                //   "hsl(var(--secondary-800))", // 8
+                //   "hsl(var(--secondary-900))", // 9
+                // ],
+                // accent: [
+                //   "hsl(var(--accent-50))", // 0
+                //   "hsl(var(--accent-100))", // 1
+                //   "hsl(var(--accent-200))", // 2
+                //   "hsl(var(--accent-300))", // 3
+                //   "hsl(var(--accent-400))", // 4
+                //   "hsl(var(--accent-500))", // 5
+                //   "hsl(var(--accent-600))", // 6
+                //   "hsl(var(--accent-700))", // 7
+                //   "hsl(var(--accent-800))", // 8
+                //   "hsl(var(--accent-900))", // 9
+                // ],
               },
               primaryColor: "primary",
-              primaryShade: 5,
+              // primaryShade: 5,
             }}
           >
             <ModalsProvider>
