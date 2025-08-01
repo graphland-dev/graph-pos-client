@@ -69,7 +69,11 @@ const AutoComplete: React.FC<Prop> = ({
           {data?.map((item: any, idx: number) => (
             <Combobox.Option key={idx} value={item} as={Fragment}>
               {({ active }) => (
-                <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
+                <li
+                  className={clsx("px-2 py-1 text-gray-600", {
+                    "bg-primary-200": active,
+                  })}
+                >
                   {item[labelKey]}
                 </li>
               )}
