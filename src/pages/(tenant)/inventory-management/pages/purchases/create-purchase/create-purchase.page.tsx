@@ -33,7 +33,7 @@ import {
 import { DateInput } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { IconMinus, IconPlus, IconX } from '@tabler/icons-react';
-import classNames from 'classnames';
+import { clsx } from 'clsx';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import {
@@ -523,7 +523,7 @@ const CreatePurchasePage = () => {
           {costsFields?.map((_, idx) => (
             <div
               key={idx}
-              className={classNames(
+              className={clsx(
                 'relative p-2 mt-5 mb-2 rounded-sm bg-gray-100',
                 {
                   'bg-gray-100': true,

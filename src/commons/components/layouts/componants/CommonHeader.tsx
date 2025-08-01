@@ -1,7 +1,7 @@
 import { Header, UnstyledButton } from '@mantine/core';
 import { spotlight } from '@mantine/spotlight';
 import { IconSearch } from '@tabler/icons-react';
-import classnames from 'classnames';
+import { clsx } from 'clsx';
 import { Link, useParams } from 'react-router-dom';
 import TenantDropdown from './TenantDropdown';
 import ThemeSwitcher from './ThemeSwitcher';
@@ -31,13 +31,13 @@ const CommonHeader = () => {
       <div className="flex items-center gap-4">
         <UnstyledButton
           onClick={() => spotlight.open()}
-          className={classnames(
+          className={clsx(
             'flex items-center w-[200px] justify-between px-2 py-1 rounded-md spotlight',
           )}
         >
           <IconSearch className="spotlight__search-icon" size={15} />
           <div
-            className={classnames(
+            className={clsx(
               'p-1 text-xs rounded-md spotlight__command-label',
             )}
           >
