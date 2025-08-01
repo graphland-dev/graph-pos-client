@@ -93,11 +93,16 @@ const PosPage = () => {
     },
   });
 
-  const form = useForm<IPosFormType>({
+  const form = useForm({
     defaultValues: {
       discountMode: ProductDiscountMode.Amount,
+      discountValue: 0,
       costAmount: 0,
-    },
+      taxRate: 0,
+      taxAmount: 0,
+      clientId: "",
+      products: [],
+    } as IPosFormType,
     resolver: yupResolver(Pos_Form_Validation_Schema),
     mode: "onChange",
   });
@@ -131,6 +136,7 @@ const PosPage = () => {
     );
 
     if (index == -1) {
+      delete productReference.isSellableWithoutStock;
       appendProduct({
         ...productReference,
         subAmount: productReference?.unitPrice * productReference?.quantity,
@@ -575,6 +581,7 @@ const PosPage = () => {
 
                       discountAmount,
                       discountPercentage: discountValue,
+                      discountValue,
                       discountMode,
 
                       subTotal: productsPrice,
@@ -618,6 +625,7 @@ const PosPage = () => {
                       discountMode === ProductDiscountMode.Percentage
                         ? discountValue
                         : 0,
+                    discountValue,
                     discountMode,
 
                     subTotal: productsPrice,
@@ -703,15 +711,15 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
     .min(1, "You must have to select at least one product")
     .label("Purchase products"),
 
-  discountMode: Yup.string().optional().label("Discount type"),
-  discountValue: Yup.number().optional().label("Discount value"), // amount, %
+  discountMode: Yup.string().default("").label("Discount type"),
+  discountValue: Yup.number().default(0).label("Discount value"), // amount, %
   // discountAmount: Yup.number().optional().label("Discount amount"),
   // discountPercentage: Yup.number().optional().label("Discount %"),
 
-  costAmount: Yup.number().optional().label("Transport cost"),
+  costAmount: Yup.number().default(0).label("Transport cost"),
 
-  taxRate: Yup.number().optional().label("Tax rate"),
-  taxAmount: Yup.number().optional().label("Tax amount"),
+  taxRate: Yup.number().default(0).label("Tax rate"),
+  taxAmount: Yup.number().default(0).label("Tax amount"),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;
