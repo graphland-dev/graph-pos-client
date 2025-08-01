@@ -558,7 +558,7 @@ const PosPage = () => {
                   </Text>
                 </Flex>
                 <Space h={"sm"} />
-                <div className="flex justify-between p-3 text-xl font-bold text-center text-black bg-indigo-200 rounded-sm">
+                <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50">
                   <div>Net Total (Subtotal - Discount)</div>{" "}
                   <div>{currencyNumberFormat(getNetAmount())} BDT</div>
                 </div>

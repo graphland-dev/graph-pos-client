@@ -75,7 +75,7 @@ const RootApp = () => {
                   defaultProps: {
                     classNames: {
                       content: "app-drawer",
-                      body: "px-0 !pt-2",
+                      body: "!pt-2",
                     },
                   },
                 },
