@@ -177,7 +177,6 @@ const ImportExportCSV: React.FC = () => {
 
           <Group>
             <Button
-              variant="light"
               leftIcon={<IconDownload size={16} />}
               onClick={handleTemplateDownload}
               loading={isDownloadingTemplate}
@@ -187,14 +186,12 @@ const ImportExportCSV: React.FC = () => {
           </Group>
 
           <Text weight={600}>Instructions:</Text>
-          <List size="sm">
+          <List className="list-disc list-inside">
             <List.Item>Only 'name' field is required</List.Item>
+            <List.Item>Use 'code' field to update existing products.</List.Item>
             <List.Item>
-              Use 'code' field to update existing products (if updateExisting is
-              enabled)
-            </List.Item>
-            <List.Item>
-              Category, brand, unit, and VAT codes must exist in the system
+              If Category, brand, unit, and VAT codes are not exits in system,
+              they will be created automatically.
             </List.Item>
             <List.Item>
               Discount mode should be either 'PERCENTAGE' or 'AMOUNT'
