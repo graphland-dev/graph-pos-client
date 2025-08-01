@@ -18,6 +18,7 @@ import {
 } from "../utils/query.pos";
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
 import PosItemCard from "./PosItemCard";
+import clsx from "clsx";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
@@ -121,8 +122,14 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
       </div>
 
       {/* Items */}
-
-      <div className="flex-1 overflow-y-auto">
+      {/* productsData?.inventory__products.nodes */}
+      <div
+        className={clsx("flex-1 overflow-y-auto", {
+          hidden:
+            !productsData?.inventory__products.nodes?.length &&
+            !isProductsFetching,
+        })}
+      >
         <div className={`grid grid-columns--${itemsGridColumnCount} gap-2`}>
           {productsData?.inventory__products.nodes?.map((product) => (
             <PosItemCard
@@ -135,6 +142,7 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
       </div>
 
       <EmptyState
+        rootClassName="flex-1 m-4"
         visible={
           !productsData?.inventory__products.nodes?.length &&
           !isProductsFetching

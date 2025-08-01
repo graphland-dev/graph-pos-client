@@ -124,13 +124,11 @@ const PosPage = () => {
   function handleAddProductToList(
     productReference: ProductItemReferenceWithStockQuantity
   ) {
-    // console.log({ productReference: watch('products') });
     const productCart: ProductItemReference[] = watch("products");
 
     const index = productCart?.findIndex(
       (item) => item.referenceId == productReference.referenceId
     );
-    console.log({ productCart, productReference, index });
 
     if (index == -1) {
       appendProduct({

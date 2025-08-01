@@ -1,26 +1,30 @@
-import { Space } from '@mantine/core';
-import React from 'react';
+import { Space } from "@mantine/core";
+import React from "react";
 
 interface IProp {
   label?: string | null;
   Actions?: React.ReactNode;
   visible?: boolean;
+  rootClassName?: string;
 }
 
 const EmptyState: React.FC<IProp> = ({
-  label = 'No Data',
+  label = "No Data",
   Actions,
+  rootClassName = "",
   visible = true,
 }) => {
   if (!visible) return null;
 
   return (
-    <div className="flex flex-col items-center justify-center border h-72 border-slate-200">
+    <div
+      className={`flex flex-col items-center justify-center border h-72 border-slate-200 ${rootClassName}`}
+    >
       <EmptyBucketSvg />
       <p className="text-slate-400">{label}</p>
       {Actions && (
         <>
-          <Space h={'lg'} />
+          <Space h={"lg"} />
           {Actions}
         </>
       )}
