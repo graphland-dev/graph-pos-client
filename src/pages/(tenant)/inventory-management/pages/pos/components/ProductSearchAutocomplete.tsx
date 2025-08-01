@@ -1,16 +1,18 @@
-import AutoComplete from "@/commons/components/AutoComplete.tsx";
+import AutoComplete from "@/commons/components/AutoComplete";
 import {
   MatchOperator,
   Product,
   ProductItemReference,
   ProductsWithPagination,
 } from "@/commons/graphql-models/graphql";
+import { playBipSound } from "@/commons/utils/play-bip-sound";
 import { useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
-import { Input, Text } from "@mantine/core";
+import { Input } from "@mantine/core";
 import React, { useState } from "react";
 import { Pos_Products_Query } from "../utils/query.pos";
-import { getProductReferenceByQuantity } from "../utils/utils.calc";
+import { getProductReferenceByQuantity, getStock } from "../utils/utils.calc";
+import { showNotification } from "@mantine/notifications";
 
 const ProductSearchAutocomplete: React.FC<{
   formInstance: any;
@@ -42,6 +44,17 @@ const ProductSearchAutocomplete: React.FC<{
         ],
       },
     },
+    onCompleted(data) {
+      // if one product is found then select it
+      if (data.inventory__products.nodes?.length === 1) {
+        onSelectProduct(
+          getProductReferenceByQuantity(data.inventory__products.nodes[0], 1)
+        );
+        playBipSound();
+        // clean the input
+        setQ("");
+      }
+    },
     skip: !q,
   });
 
@@ -58,14 +71,23 @@ const ProductSearchAutocomplete: React.FC<{
         onChange={setQ}
         placeholder="Search in inventory"
         onSelect={(item: Product) => {
+          if (!item._id) return;
+          if (!getStock(item) && !item?.isSellableWithoutStock) {
+            showNotification({
+              message: "Out of stock",
+              color: "red",
+            });
+            return;
+          }
+
+          // if one product is selected then emit it
           onSelectProduct(getProductReferenceByQuantity(item, 1));
+          playBipSound();
         }}
         enableNoResultDropdown
         NoResultComponent={
           <div className="flex gap-2 py-2 item-center">
-            <Text color="gray" fw={500}>
-              No product found!
-            </Text>
+            <p>No product found!</p>
           </div>
         }
         labelKey={"name"}

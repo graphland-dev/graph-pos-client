@@ -19,6 +19,7 @@ import {
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
 import PosItemCard from "./PosItemCard";
 import clsx from "clsx";
+import { playBipSound } from "@/commons/utils/play-bip-sound";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
@@ -87,8 +88,9 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
 
   // handle emit product
   const handleEmitProduct = (product: Product) => {
-    const audio = new Audio("/beep.mp3");
-    audio.play();
+    if (!product) return;
+
+    playBipSound();
     onSelectProduct(getProductReferenceByQuantity(product, 1));
   };
 
