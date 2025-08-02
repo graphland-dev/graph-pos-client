@@ -38,8 +38,8 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import {
   calculateInvoiceItemTaxAmount,
-  getTotalCostAmount,
   getNetSellPrice,
+  getTotalCostAmount,
   getTotalTaxAmount,
   getVatProfileSelectInputData,
 } from "./utils/helpers";
@@ -56,10 +56,7 @@ import {
   CREATE_INVENTORY_PRODUCT_PURCHASE,
   PURCHASE_PRODUCT_LIST,
 } from "./utils/products.query";
-import {
-  ICreatePurchaseFormState,
-  Schema_Validation,
-} from "./utils/validation";
+import { Schema_Validation } from "./utils/validation";
 
 const CreatePurchasePage = () => {
   const [productPage, onChangeProductPage] = useState(1);
@@ -148,7 +145,8 @@ const CreatePurchasePage = () => {
     control,
     watch,
     handleSubmit,
-  } = useForm<ICreatePurchaseFormState>({
+    // } = useForm<ICreatePurchaseFormState>({
+  } = useForm({
     defaultValues: {
       purchaseDate: new Date(),
       purchaseOrderDate: new Date(),

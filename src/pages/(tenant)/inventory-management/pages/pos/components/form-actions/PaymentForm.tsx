@@ -1,13 +1,16 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
 import {
   AccountsWithPagination,
+  CreateProductInvoiceInput,
+  InventoryInvoicePaymentItemInput,
   ProductDiscountMode,
+  ProductItemReference,
   Purchase_Invoice_Status,
-} from '@/commons/graphql-models/graphql';
-import { ACCOUNTING_ACCOUNTS_LIST } from '@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query';
-import { useMutation, useQuery } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
-import { yupResolver } from '@hookform/resolvers/yup';
+} from "@/commons/graphql-models/graphql";
+import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
 import {
   Button,
   Group,
@@ -16,24 +19,21 @@ import {
   Paper,
   Select,
   Space,
-} from '@mantine/core';
-import { DateInput } from '@mantine/dates';
-import React, { useEffect } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { IPosFormType } from '../../pos.page';
+} from "@mantine/core";
+import { DateInput } from "@mantine/dates";
+import React from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { IPosFormType } from "../../pos.page";
 import {
   Create_Invoice_Payment,
   Create_Product_Invoice,
-} from '../../utils/query.payment';
-import { Update_Invoice_Status } from '../../utils/query.pos';
-import { Payment_Form_Validation } from '../../utils/validations/paymentForm.validation';
+} from "../../utils/query.payment";
+import { Update_Invoice_Status } from "../../utils/query.pos";
+import { Payment_Form_Validation } from "../../utils/validations/paymentForm.validation";
 
 interface ExtendedFormData extends IPosFormType {
-  subTotal: number;
-  netTotal: number;
-
-  discountAmount: number;
-  discountPercentage: number;
+  invoiceNetTotalBill: number;
+  invoiceDiscountPercentage: number;
 }
 
 interface IPaymentFormProps {
@@ -49,6 +49,26 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   preMadeInvoiceId,
   onRefetchHoldList,
 }) => {
+  const getNetExtraDiscount = () => {
+    if (formData.invoiceDiscountMode === ProductDiscountMode.Amount) {
+      return formData.discountValue || 0;
+    }
+
+    if (formData.invoiceDiscountMode === ProductDiscountMode.Percentage) {
+      const netSellPrice =
+        formData.products
+          ?.map((p: ProductItemReference) => {
+            const unitSellPrice = p?.unitSellPrice || 0;
+            const quantity = p?.quantity || 0;
+            return unitSellPrice * quantity;
+          })
+          .reduce((a, b) => a + b, 0) || 0;
+      return (formData.discountValue || 0) * (netSellPrice / 100);
+    }
+
+    return 0;
+  };
+
   // accounts API
   const { data } = useQuery<{
     accounting__accounts: AccountsWithPagination;
@@ -78,47 +98,47 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
     reset,
   } = useForm({
     defaultValues: {
-      receiptNo: '',
-      paymentTerm: '',
-      reference: '',
-      poReference: '',
+      receiptNo: "",
+      paymentTerm: "",
+      reference: "",
+      poReference: "",
       date: new Date(),
       payments: [
         // Required
         {
-          accountId: '',
-          amount: formData?.netTotal || 0,
-          type: 'Cash',
+          accountId: "",
+          amount: formData?.invoiceNetTotalBill || 0,
+          type: "Cash",
         },
       ],
     },
     resolver: yupResolver(Payment_Form_Validation),
-    mode: 'onChange',
+    mode: "onChange",
   });
 
   // form fields array
   const { append, fields, remove } = useFieldArray({
     control,
-    name: 'payments',
+    name: "payments",
   });
 
   // payment mutation
   const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
     Create_Invoice_Payment,
     commonNotifierCallback({
-      successTitle: 'Payment successful',
+      successTitle: "Payment successful",
       onSuccess() {
         onSuccess();
         reset({
           date: new Date(),
-          paymentTerm: '',
-          poReference: '',
-          receiptNo: '',
-          reference: '',
+          paymentTerm: "",
+          poReference: "",
+          receiptNo: "",
+          reference: "",
           payments: [],
         });
       },
-    }),
+    })
   );
 
   // payment mutation
@@ -129,17 +149,13 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
         onSuccess();
         onRefetchHoldList();
       },
-    },
+    }
   );
 
   // create invoice mutation
   const [createInvoice, { loading: __creatingInvoice }] = useMutation(
-    Create_Product_Invoice,
+    Create_Product_Invoice
   );
-
-  useEffect(() => {
-    // setValue(`paymentCount.${0}.amount`, formData?.netTotal);
-  }, [formData]);
 
   // payment form submit
   const onSubmit = (values: any) => {
@@ -148,7 +164,6 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
         variables: {
           body: {
             clientId: formData?.clientId,
-
             invoiceId: preMadeInvoiceId,
             payments: values?.payments,
             poReference: values?.poReference,
@@ -163,7 +178,8 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           variables: {
             invoiceId: preMadeInvoiceId,
             status:
-              getTotalPaymentAmount(watch('payments')) === formData?.netTotal
+              getTotalPaymentAmount(watch("payments")) ===
+              formData?.invoiceNetTotalBill
                 ? Purchase_Invoice_Status.Paid
                 : Purchase_Invoice_Status.PartiallyPaid,
           },
@@ -173,28 +189,28 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
       createInvoice({
         variables: {
           input: {
+            products: formData.products.map((p) => ({
+              referenceId: p.referenceId,
+              code: p.code,
+              name: p.name,
+              quantity: p.quantity,
+              unitPrice: p.unitPrice,
+              unitSellPrice: p.unitSellPrice,
+              taxRate: p.taxRate,
+            })),
             clientId: formData?.clientId,
-            products: formData?.products,
-            taxRate: formData?.taxRate,
-            taxAmount: formData?.taxAmount,
-            costAmount: formData?.costAmount,
-
-            subTotal: formData?.subTotal || 0,
-            netTotal: formData?.netTotal || 0,
-            reference: values.reference || '',
-
-            discountAmount: formData?.discountAmount || 0,
-            discountMode: formData.discountMode || ProductDiscountMode.Amount,
-            discountPercentage: formData.discountPercentage || 0,
-            date: values?.date,
-          },
+            invoiceDiscountMode:
+              (formData.invoiceDiscountMode as ProductDiscountMode) ||
+              ProductDiscountMode.Amount,
+            invoiceDiscountAmount: getNetExtraDiscount(),
+            invoiceDiscountPercentage: formData.invoiceDiscountPercentage,
+          } satisfies CreateProductInvoiceInput,
         },
       }).then((invoice) => {
         paymentToInvoice({
           variables: {
             body: {
               clientId: formData?.clientId,
-
               invoiceId: invoice.data?.inventory__createProductInvoice?._id,
               payments: values?.payments,
               poReference: values?.poReference,
@@ -211,7 +227,6 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 
   return (
     <div>
-      {/* {JSON.stringify(errors, null, 2)} */}
       <form onSubmit={handleSubmit(onSubmit)}>
         <Input.Wrapper
           label="Reference"
@@ -288,7 +303,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
               <Select
                 placeholder="Pick a payment type"
                 withAsterisk
-                data={['Cash', 'Bank Transfer', 'Card', 'MFS']}
+                data={["Cash", "Bank Transfer", "Card", "MFS"]}
                 onChange={(e) => setValue(`payments.${idx}.type`, e!)}
                 defaultValue={watch(`payments.${idx}.type`)}
               />
@@ -328,8 +343,8 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             variant="subtle"
             onClick={() =>
               append({
-                accountId: '',
-                type: '',
+                accountId: "",
+                type: "",
                 amount: 0,
               })
             }
@@ -343,7 +358,8 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
               __creatingInvoice || __payment__inprogress || __updating__invoice
             }
             disabled={
-              getTotalPaymentAmount(watch('payments')) > formData?.netTotal
+              getTotalPaymentAmount(watch("payments")) >
+              formData?.invoiceNetTotalBill
             }
           >
             Make Payment
@@ -356,11 +372,13 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 
 export default PaymentForm;
 
-const getTotalPaymentAmount = (payments: any): number => {
+const getTotalPaymentAmount = (
+  payments: InventoryInvoicePaymentItemInput[]
+): number => {
   let totalPaymentAmount = 0;
   payments?.map(
     (payment: any) =>
-      (totalPaymentAmount = totalPaymentAmount + payment?.amount),
+      (totalPaymentAmount = totalPaymentAmount + payment?.amount)
   );
   return totalPaymentAmount;
 };

@@ -20,12 +20,14 @@ import {
   Modal,
   NumberInput,
   Paper,
+  Select,
   Space,
   Table,
   Text,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { showNotification } from "@mantine/notifications";
 import {
   IconArrowsMaximize,
   IconBox,
@@ -41,21 +43,15 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import * as Yup from "yup";
-import {
-  calculateInvoiceItemTaxAmount,
-  getNetSellPrice,
-  getTotalTaxAmount,
-} from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
 import POSProductGallery from "./components/POSProductGalary";
 import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
-import PaymentForm from "./components/form-actions/PaymentForm";
 import HoldList from "./components/pos-header/HoldList";
 import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
 import { Pos_Hold_List } from "./utils/query.pos";
-import { getDiscount, getProductReferenceByQuantity } from "./utils/utils.calc";
-import { showNotification } from "@mantine/notifications";
+import { getPercentageAmount } from "./utils/utils.calc";
+import PaymentForm from "./components/form-actions/PaymentForm";
 
 const PosPage = () => {
   const [openedHoldModal, holdModalHandler] = useDisclosure();
@@ -127,7 +123,6 @@ const PosPage = () => {
     );
 
     if (index == -1) {
-      delete productReference.isSellableWithoutStock;
       appendProduct({
         referenceId: productReference?.referenceId || "",
         code: productReference?.code || "",
@@ -135,6 +130,7 @@ const PosPage = () => {
         quantity: 1,
         unitPrice: productReference?.unitPrice || 0,
         unitSellPrice: productReference?.unitSellPrice || 0,
+        unitPurchasePrice: productReference?.unitPurchasePrice || 0,
         taxAmount: productReference?.taxAmount || 0,
         taxRate: productReference?.taxRate || 0,
       });
@@ -158,18 +154,79 @@ const PosPage = () => {
       }
     }
   }
-  const discountMode =
-    watch("invoiceDiscountMode") || ProductDiscountMode.Amount;
-  const discountValue = watch("discountValue") || 0;
-  const products = watch("products") || [];
 
-  // product price calculate
-  const productsPrice = getNetSellPrice(products);
-  const discountAmount = getDiscount(
-    discountMode,
-    discountValue,
-    productsPrice
-  );
+  const getNetSellPrice = () => {
+    const products = watch("products") || [];
+    return (
+      products
+        ?.map((p: ProductItemReference) => {
+          const unitSellPrice = p?.unitSellPrice || 0;
+          const quantity = p?.quantity || 0;
+          return unitSellPrice * quantity;
+        })
+        .reduce((a, b) => a + b, 0) || 0
+    );
+  };
+
+  const getNetSubtotal = () => {
+    const products = watch("products") || [];
+    return (
+      products
+        ?.map((p: ProductItemReference) => {
+          const unitPrice = p?.unitPrice || 0;
+          const quantity = p?.quantity || 0;
+          return unitPrice * quantity;
+        })
+        .reduce((a, b) => a + b, 0) || 0
+    );
+  };
+
+  const getNetSubtotalDiscount = () => {
+    return (
+      watch("products")
+        ?.map((p: ProductItemReference) => {
+          const unitSellPrice = p?.unitSellPrice || 0;
+          const unitPrice = p?.unitPrice || 0;
+          const quantity = p?.quantity || 0;
+          return (unitPrice - unitSellPrice) * quantity || 0;
+        })
+        .reduce((a, b) => a + b, 0) || 0
+    );
+  };
+
+  const getNetExtraDiscount = () => {
+    if (watch("invoiceDiscountMode") === ProductDiscountMode.Amount) {
+      return watch("discountValue") || 0;
+    }
+
+    if (watch("invoiceDiscountMode") === ProductDiscountMode.Percentage) {
+      const netSellPrice =
+        watch("products")
+          ?.map((p: ProductItemReference) => {
+            const unitSellPrice = p?.unitSellPrice || 0;
+            const quantity = p?.quantity || 0;
+            return unitSellPrice * quantity;
+          })
+          .reduce((a, b) => a + b, 0) || 0;
+      return (watch("discountValue") || 0) * (netSellPrice / 100);
+    }
+
+    return 0;
+  };
+
+  const getNetTaxAmount = () => {
+    return (
+      watch("products")
+        ?.map((p) => {
+          return p.unitSellPrice * p.quantity * p.taxRate || 0;
+        })
+        .reduce((a, b) => a + b, 0) || 0
+    );
+  };
+
+  const invoiceNetTotal = () => {
+    return getNetSellPrice() + getNetTaxAmount() - getNetExtraDiscount();
+  };
 
   // prefill form
   useEffect(() => {
@@ -249,9 +306,8 @@ const PosPage = () => {
                 reset({
                   clientId: "",
                   discountValue: 0,
-                  discountMode: ProductDiscountMode.Amount,
-                  taxRate: 0,
-                  taxAmount: 0,
+                  invoiceDiscountMode: ProductDiscountMode.Amount,
+                  netTaxAmount: 0,
                   products: [],
                   costAmount: 0,
                 })
@@ -277,11 +333,10 @@ const PosPage = () => {
           />
         </div>
       </Flex>
-
       <form onSubmit={handleSubmit(onSubmitPOS)}>
         <div className="flex items-start gap-3">
           {/* Left Side */}
-          <div className="hidden lg:w-7/12">
+          <div className="lg:w-7/12">
             <Paper p={8} withBorder>
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
@@ -321,8 +376,10 @@ const PosPage = () => {
                       {productFields?.map(
                         (product: ProductItemReference, idx: number) => (
                           <tr key={idx}>
-                            <td className="font-medium">{product?.name}</td>
-                            <td className="font-medium">
+                            <td data-name="name" className="font-medium">
+                              {product?.name}
+                            </td>
+                            <td data-name="quantity" className="font-medium">
                               <NumberInput
                                 w={100}
                                 onChange={(v) =>
@@ -335,7 +392,10 @@ const PosPage = () => {
                                 value={watch(`products.${idx}.quantity`)}
                               />
                             </td>
-                            <td className="font-medium">
+                            <td
+                              data-name="unitSellPrice"
+                              className="font-medium"
+                            >
                               <NumberInput
                                 w={100}
                                 onChange={(v) =>
@@ -347,32 +407,64 @@ const PosPage = () => {
                                 min={1}
                                 value={watch(`products.${idx}.unitSellPrice`)}
                               />
+
+                              <p className="mt-1 text-xs">
+                                Purchase Price:{" "}
+                                {currencyNumberFormat(
+                                  watch(`products.${idx}.unitPurchasePrice`) ||
+                                    0
+                                )}
+                              </p>
                             </td>
-                            <td className="font-medium text-center">
-                              unit cost
+                            <td
+                              data-name="unit-cost"
+                              className="font-medium text-center"
+                            >
+                              {watch(`products.${idx}.unitSellPrice`) *
+                                watch(`products.${idx}.quantity`)}
                             </td>
-                            <td className="font-medium">
-                              {product?.taxRate || 0}
+                            <td
+                              data-name="tax-rate"
+                              className="font-medium w-[150px]"
+                            >
+                              <Select
+                                data={
+                                  vatProfile?.setup__vats.nodes?.map((v) => ({
+                                    label: `${v.name} (${v.percentage}%)`,
+                                    value: v.percentage.toString(),
+                                  })) || []
+                                }
+                                value={(
+                                  watch(`products.${idx}.taxRate`) * 100
+                                ).toString()}
+                                onChange={(v) => {
+                                  const rateP = parseFloat(v!) || 0;
+                                  const rate = rateP / 100 || 0;
+                                  setValue(`products.${idx}.taxRate`, rate);
+                                }}
+                                placeholder="Select vat profile"
+                                disabled={vatProfileLoading}
+                              />
                             </td>
-                            <td className="font-medium">
-                              {product?.taxRate || 0}
-                            </td>
-                            <td className="font-medium">
+                            <td data-name="tax-amount" className="font-medium">
                               {currencyNumberFormat(
-                                calculateInvoiceItemTaxAmount(
-                                  watch(`products.${idx}`)
-                                )
-                              )}
-                            </td>
-                            <td className="font-medium">
-                              {currencyNumberFormat(
-                                calculateInvoiceItemTaxAmount(
-                                  watch(`products.${idx}`)
-                                ) +
+                                watch(`products.${idx}.unitSellPrice`) *
                                   watch(`products.${idx}.quantity`) *
-                                    watch(`products.${idx}.unitPrice`)
-                              )}
+                                  watch(`products.${idx}.taxRate`)
+                              ) || 0}{" "}
                             </td>
+                            <td data-name="total-cost" className="font-medium">
+                              {currencyNumberFormat(
+                                watch(`products.${idx}.unitSellPrice`) *
+                                  watch(`products.${idx}.quantity`) +
+                                  getPercentageAmount(
+                                    watch(`products.${idx}.unitSellPrice`) *
+                                      watch(`products.${idx}.quantity`),
+                                    watch(`products.${idx}.taxRate`) * 100
+                                  )
+                              ) || 0}{" "}
+                            </td>
+
                             <td className="font-medium">
                               <ActionIcon
                                 variant="filled"
@@ -390,15 +482,22 @@ const PosPage = () => {
                       )}
 
                       <tr>
-                        <td></td>
                         <td colSpan={5} className="font-semibold text-right">
                           Total
                         </td>
-                        <td>{getTotalTaxAmount(watch("products") || [])}</td>
+                        <td>{0}</td>
                         <td>
-                          {currencyNumberFormat(
-                            getNetSellPrice(watch("products")!)
-                          )}
+                          {/* {currencyNumberFormat(
+                            watch("products")
+                              ?.map((p: ProductItemReference) => {
+                                const netSellPrice = p.netSellPrice || 0;
+                                const quantity = p.quantity || 0;
+                                const taxAmount =
+                                  netSellPrice * quantity * p.taxRate || 0;
+                                return taxAmount + p.unitSellPrice * p.quantity;
+                              })
+                              .reduce((a, b) => a + b, 0)
+                          )} */}
                         </td>
                         <td></td>
                       </tr>
@@ -414,7 +513,7 @@ const PosPage = () => {
             <Paper p={15} withBorder>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  {/* <Input.Wrapper
+                  <Input.Wrapper
                     size="md"
                     error={<ErrorMessage name="discountType" errors={errors} />}
                   >
@@ -422,12 +521,12 @@ const PosPage = () => {
                       label="Discount Mode"
                       placeholder="Discount Mode"
                       size="md"
-                      onChange={(e) => setValue("discountMode", e!)}
+                      onChange={(e) => setValue("invoiceDiscountMode", e!)}
                       radius={0}
-                      value={watch("discountMode")}
+                      value={watch("invoiceDiscountMode")}
                       data={[
                         {
-                          label: "Fixed",
+                          label: "Fixed Amount",
                           value: ProductDiscountMode.Amount,
                         },
                         {
@@ -436,28 +535,7 @@ const PosPage = () => {
                         },
                       ]}
                     />
-                  </Input.Wrapper> */}
-
-                  {/* <Space h={"sm"} />
-
-                  <Input.Wrapper
-                    size="md"
-                    error={
-                      <ErrorMessage name="transportCost" errors={errors} />
-                    }
-                  >
-                    <NumberInput
-                      label="Transport Cost"
-                      size="md"
-                      onChange={(e) =>
-                        setValue("costAmount", parseInt(e as string))
-                      }
-                      defaultValue={watch("costAmount")}
-                      min={0}
-                      radius={0}
-                      placeholder="Enter transport cost"
-                    />
-                  </Input.Wrapper> */}
+                  </Input.Wrapper>
                 </div>
                 <div>
                   <Input.Wrapper
@@ -486,46 +564,36 @@ const PosPage = () => {
               <Space h={"sm"} />
 
               <Paper withBorder p={"sm"} mb={"xl"}>
-                {/* <Flex justify={'space-between'}> */}
                 <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Tax rate</Text>
-                  <Text>0 %</Text>
+                  <Text fw={"bold"}>Sub total</Text>
+                  <Text>{currencyNumberFormat(getNetSubtotal())} BDT</Text>
                 </Flex>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Sell price</Text>
+                  <Text>{currencyNumberFormat(getNetSellPrice())} BDT</Text>
+                </Flex>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Sub total discount</Text>
+                  <Text>
+                    {currencyNumberFormat(getNetSubtotalDiscount())} BDT
+                  </Text>
+                </Flex>
+                <Flex justify={"space-between"}>
+                  <Text fw={"bold"}>Extra discount</Text>
+                  <Text>{currencyNumberFormat(getNetExtraDiscount())} BDT</Text>
+                </Flex>
+
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Tax amount</Text>
-                  <Text>{0} BDT</Text>
+                  <Text>{currencyNumberFormat(getNetTaxAmount())} BDT</Text>
                 </Flex>
-                {/* </Flex> */}
+
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
 
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Cost Amount</Text>
-                  <Text>0 BDT</Text>
-                </Flex>
-
-                {/* <hr /> */}
-
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Sub total (Product + Cost)</Text>
-                  <Text>0 BDT</Text>
-                </Flex>
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>
-                    Discount
-                    {watch("discountMode") === "PERCENTAGE" &&
-                      ` (${watch("discountValue")}%)`}
-                  </Text>
-                  <Text>
-                    {currencyNumberFormat(
-                      getDiscount(discountMode, discountValue, productsPrice)
-                    ) || 0}{" "}
-                    BDT
-                  </Text>
-                </Flex>
                 <Space h={"sm"} />
                 <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50 text-primary-foreground">
-                  <div>Net Total (Subtotal - Discount)</div>{" "}
-                  <div>{currencyNumberFormat(0)} BDT</div>
+                  <div>Net Total (SellPrice + Tax - Discount)</div>{" "}
+                  <div>{currencyNumberFormat(invoiceNetTotal())} BDT</div>
                 </div>
               </Paper>
 
@@ -582,20 +650,17 @@ const PosPage = () => {
                 <PaymentForm
                   formData={{
                     clientId: watch("clientId"),
-                    products,
-                    costAmount: 0,
-
-                    discountAmount,
-                    discountPercentage:
-                      discountMode === ProductDiscountMode.Percentage
-                        ? discountValue
+                    products: watch("products"),
+                    discountValue: watch("discountValue"),
+                    invoiceDiscountMode: watch("invoiceDiscountMode"),
+                    invoiceDiscountPercentage:
+                      watch("invoiceDiscountMode") ===
+                      ProductDiscountMode.Percentage
+                        ? watch("discountValue")
                         : 0,
-                    discountValue,
-                    invoiceDiscountMode: discountMode,
-                    netTaxAmount: 0,
-
-                    subTotal: productsPrice,
-                    netTotal: 0,
+                    costAmount: watch("costAmount"),
+                    netTaxAmount: getNetTaxAmount(),
+                    invoiceNetTotalBill: invoiceNetTotal(),
                   }}
                   onSuccess={() => {
                     paymentModalHandler.close();
@@ -650,8 +715,6 @@ const PosPage = () => {
             </Paper>
           </div>
 
-          <pre>{JSON.stringify(watch("products"), null, 2)}</pre>
-
           {/*  
               Right Side
               --------------------------
@@ -676,8 +739,6 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
 
   invoiceDiscountMode: Yup.string().default("").label("Discount type"),
   discountValue: Yup.number().default(0).label("Discount value"), // amount, %
-  // discountAmount: Yup.number().optional().label("Discount amount"),
-  // discountPercentage: Yup.number().optional().label("Discount %"),
 
   costAmount: Yup.number().default(0).label("Transport cost"),
   netTaxAmount: Yup.number().default(0).label("Tax amount"),

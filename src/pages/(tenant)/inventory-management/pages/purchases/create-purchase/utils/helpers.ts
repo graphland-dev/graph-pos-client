@@ -26,7 +26,8 @@ export const getNetSellPrice = (products: ProductItemReference[]) => {
   products?.map((product) => {
     const unitSellPrice = product?.unitSellPrice || 0;
     const quantity = product?.quantity || 0;
-    total += unitSellPrice * quantity;
+    const taxRate = product?.taxRate || 0;
+    total += unitSellPrice * quantity * taxRate || 0;
   });
   return total;
 };

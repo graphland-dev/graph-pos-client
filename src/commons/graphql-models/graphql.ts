@@ -1161,7 +1161,6 @@ export type ProductItemReferenceInput = {
   name: Scalars['String']['input'];
   quantity: Scalars['Int']['input'];
   referenceId: Scalars['ID']['input'];
-  taxAmount: Scalars['Float']['input'];
   taxRate: Scalars['Float']['input'];
   unitPrice: Scalars['Float']['input'];
   unitSellPrice: Scalars['Float']['input'];
