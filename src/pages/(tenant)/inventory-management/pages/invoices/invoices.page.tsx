@@ -1,24 +1,28 @@
 import DataTable from "@/commons/components/DataTable.tsx";
+import PrintableFullInvoice from "@/commons/components/invoice/PrintableFullInvoice";
 import PageTitle from "@/commons/components/PageTitle";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
 import {
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
 } from "@/commons/graphql-models/graphql";
+import currencyNumberFormat from "@/commons/utils/commaNumber";
+import dateFormat from "@/commons/utils/dateFormat";
 import { useLazyQuery, useQuery } from "@apollo/client";
-import { Badge, Drawer, Menu, Text } from "@mantine/core";
+import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo } from "@tabler/icons-react";
+import { PrinterIcon } from "lucide-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useEffect, useMemo, useState } from "react";
-import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
+import { useParams, useSearchParams } from "react-router-dom";
 import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
-import { useSearchParams } from "react-router-dom";
+import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
 interface IState {
   refetching: boolean;
   openDrawer: boolean;
+  openPrintableInvoice: boolean;
+  printableInvoiceId?: string;
 }
 
 const InvoicesPage = () => {
@@ -26,6 +30,8 @@ const InvoicesPage = () => {
   const [state, setState] = useSetState<IState>({
     refetching: false,
     openDrawer: false,
+    openPrintableInvoice: false,
+    printableInvoiceId: undefined,
   });
   const { data, loading, refetch } = useQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
@@ -40,6 +46,7 @@ const InvoicesPage = () => {
 
   const [searchParams] = useSearchParams();
   const invoiceId = searchParams.get("invoiceId");
+  const params = useParams<{ tenant: string }>();
 
   const [productInvoice] = useLazyQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
@@ -127,7 +134,6 @@ const InvoicesPage = () => {
   };
 
   useEffect(() => {
-    console.log(invoiceId);
     if (invoiceId) {
       productInvoice({
         variables: {
@@ -155,17 +161,51 @@ const InvoicesPage = () => {
       <PageTitle title="invoice-details" />
 
       <Drawer
-        onClose={() =>
-          setState({
-            openDrawer: false,
-          })
+        onClose={() => setState({ openDrawer: false })}
+        title={
+          <div className="flex items-center justify-between gap-3">
+            <Text className="text-2xl font-semibold">Invoice Details</Text>
+            <Button
+              variant="outline"
+              leftIcon={<PrinterIcon />}
+              onClick={() =>
+                setState({
+                  openPrintableInvoice: true,
+                  printableInvoiceId: invoiceDetails?._id,
+                })
+              }
+            >
+              Print
+            </Button>
+          </div>
         }
-        title={<Text className="text-2xl font-semibold">Invoice Details</Text>}
         opened={state.openDrawer}
         size={"90%"}
       >
         <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
       </Drawer>
+
+      <Drawer
+        onClose={() =>
+          setState({
+            openPrintableInvoice: false,
+            printableInvoiceId: undefined,
+          })
+        }
+        title={
+          <Text className="text-2xl font-semibold">Printable Invoice</Text>
+        }
+        opened={state.openPrintableInvoice}
+        size={"80%"}
+      >
+        {state.printableInvoiceId && (
+          <PrintableFullInvoice
+            invoiceId={state.printableInvoiceId}
+            tenant={params.tenant ?? ""}
+          />
+        )}
+      </Drawer>
+
       {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <DataTable
         columns={columns}

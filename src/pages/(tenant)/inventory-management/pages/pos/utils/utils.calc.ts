@@ -1,8 +1,4 @@
-import {
-  Product,
-  ProductDiscountMode,
-  ProductTaxType,
-} from "@/commons/graphql-models/graphql";
+import { Product, ProductDiscountMode } from "@/commons/graphql-models/graphql";
 import { ProductItemReferenceWithStockQuantity } from "./pos.types";
 
 // get discount
@@ -20,7 +16,10 @@ export const getDiscount = (
 };
 
 // sales vat
-export const getSalesVat = (subTotal: number, vatPercentage: number) => {
+export const getPercentageAmount = (
+  subTotal: number,
+  vatPercentage: number
+) => {
   return (subTotal / 100) * vatPercentage;
 };
 
@@ -37,21 +36,34 @@ export const getProductReferenceByQuantity = (
 ): ProductItemReferenceWithStockQuantity => {
   const taxPercentage = product?.vat?.percentage || 0;
   const taxRate = taxPercentage / 100 || 0;
+  const unitSellPrice = product?.price || 0;
   const unitPrice = product?.price || 0;
-  const taxAmount = unitPrice * taxRate * quantity;
-  const netAmount = unitPrice * quantity + taxAmount;
+  const taxAmount = unitSellPrice * taxRate * quantity;
+  const purchasePrice = product?.purchasePrice || 0;
+  const netSellPrice = unitSellPrice * quantity || 0;
+  const unitPurchasePrice = product?.purchasePrice || 0;
+  const netDiscountAmount = (unitPrice - unitSellPrice) * quantity || 0;
+  const netSubtotal = unitPrice * quantity || 0;
+  const netAmount = netSellPrice + taxAmount || 0;
 
   return {
-    name: product.name,
     referenceId: product._id,
-    netAmount,
-    quantity,
+    name: product.name,
     taxAmount,
     taxRate,
-    taxType: product.taxType || ProductTaxType.Exclusive,
-    unitPrice,
+    unitSellPrice,
+    netSellPrice,
+    unitPurchasePrice,
     code: product.code,
-    stock: getStock(product) || 0,
     isSellableWithoutStock: product.isSellableWithoutStock || false,
+    quantity,
+    unitPrice,
+
+    netAmount,
+    discountAmount: netDiscountAmount,
+    netPurchaseAmount: purchasePrice * quantity || 0,
+    netProfit: 0,
+    netSubtotal,
+    stock: getStock(product) || 0,
   };
 };

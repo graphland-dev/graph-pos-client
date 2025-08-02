@@ -7,8 +7,8 @@ import {
   Text,
   Title,
   useMantineColorScheme,
-} from '@mantine/core';
-import CommonHeader from '@/commons/components/layouts/componants/CommonHeader.tsx';
+} from "@mantine/core";
+import CommonHeader from "@/commons/components/layouts/componants/CommonHeader.tsx";
 import {
   Card,
   CardContent,
@@ -16,10 +16,10 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/commons/shadcn/components/ui/card.tsx';
-import { useDisclosure } from '@mantine/hooks';
-import { Link } from 'react-router-dom';
-import { IconDashboard } from '@tabler/icons-react';
+} from "@/commons/shadcn/components/ui/card.tsx";
+import { useDisclosure } from "@mantine/hooks";
+import { Link } from "react-router-dom";
+import { IconDashboard } from "@tabler/icons-react";
 
 const DesignSystem = () => {
   const { toggleColorScheme } = useMantineColorScheme();
@@ -30,7 +30,7 @@ const DesignSystem = () => {
       <CommonHeader />
 
       <div className="p-20">
-        <Button my={'lg'} onClick={() => toggleColorScheme()}>
+        <Button my={"lg"} onClick={() => toggleColorScheme()}>
           Toggle Theme
         </Button>
 
@@ -39,15 +39,15 @@ const DesignSystem = () => {
             <CardTitle className="text-lg">Muted Typography</CardTitle>
           </CardHeader>
           <CardContent className="">
-            <Text fw={'bold'}>Heading 1</Text>
+            <Text fw={"bold"}>Heading 1</Text>
             <p className="text-muted-foreground">
               Lorem ipsum dolor sit amet consectetur adipisicing elit.
             </p>
           </CardContent>
         </Card>
 
-        <Paper title={'Design System'}>
-          <Title fw={'normal'} order={4}>
+        <Paper title={"Design System"}>
+          <Title fw={"normal"} order={4}>
             Default Card
           </Title>
           <Divider mb={10} />
@@ -97,13 +97,13 @@ const DesignSystem = () => {
             <Button color="primary.8">Button Primary 8</Button>
             <Button color="primary.9">Button Primary 9</Button>
             <Button color="primary">Button Primary Default</Button>
-            <Button color="primary" component={Link} to={'/'}>
+            <Button color="primary" component={Link} to={"/"}>
               Button Primary Default
             </Button>
             <Button
               variant="subtle"
               component={Link}
-              to={'/'}
+              to={"/"}
               leftIcon={<IconDashboard size={16} />}
             >
               Dashboard
@@ -112,7 +112,7 @@ const DesignSystem = () => {
           <div className="flex gap-3 p-10">
             <Button color="primary">Button Primary</Button>
             <Button color="secondary">Button Secondary</Button>
-            <Button color="secondary" variant={'white'}>
+            <Button color="secondary" variant={"white"}>
               Button White
             </Button>
           </div>
@@ -124,7 +124,7 @@ const DesignSystem = () => {
       <Paper>
         <Drawer
           classNames={{
-            content: 'app-drawer-content',
+            content: "app-drawer-content",
           }}
           opened={opened}
           onClose={close}

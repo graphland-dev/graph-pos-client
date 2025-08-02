@@ -4,30 +4,30 @@ import {
   Vat,
 } from "@/commons/graphql-models/graphql";
 
-export const calculateTaxAmount = (product: ProductItemReference) => {
+export const calculateInvoiceItemTaxAmount = (
+  product: ProductItemReference
+) => {
   const percentage = product?.taxRate || 0;
-  const unitPrice = product?.unitPrice || 0;
+  const unitSellPrice = product?.unitSellPrice || 0;
   const quantity = product?.quantity || 0;
-  const total = unitPrice * quantity || 0;
+  const total = unitSellPrice * quantity || 0;
   return (total * percentage) / 100;
 };
 
 export const getTotalTaxAmount = (products: ProductItemReference[]) => {
   return products.reduce(
-    (total, current) => total + calculateTaxAmount(current),
+    (total, current) => total + calculateInvoiceItemTaxAmount(current),
     0
   );
 };
 
-export const getTotalProductsPrice = (products: ProductItemReference[]) => {
+export const getNetSellPrice = (products: ProductItemReference[]) => {
   let total = 0;
-  products?.map(
-    (product) =>
-      (total =
-        total +
-        calculateTaxAmount(product) +
-        product?.quantity * product?.unitPrice)
-  );
+  products?.map((product) => {
+    const unitSellPrice = product?.unitSellPrice || 0;
+    const quantity = product?.quantity || 0;
+    total += unitSellPrice * quantity;
+  });
   return total;
 };
 

@@ -1,6 +1,6 @@
-import currencyNumberFormat from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
-import { ProductInvoice } from '@/commons/graphql-models/graphql';
+import currencyNumberFormat from "@/commons/utils/commaNumber";
+import dateFormat from "@/commons/utils/dateFormat";
+import { ProductInvoice } from "@/commons/graphql-models/graphql";
 import {
   Anchor,
   Divider,
@@ -9,10 +9,10 @@ import {
   Table,
   Text,
   Title,
-} from '@mantine/core';
-import { useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import ProductInvoiceDetailsTable from './ProductInvoiceDetailsTable';
+} from "@mantine/core";
+import { useMemo } from "react";
+import { Link } from "react-router-dom";
+import ProductInvoiceDetailsTable from "./ProductInvoiceDetailsTable";
 
 const ProductInvoiceDetails: React.FC<{
   details: ProductInvoice;
@@ -22,9 +22,9 @@ const ProductInvoiceDetails: React.FC<{
     () =>
       details?.products.reduce(
         (total, current) => total + (current?.netAmount ?? 0),
-        0,
+        0
       ),
-    [details?.products],
+    [details?.products]
   );
 
   const ths = (
@@ -103,19 +103,19 @@ const ProductInvoiceDetails: React.FC<{
           <Title order={4}>Basic Info</Title>
           <Divider />
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Invoice UID:</span>{' '}
+            <span className="font-semibold">Invoice UID:</span>{" "}
             {details.invoiceUID}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Date:</span>{' '}
+            <span className="font-semibold">Date:</span>{" "}
             {dateFormat(details.date)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Tax Rate:</span>
+            <span className="font-semibold">Tax Rate:</span>
             {currencyNumberFormat(details?.taxRate)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold text-gray-800">Tax Amount:</span>
+            <span className="font-semibold">Tax Amount:</span>
             {currencyNumberFormat(details?.taxAmount)}
           </Text>
           <Text className="flex justify-between">
@@ -126,7 +126,7 @@ const ProductInvoiceDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              {' '}
+              {" "}
               Discount Percentage:
             </span>
             {details?.discountPercentage}
@@ -189,7 +189,7 @@ const ProductInvoiceDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
-              Contact Number:{' '}
+              Contact Number:{" "}
             </span>
             {details?.client?.contactNumber}
           </Text>
@@ -206,16 +206,16 @@ const ProductInvoiceDetails: React.FC<{
         </Paper>
       </div>
 
-      <Paper p={'sm'}>
+      <Paper p={"sm"}>
         <Title order={4}>Items</Title>
-        <Table mt={'sm'} withColumnBorders withBorder captionSide="bottom">
+        <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
           <thead className="bg-card-header">{ths}</thead>
           <tbody>{loading ? trSkeleton : rows}</tbody>
           <tfoot>{tfs}</tfoot>
         </Table>
       </Paper>
 
-      <ProductInvoiceDetailsTable id={details.invoiceUID || ''} />
+      <ProductInvoiceDetailsTable id={details.invoiceUID || ""} />
 
       {/* <Attachments
         attachments={details.attachments ?? []}

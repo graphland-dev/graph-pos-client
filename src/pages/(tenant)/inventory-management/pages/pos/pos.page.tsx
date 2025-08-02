@@ -4,7 +4,6 @@ import {
   ProductInvoice,
   ProductInvoicesWithPagination,
   ProductItemReference,
-  Vat,
   VatsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import currencyNumberFormat from "@/commons/utils/commaNumber";
@@ -21,14 +20,12 @@ import {
   Modal,
   NumberInput,
   Paper,
-  Select,
   Space,
   Table,
   Text,
   Title,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
 import {
   IconArrowsMaximize,
   IconBox,
@@ -45,21 +42,20 @@ import { useFieldArray, useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import * as Yup from "yup";
 import {
-  calculateTaxAmount,
-  getTotalProductsPrice,
+  calculateInvoiceItemTaxAmount,
+  getNetSellPrice,
   getTotalTaxAmount,
-  getVatProfileSelectInputData,
 } from "../purchases/create-purchase/utils/helpers";
 import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
 import POSProductGallery from "./components/POSProductGalary";
 import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
-import HoldAction from "./components/form-actions/HoldAction";
 import PaymentForm from "./components/form-actions/PaymentForm";
 import HoldList from "./components/pos-header/HoldList";
 import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
 import { Pos_Hold_List } from "./utils/query.pos";
-import { getDiscount, getSalesVat } from "./utils/utils.calc";
+import { getDiscount, getProductReferenceByQuantity } from "./utils/utils.calc";
+import { showNotification } from "@mantine/notifications";
 
 const PosPage = () => {
   const [openedHoldModal, holdModalHandler] = useDisclosure();
@@ -95,13 +91,8 @@ const PosPage = () => {
 
   const form = useForm({
     defaultValues: {
-      discountMode: ProductDiscountMode.Amount,
       discountValue: 0,
-      costAmount: 0,
-      taxRate: 0,
-      taxAmount: 0,
-      clientId: "",
-      products: [],
+      invoiceDiscountMode: ProductDiscountMode.Percentage,
     } as IPosFormType,
     resolver: yupResolver(Pos_Form_Validation_Schema),
     mode: "onChange",
@@ -138,8 +129,14 @@ const PosPage = () => {
     if (index == -1) {
       delete productReference.isSellableWithoutStock;
       appendProduct({
-        ...productReference,
-        subAmount: productReference?.unitPrice * productReference?.quantity,
+        referenceId: productReference?.referenceId || "",
+        code: productReference?.code || "",
+        name: productReference?.name || "",
+        quantity: 1,
+        unitPrice: productReference?.unitPrice || 0,
+        unitSellPrice: productReference?.unitSellPrice || 0,
+        taxAmount: productReference?.taxAmount || 0,
+        taxRate: productReference?.taxRate || 0,
       });
     } else {
       const existingStock = watch(`products.${index}.quantity`);
@@ -161,44 +158,29 @@ const PosPage = () => {
       }
     }
   }
-  const discountMode = watch("discountMode") || ProductDiscountMode.Amount;
+  const discountMode =
+    watch("invoiceDiscountMode") || ProductDiscountMode.Amount;
   const discountValue = watch("discountValue") || 0;
   const products = watch("products") || [];
-  const costAmount = watch("costAmount") || 0;
-  const taxRate = watch("taxRate") || 0;
 
   // product price calculate
-  const productsPrice = getTotalProductsPrice(products);
+  const productsPrice = getNetSellPrice(products);
   const discountAmount = getDiscount(
     discountMode,
     discountValue,
     productsPrice
   );
 
-  // sales vat calculate
-  const salesVatAmount = getSalesVat(
-    costAmount + productsPrice - discountAmount,
-    taxRate
-  );
-
-  // net amount calculate
-  const getNetAmount = () => {
-    const sum = productsPrice - discountAmount + costAmount + salesVatAmount;
-
-    return sum;
-  };
-
   // prefill form
   useEffect(() => {
     if (selectedInvoice) {
       setValue("clientId", selectedInvoice?.client?._id as string);
       setValue(
-        "discountMode",
-        selectedInvoice?.discountMode ?? ProductDiscountMode.Percentage
+        "invoiceDiscountMode",
+        selectedInvoice?.invoiceDiscountMode ?? ProductDiscountMode.Percentage
       );
-      setValue("discountValue", selectedInvoice?.discountAmount ?? 0);
+      setValue("discountValue", selectedInvoice?.netDiscountAmount ?? 0);
       setValue("costAmount", selectedInvoice?.costAmount as number);
-      setValue("taxRate", selectedInvoice?.taxAmount ?? (0 as number));
       setValue("products", selectedInvoice?.products as ProductItemReference[]);
     }
   }, [selectedInvoice, setValue]);
@@ -297,9 +279,9 @@ const PosPage = () => {
       </Flex>
 
       <form onSubmit={handleSubmit(onSubmitPOS)}>
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-3">
           {/* Left Side */}
-          <div className="lg:w-7/12">
+          <div className="hidden lg:w-7/12">
             <Paper p={8} withBorder>
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
@@ -326,7 +308,7 @@ const PosPage = () => {
                       <tr className="!p-2 rounded-md">
                         <th>Name</th>
                         <th>Quantity</th>
-                        <th>Unit Price</th>
+                        <th>Sell Price</th>
                         <th>Unit cost</th>
                         <th>Tax %</th>
                         <th>Tax Amount</th>
@@ -358,31 +340,35 @@ const PosPage = () => {
                                 w={100}
                                 onChange={(v) =>
                                   setValue(
-                                    `products.${idx}.unitPrice`,
+                                    `products.${idx}.unitSellPrice`,
                                     parseInt(v as string)
                                   )
                                 }
                                 min={1}
-                                value={watch(`products.${idx}.unitPrice`)}
+                                value={watch(`products.${idx}.unitSellPrice`)}
                               />
                             </td>
                             <td className="font-medium text-center">
-                              {currencyNumberFormat(
-                                watch(`products.${idx}.quantity`) *
-                                  watch(`products.${idx}.unitPrice`)
-                              )}
+                              unit cost
+                            </td>
+                            <td className="font-medium">
+                              {product?.taxRate || 0}
                             </td>
                             <td className="font-medium">
                               {product?.taxRate || 0}
                             </td>
                             <td className="font-medium">
                               {currencyNumberFormat(
-                                calculateTaxAmount(watch(`products.${idx}`))
+                                calculateInvoiceItemTaxAmount(
+                                  watch(`products.${idx}`)
+                                )
                               )}
                             </td>
                             <td className="font-medium">
                               {currencyNumberFormat(
-                                calculateTaxAmount(watch(`products.${idx}`)) +
+                                calculateInvoiceItemTaxAmount(
+                                  watch(`products.${idx}`)
+                                ) +
                                   watch(`products.${idx}.quantity`) *
                                     watch(`products.${idx}.unitPrice`)
                               )}
@@ -404,13 +390,14 @@ const PosPage = () => {
                       )}
 
                       <tr>
+                        <td></td>
                         <td colSpan={5} className="font-semibold text-right">
                           Total
                         </td>
                         <td>{getTotalTaxAmount(watch("products") || [])}</td>
                         <td>
                           {currencyNumberFormat(
-                            getTotalProductsPrice(watch("products")!)
+                            getNetSellPrice(watch("products")!)
                           )}
                         </td>
                         <td></td>
@@ -427,7 +414,7 @@ const PosPage = () => {
             <Paper p={15} withBorder>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Input.Wrapper
+                  {/* <Input.Wrapper
                     size="md"
                     error={<ErrorMessage name="discountType" errors={errors} />}
                   >
@@ -449,9 +436,9 @@ const PosPage = () => {
                         },
                       ]}
                     />
-                  </Input.Wrapper>
+                  </Input.Wrapper> */}
 
-                  <Space h={"sm"} />
+                  {/* <Space h={"sm"} />
 
                   <Input.Wrapper
                     size="md"
@@ -470,7 +457,7 @@ const PosPage = () => {
                       radius={0}
                       placeholder="Enter transport cost"
                     />
-                  </Input.Wrapper>
+                  </Input.Wrapper> */}
                 </div>
                 <div>
                   <Input.Wrapper
@@ -493,26 +480,6 @@ const PosPage = () => {
                   </Input.Wrapper>
 
                   <Space h={"sm"} />
-
-                  <Input.Wrapper
-                    size="md"
-                    error={<ErrorMessage name="invoiceTax" errors={errors} />}
-                  >
-                    <Select
-                      label="Invoice Tax"
-                      placeholder="Select tax type"
-                      size="md"
-                      radius={0}
-                      disabled={vatProfileLoading}
-                      defaultValue={watch("taxRate")?.toString()}
-                      data={getVatProfileSelectInputData(
-                        vatProfile?.setup__vats?.nodes as Vat[]
-                      )}
-                      onChange={(e) =>
-                        setValue("taxRate", parseInt(e as string)!)
-                      }
-                    />
-                  </Input.Wrapper>
                 </div>
               </div>
 
@@ -522,27 +489,25 @@ const PosPage = () => {
                 {/* <Flex justify={'space-between'}> */}
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Tax rate</Text>
-                  <Text>{watch("taxRate") || 0} %</Text>
+                  <Text>0 %</Text>
                 </Flex>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Tax amount</Text>
-                  <Text>{currencyNumberFormat(salesVatAmount) || 0} BDT</Text>
+                  <Text>{0} BDT</Text>
                 </Flex>
                 {/* </Flex> */}
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
 
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Cost Amount</Text>
-                  <Text>{currencyNumberFormat(costAmount) || 0} BDT</Text>
+                  <Text>0 BDT</Text>
                 </Flex>
 
                 {/* <hr /> */}
 
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Sub total (Product + Cost)</Text>
-                  <Text>
-                    {currencyNumberFormat(productsPrice + costAmount) || 0} BDT
-                  </Text>
+                  <Text>0 BDT</Text>
                 </Flex>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>
@@ -558,9 +523,9 @@ const PosPage = () => {
                   </Text>
                 </Flex>
                 <Space h={"sm"} />
-                <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50">
+                <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50 text-primary-foreground">
                   <div>Net Total (Subtotal - Discount)</div>{" "}
-                  <div>{currencyNumberFormat(getNetAmount())} BDT</div>
+                  <div>{currencyNumberFormat(0)} BDT</div>
                 </div>
               </Paper>
 
@@ -572,7 +537,7 @@ const PosPage = () => {
                 onClose={holdModalHandler.close}
                 title=""
               >
-                <HoldAction
+                {/* <HoldAction
                   formData={
                     {
                       clientId: watch("clientId"),
@@ -603,7 +568,7 @@ const PosPage = () => {
                       costAmount: 0,
                     });
                   }}
-                />
+                /> */}
               </Modal>
 
               {/* payment form */}
@@ -618,7 +583,7 @@ const PosPage = () => {
                   formData={{
                     clientId: watch("clientId"),
                     products,
-                    costAmount,
+                    costAmount: 0,
 
                     discountAmount,
                     discountPercentage:
@@ -626,21 +591,18 @@ const PosPage = () => {
                         ? discountValue
                         : 0,
                     discountValue,
-                    discountMode,
+                    invoiceDiscountMode: discountMode,
+                    netTaxAmount: 0,
 
                     subTotal: productsPrice,
-                    netTotal: getNetAmount(),
-
-                    taxRate,
-                    taxAmount: salesVatAmount,
+                    netTotal: 0,
                   }}
                   onSuccess={() => {
                     paymentModalHandler.close();
                     reset({
                       clientId: "",
-                      discountMode: ProductDiscountMode.Amount,
+                      invoiceDiscountMode: ProductDiscountMode.Amount,
                       discountValue: 0,
-                      taxRate: 0,
                       products: [],
                       costAmount: 0,
                     });
@@ -673,9 +635,8 @@ const PosPage = () => {
                   onClick={() =>
                     reset({
                       clientId: "",
-                      discountMode: ProductDiscountMode.Amount,
-                      taxRate: 0,
-                      taxAmount: 0,
+                      invoiceDiscountMode: ProductDiscountMode.Amount,
+                      netTaxAmount: 0,
                       products: [],
                       costAmount: 0,
                     })
@@ -688,6 +649,8 @@ const PosPage = () => {
               </Group>
             </Paper>
           </div>
+
+          <pre>{JSON.stringify(watch("products"), null, 2)}</pre>
 
           {/*  
               Right Side
@@ -711,15 +674,13 @@ const Pos_Form_Validation_Schema = Yup.object().shape({
     .min(1, "You must have to select at least one product")
     .label("Purchase products"),
 
-  discountMode: Yup.string().default("").label("Discount type"),
+  invoiceDiscountMode: Yup.string().default("").label("Discount type"),
   discountValue: Yup.number().default(0).label("Discount value"), // amount, %
   // discountAmount: Yup.number().optional().label("Discount amount"),
   // discountPercentage: Yup.number().optional().label("Discount %"),
 
   costAmount: Yup.number().default(0).label("Transport cost"),
-
-  taxRate: Yup.number().default(0).label("Tax rate"),
-  taxAmount: Yup.number().default(0).label("Tax amount"),
+  netTaxAmount: Yup.number().default(0).label("Tax amount"),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;
