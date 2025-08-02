@@ -206,7 +206,6 @@ const InvoicesPage = () => {
         )}
       </Drawer>
 
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
       <DataTable
         columns={columns}
         data={data?.inventory__productInvoices.nodes ?? []}
@@ -227,18 +226,6 @@ const InvoicesPage = () => {
             </Menu.Item>
           </>
         )}
-        // ActionArea={
-        //   <>
-        //     <Button
-        //       leftIcon={<IconPlus size={16} />}
-        //     //   component={Link}
-        //     //   to={`/${params.tenant}/inventory-management/purchases/create`}
-        //       size="sm"
-        //     >
-        //       Add new
-        //     </Button>
-        //   </>
-        // }
         loading={loading || state.refetching}
       />
     </>

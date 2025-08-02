@@ -49,18 +49,26 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
         }
         subTotal={invoiceQuery.data?.inventory__productInvoice?.subTotal || 0}
         netTotal={invoiceQuery.data?.inventory__productInvoice?.netTotal || 0}
-        vatAmount={
+        netTaxAmount={
           invoiceQuery.data?.inventory__productInvoice?.netTaxAmount || 0
         }
-        vatSuffix={""}
-        discountSuffix={
-          invoiceQuery.data?.inventory__productInvoice.invoiceDiscountMode ===
-          ProductDiscountMode.Percentage
-            ? `(${invoiceQuery.data?.inventory__productInvoice.invoiceDiscountPercentage}%)`
-            : ""
-        }
-        discountAmount={
+        netSubtotalDiscount={
           invoiceQuery.data?.inventory__productInvoice?.netDiscountAmount || 0
+        }
+        invoiceDiscountPercentage={
+          invoiceQuery.data?.inventory__productInvoice
+            ?.invoiceDiscountPercentage || 0
+        }
+        invoiceDiscountAmount={
+          invoiceQuery.data?.inventory__productInvoice?.invoiceDiscountAmount ||
+          0
+        }
+        invoiceDiscountMode={
+          invoiceQuery.data?.inventory__productInvoice?.invoiceDiscountMode ||
+          ProductDiscountMode.Percentage
+        }
+        netSellPrice={
+          invoiceQuery.data?.inventory__productInvoice?.netSellPrice || 0
         }
         customerInfo={
           invoiceQuery.data?.inventory__productInvoice?.client
@@ -94,13 +102,19 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
           invoiceQuery.data?.inventory__productInvoice?.products.map(
             (item, index) => ({
               sl: index + 1,
-              productName: item.name,
+              name: item.name,
               quantity: item.quantity,
               unitPrice: item.unitPrice || 0,
+              unitSellPrice: item.unitSellPrice || 0,
+              discountAmount: item.discountAmount || 0,
               netAmount: item.netAmount,
             })
           ) || []
         }
+        netDiscountAmount={
+          invoiceQuery.data?.inventory__productInvoice?.netDiscountAmount || 0
+        }
+        costAmount={0}
       />
     </>
   );

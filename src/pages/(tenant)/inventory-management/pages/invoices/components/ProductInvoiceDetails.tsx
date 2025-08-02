@@ -31,11 +31,11 @@ const ProductInvoiceDetails: React.FC<{
     <tr>
       <th>Product Name</th>
       <th>Code</th>
-      <th>Unit Price</th>
-      <th>Tax Rate</th>
-      <th>Tax Type</th>
-      <th>Tax Amount</th>
+      <th>Unit purchase price</th>
+      <th>Unit sell price</th>
       <th>Quantity</th>
+      <th>Tax rate</th>
+      <th>Tax amount</th>
       <th>Net Amount</th>
     </tr>
   );
@@ -80,11 +80,11 @@ const ProductInvoiceDetails: React.FC<{
         {}
       </td>
       <td>{element.code} </td>
-      <td>{element.unitPrice} </td>
-      <td>{element.taxRate} </td>
-      <td>{element.taxType} </td>
-      <td>{element.taxAmount} </td>
+      <td>{element.unitPurchasePrice} </td>
+      <td>{element.unitSellPrice} </td>
       <td>{element.quantity} </td>
+      <td>{element.taxRate} </td>
+      <td>{element.taxAmount} </td>
       <td>{element.netAmount} </td>
     </tr>
   ));
@@ -111,31 +111,27 @@ const ProductInvoiceDetails: React.FC<{
             {dateFormat(details.date)}
           </Text>
           <Text className="flex justify-between">
-            <span className="font-semibold">Tax Rate:</span>
-            {currencyNumberFormat(details?.taxRate)}
-          </Text>
-          <Text className="flex justify-between">
             <span className="font-semibold">Tax Amount:</span>
-            {currencyNumberFormat(details?.taxAmount)}
+            {currencyNumberFormat(details?.netTaxAmount)}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
               Discount Amount:
             </span>
-            {details?.discountAmount}
+            {details?.netDiscountAmount}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
               {" "}
               Discount Percentage:
             </span>
-            {details?.discountPercentage}
+            {details?.invoiceDiscountPercentage}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
               Discount Mode:
             </span>
-            {details?.discountMode}
+            {details?.invoiceDiscountMode}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">

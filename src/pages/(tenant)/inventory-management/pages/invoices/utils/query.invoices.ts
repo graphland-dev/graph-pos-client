@@ -27,11 +27,12 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
           }
         }
         date
-        taxRate
-        taxAmount
-        discountPercentage
-        discountAmount
-        discountMode
+        netTaxAmount
+        netSubtotalDiscount
+        invoiceDiscountAmount
+        invoiceDiscountMode
+        invoiceDiscountPercentage
+        netDiscountAmount
         subTotal
         costAmount
         netTotal
@@ -50,10 +51,16 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
           name
           code
           unitPrice
+          unitSellPrice
           taxRate
-          taxType
           taxAmount
           quantity
+          unitPurchasePrice
+          netSellPrice
+          netPurchaseAmount
+          netProfit
+          discountAmount
+          netSubtotal
           netAmount
         }
         client {
