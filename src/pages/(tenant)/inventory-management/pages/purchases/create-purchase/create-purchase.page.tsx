@@ -1,9 +1,10 @@
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
 import {
+  CostItemReferenceInput,
   MatchOperator,
   Product,
   ProductItemReference,
-  ProductTaxType,
+  ProductPurchaseItemReferenceInput,
   ProductsWithPagination,
   Supplier,
   SuppliersWithPagination,
@@ -17,6 +18,7 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ActionIcon,
+  Box,
   Button,
   Drawer,
   Flex,
@@ -36,13 +38,7 @@ import { IconMinus, IconPlus, IconX } from "@tabler/icons-react";
 import { clsx } from "clsx";
 import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import {
-  calculateInvoiceItemTaxAmount,
-  getNetSellPrice,
-  getTotalCostAmount,
-  getTotalTaxAmount,
-  getVatProfileSelectInputData,
-} from "./utils/helpers";
+import { getVatProfileSelectInputData } from "./utils/helpers";
 
 import currencyNumberFormat from "@/commons/utils/commaNumber";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -50,7 +46,6 @@ import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
 import ProductsCardList from "./components/ProductsCardList";
-import SummaryCard from "./components/SummaryCard";
 import SuppliersCardList from "./components/SuppliersCardList";
 import {
   CREATE_INVENTORY_PRODUCT_PURCHASE,
@@ -154,7 +149,7 @@ const CreatePurchasePage = () => {
       // products: [],
       // costs: [],
       // supplierId: "",
-      // taxRate: 0,
+      taxRate: 0,
     },
     resolver: yupResolver(Schema_Validation),
     mode: "onChange",
@@ -179,31 +174,62 @@ const CreatePurchasePage = () => {
   });
 
   function handleAddProductToList(product: Product) {
-    const price = product?.price || 0;
-    const percentage = product.vat?.percentage || 0;
-
-    // Check the product is already exits in productsFields
     const locationIndex = productFields.findIndex(
       (p) => p?.referenceId === product?._id
     );
     if (locationIndex == -1) {
       appendProduct({
-        name: product.name,
-        referenceId: product._id,
+        name: product.name || "",
+        referenceId: product._id || "",
+        code: product.code || "",
+        unitPurchasePrice: product.purchasePrice || 0,
         quantity: 1,
-        subAmount: price,
-        unitPrice: price,
-        netAmount: 0,
-        taxAmount: (price * percentage) / 100,
-        taxRate: product.vat?.percentage || 0,
-        taxType: ProductTaxType.Inclusive,
-      });
+      } satisfies ProductPurchaseItemReferenceInput);
     } else {
       setValue(
         `products.${locationIndex}.quantity`,
         watch(`products.${locationIndex}.quantity`) + 1
       );
     }
+  }
+
+  function getNetPurchasePriceAmount(
+    products: ProductPurchaseItemReferenceInput[]
+  ) {
+    return products?.reduce(
+      (total, current) =>
+        total + (current.unitPurchasePrice ?? 0) * current.quantity,
+      0
+    );
+  }
+
+  function getTotalCostAmount(costs: CostItemReferenceInput[]) {
+    return costs?.reduce((total, current) => total + current.amount, 0);
+  }
+
+  function getTotalTaxAmount(products: ProductPurchaseItemReferenceInput[]) {
+    return products.reduce((total, current) => {
+      const unitSellPrice = current.unitPurchasePrice || 0;
+      const taxRate = watch("taxRate") || 0;
+      const quantity = current.quantity || 0;
+      return total + unitSellPrice * quantity * taxRate;
+    }, 0);
+  }
+
+  function getSubtotal(products: ProductPurchaseItemReferenceInput[]) {
+    return products.reduce((total, current) => {
+      const unitPrice = current.unitPurchasePrice || 0;
+      const quantity = current.quantity || 0;
+      return total + unitPrice * quantity;
+    }, 0);
+  }
+
+  function getNetTotal() {
+    return (
+      getSubtotal(watch("products") ?? []) +
+      getTotalTaxAmount(watch("products") ?? []) +
+      getTotalCostAmount(watch("costs") ?? [])
+    );
   }
 
   const [createPurchaseProduct, { loading: creatingPurchase }] = useMutation(
@@ -220,29 +246,17 @@ const CreatePurchasePage = () => {
     })
   );
 
-  const onSubmit = (v: any) => {
+  const onSubmit = () => {
     createPurchaseProduct({
       variables: {
         body: {
-          ...v,
-          taxAmount:
-            ((getNetSellPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
-            100,
-
-          // Prices
-          costAmount: getTotalCostAmount(watch("costs")!),
-          subTotal:
-            getNetSellPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!), // products.netAmount + costs.amount
-          netTotal:
-            getNetSellPrice(watch("products")!) +
-            getTotalCostAmount(watch("costs")!) +
-            ((getNetSellPrice(watch("products")!) +
-              getTotalCostAmount(watch("costs")!)) *
-              watch("taxRate")) /
-              100, // subTotal + taxAmount
+          supplierId: watch("supplierId"),
+          purchaseDate: watch("purchaseDate"),
+          purchaseOrderDate: watch("purchaseOrderDate"),
+          note: watch("note"),
+          products: watch("products"),
+          costs: watch("costs"),
+          taxRate: watch("taxRate"),
         },
       },
     });
@@ -361,11 +375,8 @@ const CreatePurchasePage = () => {
                   <tr className="!p-2 rounded-md">
                     <th>Name</th>
                     <th>Quantity</th>
-                    <th>Unit Price</th>
-                    <th>Unit cost</th>
-                    <th>Tax %</th>
-                    <th>Tax Amount</th>
-                    <th>Total cost</th>
+                    <th>Unit purchase price</th>
+                    <th>Cost</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -393,37 +404,22 @@ const CreatePurchasePage = () => {
                             w={100}
                             onChange={(v) =>
                               setValue(
-                                `products.${idx}.unitPrice`,
+                                `products.${idx}.unitPurchasePrice`,
                                 parseInt(v as string)
                               )
                             }
                             min={1}
-                            value={watch(`products.${idx}.unitPrice`)}
+                            value={watch(`products.${idx}.unitPurchasePrice`)}
                           />
                         </td>
-                        <td className="font-medium text-center">
+                        <td className="font-medium text-left">
                           {currencyNumberFormat(
                             watch(`products.${idx}.quantity`) *
-                              watch(`products.${idx}.unitPrice`)
-                          )}
+                              watch(`products.${idx}.unitPurchasePrice`)
+                          )}{" "}
+                          BDT
                         </td>
-                        <td className="font-medium">{product?.taxRate || 0}</td>
-                        <td className="font-medium">
-                          {currencyNumberFormat(
-                            calculateInvoiceItemTaxAmount(
-                              watch(`products.${idx}`)
-                            )
-                          )}
-                        </td>
-                        <td className="font-medium">
-                          {currencyNumberFormat(
-                            calculateInvoiceItemTaxAmount(
-                              watch(`products.${idx}`)
-                            ) +
-                              watch(`products.${idx}.quantity`) *
-                                watch(`products.${idx}.unitPrice`)
-                          )}
-                        </td>
+
                         <td className="font-medium">
                           <ActionIcon
                             variant="filled"
@@ -441,14 +437,14 @@ const CreatePurchasePage = () => {
                   )}
 
                   <tr>
-                    <td colSpan={5} className="font-semibold text-right">
+                    <td colSpan={3} className="font-semibold text-right">
                       Total
                     </td>
-                    <td>{getTotalTaxAmount(watch("products") || [])}</td>
                     <td>
                       {currencyNumberFormat(
-                        getNetSellPrice(watch("products")!)
-                      )}
+                        getNetPurchasePriceAmount(watch("products")!)
+                      )}{" "}
+                      BDT
                     </td>
                     <td></td>
                   </tr>
@@ -495,7 +491,10 @@ const CreatePurchasePage = () => {
               data={getVatProfileSelectInputData(
                 vatProfile?.setup__vats?.nodes as Vat[]
               )}
-              onChange={(v) => setValue("taxRate", parseInt(v!))}
+              onChange={(value) => {
+                const vatProfile = Number(value ?? 0) ?? 0;
+                setValue("taxRate", vatProfile > 0 ? vatProfile / 100 : 0);
+              }}
               placeholder="Select vat profile"
               disabled={vatProfileLoading}
             />
@@ -564,9 +563,6 @@ const CreatePurchasePage = () => {
                 <NumberInput
                   size="xs"
                   placeholder="Write cost amount"
-                  // {...register(`costs.${idx}.amount`, {
-                  // 	valueAsNumber: true,
-                  // })}
                   onChange={(v) =>
                     setValue(`costs.${idx}.amount`, parseInt(v as string))
                   }
@@ -590,8 +586,34 @@ const CreatePurchasePage = () => {
           ))}
 
           <Space h={50} />
-
-          <SummaryCard watch={watch} />
+          {/* Summary */}
+          <Paper withBorder p={"sm"} mb={"xl"} w={"45%"}>
+            <Flex justify={"space-between"}>
+              <Text fw={"bold"}>Subtotal</Text>
+              <Text>{getSubtotal(watch("products") ?? []) || 0} BDT</Text>
+            </Flex>
+            <Flex justify={"space-between"}>
+              <Box>
+                <Text fw={"bold"}>Tax ({watch("taxRate") * 100}%)</Text>
+              </Box>
+              <Box>
+                <Text>
+                  {currencyNumberFormat(
+                    getTotalTaxAmount(watch("products") ?? [])
+                  ) || 0}{" "}
+                  BDT
+                </Text>
+              </Box>
+            </Flex>
+            <Flex justify={"space-between"}>
+              <Text fw={"bold"}>Cost Amount</Text>
+              <Text>{getTotalCostAmount(watch("costs") ?? []) || 0} BDT</Text>
+            </Flex>
+            <Flex justify={"space-between"}>
+              <Text fw={"bold"}>Total Bill</Text>
+              <Text>{getNetTotal() || 0} BDT</Text>
+            </Flex>
+          </Paper>
           <Space h={10} />
           <Button type="submit" loading={creatingPurchase} fullWidth>
             Submit

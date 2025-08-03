@@ -5,35 +5,30 @@ export const Inventory__product_Purchases_Query = gql`
     inventory__productPurchases(where: $where) {
       nodes {
         _id
+        tenant
         purchaseUID
         products {
           referenceId
           name
-          unitPrice
-          taxRate
-          taxType
-          taxAmount
+          code
           quantity
-          netAmount
+          unitPurchasePrice
+          netPurchaseAmount
         }
         paymentHistory {
-          amount
-          committedBy {
-            email
-            name
-            referenceId
-          }
-          date
-          paymentUID
           referenceId
-        }
-        costs {
-          name
+          committedBy {
+            referenceId
+            name
+            email
+          }
+          paymentUID
+          date
           amount
-          note
         }
         supplier {
           _id
+          tenant
           name
           companyName
           contactNumber
@@ -44,7 +39,7 @@ export const Inventory__product_Purchases_Query = gql`
         }
         purchaseDate
         purchaseOrderDate
-        # taxRate
+        taxRate
         taxAmount
         discountPercentage
         discountAmount
@@ -56,12 +51,6 @@ export const Inventory__product_Purchases_Query = gql`
         note
         createdAt
         updatedAt
-      }
-      meta {
-        totalCount
-        currentPage
-        hasNextPage
-        totalPages
       }
     }
   }
