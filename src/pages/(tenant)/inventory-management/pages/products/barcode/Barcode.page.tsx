@@ -19,8 +19,8 @@ import {
 import Barcode from "react-jsbarcode";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../products-list/utils/product.query";
 // import JsBarcode from "jsbarcode";
-import PageTitle from "@/commons/components/PageTitle";
 import AutoComplete from "@/commons/components/AutoComplete.tsx";
+import PageTitle from "@/commons/components/PageTitle";
 import { Generate_Barcode_Type } from "@/commons/models/barcode.type";
 import { useDebouncedState } from "@mantine/hooks";
 import { IconPrinter, IconTrash } from "@tabler/icons-react";
@@ -43,7 +43,7 @@ const BarcodePage = () => {
 
   const printRef = useRef<HTMLDivElement | null>(null);
   const handlePrint = useReactToPrint({
-    content: () => printRef.current!,
+    contentRef: printRef,
   });
 
   const { data: searchedProducts, loading } = useQuery<{

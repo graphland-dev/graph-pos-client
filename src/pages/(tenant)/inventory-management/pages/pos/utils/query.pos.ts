@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const Pos_Client_Query = gql`
   query Pos_Client_Query($where: CommonPaginationDto) {
@@ -60,6 +60,7 @@ export const Pos_Products_Query = gql`
         discountAmount
         discountMode
         discountPercentage
+        purchasePrice
         code
         name
         price

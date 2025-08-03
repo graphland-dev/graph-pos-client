@@ -1,24 +1,28 @@
-import DataTable from '@/commons/components/DataTable.tsx';
-import PageTitle from '@/commons/components/PageTitle';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import DataTable from "@/commons/components/DataTable.tsx";
+import PrintableFullInvoice from "@/commons/components/invoice/PrintableFullInvoice";
+import PageTitle from "@/commons/components/PageTitle";
 import {
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
-} from '@/commons/graphql-models/graphql';
-import { useLazyQuery, useQuery } from '@apollo/client';
-import { Badge, Drawer, Menu, Text } from '@mantine/core';
-import { useSetState } from '@mantine/hooks';
-import { IconFileInfo } from '@tabler/icons-react';
-import { MRT_ColumnDef } from 'mantine-react-table';
-import { useEffect, useMemo, useState } from 'react';
-import { INVENTORY_PRODUCT_INVOICES_QUERY } from './utils/query.invoices';
-import ProductInvoiceDetails from './components/ProductInvoiceDetails';
-import { useSearchParams } from 'react-router-dom';
+} from "@/commons/graphql-models/graphql";
+import currencyNumberFormat from "@/commons/utils/commaNumber";
+import dateFormat from "@/commons/utils/dateFormat";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
+import { useSetState } from "@mantine/hooks";
+import { IconFileInfo } from "@tabler/icons-react";
+import { PrinterIcon } from "lucide-react";
+import { MRT_ColumnDef } from "mantine-react-table";
+import { useEffect, useMemo, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
+import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
+import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
 interface IState {
   refetching: boolean;
   openDrawer: boolean;
+  openPrintableInvoice: boolean;
+  printableInvoiceId?: string;
 }
 
 const InvoicesPage = () => {
@@ -26,6 +30,8 @@ const InvoicesPage = () => {
   const [state, setState] = useSetState<IState>({
     refetching: false,
     openDrawer: false,
+    openPrintableInvoice: false,
+    printableInvoiceId: undefined,
   });
   const { data, loading, refetch } = useQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
@@ -39,78 +45,85 @@ const InvoicesPage = () => {
   });
 
   const [searchParams] = useSearchParams();
-  const invoiceId = searchParams.get('invoiceId');
+  const invoiceId = searchParams.get("invoiceId");
+  const params = useParams<{ tenant: string }>();
 
   const [productInvoice] = useLazyQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
   }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
-    fetchPolicy: 'network-only',
+    fetchPolicy: "network-only",
   });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
       {
-        accessorKey: 'invoiceUID',
-        header: 'Invoice UID',
+        accessorKey: "invoiceUID",
+        header: "Invoice UID",
       },
       {
-        accessorKey: 'client.name',
-        header: 'Client Name',
+        accessorFn(originalRow) {
+          return (
+            originalRow?.client?.name || (
+              <p className="px-2 bg-destructive/10">No Client</p>
+            )
+          );
+        },
+        header: "Client Name",
       },
       {
         accessorFn: (row: ProductInvoice) =>
-          row?.date ? dateFormat(row?.date) : '',
-        header: 'Purchase Date',
+          row?.date ? dateFormat(row?.date) : "",
+        header: "Purchase Date",
       },
       {
-        accessorKey: 'subTotal',
+        accessorKey: "subTotal",
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
-        header: 'Sub Total',
+        header: "Sub Total",
       },
       {
-        accessorKey: 'dueAmount',
+        accessorKey: "dueAmount",
         accessorFn: (originalRow: ProductInvoice) => {
           const paidAmount = originalRow?.paidAmount || 0;
           const netTotal = originalRow?.netTotal || 0;
 
           const totalDue = netTotal - paidAmount;
 
-          let color = 'red';
+          let color = "red";
           if (totalDue > 0 && paidAmount !== 0) {
-            color = 'yellow';
+            color = "yellow";
           }
           if (totalDue === 0 && paidAmount !== 0) {
-            color = 'green';
+            color = "green";
           }
 
           return (
             <Badge color={color}>{`${currencyNumberFormat(
-              originalRow?.netTotal - (originalRow?.paidAmount || 0),
+              originalRow?.netTotal - (originalRow?.paidAmount || 0)
             )} BDT`}</Badge>
           );
         },
 
-        header: 'Due Amount',
+        header: "Due Amount",
       },
       {
-        accessorKey: 'paidAmount',
+        accessorKey: "paidAmount",
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
-        header: 'Paid Amount',
+        header: "Paid Amount",
       },
       {
-        accessorKey: 'netTotal',
+        accessorKey: "netTotal",
         accessorFn: (originalRow: ProductInvoice) =>
           `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
-        header: 'Net Total',
+        header: "Net Total",
       },
       {
-        accessorKey: 'source',
-        header: 'Source',
+        accessorKey: "source",
+        header: "Source",
       },
     ],
-    [],
+    []
   );
 
   const handleRefetch = (variables: any) => {
@@ -121,14 +134,13 @@ const InvoicesPage = () => {
   };
 
   useEffect(() => {
-    console.log(invoiceId);
     if (invoiceId) {
       productInvoice({
         variables: {
           where: {
             filters: [
               {
-                key: '_id',
+                key: "_id",
                 operator: MatchOperator.Eq,
                 value: invoiceId,
               },
@@ -149,18 +161,51 @@ const InvoicesPage = () => {
       <PageTitle title="invoice-details" />
 
       <Drawer
-        onClose={() =>
-          setState({
-            openDrawer: false,
-          })
+        onClose={() => setState({ openDrawer: false })}
+        title={
+          <div className="flex items-center justify-between gap-3">
+            <Text className="text-2xl font-semibold">Invoice Details</Text>
+            <Button
+              variant="outline"
+              leftIcon={<PrinterIcon />}
+              onClick={() =>
+                setState({
+                  openPrintableInvoice: true,
+                  printableInvoiceId: invoiceDetails?._id,
+                })
+              }
+            >
+              Print
+            </Button>
+          </div>
         }
-        title={<Text className="text-2xl font-semibold">Invoice Details</Text>}
         opened={state.openDrawer}
-        size={'90%'}
+        size={"100%"}
       >
         <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
       </Drawer>
-      {/* <pre>{JSON.stringify(data, null, 2)}</pre> */}
+
+      <Drawer
+        onClose={() =>
+          setState({
+            openPrintableInvoice: false,
+            printableInvoiceId: undefined,
+          })
+        }
+        title={
+          <Text className="text-2xl font-semibold">Printable Invoice</Text>
+        }
+        opened={state.openPrintableInvoice}
+        size={"80%"}
+      >
+        {state.printableInvoiceId && (
+          <PrintableFullInvoice
+            invoiceId={state.printableInvoiceId}
+            tenant={params.tenant ?? ""}
+          />
+        )}
+      </Drawer>
+
       <DataTable
         columns={columns}
         data={data?.inventory__productInvoices.nodes ?? []}
@@ -181,18 +226,6 @@ const InvoicesPage = () => {
             </Menu.Item>
           </>
         )}
-        // ActionArea={
-        //   <>
-        //     <Button
-        //       leftIcon={<IconPlus size={16} />}
-        //     //   component={Link}
-        //     //   to={`/${params.tenant}/inventory-management/purchases/create`}
-        //       size="sm"
-        //     >
-        //       Add new
-        //     </Button>
-        //   </>
-        // }
         loading={loading || state.refetching}
       />
     </>

@@ -1,4 +1,9 @@
-import { Combobox } from "@headlessui/react";
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxOption,
+  ComboboxOptions,
+} from "@headlessui/react";
 import { clsx } from "@mantine/core";
 import { useDebouncedState } from "@mantine/hooks";
 import React, { Fragment, useEffect } from "react";
@@ -33,7 +38,7 @@ const AutoComplete: React.FC<Prop> = ({
     <Combobox onChange={onSelect}>
       <div className="relative w-full">
         <div className="relative">
-          <Combobox.Input
+          <ComboboxInput
             placeholder={placeholder}
             onChange={(event) => setSearchTerm(event.target.value)}
             className={"border border-slate-300 px-2 py-3 rounded-md w-full"}
@@ -61,35 +66,35 @@ const AutoComplete: React.FC<Prop> = ({
             </svg>
           )}
         </div>
-        <Combobox.Options
+        <ComboboxOptions
           className={
             "absolute top-10 left-0 w-full shadow-lg z-50 rounded-md bg-slate-100"
           }
         >
           {data?.map((item: any, idx: number) => (
-            <Combobox.Option key={idx} value={item} as={Fragment}>
-              {({ active }) => (
+            <ComboboxOption key={idx} value={item} as={Fragment}>
+              {({ focus }) => (
                 <li
                   className={clsx("px-2 py-1 text-gray-600", {
-                    "bg-primary-200": active,
+                    "bg-primary-200": focus,
                   })}
                 >
                   {item[labelKey]}
                 </li>
               )}
-            </Combobox.Option>
+            </ComboboxOption>
           ))}
 
           {!data.length && !loading && (
-            <Combobox.Option value={searchTerm} as={Fragment}>
-              {({ active }) => (
-                <li className={clsx("px-2 py-1", { "bg-blue-200": active })}>
+            <ComboboxOption value={searchTerm} as={Fragment}>
+              {({ focus }) => (
+                <li className={clsx("px-2 py-1", { "bg-blue-200": focus })}>
                   {NoResultComponent}
                 </li>
               )}
-            </Combobox.Option>
+            </ComboboxOption>
           )}
-        </Combobox.Options>
+        </ComboboxOptions>
       </div>
     </Combobox>
   );

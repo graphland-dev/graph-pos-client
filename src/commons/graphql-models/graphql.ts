@@ -257,37 +257,24 @@ export type CreateProductInput = {
 };
 
 export type CreateProductInvoiceInput = {
-  clientId: Scalars['String']['input'];
-  costAmount: Scalars['Float']['input'];
-  costs?: InputMaybe<Array<CostItemReferenceInput>>;
+  clientId?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
-  discountAmount?: InputMaybe<Scalars['Float']['input']>;
-  discountMode?: InputMaybe<ProductDiscountMode>;
-  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
-  netTotal: Scalars['Float']['input'];
+  invoiceDiscountAmount?: InputMaybe<Scalars['Float']['input']>;
+  invoiceDiscountMode?: InputMaybe<ProductDiscountMode>;
+  invoiceDiscountPercentage?: InputMaybe<Scalars['Float']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
   products: Array<ProductItemReferenceInput>;
   reference?: InputMaybe<Scalars['String']['input']>;
   status?: InputMaybe<Purchase_Invoice_Status>;
-  subTotal: Scalars['Float']['input'];
-  taxAmount?: InputMaybe<Scalars['Float']['input']>;
-  taxRate?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CreateProductPurchaseInput = {
-  costAmount: Scalars['Float']['input'];
   costs?: InputMaybe<Array<CostItemReferenceInput>>;
-  discountAmount?: InputMaybe<Scalars['Float']['input']>;
-  discountMode?: InputMaybe<ProductDiscountMode>;
-  discountPercentage?: InputMaybe<Scalars['Float']['input']>;
-  netTotal: Scalars['Float']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
-  products: Array<ProductItemReferenceInput>;
+  products: Array<ProductPurchaseItemReferenceInput>;
   purchaseDate?: InputMaybe<Scalars['DateTime']['input']>;
   purchaseOrderDate?: InputMaybe<Scalars['DateTime']['input']>;
-  subTotal: Scalars['Float']['input'];
   supplierId: Scalars['String']['input'];
-  taxAmount: Scalars['Float']['input'];
   taxRate: Scalars['Float']['input'];
 };
 
@@ -1075,6 +1062,7 @@ export type Product = {
   note?: Maybe<Scalars['String']['output']>;
   partId?: Maybe<Scalars['String']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
+  purchasePrice?: Maybe<Scalars['Float']['output']>;
   stockInQuantity: Scalars['Int']['output'];
   stockOutQuantity: Scalars['Int']['output'];
   taxType?: Maybe<ProductTaxType>;
@@ -1117,10 +1105,15 @@ export type ProductInvoice = {
   costs: Array<CostItemReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   date?: Maybe<Scalars['DateTime']['output']>;
-  discountAmount?: Maybe<Scalars['Float']['output']>;
-  discountMode?: Maybe<ProductDiscountMode>;
-  discountPercentage?: Maybe<Scalars['Float']['output']>;
+  invoiceDiscountAmount?: Maybe<Scalars['Float']['output']>;
+  invoiceDiscountMode?: Maybe<ProductDiscountMode>;
+  invoiceDiscountPercentage?: Maybe<Scalars['Float']['output']>;
   invoiceUID?: Maybe<Scalars['String']['output']>;
+  netDiscountAmount?: Maybe<Scalars['Float']['output']>;
+  netProfit?: Maybe<Scalars['Float']['output']>;
+  netSellPrice?: Maybe<Scalars['Float']['output']>;
+  netSubtotalDiscount?: Maybe<Scalars['Float']['output']>;
+  netTaxAmount: Scalars['Float']['output'];
   netTotal: Scalars['Float']['output'];
   note?: Maybe<Scalars['String']['output']>;
   paidAmount?: Maybe<Scalars['Float']['output']>;
@@ -1129,8 +1122,6 @@ export type ProductInvoice = {
   source?: Maybe<Product_Sell_Source>;
   status?: Maybe<Purchase_Invoice_Status>;
   subTotal: Scalars['Float']['output'];
-  taxAmount: Scalars['Float']['output'];
-  taxRate: Scalars['Float']['output'];
   tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -1144,33 +1135,36 @@ export type ProductInvoicesWithPagination = {
 export type ProductItemReference = {
   __typename?: 'ProductItemReference';
   code?: Maybe<Scalars['String']['output']>;
+  discountAmount: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   netAmount: Scalars['Float']['output'];
+  netProfit: Scalars['Float']['output'];
+  netPurchaseAmount: Scalars['Float']['output'];
+  netSellPrice?: Maybe<Scalars['Float']['output']>;
+  netSubtotal: Scalars['Float']['output'];
   quantity: Scalars['Int']['output'];
   referenceId: Scalars['ID']['output'];
   taxAmount: Scalars['Float']['output'];
   taxRate: Scalars['Float']['output'];
-  taxType: ProductTaxType;
-  unitPrice: Scalars['Float']['output'];
+  unitPrice?: Maybe<Scalars['Float']['output']>;
+  unitPurchasePrice?: Maybe<Scalars['Float']['output']>;
+  unitSellPrice?: Maybe<Scalars['Float']['output']>;
 };
 
 export type ProductItemReferenceInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  netAmount: Scalars['Float']['input'];
   quantity: Scalars['Int']['input'];
   referenceId: Scalars['ID']['input'];
-  stock?: InputMaybe<Scalars['Int']['input']>;
-  subAmount: Scalars['Float']['input'];
-  taxAmount: Scalars['Float']['input'];
   taxRate: Scalars['Float']['input'];
-  taxType: ProductTaxType;
   unitPrice: Scalars['Float']['input'];
+  unitSellPrice: Scalars['Float']['input'];
 };
 
 export type ProductPurchase = {
   __typename?: 'ProductPurchase';
   _id: Scalars['ID']['output'];
+  committedBy?: Maybe<UserReference>;
   costAmount: Scalars['Float']['output'];
   costs: Array<CostItemReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1181,7 +1175,7 @@ export type ProductPurchase = {
   note?: Maybe<Scalars['String']['output']>;
   paidAmount?: Maybe<Scalars['Float']['output']>;
   paymentHistory?: Maybe<Array<ProductPurchasePaymentHistoryReference>>;
-  products: Array<ProductItemReference>;
+  products: Array<ProductPurchaseItemReference>;
   purchaseDate?: Maybe<Scalars['DateTime']['output']>;
   purchaseOrderDate?: Maybe<Scalars['DateTime']['output']>;
   purchaseUID?: Maybe<Scalars['String']['output']>;
@@ -1191,6 +1185,23 @@ export type ProductPurchase = {
   taxRate: Scalars['Float']['output'];
   tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductPurchaseItemReference = {
+  __typename?: 'ProductPurchaseItemReference';
+  code?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  quantity: Scalars['Int']['output'];
+  referenceId: Scalars['ID']['output'];
+  unitPurchasePrice?: Maybe<Scalars['Float']['output']>;
+};
+
+export type ProductPurchaseItemReferenceInput = {
+  code?: InputMaybe<Scalars['String']['input']>;
+  name: Scalars['String']['input'];
+  quantity: Scalars['Int']['input'];
+  referenceId: Scalars['ID']['input'];
+  unitPurchasePrice?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type ProductPurchasePaymentHistoryReference = {
@@ -1314,6 +1325,7 @@ export type Query = {
   identity__myPermissions?: Maybe<Array<RolePermission>>;
   identity__myTenants: TenantsWithPagination;
   identity__roles: RolesWithPagination;
+  identity__tenant?: Maybe<Tenant>;
   identity__tenants: TenantsWithPagination;
   identity__users: UsersWithPagination;
   inventory__product: Product;
@@ -1426,6 +1438,11 @@ export type QueryIdentity__MyPermissionsArgs = {
 
 export type QueryIdentity__RolesArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryIdentity__TenantArgs = {
+  tenant: Scalars['String']['input'];
 };
 
 
@@ -1944,6 +1961,20 @@ export enum Link__Purpose {
   Security = 'SECURITY'
 }
 
+export type Inventory__ProductInvoiceQueryVariables = Exact<{
+  where: CommonFindDocumentDto;
+}>;
+
+
+export type Inventory__ProductInvoiceQuery = { __typename?: 'Query', inventory__productInvoice: { __typename?: 'ProductInvoice', _id: string, tenant?: string | null, invoiceUID?: string | null, status?: Purchase_Invoice_Status | null, date?: any | null, netTaxAmount: number, netSellPrice?: number | null, netSubtotalDiscount?: number | null, invoiceDiscountAmount?: number | null, invoiceDiscountMode?: ProductDiscountMode | null, invoiceDiscountPercentage?: number | null, netDiscountAmount?: number | null, subTotal: number, costAmount: number, netTotal: number, paidAmount?: number | null, note?: string | null, source?: Product_Sell_Source | null, createdAt?: any | null, updatedAt?: any | null, client?: { __typename?: 'Client', address?: string | null, contactNumber: string, email?: string | null, name: string, tenant?: string | null, _id: string, createdAt?: any | null, attachments?: Array<{ __typename?: 'ServerFileReference', meta?: string | null, path?: string | null, provider?: ServerFileProvider | null }> | null } | null, committedBy?: { __typename?: 'UserReference', email?: string | null, name?: string | null, referenceId?: string | null } | null, products: Array<{ __typename?: 'ProductItemReference', referenceId: string, name: string, code?: string | null, unitPrice?: number | null, unitSellPrice?: number | null, taxRate: number, taxAmount: number, quantity: number, unitPurchasePrice?: number | null, netSellPrice?: number | null, netPurchaseAmount: number, netProfit: number, discountAmount: number, netSubtotal: number, netAmount: number }> } };
+
+export type Identity__TenantQueryVariables = Exact<{
+  tenant: Scalars['String']['input'];
+}>;
+
+
+export type Identity__TenantQuery = { __typename?: 'Query', identity__tenant?: { __typename?: 'Tenant', _id: string, name: string, address?: string | null, businessPhoneNumber?: string | null, description?: string | null, uid?: string | null, subscriptionType?: SubscriptionType | null, allowedCollections?: Array<string> | null, createdAt?: any | null, updatedAt?: any | null } | null };
+
 export type Root_QueryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -1989,6 +2020,8 @@ export type Identity__MyTenantsQueryVariables = Exact<{ [key: string]: never; }>
 export type Identity__MyTenantsQuery = { __typename?: 'Query', identity__myTenants: { __typename?: 'TenantsWithPagination', nodes?: Array<{ __typename?: 'Tenant', _id: string, name: string, uid?: string | null, createdAt?: any | null, logo?: { __typename?: 'ServerFileReference', meta?: string | null, path?: string | null, provider?: ServerFileProvider | null } | null }> | null } };
 
 
+export const Inventory__ProductInvoiceDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Inventory__productInvoice"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__productInvoice"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceUID"}},{"kind":"Field","name":{"kind":"Name","value":"status"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"attachments"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"netTaxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"netSellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"netSubtotalDiscount"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceDiscountAmount"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceDiscountMode"}},{"kind":"Field","name":{"kind":"Name","value":"invoiceDiscountPercentage"}},{"kind":"Field","name":{"kind":"Name","value":"netDiscountAmount"}},{"kind":"Field","name":{"kind":"Name","value":"subTotal"}},{"kind":"Field","name":{"kind":"Name","value":"costAmount"}},{"kind":"Field","name":{"kind":"Name","value":"netTotal"}},{"kind":"Field","name":{"kind":"Name","value":"paidAmount"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"source"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}},{"kind":"Field","name":{"kind":"Name","value":"committedBy"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"referenceId"}}]}},{"kind":"Field","name":{"kind":"Name","value":"products"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"referenceId"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"unitPrice"}},{"kind":"Field","name":{"kind":"Name","value":"unitSellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"taxRate"}},{"kind":"Field","name":{"kind":"Name","value":"taxAmount"}},{"kind":"Field","name":{"kind":"Name","value":"quantity"}},{"kind":"Field","name":{"kind":"Name","value":"unitPurchasePrice"}},{"kind":"Field","name":{"kind":"Name","value":"netSellPrice"}},{"kind":"Field","name":{"kind":"Name","value":"netPurchaseAmount"}},{"kind":"Field","name":{"kind":"Name","value":"netProfit"}},{"kind":"Field","name":{"kind":"Name","value":"discountAmount"}},{"kind":"Field","name":{"kind":"Name","value":"netSubtotal"}},{"kind":"Field","name":{"kind":"Name","value":"netAmount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"tenant"}}]}}]}}]}}]} as unknown as DocumentNode<Inventory__ProductInvoiceQuery, Inventory__ProductInvoiceQueryVariables>;
+export const Identity__TenantDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__tenant"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__tenant"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"tenant"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tenant"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"subscriptionType"}},{"kind":"Field","name":{"kind":"Name","value":"allowedCollections"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<Identity__TenantQuery, Identity__TenantQueryVariables>;
 export const Root_QueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ROOT_QUERY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Root_QueryQuery, Root_QueryQueryVariables>;
 export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
 export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;

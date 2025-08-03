@@ -19,6 +19,7 @@ import {
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
 import PosItemCard from "./PosItemCard";
 import clsx from "clsx";
+import { playBipSound } from "@/commons/utils/play-bip-sound";
 
 interface IProp {
   onSelectProduct: (product: ProductItemReference) => void;
@@ -32,7 +33,13 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
   const [filteredBrandID, setFilteredBrandID] = useState("");
 
   const buildFilter = useMemo(() => {
-    const filters = [];
+    const filters = [
+      {
+        key: "purchasePrice",
+        operator: MatchOperator.Gte,
+        value: "0",
+      },
+    ];
     if (filteredCategoryID) {
       filters.push({
         key: "category",
@@ -87,8 +94,9 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
 
   // handle emit product
   const handleEmitProduct = (product: Product) => {
-    const audio = new Audio("/beep.mp3");
-    audio.play();
+    if (!product) return;
+
+    playBipSound();
     onSelectProduct(getProductReferenceByQuantity(product, 1));
   };
 

@@ -30,7 +30,7 @@
     --primary-900: #5b6d3c;
 
     --primary: var(--primary-500);
-    --primary-foreground: 0, 100%, 100%;
+    --primary-foreground: 0, 0%, 0%;
 
     --secondary-50: 180, 23%, 95%;
     --secondary-100: 189, 25%, 90%;
