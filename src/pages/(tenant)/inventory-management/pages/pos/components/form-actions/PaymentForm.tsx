@@ -149,7 +149,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
     Update_Invoice_Status,
     {
       onCompleted: () => {
-        onSuccess();
+        onSuccess({ invoiceId: "" });
         onRefetchHoldList();
       },
     }
