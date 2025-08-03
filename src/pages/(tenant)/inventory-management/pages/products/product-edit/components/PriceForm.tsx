@@ -1,20 +1,20 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
-import { MatchOperator, Product } from '@/commons/graphql-models/graphql';
-import { useMutation, useQuery } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Input, SegmentedControl, Space } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router-dom';
-import * as Yup from 'yup';
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
+import { MatchOperator, Product } from "@/commons/graphql-models/graphql";
+import { useMutation, useQuery } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input, SegmentedControl, Space } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
+import * as Yup from "yup";
 import {
   INVENTORY_PRODUCT_PRICE_QUERY,
   INVENTORY_PRODUCT_UPDATE,
-} from '../utils/productEdit.query';
+} from "../utils/productEdit.query";
 
 const PriceForm = () => {
-  const [segment, setSegment] = useState<'AMOUNT' | 'PERCENTAGE'>('PERCENTAGE');
+  const [segment, setSegment] = useState<"AMOUNT" | "PERCENTAGE">("PERCENTAGE");
 
   const { productId } = useParams();
 
@@ -26,6 +26,7 @@ const PriceForm = () => {
   } = useForm({
     defaultValues: {
       price: 0,
+      purchasePrice: 0,
       discountAmount: 0,
       discountPercentage: 0,
     },
@@ -38,7 +39,7 @@ const PriceForm = () => {
   }>(INVENTORY_PRODUCT_PRICE_QUERY, {
     variables: {
       where: {
-        key: '_id',
+        key: "_id",
         operator: MatchOperator.Eq,
         value: productId,
       },
@@ -48,26 +49,31 @@ const PriceForm = () => {
   const [saveForm, { loading: savingInfo }] = useMutation(
     INVENTORY_PRODUCT_UPDATE,
     commonNotifierCallback({
-      successTitle: 'Price information saved!',
+      successTitle: "Price information saved!",
       onSuccess() {
         refetch();
       },
-    }),
+    })
   );
 
   useEffect(() => {
-    setValue('price', priceInfo?.inventory__product?.price as number);
+    setValue("price", priceInfo?.inventory__product?.price ?? 0);
     setValue(
-      'discountAmount',
-      priceInfo?.inventory__product?.discountAmount as number,
+      "discountAmount",
+      priceInfo?.inventory__product?.discountAmount ?? 0
     );
     setValue(
-      'discountPercentage',
-      priceInfo?.inventory__product?.discountPercentage as number,
+      "discountPercentage",
+      priceInfo?.inventory__product?.discountPercentage ?? 0
+    );
+
+    setValue(
+      "purchasePrice",
+      priceInfo?.inventory__product?.purchasePrice ?? 0
     );
 
     setSegment(
-      (priceInfo?.inventory__product?.discountMode as any) ?? 'PERCENTAGE',
+      (priceInfo?.inventory__product?.discountMode as any) ?? "PERCENTAGE"
     );
   }, [priceInfo]);
 
@@ -75,7 +81,7 @@ const PriceForm = () => {
     saveForm({
       variables: {
         where: {
-          key: '_id',
+          key: "_id",
           operator: MatchOperator.Eq,
           value: productId,
         },
@@ -88,27 +94,40 @@ const PriceForm = () => {
     <div>
       <form className="lg:w-8/12" onSubmit={handleSubmit(onSubmit)}>
         <Input.Wrapper
-          label="Price"
+          label="Sell Price"
           error={<ErrorMessage errors={errors} name="price" />}
         >
           <Input
             placeholder="Write product price"
             type="number"
-            {...register('price')}
+            {...register("price")}
           />
         </Input.Wrapper>
 
-        <Space h={'md'} />
+        <Space h={"md"} />
+
+        <Input.Wrapper
+          label="Purchase Price"
+          error={<ErrorMessage errors={errors} name="purchasePrice" />}
+        >
+          <Input
+            placeholder="Write product purchase price"
+            type="number"
+            {...register("purchasePrice")}
+          />
+        </Input.Wrapper>
+
+        <Space h={"md"} />
 
         <SegmentedControl
           value={segment}
-          onChange={(e) => setSegment(e as 'AMOUNT' | 'PERCENTAGE')}
+          onChange={(e) => setSegment(e as "AMOUNT" | "PERCENTAGE")}
           data={[
-            { label: 'Percentage', value: 'PERCENTAGE' },
-            { label: 'Amount', value: 'AMOUNT' },
+            { label: "Percentage", value: "PERCENTAGE" },
+            { label: "Amount", value: "AMOUNT" },
           ]}
         />
-        {segment === 'AMOUNT' && (
+        {segment === "AMOUNT" && (
           <>
             <Input.Wrapper
               label="Discount amount"
@@ -117,13 +136,13 @@ const PriceForm = () => {
               <Input
                 placeholder="Write discount amount"
                 type="number"
-                {...register('discountAmount')}
+                {...register("discountAmount")}
               />
             </Input.Wrapper>
-            <Space h={'sm'} />
+            <Space h={"sm"} />
           </>
         )}
-        {segment === 'PERCENTAGE' && (
+        {segment === "PERCENTAGE" && (
           <>
             <Input.Wrapper
               label="Discount percentage"
@@ -132,14 +151,14 @@ const PriceForm = () => {
               <Input
                 type="number"
                 placeholder="Write discount percentage"
-                {...register('discountPercentage')}
+                {...register("discountPercentage")}
               />
             </Input.Wrapper>
-            <Space h={'sm'} />
+            <Space h={"sm"} />
           </>
         )}
         {/* )} */}
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <Button type="submit" loading={savingInfo}>
           Save
@@ -152,9 +171,10 @@ const PriceForm = () => {
 export default PriceForm;
 
 const PRICE_FORM_SCHEMA = Yup.object().shape({
-  price: Yup.number().required().label('Price'),
-  discountAmount: Yup.number().optional().nullable().label('Amount'),
-  discountPercentage: Yup.number().optional().nullable().label('Percentage'),
+  price: Yup.number().required().label("Price"),
+  purchasePrice: Yup.number().required().label("Purchase Price"),
+  discountAmount: Yup.number().optional().nullable().label("Amount"),
+  discountPercentage: Yup.number().optional().nullable().label("Percentage"),
 });
 
 export interface IPriceFormState

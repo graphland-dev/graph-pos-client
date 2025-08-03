@@ -35,6 +35,7 @@ export const INVENTORY_PRODUCT_PRICE_QUERY = gql`
   query Inventory__product($where: CommonFindDocumentDto!) {
     inventory__product(where: $where) {
       price
+      purchasePrice
       discountAmount
       discountPercentage
       discountMode
