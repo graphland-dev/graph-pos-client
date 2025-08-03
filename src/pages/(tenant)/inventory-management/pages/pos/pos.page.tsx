@@ -50,6 +50,8 @@ const PosPage = () => {
   // const [openedHoldModal, holdModalHandler] = useDisclosure();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
   const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
+  // const [successFullpaymentInvoiceId, setSuccessFullpaymentInvoiceId] =
+  //   useState<string>();
   // Note: This is for hold list
   // const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
   const params = useParams<{ tenant: string }>();
@@ -637,8 +639,10 @@ const PosPage = () => {
                     netTaxAmount: getNetTaxAmount(),
                     invoiceNetTotalBill: invoiceNetTotal(),
                   }}
-                  onSuccess={() => {
+                  onSuccess={({ invoiceId }) => {
                     paymentModalHandler.close();
+                    console.log(invoiceId);
+                    // setSuccessFullpaymentInvoiceId(invoiceId);
                     reset({
                       clientId: "",
                       invoiceDiscountMode: ProductDiscountMode.Amount,

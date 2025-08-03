@@ -1,6 +1,7 @@
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
 import {
   AccountsWithPagination,
+  CommonMutationResponse,
   CreateProductInvoiceInput,
   InventoryInvoicePaymentItemInput,
   ProductDiscountMode,
@@ -38,7 +39,7 @@ interface ExtendedFormData extends IPosFormType {
 
 interface IPaymentFormProps {
   formData: ExtendedFormData;
-  onSuccess: () => void;
+  onSuccess: ({ invoiceId }: { invoiceId: string }) => void;
   onRefetchHoldList: () => void;
   preMadeInvoiceId?: string;
 }
@@ -123,12 +124,14 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   });
 
   // payment mutation
-  const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation(
+  const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation<{
+    inventory__createProductInvoice: CommonMutationResponse;
+  }>(
     Create_Invoice_Payment,
     commonNotifierCallback({
       successTitle: "Payment successful",
-      onSuccess() {
-        onSuccess();
+      onSuccess(res) {
+        onSuccess(res?.data?.inventory__createProductInvoice?._id);
         reset({
           date: new Date(),
           paymentTerm: "",

@@ -100,6 +100,7 @@ const PriceForm = () => {
           <Input
             placeholder="Write product price"
             type="number"
+            step="0.00001"
             {...register("price")}
           />
         </Input.Wrapper>
@@ -113,6 +114,7 @@ const PriceForm = () => {
           <Input
             placeholder="Write product purchase price"
             type="number"
+            step="0.00001"
             {...register("purchasePrice")}
           />
         </Input.Wrapper>
