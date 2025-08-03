@@ -1,10 +1,6 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
-import { Purchase_Invoice_Status } from '@/commons/graphql-models/graphql';
-import { useMutation } from '@apollo/client';
-import { Button, Input, Space, Text, Title } from '@mantine/core';
-import React, { useState } from 'react';
-import { IPosFormType } from '../../pos.page';
-import { Create_Product_Invoice } from '../../utils/query.payment';
+import { Input, Space, Text, Title } from "@mantine/core";
+import React, { useState } from "react";
+import { IPosFormType } from "../../pos.page";
 
 interface ExtendedFormData extends IPosFormType {
   subTotal: number;
@@ -19,41 +15,41 @@ interface IHoldActionProps {
   onSuccess: () => void;
 }
 
-const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
-  const [reference, setReference] = useState('');
+const HoldAction: React.FC<IHoldActionProps> = () => {
+  const [, setReference] = useState("");
 
   // create invoice mutation
-  const [createInvoiceAsHold, { loading: creating }] = useMutation(
-    Create_Product_Invoice,
-    commonNotifierCallback({
-      successTitle: 'Added to hold list',
-      onSuccess() {
-        onSuccess();
-      },
-    }),
-  );
+  // const [createInvoiceAsHold, { loading: creating }] = useMutation(
+  //   Create_Product_Invoice,
+  //   commonNotifierCallback({
+  //     successTitle: "Added to hold list",
+  //     onSuccess() {
+  //       onSuccess();
+  //     },
+  //   })
+  // );
 
   // console.log({ formData });
   return (
     <div>
       <Title order={3}>Hold Invoice</Title>
 
-      <Space h={'sm'} />
+      <Space h={"sm"} />
 
       <Text fw={500}>
         Give a reference <br /> to quick payment
       </Text>
 
-      <Space h={'sm'} />
+      <Space h={"sm"} />
       <Input
         placeholder="Reference"
         onChange={(e) => setReference(e?.target?.value)}
         required
       />
 
-      <Space h={'sm'} />
+      <Space h={"sm"} />
 
-      <Button
+      {/* <Button
         disabled={!reference}
         loading={creating}
         onClick={() =>
@@ -76,7 +72,7 @@ const HoldAction: React.FC<IHoldActionProps> = ({ formData, onSuccess }) => {
         }
       >
         Hold
-      </Button>
+      </Button> */}
     </div>
   );
 };
