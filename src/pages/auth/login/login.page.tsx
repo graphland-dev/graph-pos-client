@@ -36,7 +36,7 @@ const LoginPage = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<IForm>({
+  } = useForm({
     resolver: yupResolver(ValidationSchema),
   });
 
