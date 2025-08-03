@@ -180,7 +180,7 @@ const InvoicesPage = () => {
           </div>
         }
         opened={state.openDrawer}
-        size={"90%"}
+        size={"100%"}
       >
         <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
       </Drawer>

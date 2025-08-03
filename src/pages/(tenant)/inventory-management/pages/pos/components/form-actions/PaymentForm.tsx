@@ -189,6 +189,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
       createInvoice({
         variables: {
           input: {
+            date: values?.date,
             products: formData.products.map((p) => ({
               referenceId: p.referenceId,
               code: p.code,

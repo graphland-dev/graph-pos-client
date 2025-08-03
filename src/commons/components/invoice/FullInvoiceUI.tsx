@@ -12,6 +12,8 @@ interface InvoiceItem {
   unitSellPrice: number; // unit sell price
   discountAmount: number;
   netAmount: number; // net amount
+  netTaxAmount: number;
+  netTaxRate: number;
 }
 
 interface CustomerInfo {
@@ -137,6 +139,9 @@ export default function FullInvoiceUI({
             <th className="px-2 py-2 text-sm font-semibold text-center border-r border-black w-[120px]">
               Discount
             </th>
+            <th className="px-2 py-2 text-sm font-semibold text-center border-r border-black w-[120px]">
+              VAT
+            </th>
             <th className="px-2 py-2 text-sm font-semibold text-center w-[120px]">
               Net Price
             </th>
@@ -159,6 +164,9 @@ export default function FullInvoiceUI({
               </td>
               <td className="px-2 py-2 text-sm text-right border-r border-black">
                 {item.discountAmount?.toFixed(2)}
+              </td>
+              <td className="px-2 py-2 text-sm text-right border-r border-black">
+                {item.netTaxAmount?.toFixed(2)} ({item.netTaxRate * 100}%)
               </td>
               <td className="px-2 py-2 text-sm text-right">
                 {item.netAmount?.toFixed(2)}

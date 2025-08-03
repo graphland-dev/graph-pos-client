@@ -258,6 +258,7 @@ export type CreateProductInput = {
 
 export type CreateProductInvoiceInput = {
   clientId?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
   invoiceDiscountAmount?: InputMaybe<Scalars['Float']['input']>;
   invoiceDiscountMode?: InputMaybe<ProductDiscountMode>;
   invoiceDiscountPercentage?: InputMaybe<Scalars['Float']['input']>;
@@ -1116,6 +1117,7 @@ export type ProductInvoice = {
   invoiceDiscountPercentage?: Maybe<Scalars['Float']['output']>;
   invoiceUID?: Maybe<Scalars['String']['output']>;
   netDiscountAmount?: Maybe<Scalars['Float']['output']>;
+  netProfit?: Maybe<Scalars['Float']['output']>;
   netSellPrice?: Maybe<Scalars['Float']['output']>;
   netSubtotalDiscount?: Maybe<Scalars['Float']['output']>;
   netTaxAmount: Scalars['Float']['output'];

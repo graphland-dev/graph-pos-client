@@ -37,6 +37,8 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
         costAmount
         netTotal
         paidAmount
+        netSellPrice
+        netProfit
         note
         source
         createdAt

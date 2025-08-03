@@ -108,6 +108,8 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
               unitSellPrice: item.unitSellPrice || 0,
               discountAmount: item.discountAmount || 0,
               netAmount: item.netAmount,
+              netTaxAmount: item.taxAmount,
+              netTaxRate: item.taxRate,
             })
           ) || []
         }
@@ -143,6 +145,7 @@ const INVOICE_DETAILS_QUERY = gql`
       }
       date
       netTaxAmount
+      netSellPrice
       netSubtotalDiscount
       invoiceDiscountAmount
       invoiceDiscountMode
