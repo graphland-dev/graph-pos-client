@@ -33,7 +33,13 @@ const POSProductGallery: React.FC<IProp> = ({ onSelectProduct }) => {
   const [filteredBrandID, setFilteredBrandID] = useState("");
 
   const buildFilter = useMemo(() => {
-    const filters = [];
+    const filters = [
+      {
+        key: "purchasePrice",
+        operator: MatchOperator.Gte,
+        value: "0",
+      },
+    ];
     if (filteredCategoryID) {
       filters.push({
         key: "category",

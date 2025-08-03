@@ -1,8 +1,5 @@
 import {
-  MatchOperator,
   ProductDiscountMode,
-  ProductInvoice,
-  ProductInvoicesWithPagination,
   ProductItemReference,
   VatsWithPagination,
 } from "@/commons/graphql-models/graphql";
@@ -17,7 +14,6 @@ import {
   Flex,
   Group,
   Input,
-  Modal,
   NumberInput,
   Paper,
   Select,
@@ -29,7 +25,6 @@ import {
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
 import {
-  IconArrowsMaximize,
   IconBox,
   IconCalculator,
   IconCreditCard,
@@ -39,7 +34,7 @@ import {
   IconUsers,
   IconX,
 } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Link, useParams } from "react-router-dom";
 import * as Yup from "yup";
@@ -47,34 +42,33 @@ import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
 import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
 import POSProductGallery from "./components/POSProductGalary";
 import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
-import HoldList from "./components/pos-header/HoldList";
-import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
-import { Pos_Hold_List } from "./utils/query.pos";
-import { getPercentageAmount } from "./utils/utils.calc";
 import PaymentForm from "./components/form-actions/PaymentForm";
+import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
+import { getPercentageAmount } from "./utils/utils.calc";
 
 const PosPage = () => {
-  const [openedHoldModal, holdModalHandler] = useDisclosure();
+  // const [openedHoldModal, holdModalHandler] = useDisclosure();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
   const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
-  const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
+  // Note: This is for hold list
+  // const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
   const params = useParams<{ tenant: string }>();
 
   // hold list data API
-  const { data: holdList, refetch: refetchHoldList } = useQuery<{
-    inventory__productInvoices: ProductInvoicesWithPagination;
-  }>(Pos_Hold_List, {
-    variables: {
-      where: {
-        limit: -1,
-        filters: {
-          key: "status",
-          operator: MatchOperator.Eq,
-          value: "HOLD",
-        },
-      },
-    },
-  });
+  // const { data: holdList, refetch: refetchHoldList } = useQuery<{
+  //   inventory__productInvoices: ProductInvoicesWithPagination;
+  // }>(Pos_Hold_List, {
+  //   variables: {
+  //     where: {
+  //       limit: -1,
+  //       filters: {
+  //         key: "status",
+  //         operator: MatchOperator.Eq,
+  //         value: "HOLD",
+  //       },
+  //     },
+  //   },
+  // });
 
   // fetch vat profiles
   const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
@@ -228,24 +222,25 @@ const PosPage = () => {
     return getNetSellPrice() + getNetTaxAmount() - getNetExtraDiscount();
   };
 
+  // Note: This is for hold list
   // prefill form
-  useEffect(() => {
-    if (selectedInvoice) {
-      setValue("clientId", selectedInvoice?.client?._id as string);
-      setValue(
-        "invoiceDiscountMode",
-        selectedInvoice?.invoiceDiscountMode ?? ProductDiscountMode.Percentage
-      );
-      setValue("discountValue", selectedInvoice?.netDiscountAmount ?? 0);
-      setValue("costAmount", selectedInvoice?.costAmount as number);
-      setValue("products", selectedInvoice?.products as ProductItemReference[]);
-    }
-  }, [selectedInvoice, setValue]);
+  // useEffect(() => {
+  //   if (selectedInvoice) {
+  //     setValue("clientId", selectedInvoice?.client?._id as string);
+  //     setValue(
+  //       "invoiceDiscountMode",
+  //       selectedInvoice?.invoiceDiscountMode ?? ProductDiscountMode.Percentage
+  //     );
+  //     setValue("discountValue", selectedInvoice?.netDiscountAmount ?? 0);
+  //     setValue("costAmount", selectedInvoice?.costAmount as number);
+  //     setValue("products", selectedInvoice?.products as ProductItemReference[]);
+  //   }
+  // }, [selectedInvoice, setValue]);
 
   // submit pos form
   const onSubmitPOS = () => {
     if (action === "ADD_TO_HOLD_LIST") {
-      holdModalHandler.open();
+      // holdModalHandler.open();
     } else {
       paymentModalHandler.open();
     }
@@ -317,7 +312,7 @@ const PosPage = () => {
             </Button>
           </Flex>
         </div>
-        <div className="flex items-center gap-3">
+        {/* <div className="flex items-center gap-3">
           <HoldList
             onSelectInvoice={setSelectedInvoice}
             holdList={holdList?.inventory__productInvoices?.nodes ?? []}
@@ -331,7 +326,7 @@ const PosPage = () => {
             color="grey"
             className="cursor-pointer"
           />
-        </div>
+        </div> */}
       </Flex>
       <form onSubmit={handleSubmit(onSubmitPOS)}>
         <div className="flex items-start gap-3">
@@ -341,7 +336,8 @@ const PosPage = () => {
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   prefilledClientId={
-                    watch("clientId") ?? selectedInvoice?.client?._id
+                    watch("clientId")
+                    // watch("clientId") ?? selectedInvoice?.client?._id
                   }
                   onSelectClientId={(_id) => setValue("clientId", _id)}
                 />
@@ -480,27 +476,6 @@ const PosPage = () => {
                           </tr>
                         )
                       )}
-
-                      <tr>
-                        <td colSpan={5} className="font-semibold text-right">
-                          Total
-                        </td>
-                        <td>{0}</td>
-                        <td>
-                          {/* {currencyNumberFormat(
-                            watch("products")
-                              ?.map((p: ProductItemReference) => {
-                                const netSellPrice = p.netSellPrice || 0;
-                                const quantity = p.quantity || 0;
-                                const taxAmount =
-                                  netSellPrice * quantity * p.taxRate || 0;
-                                return taxAmount + p.unitSellPrice * p.quantity;
-                              })
-                              .reduce((a, b) => a + b, 0)
-                          )} */}
-                        </td>
-                        <td></td>
-                      </tr>
                     </tbody>
                   </Table>
                   <Space h={50} />
@@ -600,12 +575,12 @@ const PosPage = () => {
               <Space h={15} />
 
               {/* hold modal */}
-              <Modal
+              {/* <Modal
                 opened={openedHoldModal}
                 onClose={holdModalHandler.close}
                 title=""
               >
-                {/* <HoldAction
+                <HoldAction
                   formData={
                     {
                       clientId: watch("clientId"),
@@ -636,8 +611,8 @@ const PosPage = () => {
                       costAmount: 0,
                     });
                   }}
-                /> */}
-              </Modal>
+                />
+              </Modal> */}
 
               {/* payment form */}
               <Drawer
@@ -672,20 +647,24 @@ const PosPage = () => {
                       costAmount: 0,
                     });
                   }}
-                  preMadeInvoiceId={selectedInvoice?._id}
-                  onRefetchHoldList={() => refetchHoldList()}
+                  // Note: This is for hold list
+                  // preMadeInvoiceId={selectedInvoice?._id}
+                  onRefetchHoldList={() => {
+                    // Note: This is for hold list
+                    // refetchHoldList();
+                  }}
                 />
               </Drawer>
 
               <Group position="apart">
-                <Button
+                {/* <Button
                   size="md"
                   type="submit"
                   onClick={() => setAction("ADD_TO_HOLD_LIST")}
                   disabled={!watch("products")?.length || !watch("clientId")}
                 >
                   Hold
-                </Button>
+                </Button> */}
                 <Button
                   size="md"
                   type="submit"
