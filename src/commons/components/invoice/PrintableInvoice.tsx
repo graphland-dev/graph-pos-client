@@ -208,7 +208,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                     {formatCurrency(netTaxAmount)}
                   </span>
                 </div>
-                {netDiscountAmount && (
+                {netDiscountAmount ? (
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">
                       Discount
@@ -221,7 +221,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                       {formatCurrency(netDiscountAmount)}
                     </span>
                   </div>
-                )}
+                ) : null}
 
                 <div className="flex justify-between">
                   <span className="font-bold text-foreground">
