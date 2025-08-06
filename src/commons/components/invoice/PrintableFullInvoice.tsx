@@ -1,11 +1,6 @@
-import {
-  ProductDiscountMode,
-  ProductInvoice,
-  Tenant,
-} from "@/commons/graphql-models/graphql";
+import { ProductInvoice, Tenant } from "@/commons/graphql-models/graphql";
 import { gql, useQuery } from "@apollo/client";
-import FullInvoiceUI from "./FullInvoiceUI";
-import dateFormat from "@/commons/utils/dateFormat";
+import InvoiceTemplate from "./PrintableInvoice";
 
 interface Props {
   invoiceId: string;
@@ -40,7 +35,7 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
         {/* <br /> */}
         {/* {JSON.stringify(tenantQuery.data?.identity__tenant, null, 2)} */}
       </pre>
-      <FullInvoiceUI
+      {/* <FullInvoiceUI
         date={
           dateFormat(invoiceQuery.data?.inventory__productInvoice?.date) || ""
         }
@@ -117,7 +112,8 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
           invoiceQuery.data?.inventory__productInvoice?.netDiscountAmount || 0
         }
         costAmount={0}
-      />
+      /> */}
+      <InvoiceTemplate />
     </>
   );
 };

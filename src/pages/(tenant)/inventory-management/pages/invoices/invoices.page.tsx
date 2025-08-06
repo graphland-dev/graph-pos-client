@@ -196,7 +196,7 @@ const InvoicesPage = () => {
           <Text className="text-2xl font-semibold">Printable Invoice</Text>
         }
         opened={state.openPrintableInvoice}
-        size={"80%"}
+        size={"100%"}
       >
         {state.printableInvoiceId && (
           <PrintableFullInvoice
