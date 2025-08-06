@@ -1,9 +1,11 @@
 import {
+  MatchOperator,
   ProductDiscountMode,
   ProductInvoice,
 } from "@/commons/graphql-models/graphql";
 import currencyNumberFormat from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
+import { gql, useQuery } from "@apollo/client";
 import {
   Anchor,
   Divider,
@@ -13,13 +15,31 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import ProductInvoiceDetailsTable from "./ProductInvoiceDetailsTable";
 
 const ProductInvoiceDetails: React.FC<{
-  details: ProductInvoice;
+  invoiceId: string;
   loading: boolean;
-}> = ({ details, loading }) => {
+}> = ({ invoiceId, loading }) => {
+  const query = useQuery<{
+    inventory__productInvoice: ProductInvoice;
+  }>(INVOICE_DETAILS_QUERY, {
+    variables: {
+      where: {
+        key: "_id",
+        operator: MatchOperator.Eq,
+        value: invoiceId,
+      },
+    },
+  });
+
+  const invoice = useMemo(
+    () => query.data?.inventory__productInvoice,
+    [query.loading]
+  );
+
   const ths = (
     <tr>
       <th>Product Name</th>
@@ -45,7 +65,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total sell Price
         </th>
-        <th>{currencyNumberFormat(details.netSellPrice || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netSellPrice || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -54,7 +74,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total vat amount
         </th>
-        <th>{currencyNumberFormat(details.netTaxAmount || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netTaxAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -63,7 +83,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total Item wise discount
         </th>
-        <th>{currencyNumberFormat(details.netSubtotalDiscount || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netSubtotalDiscount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -71,11 +91,11 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th className="!text-right" colSpan={7}>
           Extra discount{" "}
-          {details.invoiceDiscountMode == ProductDiscountMode.Percentage
-            ? `(${details.invoiceDiscountPercentage}%)`
+          {invoice?.invoiceDiscountMode == ProductDiscountMode.Percentage
+            ? `(${invoice?.invoiceDiscountPercentage}%)`
             : ""}
         </th>
-        <th>{currencyNumberFormat(details.invoiceDiscountAmount || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.invoiceDiscountAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -84,7 +104,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total applied discount
         </th>
-        <th>{currencyNumberFormat(details.netDiscountAmount || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netDiscountAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -93,7 +113,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Net Profit (Purchase price - Sell price)
         </th>
-        <th>{currencyNumberFormat(details.netProfit || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netProfit || 0)}</th>
       </tr>
 
       <tr>
@@ -103,7 +123,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Net payable bill (bill - discount + vat)
         </th>
-        <th>{currencyNumberFormat(details.netTotal || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.netTotal || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -112,7 +132,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Paid amount
         </th>
-        <th>{currencyNumberFormat(details.paidAmount || 0)}</th>
+        <th>{currencyNumberFormat(invoice?.paidAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -123,7 +143,7 @@ const ProductInvoiceDetails: React.FC<{
         </th>
         <th>
           {currencyNumberFormat(
-            details.netTotal - (details.paidAmount || 0) || 0
+            (invoice?.netTotal || 0) - (invoice?.paidAmount || 0) || 0
           )}
         </th>
       </tr>
@@ -132,8 +152,8 @@ const ProductInvoiceDetails: React.FC<{
 
   const trSkeleton = Array.from({ length: 10 })
     .fill(null)
-    .map(() => (
-      <tr>
+    .map((_, index) => (
+      <tr key={index}>
         <td>
           <Skeleton h={35} />
         </td>
@@ -149,22 +169,22 @@ const ProductInvoiceDetails: React.FC<{
       </tr>
     ));
 
-  const rows = details.products?.map((element) => (
-    <tr key={element.referenceId}>
+  const rows = invoice?.products?.map((element) => (
+    <tr key={element?.referenceId}>
       <td>
         <Anchor
           component={Link}
-          to={`/${details?.client?.tenant}/inventory-management/products/${element.referenceId}`}
+          to={`/${invoice?.client?.tenant}/inventory-management/products/${element.referenceId}`}
         >
-          {element.name}
+          {element?.name}
         </Anchor>
         {}
       </td>
-      <td>{element.code} </td>
-      <td>{element.unitPurchasePrice} </td>
-      <td>{element.unitPrice} </td>
-      <td>{element.unitSellPrice} </td>
-      <td>{element.quantity} </td>
+      <td>{element?.code} </td>
+      <td>{element?.unitPurchasePrice} </td>
+      <td>{element?.unitPrice} </td>
+      <td>{element?.unitSellPrice} </td>
+      <td>{element?.quantity} </td>
       <td>{element.taxRate * 100} % </td>
       <td>{element.taxAmount} </td>
       <td>{element.netSellPrice} </td>
@@ -175,10 +195,11 @@ const ProductInvoiceDetails: React.FC<{
 
   return (
     <>
+      {/* <pre>{JSON.stringify({ invoiceId, invoice }, null, 2)}</pre> */}
       <div className="flex flex-col gap-4">
         <div className="flex justify-between w-full gap-4">
           <Paper
-            key={details._id}
+            key={invoice?._id}
             p={10}
             radius={5}
             shadow="sm"
@@ -189,11 +210,11 @@ const ProductInvoiceDetails: React.FC<{
             <Divider />
             <Text className="flex justify-between">
               <span className="font-semibold">Invoice UID:</span>{" "}
-              {details.invoiceUID}
+              {invoice?.invoiceUID}
             </Text>
             <Text className="flex justify-between">
               <span className="font-semibold">Date:</span>{" "}
-              {dateFormat(details.date)}
+              {dateFormat(invoice?.date)}
             </Text>
           </Paper>
 
@@ -211,9 +232,9 @@ const ProductInvoiceDetails: React.FC<{
 
               <Anchor
                 component={Link}
-                to={`/${details?.client?.tenant}/people/client?clientId=${details?.client?._id}`}
+                to={`/${invoice?.client?.tenant}/people/client?clientId=${invoice?.client?._id}`}
               >
-                {details?.client?.name}
+                {invoice?.client?.name}
               </Anchor>
             </Text>
             <Text className="flex justify-between">
@@ -222,25 +243,25 @@ const ProductInvoiceDetails: React.FC<{
                 Email:{" "}
               </span>
 
-              {details?.client?.email}
+              {invoice?.client?.email}
             </Text>
             <Text className="flex justify-between">
               <span className="font-semibold text-neutral-primary">
                 Contact Number:{" "}
               </span>
-              {details?.client?.contactNumber}
+              {invoice?.client?.contactNumber}
             </Text>
             <Text className="flex justify-between">
               <span className="font-semibold text-neutral-primary">
                 Address:
               </span>
-              {details?.client?.address}
+              {invoice?.client?.address}
             </Text>
             <Text className="flex justify-between">
               <span className="font-semibold text-neutral-primary">
                 create Date:
               </span>
-              {dateFormat(details.client?.createdAt)}
+              {dateFormat(invoice?.client?.createdAt)}
             </Text>
           </Paper>
         </div>
@@ -254,7 +275,7 @@ const ProductInvoiceDetails: React.FC<{
           </Table>
         </Paper>
 
-        <ProductInvoiceDetailsTable id={details.invoiceUID || ""} />
+        <ProductInvoiceDetailsTable invoiceId={invoice?._id || ""} />
 
         {/* <Attachments
         attachments={details.attachments ?? []}
@@ -268,3 +289,71 @@ const ProductInvoiceDetails: React.FC<{
 };
 
 export default ProductInvoiceDetails;
+
+const INVOICE_DETAILS_QUERY = gql`
+  query Inventory__productInvoice($where: CommonFindDocumentDto!) {
+    inventory__productInvoice(where: $where) {
+      _id
+      tenant
+      invoiceUID
+      status
+      client {
+        address
+        contactNumber
+        email
+        name
+        tenant
+        attachments {
+          meta
+          path
+          provider
+        }
+      }
+      date
+      netTaxAmount
+      netSellPrice
+      netSubtotalDiscount
+      invoiceDiscountAmount
+      invoiceDiscountMode
+      invoiceDiscountPercentage
+      netDiscountAmount
+      subTotal
+      costAmount
+      netTotal
+      paidAmount
+      note
+      source
+      createdAt
+      updatedAt
+      committedBy {
+        email
+        name
+        referenceId
+      }
+      products {
+        referenceId
+        name
+        code
+        unitPrice
+        unitSellPrice
+        taxRate
+        taxAmount
+        quantity
+        unitPurchasePrice
+        netSellPrice
+        netPurchaseAmount
+        netProfit
+        discountAmount
+        netSubtotal
+        netAmount
+      }
+      client {
+        _id
+        name
+        email
+        createdAt
+        tenant
+      }
+    }
+  }
+`;

@@ -1,15 +1,18 @@
-import dateFormat from '@/commons/utils/dateFormat';
-import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from '../utils/query.invoices';
-import { InventoryInvoicePaymentsWithPagination } from '@/commons/graphql-models/graphql';
-import { useQuery } from '@apollo/client';
-import { Anchor, Paper, Skeleton, Table, Title } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import dateFormat from "@/commons/utils/dateFormat";
+import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from "../utils/query.invoices";
+import {
+  InventoryInvoicePaymentsWithPagination,
+  MatchOperator,
+} from "@/commons/graphql-models/graphql";
+import { useQuery } from "@apollo/client";
+import { Anchor, Paper, Skeleton, Table, Title } from "@mantine/core";
+import { Link } from "react-router-dom";
 
 interface IProps {
-  id: string;
+  invoiceId: string;
 }
 
-const ProductInvoiceDetailsTable: React.FC<IProps> = ({ id }) => {
+const ProductInvoiceDetailsTable: React.FC<IProps> = ({ invoiceId }) => {
   const { data, loading } = useQuery<{
     accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   }>(ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY, {
@@ -17,9 +20,9 @@ const ProductInvoiceDetailsTable: React.FC<IProps> = ({ id }) => {
       where: {
         filters: [
           {
-            key: 'inventoryInvoicePaymentUID',
-            operator: 'eq',
-            value: id,
+            key: "invoice",
+            operator: MatchOperator.Eq,
+            value: invoiceId,
           },
         ],
       },
@@ -66,18 +69,18 @@ const ProductInvoiceDetailsTable: React.FC<IProps> = ({ id }) => {
           </Anchor>
           {}
         </td>
-        <td>{element?.date ? dateFormat(element.date) : ''}</td>
+        <td>{element?.date ? dateFormat(element.date) : ""}</td>
         <td>{element.paymentTerm} </td>
         <td>{element.netAmount} </td>
       </tr>
-    ),
+    )
   );
 
   return (
     <div>
-      <Paper mb={'lg'} p={'sm'}>
+      <Paper mb={"lg"} p={"sm"}>
         <Title order={4}>Payments</Title>
-        <Table mt={'sm'} withColumnBorders withBorder captionSide="bottom">
+        <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
           <thead className="bg-card-header">{paymentsThs}</thead>
           <tbody>{loading ? trSkeleton : rows}</tbody>
         </Table>

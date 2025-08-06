@@ -14,7 +14,7 @@ import { useSetState } from "@mantine/hooks";
 import { IconFileInfo } from "@tabler/icons-react";
 import { PrinterIcon } from "lucide-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
 import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
@@ -26,7 +26,6 @@ interface IState {
 }
 
 const InvoicesPage = () => {
-  const [invoiceDetails, setInvoiceDetails] = useState<ProductInvoice>();
   const [state, setState] = useSetState<IState>({
     refetching: false,
     openDrawer: false,
@@ -148,9 +147,10 @@ const InvoicesPage = () => {
           },
         },
       }).then((res) => {
-        setInvoiceDetails(res.data?.inventory__productInvoices?.nodes?.[0]);
         setState({
           openDrawer: true,
+          printableInvoiceId:
+            res.data?.inventory__productInvoices?.nodes?.[0]?._id,
         });
       });
     }
@@ -171,7 +171,7 @@ const InvoicesPage = () => {
               onClick={() =>
                 setState({
                   openPrintableInvoice: true,
-                  printableInvoiceId: invoiceDetails?._id,
+                  printableInvoiceId: state.printableInvoiceId ?? "",
                 })
               }
             >
@@ -182,7 +182,10 @@ const InvoicesPage = () => {
         opened={state.openDrawer}
         size={"100%"}
       >
-        <ProductInvoiceDetails details={invoiceDetails!} loading={loading} />
+        <ProductInvoiceDetails
+          invoiceId={state.printableInvoiceId ?? ""}
+          loading={loading}
+        />
       </Drawer>
 
       <Drawer
@@ -216,9 +219,9 @@ const InvoicesPage = () => {
             <Menu.Item
               icon={<IconFileInfo size={18} />}
               onClick={() => {
-                setInvoiceDetails(row);
                 setState({
                   openDrawer: true,
+                  printableInvoiceId: row._id,
                 });
               }}
             >
