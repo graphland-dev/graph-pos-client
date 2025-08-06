@@ -5,15 +5,41 @@ import {
   MatchOperator,
 } from "@/commons/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Anchor, Paper, Skeleton, Table, Title } from "@mantine/core";
+import {
+  Anchor,
+  Button,
+  Drawer,
+  Paper,
+  Skeleton,
+  Table,
+  Title,
+} from "@mantine/core";
 import { Link } from "react-router-dom";
+import { useSetState } from "@mantine/hooks";
+import InvoicePaymentEntry from "./InvoicePaymentEntry";
 
 interface IProps {
   invoiceId: string;
+  clientId: string;
+  dueAmount: number;
+  onDone?: () => void;
 }
 
-const ProductInvoiceDetailsTable: React.FC<IProps> = ({ invoiceId }) => {
-  const { data, loading } = useQuery<{
+const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
+  invoiceId,
+  clientId,
+  onDone,
+  dueAmount,
+}) => {
+  const [state, setState] = useSetState<{
+    openPaymentEntry: boolean;
+    paymentEntryInvoiceId: string;
+  }>({
+    openPaymentEntry: false,
+    paymentEntryInvoiceId: "",
+  });
+
+  const { data, loading, refetch } = useQuery<{
     accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   }>(ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY, {
     variables: {
@@ -79,14 +105,35 @@ const ProductInvoiceDetailsTable: React.FC<IProps> = ({ invoiceId }) => {
   return (
     <div>
       <Paper mb={"lg"} p={"sm"}>
-        <Title order={4}>Payments</Title>
+        <div className="flex items-center justify-between">
+          <Title order={4}>Payments</Title>
+          <Button onClick={() => setState({ openPaymentEntry: true })}>
+            Add Payment
+          </Button>
+        </div>
         <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
           <thead className="bg-card-header">{paymentsThs}</thead>
           <tbody>{loading ? trSkeleton : rows}</tbody>
         </Table>
       </Paper>
+      <Drawer
+        opened={state.openPaymentEntry}
+        onClose={() => setState({ openPaymentEntry: false })}
+        title="Add Payment"
+      >
+        <InvoicePaymentEntry
+          onDone={function (): void {
+            onDone?.();
+            refetch();
+            setState({ openPaymentEntry: false });
+          }}
+          invoiceId={invoiceId}
+          clientId={clientId}
+          payableAmount={dueAmount}
+        />
+      </Drawer>
     </div>
   );
 };
 
-export default ProductInvoiceDetailsTable;
+export default ProductInvoiceDetailsPaymentsTable;

@@ -17,7 +17,7 @@ import {
 } from "@mantine/core";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import ProductInvoiceDetailsTable from "./ProductInvoiceDetailsTable";
+import ProductInvoiceDetailsPaymentsTable from "./ProductInvoiceDetailsPaymentsTable";
 
 const ProductInvoiceDetails: React.FC<{
   invoiceId: string;
@@ -35,10 +35,7 @@ const ProductInvoiceDetails: React.FC<{
     },
   });
 
-  const invoice = useMemo(
-    () => query.data?.inventory__productInvoice,
-    [query.loading]
-  );
+  const invoice = useMemo(() => query.data?.inventory__productInvoice, [query]);
 
   const ths = (
     <tr>
@@ -265,7 +262,6 @@ const ProductInvoiceDetails: React.FC<{
             </Text>
           </Paper>
         </div>
-
         <Paper p={"sm"}>
           <Title order={4}>Items</Title>
           <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
@@ -274,9 +270,15 @@ const ProductInvoiceDetails: React.FC<{
             <tfoot>{tfs}</tfoot>
           </Table>
         </Paper>
-
-        <ProductInvoiceDetailsTable invoiceId={invoice?._id || ""} />
-
+        {invoice?.netTotal} - {invoice?.paidAmount}
+        <ProductInvoiceDetailsPaymentsTable
+          clientId={invoice?.client?._id || ""}
+          invoiceId={invoice?._id || ""}
+          dueAmount={(invoice?.netTotal || 0) - (invoice?.paidAmount || 0)}
+          onDone={function (): void {
+            query.refetch();
+          }}
+        />
         {/* <Attachments
         attachments={details.attachments ?? []}
         onUploadDone={() => {}}

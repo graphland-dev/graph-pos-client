@@ -101,7 +101,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
     reset,
   } = useForm({
     defaultValues: {
-      receiptNo: "",
+      receptNo: "",
       paymentTerm: "",
       reference: "",
       poReference: "",
@@ -139,7 +139,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           date: new Date(),
           paymentTerm: "",
           poReference: "",
-          receiptNo: "",
+          receptNo: "",
           reference: "",
           payments: [],
         });
@@ -202,6 +202,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
               ProductDiscountMode.Amount,
             invoiceDiscountAmount: getNetExtraDiscount(),
             invoiceDiscountPercentage: formData.invoiceDiscountPercentage,
+            note: values?.note || "",
           } satisfies CreateProductInvoiceInput,
         },
       }).then((invoice) => {
@@ -257,14 +258,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             label="Receipt No"
             error={<ErrorMessage name={`receiptNo`} errors={errors} />}
           >
-            <Input placeholder="Receipt no" {...register(`receiptNo`)} />
-          </Input.Wrapper>
-
-          <Input.Wrapper
-            label="Payment Term"
-            error={<ErrorMessage name={`paymentTerm`} errors={errors} />}
-          >
-            <Textarea placeholder="Payment Term" {...register(`paymentTerm`)} />
+            <Input placeholder="Receipt no" {...register(`receptNo`)} />
           </Input.Wrapper>
 
           <Input.Wrapper

@@ -14,7 +14,7 @@ export const Payment_Form_Validation = Yup.object().shape({
     .required()
     .label("Payments"),
   poReference: Yup.string().optional().nullable().label("PO reference"),
-  receiptNo: Yup.string().optional().nullable().label("Receipt no"),
+  receptNo: Yup.string().optional().nullable().label("Receipt no"),
   reference: Yup.string().optional().nullable().label("Reference"),
   paymentTerm: Yup.string().optional().nullable().label("Payment term"),
   note: Yup.string().optional().nullable().label("Note"),
