@@ -6,7 +6,6 @@ import {
   InventoryInvoicePaymentItemInput,
   ProductDiscountMode,
   ProductItemReference,
-  Purchase_Invoice_Status,
 } from "@/commons/graphql-models/graphql";
 import { ACCOUNTING_ACCOUNTS_LIST } from "@/pages/(tenant)/accounting/pages/cashbook/accounts/utils/query";
 import { useMutation, useQuery } from "@apollo/client";
@@ -33,7 +32,6 @@ import {
   Create_Invoice_Payment,
   Create_Product_Invoice,
 } from "../../utils/query.payment";
-import { Update_Invoice_Status } from "../../utils/query.pos";
 import { Payment_Form_Validation } from "../../utils/validations/paymentForm.validation";
 
 interface ExtendedFormData extends IPosFormType {
@@ -130,13 +128,13 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
 
   // payment mutation
   const [paymentToInvoice, { loading: __payment__inprogress }] = useMutation<{
-    inventory__createProductInvoice: CommonMutationResponse;
+    accounting__createInventoryInvoicePayment: CommonMutationResponse;
   }>(
     Create_Invoice_Payment,
     commonNotifierCallback({
       successTitle: "Payment successful",
       onSuccess(res) {
-        onSuccess(res?.data?.inventory__createProductInvoice?._id);
+        onSuccess(res?.data?.accounting__createInventoryInvoicePayment?._id);
         reset({
           date: new Date(),
           paymentTerm: "",
@@ -207,7 +205,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           } satisfies CreateProductInvoiceInput,
         },
       }).then((invoice) => {
-        console.log({ s: values?.payments });
+        console.log({ s: values?.payments, invoice });
         if (values?.payments?.length) {
           paymentToInvoice({
             variables: {
@@ -222,7 +220,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
                 date: values?.date,
               },
             },
-          }).then(() => {
+          }).finally(() => {
             // debugger;
             onSuccess({
               invoiceId: invoice.data?.inventory__createProductInvoice?._id,
