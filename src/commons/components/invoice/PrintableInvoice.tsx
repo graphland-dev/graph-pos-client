@@ -108,7 +108,11 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
 
             <div className="text-right">
               {company.logoUrl && (
-                <img className="h-10 mb-2" src={company.logoUrl} alt="logo" />
+                <img
+                  className="h-10 mb-2 ml-auto"
+                  src={company.logoUrl}
+                  alt="logo"
+                />
               )}
 
               <h2 className="mb-2 text-xl font-bold text-foreground">
