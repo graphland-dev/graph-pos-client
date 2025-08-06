@@ -176,7 +176,7 @@
   }
 
   @media print {
-    body * {
+    * {
       visibility: hidden;
     }
 
@@ -187,24 +187,19 @@
 
     .invoice-container {
       position: absolute;
-      width: 100% !important;
-      top: 0;
       left: 0;
-      padding: 20px !important;
+      top: 0;
+      width: 100% !important;
       box-shadow: none !important;
-
-      padding: 0 !important;
+      border: none !important;
+      background: white !important;
       margin: 0 !important;
-    }
-
-    .invoice-container-inner {
       padding: 0 !important;
-      margin: 0 !important;
     }
 
     @page {
-      margin: 35px;
-      margin-top: 85px;
+      margin: 45px;
+      size: A4;
     }
 
     body {

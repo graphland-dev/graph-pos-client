@@ -1,5 +1,7 @@
 import { Button } from "@mantine/core";
 import { Printer } from "lucide-react";
+import numberToWords from "number-to-words";
+
 import React, { useRef, useState } from "react";
 
 interface InvoiceItem {
@@ -197,29 +199,34 @@ export const InvoiceTemplate: React.FC = () => {
 
           {/* Totals */}
           <div className="flex justify-end">
-            <div className="w-full md:w-80">
-              <div className="space-y-2">
-                <div className="flex justify-between py-2">
+            <div className="w-80">
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-semibold text-foreground">
                     {formatCurrency(invoiceData.subtotal)}
                   </span>
                 </div>
-                <div className="flex justify-between py-2">
+                <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax (8%):</span>
                   <span className="font-semibold text-foreground">
                     {formatCurrency(invoiceData.tax)}
                   </span>
                 </div>
 
-                <div className="flex justify-between py-3">
-                  <span className="text-xl font-bold text-foreground">
-                    Total:
+                <div className="flex justify-between">
+                  <span className="font-bold text-foreground">
+                    Grant total:
                   </span>
-                  <span className="text-xl font-bold text-primary">
+                  <span className="font-bold text-primary">
                     {formatCurrency(invoiceData.total)}
                   </span>
                 </div>
+                <div className="flex flex-col justify-between">
+                  <span className="font-bold text-foreground">In words:</span>
+                  <span>{numberToWords.toWords(invoiceData.total)}</span>
+                </div>
+                {/*  */}
               </div>
             </div>
           </div>
