@@ -1,6 +1,8 @@
 import { ProductInvoice, Tenant } from "@/commons/graphql-models/graphql";
 import { gql, useQuery } from "@apollo/client";
 import InvoiceTemplate from "./PrintableInvoice";
+import { getFileUrl } from "@/commons/utils/getFileUrl";
+import { useMemo } from "react";
 
 interface Props {
   invoiceId: string;
@@ -26,6 +28,11 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
     {
       variables: { tenant },
     }
+  );
+
+  const invoice = useMemo(
+    () => invoiceQuery.data?.inventory__productInvoice,
+    [invoiceQuery.data]
   );
 
   return (
@@ -113,7 +120,43 @@ const PrintableFullInvoice: React.FC<Props> = ({ invoiceId, tenant }) => {
         }
         costAmount={0}
       /> */}
-      <InvoiceTemplate />
+      <InvoiceTemplate
+        company={{
+          logoUrl: tenantQuery.data?.identity__tenant.logo
+            ? getFileUrl(tenantQuery.data?.identity__tenant.logo)
+            : undefined,
+          name: tenantQuery.data?.identity__tenant.name || "No Name",
+          address: tenantQuery.data?.identity__tenant.address || undefined,
+          phone:
+            tenantQuery.data?.identity__tenant.businessPhoneNumber || undefined,
+        }}
+        customer={{
+          name: invoice?.client?.name || undefined,
+          address: invoice?.client?.address || undefined,
+          phone: invoice?.client?.contactNumber || undefined,
+          email: invoice?.client?.email || undefined,
+        }}
+        items={
+          invoice?.products.map((item) => ({
+            name: item.name,
+            quantity: item.quantity,
+            unitPrice: item.unitPrice || 0,
+            netAmount: item.netAmount,
+            discountAmount: item.discountAmount || 0,
+          })) || []
+        }
+        date={invoice?.date}
+        invoiceUID={invoice?.invoiceUID || ""}
+        subtotal={invoice?.subTotal || 0}
+        netTotal={invoice?.netTotal || 0}
+        paidAmount={invoice?.paidAmount || 0}
+        netDiscountAmount={invoice?.netDiscountAmount || 0}
+        invoiceDiscountAmount={invoice?.invoiceDiscountAmount || 0}
+        invoiceDiscountPercentage={invoice?.invoiceDiscountPercentage || 0}
+        invoiceDiscountMode={invoice?.invoiceDiscountMode || null}
+        netTaxAmount={invoice?.netTaxAmount || 0}
+        note={invoice?.note || undefined}
+      />
     </>
   );
 };
@@ -193,6 +236,10 @@ const TENANT_DETAILS_QUERY = gql`
     identity__tenant(tenant: $tenant) {
       _id
       name
+      logo {
+        path
+        provider
+      }
       address
       businessPhoneNumber
       description

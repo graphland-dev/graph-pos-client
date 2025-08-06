@@ -1,85 +1,74 @@
+import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
 import { Button } from "@mantine/core";
 import { Printer } from "lucide-react";
 import numberToWords from "number-to-words";
 
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 
 interface InvoiceItem {
-  id: string;
-  description: string;
+  name: string;
   quantity: number;
-  rate: number;
-  amount: number;
+  unitPrice: number;
+  netAmount: number;
+  discountAmount: number;
 }
 
 interface InvoiceData {
-  invoiceNumber: string;
+  invoiceUID: string;
   date: string;
-  dueDate: string;
-  companyName: string;
-  companyAddress: string;
-  companyPhone: string;
-  companyEmail: string;
-  billToName: string;
-  billToAddress: string;
-  billToEmail: string;
+  dueDate?: string;
+  company: {
+    logoUrl?: string;
+    name: string;
+    address?: string;
+    phone?: string;
+    email?: string;
+  };
+  customer: {
+    name?: string;
+    address?: string;
+    email?: string;
+    phone?: string;
+  };
+  note?: string;
   items: InvoiceItem[];
   subtotal: number;
-  tax: number;
-  total: number;
+  netTotal: number;
+  paidAmount: number;
+  netDiscountAmount: number;
+  invoiceDiscountAmount: number;
+  invoiceDiscountPercentage: number;
+  invoiceDiscountMode?: ProductDiscountMode | null;
+  netTaxAmount: number;
 }
 
-const sampleInvoiceData: InvoiceData = {
-  invoiceNumber: "INV-2024-001",
-  date: "2024-01-15",
-  dueDate: "2024-02-15",
-  companyName: "Your Company Name",
-  companyAddress: "123 Business St.\nCity, State 12345",
-  companyPhone: "+1 (555) 123-4567",
-  companyEmail: "info@yourcompany.com",
-  billToName: "Client Name",
-  billToAddress: "456 Client Ave.\nClient City, State 67890",
-  billToEmail: "client@email.com",
-  items: [
-    {
-      id: "1",
-      description: "Web Design Services",
-      quantity: 1,
-      rate: 2500.0,
-      amount: 2500.0,
-    },
-    {
-      id: "2",
-      description: "Development Hours",
-      quantity: 40,
-      rate: 75.0,
-      amount: 3000.0,
-    },
-    {
-      id: "3",
-      description: "Project Management",
-      quantity: 1,
-      rate: 500.0,
-      amount: 500.0,
-    },
-  ],
-  subtotal: 6000.0,
-  tax: 480.0,
-  total: 6480.0,
-};
-
-export const InvoiceTemplate: React.FC = () => {
+export const InvoiceTemplate: React.FC<InvoiceData> = ({
+  invoiceUID,
+  date,
+  customer,
+  company,
+  items,
+  subtotal,
+  netTotal,
+  paidAmount,
+  netTaxAmount,
+  netDiscountAmount,
+  note,
+  // invoiceDiscountMode,
+  // invoiceDiscountPercentage,
+  // invoiceDiscountAmount,
+}) => {
   const printRef = useRef<HTMLDivElement | null>(null);
   const handlePrint = () => {
     window.print();
   };
 
-  const [invoiceData] = useState<InvoiceData>(sampleInvoiceData);
-
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "BDT",
+      minimumFractionDigits: 2,
+      currencyDisplay: "narrowSymbol",
     }).format(amount);
   };
 
@@ -112,24 +101,25 @@ export const InvoiceTemplate: React.FC = () => {
             <div className="mb-6 md:mb-0">
               <h1 className="mb-2 text-3xl font-bold text-primary">INVOICE</h1>
               <div className="text-muted-foreground">
-                <p className="font-semibold">
-                  Invoice #: {invoiceData.invoiceNumber}
-                </p>
-                <p>Date: {formatDate(invoiceData.date)}</p>
-                <p>Due Date: {formatDate(invoiceData.dueDate)}</p>
+                <p className="font-semibold">Invoice #: {invoiceUID}</p>
+                <p>Date: {formatDate(date)}</p>
               </div>
             </div>
 
             <div className="text-right">
+              {company.logoUrl && (
+                <img className="h-10 mb-2" src={company.logoUrl} alt="logo" />
+              )}
+
               <h2 className="mb-2 text-xl font-bold text-foreground">
-                {invoiceData.companyName}
+                {company.name}
               </h2>
               <div className="text-muted-foreground">
-                <p className="whitespace-pre-line">
-                  {invoiceData.companyAddress}
-                </p>
-                <p>{invoiceData.companyPhone}</p>
-                <p>{invoiceData.companyEmail}</p>
+                {company.address && (
+                  <p className="whitespace-pre-line">{company.address}</p>
+                )}
+                {company.phone && <p>{company.phone}</p>}
+                {company.email && <p>{company.email}</p>}
               </div>
             </div>
           </div>
@@ -141,13 +131,12 @@ export const InvoiceTemplate: React.FC = () => {
                 Bill To:
               </h3>
               <div className="text-muted-foreground">
-                <p className="font-semibold text-foreground">
-                  {invoiceData.billToName}
-                </p>
-                <p className="whitespace-pre-line">
-                  {invoiceData.billToAddress}
-                </p>
-                <p>{invoiceData.billToEmail}</p>
+                <p className="font-semibold text-foreground">{customer.name}</p>
+                {customer.address && (
+                  <p className="whitespace-pre-line">{customer.address}</p>
+                )}
+                {customer.phone && <p>{customer.phone}</p>}
+                {customer.email && <p>{customer.email}</p>}
               </div>
             </div>
           </div>
@@ -158,14 +147,18 @@ export const InvoiceTemplate: React.FC = () => {
               <table className="w-full">
                 <thead>
                   <tr className="border-b-2 border-border">
-                    <th className="px-2 py-3 font-semibold text-left text-foreground">
-                      Description
+                    <th className="py-3 font-semibold text-left text-foreground">
+                      Product
                     </th>
-                    <th className="w-20 px-2 py-3 font-semibold text-center text-foreground">
+                    <th className="w-[40px] px-2 py-3 font-semibold text-foreground">
                       Qty
                     </th>
+                    <th className="w-20 px-2 py-3 font-semibold text-right text-foreground">
+                      Price
+                    </th>
+
                     <th className="w-24 px-2 py-3 font-semibold text-right text-foreground">
-                      Rate
+                      Discount
                     </th>
                     <th className="px-2 py-3 font-semibold text-right text-foreground w-28">
                       Amount
@@ -173,22 +166,20 @@ export const InvoiceTemplate: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {invoiceData.items.map((item, index) => (
-                    <tr
-                      key={item.id}
-                      className={index % 2 === 0 ? "bg-muted/30" : ""}
-                    >
-                      <td className="py-2 text-foreground">
-                        {item.description}
-                      </td>
+                  {items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="py-2 text-foreground">{item.name}</td>
                       <td className="py-2 text-center text-muted-foreground">
                         {item.quantity}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {formatCurrency(item.rate)}
+                        {formatCurrency(item.unitPrice)}
+                      </td>
+                      <td className="py-2 text-right text-muted-foreground">
+                        {formatCurrency(item.discountAmount)}
                       </td>
                       <td className="py-2 font-semibold text-right text-foreground">
-                        {formatCurrency(item.amount)}
+                        {formatCurrency(item.netAmount)}
                       </td>
                     </tr>
                   ))}
@@ -204,27 +195,55 @@ export const InvoiceTemplate: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-semibold text-foreground">
-                    {formatCurrency(invoiceData.subtotal)}
+                    {formatCurrency(subtotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Tax (8%):</span>
+                  <span className="text-muted-foreground">Tax:</span>
                   <span className="font-semibold text-foreground">
-                    {formatCurrency(invoiceData.tax)}
+                    {formatCurrency(netTaxAmount)}
                   </span>
                 </div>
+                {netDiscountAmount && (
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">
+                      Discount
+                      {/* {invoiceDiscountMode === ProductDiscountMode.Percentage
+                        ? `(+ ${invoiceDiscountPercentage}%)`
+                        : formatCurrency(invoiceDiscountAmount ?? 0)} */}
+                      :
+                    </span>
+                    <span className="font-semibold text-foreground">
+                      {formatCurrency(netDiscountAmount)}
+                    </span>
+                  </div>
+                )}
 
                 <div className="flex justify-between">
                   <span className="font-bold text-foreground">
                     Grant total:
                   </span>
-                  <span className="font-bold text-primary">
-                    {formatCurrency(invoiceData.total)}
-                  </span>
+                  <span className="font-bold">{formatCurrency(netTotal)}</span>
                 </div>
                 <div className="flex flex-col justify-between">
                   <span className="font-bold text-foreground">In words:</span>
-                  <span>{numberToWords.toWords(invoiceData.total)}</span>
+                  <span>{numberToWords.toWords(netTotal)}</span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="font-bold text-foreground">
+                    Paid Amount:
+                  </span>
+                  <span className="font-bold">
+                    {formatCurrency(paidAmount)}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span className="font-bold text-foreground">Due Amount:</span>
+                  <span className="font-bold">
+                    {formatCurrency(netTotal - paidAmount)}
+                  </span>
                 </div>
                 {/*  */}
               </div>
@@ -232,16 +251,14 @@ export const InvoiceTemplate: React.FC = () => {
           </div>
 
           {/* Footer */}
-          <div className="pt-8 mt-12 border-t border-border">
-            <div className="text-sm text-muted-foreground">
-              <p className="mb-2 font-semibold">Payment Terms:</p>
-              <p>
-                Payment is due within 30 days of invoice date. Late payments may
-                be subject to fees.
-              </p>
-              <p className="mt-4">Thank you for your business!</p>
+          {note && (
+            <div className="pt-8 mt-12 border-t border-border">
+              <div className="text-sm text-muted-foreground">
+                <p className="mb-2 font-semibold">Payment Terms:</p>
+                <p>{note}</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
