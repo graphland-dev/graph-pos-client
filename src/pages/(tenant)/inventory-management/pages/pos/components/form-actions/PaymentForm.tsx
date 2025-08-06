@@ -13,13 +13,17 @@ import { useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
+  Alert,
+  Anchor,
   Button,
   Group,
   Input,
+  List,
   NumberInput,
   Paper,
   Select,
   Space,
+  Textarea,
 } from "@mantine/core";
 import { DateInput } from "@mantine/dates";
 import React from "react";
@@ -48,7 +52,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   formData,
   onSuccess,
   preMadeInvoiceId,
-  onRefetchHoldList,
+  // onRefetchHoldList,
 }) => {
   const getNetExtraDiscount = () => {
     if (formData.invoiceDiscountMode === ProductDiscountMode.Amount) {
@@ -104,6 +108,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
       reference: "",
       poReference: "",
       date: new Date(),
+      note: "",
       payments: [
         // Required
         {
@@ -145,18 +150,18 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   );
 
   // payment mutation
-  const [updateInvoice, { loading: __updating__invoice }] = useMutation(
-    Update_Invoice_Status,
-    {
-      onCompleted: () => {
-        onSuccess({ invoiceId: "" });
-        onRefetchHoldList();
-      },
-    }
-  );
+  // const [updateInvoice, { loading: __updating__invoice }] = useMutation(
+  //   Update_Invoice_Status,
+  //   {
+  //     onCompleted: () => {
+  //       onSuccess({ invoiceId: "" });
+  //       onRefetchHoldList();
+  //     },
+  //   }
+  // );
 
   // create invoice mutation
-  const [createInvoice, { loading: __creatingInvoice }] = useMutation(
+  const [createInvoiceMutation, { loading: __creatingInvoice }] = useMutation(
     Create_Product_Invoice
   );
 
@@ -177,19 +182,10 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           },
         },
       }).finally(() => {
-        updateInvoice({
-          variables: {
-            invoiceId: preMadeInvoiceId,
-            status:
-              getTotalPaymentAmount(watch("payments")) ===
-              formData?.invoiceNetTotalBill
-                ? Purchase_Invoice_Status.Paid
-                : Purchase_Invoice_Status.PartiallyPaid,
-          },
-        });
+        // NOTE: finally
       });
     } else {
-      createInvoice({
+      createInvoiceMutation({
         variables: {
           input: {
             date: values?.date,
@@ -211,20 +207,32 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           } satisfies CreateProductInvoiceInput,
         },
       }).then((invoice) => {
-        paymentToInvoice({
-          variables: {
-            body: {
-              clientId: formData?.clientId,
-              invoiceId: invoice.data?.inventory__createProductInvoice?._id,
-              payments: values?.payments,
-              poReference: values?.poReference,
-              receptNo: values?.receptNo,
-              reference: values?.reference,
-              paymentTerm: values?.paymentTerm,
-              date: values?.date,
+        console.log({ s: values?.payments });
+        if (values?.payments?.length) {
+          paymentToInvoice({
+            variables: {
+              body: {
+                clientId: formData?.clientId,
+                invoiceId: invoice.data?.inventory__createProductInvoice?._id,
+                payments: values?.payments,
+                poReference: values?.poReference,
+                receptNo: values?.receptNo,
+                reference: values?.reference,
+                paymentTerm: values?.paymentTerm,
+                date: values?.date,
+              },
             },
-          },
-        });
+          }).then(() => {
+            // debugger;
+            onSuccess({
+              invoiceId: invoice.data?.inventory__createProductInvoice?._id,
+            });
+          });
+        } else {
+          onSuccess({
+            invoiceId: invoice.data?.inventory__createProductInvoice?._id,
+          });
+        }
       });
     }
   };
@@ -232,46 +240,68 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Input.Wrapper
-          label="Reference"
-          error={<ErrorMessage name={`reference`} errors={errors} />}
-        >
-          <Input placeholder="Reference" {...register(`reference`)} />
-        </Input.Wrapper>
-        <Space h={5} />
-        <Input.Wrapper
-          label="PO Reference"
-          error={<ErrorMessage name={`poReference`} errors={errors} />}
-        >
-          <Input placeholder="PO Reference" {...register(`poReference`)} />
-        </Input.Wrapper>
-        <Space h={5} />
-        <Input.Wrapper
-          label="Receipt No"
-          error={<ErrorMessage name={`receiptNo`} errors={errors} />}
-        >
-          <Input placeholder="Receipt no" {...register(`receiptNo`)} />
-        </Input.Wrapper>
-        <Space h={5} />
-        <Input.Wrapper
-          label="Payment Term"
-          error={<ErrorMessage name={`paymentTerm`} errors={errors} />}
-        >
-          <Input placeholder="Payment Term" {...register(`paymentTerm`)} />
-        </Input.Wrapper>
-        <Space h={5} />
-        <Input.Wrapper
-          label="Date"
-          error={<ErrorMessage name={`date`} errors={errors} />}
-        >
-          <DateInput
-            placeholder="Pick a Date"
-            onChange={(e) => setValue(`date`, e!)}
-            defaultValue={watch(`date`)}
-          />
-        </Input.Wrapper>
+        <div className="flex flex-col gap-1">
+          <Input.Wrapper
+            label="Reference"
+            error={<ErrorMessage name={`reference`} errors={errors} />}
+          >
+            <Input placeholder="Reference" {...register(`reference`)} />
+          </Input.Wrapper>
+
+          <Input.Wrapper
+            label="PO Reference"
+            error={<ErrorMessage name={`poReference`} errors={errors} />}
+          >
+            <Input placeholder="PO Reference" {...register(`poReference`)} />
+          </Input.Wrapper>
+
+          <Input.Wrapper
+            label="Receipt No"
+            error={<ErrorMessage name={`receiptNo`} errors={errors} />}
+          >
+            <Input placeholder="Receipt no" {...register(`receiptNo`)} />
+          </Input.Wrapper>
+
+          <Input.Wrapper
+            label="Payment Term"
+            error={<ErrorMessage name={`paymentTerm`} errors={errors} />}
+          >
+            <Textarea placeholder="Payment Term" {...register(`paymentTerm`)} />
+          </Input.Wrapper>
+
+          <Input.Wrapper
+            label="Note"
+            error={<ErrorMessage name={`note`} errors={errors} />}
+          >
+            <Textarea placeholder="Note" {...register("note")} />
+          </Input.Wrapper>
+
+          <Input.Wrapper
+            label="Date"
+            error={<ErrorMessage name={`date`} errors={errors} />}
+          >
+            <DateInput
+              placeholder="Pick a Date"
+              onChange={(e) => setValue(`date`, e!)}
+              defaultValue={watch(`date`)}
+            />
+          </Input.Wrapper>
+        </div>
 
         <Space h={10} />
+
+        <Alert>
+          <List className="text-sm list-disc list-inside">
+            <List.Item>
+              If you want to add more payments, please click on the [Add new]
+              button below.
+            </List.Item>
+            <List.Item>
+              If you want to proceed this order without payment, remove all
+              payment entry and click on the [Create Order] button.
+            </List.Item>
+          </List>
+        </Alert>
 
         {fields.map((_, idx) => (
           <Paper key={idx} className="relative" p={10} my={10} withBorder>
@@ -339,36 +369,34 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             </Group>
           </Paper>
         ))}
+        <Anchor
+          className="inline-block mb-8 text-sm"
+          onClick={() =>
+            append({
+              accountId: "",
+              type: "",
+              amount: 0,
+            })
+          }
+        >
+          [Add new]
+        </Anchor>
 
         <Space h={5} />
 
-        <Group position="left">
-          <Button
-            variant="subtle"
-            onClick={() =>
-              append({
-                accountId: "",
-                type: "",
-                amount: 0,
-              })
-            }
-          >
-            Add new
-          </Button>
-
-          <Button
-            type="submit"
-            loading={
-              __creatingInvoice || __payment__inprogress || __updating__invoice
-            }
-            disabled={
-              getTotalPaymentAmount(watch("payments")) >
-              formData?.invoiceNetTotalBill
-            }
-          >
-            Make Payment
-          </Button>
-        </Group>
+        <Button
+          type="submit"
+          loading={
+            __creatingInvoice || __payment__inprogress
+            // __creatingInvoice || __payment__inprogress || __updating__invoice
+          }
+          disabled={
+            getTotalPaymentAmount(watch("payments")) >
+            formData?.invoiceNetTotalBill
+          }
+        >
+          Create Order
+        </Button>
       </form>
     </div>
   );

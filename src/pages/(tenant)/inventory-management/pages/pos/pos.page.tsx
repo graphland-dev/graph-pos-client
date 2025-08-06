@@ -45,16 +45,18 @@ import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
 import PaymentForm from "./components/form-actions/PaymentForm";
 import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
 import { getPercentageAmount } from "./utils/utils.calc";
+import PrintableFullInvoice from "@/commons/components/invoice/PrintableFullInvoice";
 
 const PosPage = () => {
   // const [openedHoldModal, holdModalHandler] = useDisclosure();
+  const params = useParams<{ tenant: string }>();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
   const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
+  const [createdInvoiceId, setCreatedInvoiceId] = useState<string>();
   // const [successFullpaymentInvoiceId, setSuccessFullpaymentInvoiceId] =
   //   useState<string>();
   // Note: This is for hold list
   // const [selectedInvoice, setSelectedInvoice] = useState<ProductInvoice>();
-  const params = useParams<{ tenant: string }>();
 
   // hold list data API
   // const { data: holdList, refetch: refetchHoldList } = useQuery<{
@@ -616,50 +618,6 @@ const PosPage = () => {
                 />
               </Modal> */}
 
-              {/* payment form */}
-              <Drawer
-                opened={openedPaymentModal}
-                onClose={paymentModalHandler.close}
-                title="Multiple payment to invoice"
-                size={"lg"}
-                position="right"
-              >
-                <PaymentForm
-                  formData={{
-                    clientId: watch("clientId"),
-                    products: watch("products"),
-                    discountValue: watch("discountValue"),
-                    invoiceDiscountMode: watch("invoiceDiscountMode"),
-                    invoiceDiscountPercentage:
-                      watch("invoiceDiscountMode") ===
-                      ProductDiscountMode.Percentage
-                        ? watch("discountValue")
-                        : 0,
-                    costAmount: watch("costAmount"),
-                    netTaxAmount: getNetTaxAmount(),
-                    invoiceNetTotalBill: invoiceNetTotal(),
-                  }}
-                  onSuccess={({ invoiceId }) => {
-                    paymentModalHandler.close();
-                    console.log(invoiceId);
-                    // setSuccessFullpaymentInvoiceId(invoiceId);
-                    reset({
-                      clientId: "",
-                      invoiceDiscountMode: ProductDiscountMode.Amount,
-                      discountValue: 0,
-                      products: [],
-                      costAmount: 0,
-                    });
-                  }}
-                  // Note: This is for hold list
-                  // preMadeInvoiceId={selectedInvoice?._id}
-                  onRefetchHoldList={() => {
-                    // Note: This is for hold list
-                    // refetchHoldList();
-                  }}
-                />
-              </Drawer>
-
               <Group position="apart">
                 {/* <Button
                   size="md"
@@ -676,7 +634,7 @@ const PosPage = () => {
                   onClick={() => setAction("PAYMENT")}
                   disabled={!watch("products")?.length || !watch("clientId")}
                 >
-                  Payment
+                  Proceed order
                 </Button>
                 <Button
                   size="md"
@@ -707,6 +665,63 @@ const PosPage = () => {
           </div>
         </div>
       </form>
+
+      {/* payment form */}
+      <Drawer
+        opened={openedPaymentModal}
+        onClose={paymentModalHandler.close}
+        title="Proceed order"
+        size={"lg"}
+        position="right"
+      >
+        <PaymentForm
+          formData={{
+            clientId: watch("clientId"),
+            products: watch("products"),
+            discountValue: watch("discountValue"),
+            invoiceDiscountMode: watch("invoiceDiscountMode"),
+            invoiceDiscountPercentage:
+              watch("invoiceDiscountMode") === ProductDiscountMode.Percentage
+                ? watch("discountValue")
+                : 0,
+            costAmount: watch("costAmount"),
+            netTaxAmount: getNetTaxAmount(),
+            invoiceNetTotalBill: invoiceNetTotal(),
+          }}
+          onSuccess={({ invoiceId }) => {
+            paymentModalHandler.close();
+            setCreatedInvoiceId(invoiceId);
+            console.log({ invoiceId });
+            reset({
+              clientId: "",
+              invoiceDiscountMode: ProductDiscountMode.Amount,
+              discountValue: 0,
+              products: [],
+              costAmount: 0,
+            });
+          }}
+          // Note: This is for hold list
+          // preMadeInvoiceId={selectedInvoice?._id}
+          onRefetchHoldList={() => {
+            // Note: This is for hold list
+            // refetchHoldList();
+          }}
+        />
+      </Drawer>
+      <Drawer
+        opened={Boolean(createdInvoiceId)}
+        onClose={() => setCreatedInvoiceId("")}
+        title="Print Invoice"
+        size={"100%"}
+        position="right"
+      >
+        {createdInvoiceId && (
+          <PrintableFullInvoice
+            invoiceId={createdInvoiceId}
+            tenant={params.tenant ?? ""}
+          />
+        )}
+      </Drawer>
     </div>
   );
 };

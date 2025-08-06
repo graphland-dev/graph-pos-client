@@ -105,6 +105,28 @@ const ProductInvoiceDetails: React.FC<{
         </th>
         <th>{currencyNumberFormat(details.netTotal || 0)}</th>
       </tr>
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th className="!text-right" colSpan={7}>
+          Paid amount
+        </th>
+        <th>{currencyNumberFormat(details.paidAmount || 0)}</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th className="!text-right" colSpan={7}>
+          Due
+        </th>
+        <th>
+          {currencyNumberFormat(
+            details.netTotal - (details.paidAmount || 0) || 0
+          )}
+        </th>
+      </tr>
     </>
   );
 
