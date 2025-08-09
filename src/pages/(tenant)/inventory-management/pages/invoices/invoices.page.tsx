@@ -182,17 +182,13 @@ const InvoicesPage = () => {
         opened={state.openDrawer}
         size={"100%"}
       >
-        <ProductInvoiceDetails
-          invoiceId={state.printableInvoiceId ?? ""}
-          loading={loading}
-        />
+        <ProductInvoiceDetails invoiceId={state.printableInvoiceId ?? ""} />
       </Drawer>
 
       <Drawer
         onClose={() =>
           setState({
             openPrintableInvoice: false,
-            printableInvoiceId: undefined,
           })
         }
         title={

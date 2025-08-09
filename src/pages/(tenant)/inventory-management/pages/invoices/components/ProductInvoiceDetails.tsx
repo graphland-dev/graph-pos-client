@@ -21,8 +21,7 @@ import ProductInvoiceDetailsPaymentsTable from "./ProductInvoiceDetailsPaymentsT
 
 const ProductInvoiceDetails: React.FC<{
   invoiceId: string;
-  loading: boolean;
-}> = ({ invoiceId, loading }) => {
+}> = ({ invoiceId }) => {
   const query = useQuery<{
     inventory__productInvoice: ProductInvoice;
   }>(INVOICE_DETAILS_QUERY, {
@@ -33,6 +32,7 @@ const ProductInvoiceDetails: React.FC<{
         value: invoiceId,
       },
     },
+    skip: !invoiceId,
   });
 
   const invoice = useMemo(() => query.data?.inventory__productInvoice, [query]);
@@ -239,7 +239,6 @@ const ProductInvoiceDetails: React.FC<{
                 {" "}
                 Email:{" "}
               </span>
-
               {invoice?.client?.email}
             </Text>
             <Text className="flex justify-between">
@@ -266,19 +265,21 @@ const ProductInvoiceDetails: React.FC<{
           <Title order={4}>Items</Title>
           <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
             <thead className="bg-card-header">{ths}</thead>
-            <tbody>{loading ? trSkeleton : rows}</tbody>
+            <tbody>{query.loading ? trSkeleton : rows}</tbody>
             <tfoot>{tfs}</tfoot>
           </Table>
         </Paper>
-        {invoice?.netTotal} - {invoice?.paidAmount}
-        <ProductInvoiceDetailsPaymentsTable
-          clientId={invoice?.client?._id || ""}
-          invoiceId={invoice?._id || ""}
-          dueAmount={(invoice?.netTotal || 0) - (invoice?.paidAmount || 0)}
-          onDone={function (): void {
-            query.refetch();
-          }}
-        />
+        {invoice?.client?._id && (
+          <ProductInvoiceDetailsPaymentsTable
+            clientId={invoice?.client?._id || ""}
+            invoiceId={invoice?._id || ""}
+            dueAmount={(invoice?.netTotal || 0) - (invoice?.paidAmount || 0)}
+            onDone={function (): void {
+              query.refetch();
+            }}
+          />
+        )}
+
         {/* <Attachments
         attachments={details.attachments ?? []}
         onUploadDone={() => {}}

@@ -1,27 +1,27 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
-import Attachments from '@/commons/components/Attactment/Attachments.tsx';
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
+import Attachments from "@/commons/components/Attactment/Attachments.tsx";
 import {
   Client,
   MatchOperator,
   ServerFileReference,
-} from '@/commons/graphql-models/graphql';
-import { FOLDER__NAME } from '@/commons/models/FolderName';
-import { useMutation } from '@apollo/client';
-import { ErrorMessage } from '@hookform/error-message';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Button, Input, Space, Textarea } from '@mantine/core';
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
+} from "@/commons/graphql-models/graphql";
+import { FOLDER__NAME } from "@/commons/models/FolderName";
+import { useMutation } from "@apollo/client";
+import { ErrorMessage } from "@hookform/error-message";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { Button, Input, Space, Textarea } from "@mantine/core";
+import React, { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import * as Yup from "yup";
 import {
   PEOPLE_CREATE_CLIENT,
   PEOPLE_UPDATE_CLIENT,
-} from '../utils/client.query';
+} from "../utils/client.query";
 
 interface IClientFormProps {
   onFormSubmitted: () => void;
   formData?: Client;
-  action: 'CREATE' | 'EDIT';
+  action: "CREATE" | "EDIT";
 }
 
 const ClientCreateForm: React.FC<IClientFormProps> = ({
@@ -37,10 +37,10 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
     reset,
   } = useForm({
     defaultValues: {
-      name: '',
-      contactNumber: '',
-      email: '',
-      address: '',
+      name: "",
+      contactNumber: "",
+      email: "",
+      address: "",
     },
     resolver: yupResolver(formValidationSchema),
   });
@@ -50,35 +50,37 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
   >([]);
 
   useEffect(() => {
-    setValue('name', formData?.name as string);
-    setValue('email', formData?.email as string);
-    setValue('address', formData?.address as string);
-    setValue('contactNumber', formData?.contactNumber as string);
+    setValue("name", formData?.name as string);
+    setValue("email", formData?.email as string);
+    setValue("address", formData?.address as string);
+    setValue("contactNumber", formData?.contactNumber as string);
   }, [formData]);
 
   const [createClient, { loading: creating }] = useMutation(
     PEOPLE_CREATE_CLIENT,
     commonNotifierCallback({
-      successTitle: 'Client successfully created!',
-    }),
+      successTitle: "Client successfully created!",
+    })
   );
 
   const [updateClient, { loading: updating }] = useMutation(
     PEOPLE_UPDATE_CLIENT,
     commonNotifierCallback({
-      successTitle: 'Client successfully updated!',
-    }),
+      successTitle: "Client successfully updated!",
+    })
   );
 
-  const onSubmit = async (values: ICLIENTCREATEFORM) => {
-    if (action === 'CREATE') {
+  const onSubmit: SubmitHandler<
+    Yup.InferType<typeof formValidationSchema>
+  > = async (payload) => {
+    if (action === "CREATE") {
       await createClient({
         variables: {
           body: {
-            name: values.name,
-            email: values.email,
-            contactNumber: values.contactNumber,
-            address: values.address,
+            name: payload.name,
+            email: payload.email,
+            contactNumber: payload.contactNumber,
+            address: payload.address,
             attachments: uploadedfiles || [],
           },
         },
@@ -89,15 +91,15 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
       await updateClient({
         variables: {
           where: {
-            key: '_id',
+            key: "_id",
             operator: MatchOperator.Eq,
             value: formData?._id,
           },
           body: {
-            name: values.name,
-            email: values.email,
-            contactNumber: values.contactNumber,
-            address: values.address,
+            name: payload.name,
+            email: payload.email,
+            contactNumber: payload.contactNumber,
+            address: payload.address,
           },
         },
       });
@@ -112,19 +114,19 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
           label="Name"
           error={<ErrorMessage name="name" errors={errors} />}
         >
-          <Input placeholder="Write client name" {...register('name')} />
+          <Input placeholder="Write client name" {...register("name")} />
         </Input.Wrapper>
 
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <Input.Wrapper
           label="Email"
           error={<ErrorMessage name="email" errors={errors} />}
         >
-          <Input placeholder="Write email" {...register('email')} />
+          <Input placeholder="Write email" {...register("email")} />
         </Input.Wrapper>
 
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <Input.Wrapper
           label="Contact number"
@@ -132,30 +134,30 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
         >
           <Input
             placeholder="Write contact number"
-            {...register('contactNumber')}
+            {...register("contactNumber")}
           />
         </Input.Wrapper>
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <Input.Wrapper
           label="Address"
           error={<ErrorMessage name="address" errors={errors} />}
         >
-          <Textarea placeholder="Write address" {...register('address')} />
+          <Textarea placeholder="Write address" {...register("address")} />
         </Input.Wrapper>
 
-        <Space h={'sm'} />
+        <Space h={"sm"} />
 
         <div className="my-6">
           <Attachments
             attachments={formData?.attachments || []}
             enableUploader
             onUploadDone={(files) => {
-              if (action === 'EDIT') {
+              if (action === "EDIT") {
                 return updateClient({
                   variables: {
                     where: {
-                      key: '_id',
+                      key: "_id",
                       operator: MatchOperator.Eq,
                       value: formData?._id,
                     },
@@ -174,7 +176,7 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
                   path: file.path,
                   provider: file.provider,
                   meta: file.meta,
-                })),
+                }))
               );
             }}
             folder={FOLDER__NAME.CLIENT_ATTACHMENTS}
@@ -192,15 +194,8 @@ const ClientCreateForm: React.FC<IClientFormProps> = ({
 export default ClientCreateForm;
 
 export const formValidationSchema = Yup.object().shape({
-  name: Yup.string().required().label('Name'),
-  contactNumber: Yup.string().required().label('Contact number'),
-  email: Yup.string().email().required().label('Email'),
-  address: Yup.string().required().label('Address'),
+  name: Yup.string().required().label("Name"),
+  contactNumber: Yup.string().required().label("Contact number"),
+  email: Yup.string().email().label("Email"),
+  address: Yup.string().label("Address"),
 });
-
-interface ICLIENTCREATEFORM {
-  name: string;
-  contactNumber: string;
-  email: string;
-  address: string;
-}

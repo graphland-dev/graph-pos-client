@@ -1,4 +1,5 @@
 import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
+import currencyNumberFormat from "@/commons/utils/commaNumber";
 import { Button } from "@mantine/core";
 import { Printer } from "lucide-react";
 import numberToWords from "number-to-words";
@@ -63,15 +64,6 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
     window.print();
   };
 
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "BDT",
-      minimumFractionDigits: 2,
-      currencyDisplay: "narrowSymbol",
-    }).format(amount);
-  };
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -93,26 +85,14 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
       {/* Invoice Container */}
       <div
         ref={printRef}
-        className={`invoice-container max-w-4xl mx-auto bg-card shadow-lg print-font-small`}
+        className={`invoice-container max-w-4xl mx-auto bg-card shadow-lg print-font-small min-h-[297mm] flex flex-col`}
       >
-        <div className="invoice-container-inner">
+        <div className="relative flex-1 invoice-container-inner">
           {/* Header */}
           <div className="flex flex-row items-start justify-between mb-8">
-            <div className="mb-6 md:mb-0">
-              <h1 className="mb-2 text-3xl font-bold text-primary">INVOICE</h1>
-              <div className="text-muted-foreground">
-                <p className="font-semibold">Invoice #: {invoiceUID}</p>
-                <p>Date: {formatDate(date)}</p>
-              </div>
-            </div>
-
-            <div className="text-right">
+            <div>
               {company.logoUrl && (
-                <img
-                  className="h-10 mb-2 ml-auto"
-                  src={company.logoUrl}
-                  alt="logo"
-                />
+                <img className="h-10 mb-2" src={company.logoUrl} alt="logo" />
               )}
 
               <h2 className="mb-2 text-xl font-bold text-foreground">
@@ -126,6 +106,19 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                 {company.email && <p>{company.email}</p>}
               </div>
             </div>
+            <div className="mb-6 md:mb-0">
+              {/* <h1 className="mb-2 text-3xl font-bold text-primary">INVOICE</h1> */}
+              <div className="text-muted-foreground">
+                <p className="font-semibold">Invoice #: {invoiceUID}</p>
+                <p>Date: {formatDate(date)}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Invoice Title */}
+
+          <div className="flex justify-center">
+            <h1 className="mb-2 text-3xl font-bold text-foreground">INVOICE</h1>
           </div>
 
           {/* Billing Information */}
@@ -152,6 +145,9 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                 <thead>
                   <tr className="border-b-2 border-border">
                     <th className="py-3 font-semibold text-left text-foreground">
+                      SL
+                    </th>
+                    <th className="py-3 font-semibold text-left text-foreground">
                       Product
                     </th>
                     <th className="w-[40px] px-2 py-3 font-semibold text-foreground">
@@ -171,19 +167,20 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                 </thead>
                 <tbody>
                   {items.map((item, index) => (
-                    <tr key={index}>
+                    <tr key={index} className="border-b border-border">
+                      <td className="w-8 py-2 text-foreground">{index + 1}</td>
                       <td className="py-2 text-foreground">{item.name}</td>
                       <td className="py-2 text-center text-muted-foreground">
                         {item.quantity}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {formatCurrency(item.unitPrice)}
+                        {currencyNumberFormat(item.unitPrice)}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {formatCurrency(item.discountAmount)}
+                        {currencyNumberFormat(item.discountAmount)}
                       </td>
                       <td className="py-2 font-semibold text-right text-foreground">
-                        {formatCurrency(item.netAmount)}
+                        {currencyNumberFormat(item.netAmount)}
                       </td>
                     </tr>
                   ))}
@@ -199,13 +196,13 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-semibold text-foreground">
-                    {formatCurrency(subtotal)}
+                    {currencyNumberFormat(subtotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax:</span>
                   <span className="font-semibold text-foreground">
-                    {formatCurrency(netTaxAmount)}
+                    {currencyNumberFormat(netTaxAmount)}
                   </span>
                 </div>
                 {netDiscountAmount ? (
@@ -218,7 +215,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                       :
                     </span>
                     <span className="font-semibold text-foreground">
-                      {formatCurrency(netDiscountAmount)}
+                      {currencyNumberFormat(netDiscountAmount)}
                     </span>
                   </div>
                 ) : null}
@@ -227,7 +224,9 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                   <span className="font-bold text-foreground">
                     Grant total:
                   </span>
-                  <span className="font-bold">{formatCurrency(netTotal)}</span>
+                  <span className="font-bold">
+                    {currencyNumberFormat(netTotal)}
+                  </span>
                 </div>
                 <div className="flex flex-col justify-between">
                   <span className="font-bold text-foreground">In words:</span>
@@ -239,14 +238,14 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                     Paid Amount:
                   </span>
                   <span className="font-bold">
-                    {formatCurrency(paidAmount)}
+                    {currencyNumberFormat(paidAmount)}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="font-bold text-foreground">Due Amount:</span>
                   <span className="font-bold">
-                    {formatCurrency(netTotal - paidAmount)}
+                    {currencyNumberFormat(netTotal - paidAmount)}
                   </span>
                 </div>
                 {/*  */}
@@ -259,10 +258,13 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
             <div className="pt-8 mt-12 border-t border-border">
               <div className="text-sm text-muted-foreground">
                 <p className="mb-2 font-semibold">Payment Terms:</p>
-                <p>{note}</p>
+                <pre className="font-sans whitespace-pre-wrap ">{note}</pre>
               </div>
             </div>
           )}
+
+          {/* Signature Blocks - Always at Bottom */}
+          <SignatureBlock />
         </div>
       </div>
     </div>
@@ -270,3 +272,22 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
 };
 
 export default InvoiceTemplate;
+
+const SignatureBlock = () => {
+  return (
+    <div className="hidden grid-cols-2 signature-block gap-80 print:grid">
+      <div className="text-center">
+        <div className="mb-16"></div>
+        <div className="pt-2 border-t border-black">
+          <span className="font-semibold text-foreground">Customer Sign</span>
+        </div>
+      </div>
+      <div className="text-center">
+        <div className="mb-16"></div>
+        <div className="pt-2 border-t border-black">
+          <span className="font-semibold text-foreground">Authorizer Sign</span>
+        </div>
+      </div>
+    </div>
+  );
+};

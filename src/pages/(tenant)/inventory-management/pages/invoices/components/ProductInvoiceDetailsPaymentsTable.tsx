@@ -59,7 +59,6 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
     <tr>
       <th>Payments UID</th>
       <th>Date</th>
-      <th>Pay By</th>
       <th>Amount</th>
     </tr>
   );
@@ -89,14 +88,12 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
         <td>
           <Anchor
             component={Link}
-            to={`/${element.tenant}/inventory-management/products/${element.inventoryInvoicePaymentUID}`}
+            to={`/${element.tenant}/inventory-management/payments/invoice-payments/?invoiceId=${element._id}`}
           >
             {element.inventoryInvoicePaymentUID}
           </Anchor>
-          {}
         </td>
         <td>{element?.date ? dateFormat(element.date) : ""}</td>
-        <td>{element.paymentTerm} </td>
         <td>{element.netAmount} </td>
       </tr>
     )

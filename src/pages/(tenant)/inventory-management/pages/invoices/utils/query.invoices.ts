@@ -84,6 +84,7 @@ export const ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY = gql`
         _id
         inventoryInvoicePaymentUID
         date
+        tenant
         client {
           _id
           name
