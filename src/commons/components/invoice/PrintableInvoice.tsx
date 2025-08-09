@@ -100,16 +100,18 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
               </h2>
               <div className="text-muted-foreground">
                 {company.address && (
-                  <p className="whitespace-pre-line">{company.address}</p>
+                  <pre className="font-sans whitespace-pre-line">
+                    {company.address}
+                  </pre>
                 )}
-                {company.phone && <p>{company.phone}</p>}
-                {company.email && <p>{company.email}</p>}
+                {company.phone && <p>Phone Number: {company.phone}</p>}
+                {company.email && <p>Email Address: {company.email}</p>}
               </div>
             </div>
             <div className="mb-6 md:mb-0">
               {/* <h1 className="mb-2 text-3xl font-bold text-primary">INVOICE</h1> */}
               <div className="text-muted-foreground">
-                <p className="font-semibold">Invoice #: {invoiceUID}</p>
+                <p className="font-semibold">Invoice ID: {invoiceUID}</p>
                 <p>Date: {formatDate(date)}</p>
               </div>
             </div>

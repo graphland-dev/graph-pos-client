@@ -76,7 +76,6 @@ const OrganizationOverviewPage: React.FC = () => {
     updateOrganizationInfo({
       variables: {
         input: {
-          logo: organizationLogo,
           address: values?.address,
           businessPhoneNumber: values?.businessPhoneNumber,
           description: values?.description,
@@ -105,11 +104,18 @@ const OrganizationOverviewPage: React.FC = () => {
               onDrop={async (files) => {
                 const res = await uploadFile({
                   files,
-                  folder: FOLDER__NAME.USER__AVATAR,
+                  folder: FOLDER__NAME.ORGANIZATION__LOGO,
                 });
                 if (res.data.length > 0) {
                   setOrganizationLogo(res.data[0]);
                 }
+                updateOrganizationInfo({
+                  variables: {
+                    input: {
+                      logo: res.data[0],
+                    },
+                  },
+                });
               }}
               loading={uploading}
               maxSize={3 * 1024 ** 2}
@@ -200,7 +206,7 @@ const OrganizationOverviewPage: React.FC = () => {
             label="Address"
             error={<ErrorMessage name="address" errors={errors} />}
           >
-            <Input placeholder="Address" {...register("address")} />
+            <Textarea placeholder="Address" {...register("address")} />
           </Input.Wrapper>
 
           <Space h={"xs"} />
