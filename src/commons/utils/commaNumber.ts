@@ -1,4 +1,4 @@
-function currencyNumberFormat(inputNumber: number) {
+export function currencyNumberWithSymbolFormat(inputNumber: number) {
   const numberFormatter = new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
@@ -6,6 +6,10 @@ function currencyNumberFormat(inputNumber: number) {
   return `${numberFormatter.format(inputNumber)} BDT`;
 }
 
-// export const currencyNumber
-
-export default currencyNumberFormat;
+export function currencyNumberFormat(inputNumber: number) {
+  const numberFormatter = new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+  return `${numberFormatter.format(inputNumber)}`;
+}

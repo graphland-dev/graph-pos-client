@@ -8,7 +8,7 @@ import {
   Supplier,
   SuppliersWithPagination,
 } from "@/commons/graphql-models/graphql";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { getAccountBalance } from "@/commons/utils/getBalance";
 import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
 import { useMutation, useQuery } from "@apollo/client";
@@ -251,7 +251,7 @@ const CreatePurchasePayment = () => {
                 <tr key={idx}>
                   <td className="font-medium">{item?.purchaseUID}</td>
                   <td className="font-medium">
-                    {currencyNumberFormat(
+                    {currencyNumberWithSymbolFormat(
                       (item?.netTotal || 0) - (item?.paidAmount || 0)
                     )}
                   </td>

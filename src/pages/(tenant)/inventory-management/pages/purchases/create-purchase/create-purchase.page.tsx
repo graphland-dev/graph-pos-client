@@ -40,7 +40,7 @@ import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { getVatProfileSelectInputData } from "./utils/helpers";
 
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
 import CreateProductForm from "./components/CreateProductForm";
@@ -413,7 +413,7 @@ const CreatePurchasePage = () => {
                           />
                         </td>
                         <td className="font-medium text-left">
-                          {currencyNumberFormat(
+                          {currencyNumberWithSymbolFormat(
                             watch(`products.${idx}.quantity`) *
                               watch(`products.${idx}.unitPurchasePrice`)
                           )}{" "}
@@ -441,7 +441,7 @@ const CreatePurchasePage = () => {
                       Total
                     </td>
                     <td>
-                      {currencyNumberFormat(
+                      {currencyNumberWithSymbolFormat(
                         getNetPurchasePriceAmount(watch("products")!)
                       )}{" "}
                       BDT
@@ -598,7 +598,7 @@ const CreatePurchasePage = () => {
               </Box>
               <Box>
                 <Text>
-                  {currencyNumberFormat(
+                  {currencyNumberWithSymbolFormat(
                     getTotalTaxAmount(watch("products") ?? [])
                   ) || 0}{" "}
                   BDT

@@ -1,5 +1,5 @@
 import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { Button } from "@mantine/core";
 import { useRef } from "react";
 import { useReactToPrint } from "react-to-print";
@@ -189,7 +189,7 @@ export default function FullInvoiceUI({
                 Subtotal
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(subTotal)}
+                {currencyNumberWithSymbolFormat(subTotal)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -197,7 +197,7 @@ export default function FullInvoiceUI({
                 Sell price
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(netSellPrice)}
+                {currencyNumberWithSymbolFormat(netSellPrice)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -205,7 +205,7 @@ export default function FullInvoiceUI({
                 Discount
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(netSubtotalDiscount)}
+                {currencyNumberWithSymbolFormat(netSubtotalDiscount)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -216,7 +216,7 @@ export default function FullInvoiceUI({
                   : ""}
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(invoiceDiscountAmount)}
+                {currencyNumberWithSymbolFormat(invoiceDiscountAmount)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -224,7 +224,7 @@ export default function FullInvoiceUI({
                 VAT
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(netTaxAmount)}
+                {currencyNumberWithSymbolFormat(netTaxAmount)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -232,7 +232,7 @@ export default function FullInvoiceUI({
                 Net total
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(netTotal)}
+                {currencyNumberWithSymbolFormat(netTotal)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -240,7 +240,7 @@ export default function FullInvoiceUI({
                 Paid Amount
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(paidAmount || 0)}
+                {currencyNumberWithSymbolFormat(paidAmount || 0)}
               </td>
             </tr>
             <tr className="border-b border-black">
@@ -248,7 +248,7 @@ export default function FullInvoiceUI({
                 Due Amount
               </td>
               <td className="px-3 py-1 text-sm text-right">
-                {currencyNumberFormat(netTotal - paidAmount || 0)}
+                {currencyNumberWithSymbolFormat(netTotal - paidAmount || 0)}
               </td>
             </tr>
           </tbody>

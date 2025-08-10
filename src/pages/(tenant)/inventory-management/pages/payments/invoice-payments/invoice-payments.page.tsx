@@ -1,6 +1,6 @@
 import DataTable from '@/commons/components/DataTable.tsx';
 import PageTitle from '@/commons/components/PageTitle';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import dateFormat from '@/commons/utils/dateFormat';
 import {
   InventoryInvoicePayment,
@@ -70,7 +70,7 @@ const InvoicePaymentsPage = () => {
       {
         accessorKey: 'netAmount',
         accessorFn: (originalRow: InventoryInvoicePayment) =>
-          `${currencyNumberFormat(originalRow?.netAmount || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.netAmount || 0)} BDT`,
         header: 'Net Total',
       },
     ],

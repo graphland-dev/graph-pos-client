@@ -3,7 +3,7 @@ import {
   ProductDiscountMode,
   ProductInvoice,
 } from "@/commons/graphql-models/graphql";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { gql, useQuery } from "@apollo/client";
 import {
@@ -62,7 +62,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total sell Price
         </th>
-        <th>{currencyNumberFormat(invoice?.netSellPrice || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netSellPrice || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -71,7 +71,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total vat amount
         </th>
-        <th>{currencyNumberFormat(invoice?.netTaxAmount || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netTaxAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -80,7 +80,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total Item wise discount
         </th>
-        <th>{currencyNumberFormat(invoice?.netSubtotalDiscount || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netSubtotalDiscount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -92,7 +92,7 @@ const ProductInvoiceDetails: React.FC<{
             ? `(${invoice?.invoiceDiscountPercentage}%)`
             : ""}
         </th>
-        <th>{currencyNumberFormat(invoice?.invoiceDiscountAmount || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.invoiceDiscountAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -101,7 +101,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Total applied discount
         </th>
-        <th>{currencyNumberFormat(invoice?.netDiscountAmount || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netDiscountAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -110,7 +110,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Net Profit (Purchase price - Sell price)
         </th>
-        <th>{currencyNumberFormat(invoice?.netProfit || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netProfit || 0)}</th>
       </tr>
 
       <tr>
@@ -120,7 +120,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Net payable bill (bill - discount + vat)
         </th>
-        <th>{currencyNumberFormat(invoice?.netTotal || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.netTotal || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -129,7 +129,7 @@ const ProductInvoiceDetails: React.FC<{
         <th className="!text-right" colSpan={7}>
           Paid amount
         </th>
-        <th>{currencyNumberFormat(invoice?.paidAmount || 0)}</th>
+        <th>{currencyNumberWithSymbolFormat(invoice?.paidAmount || 0)}</th>
       </tr>
       <tr>
         <th></th>
@@ -139,7 +139,7 @@ const ProductInvoiceDetails: React.FC<{
           Due
         </th>
         <th>
-          {currencyNumberFormat(
+          {currencyNumberWithSymbolFormat(
             (invoice?.netTotal || 0) - (invoice?.paidAmount || 0) || 0
           )}
         </th>

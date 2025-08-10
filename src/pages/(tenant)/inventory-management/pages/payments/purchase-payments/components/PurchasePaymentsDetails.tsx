@@ -1,4 +1,4 @@
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import dateFormat from '@/commons/utils/dateFormat';
 import { PurchasePayment } from '@/commons/graphql-models/graphql';
 import {
@@ -60,7 +60,7 @@ const PurchasePaymentsDetails: React.FC<{
       <th></th>
       <th></th>
       <th className="!text-center">Total Amount</th>
-      <th>{currencyNumberFormat(totalAmount!)}</th>
+      <th>{currencyNumberWithSymbolFormat(totalAmount!)}</th>
     </tr>
   );
 
@@ -75,8 +75,8 @@ const PurchasePaymentsDetails: React.FC<{
         </Anchor>
       </td>
       <td>{dateFormat(element.purchase.purchaseDate)} </td>
-      <td>{currencyNumberFormat(element.purchase.netTotal)}</td>
-      <td>{currencyNumberFormat(element.purchase.paidAmount || 0)}</td>
+      <td>{currencyNumberWithSymbolFormat(element.purchase.netTotal)}</td>
+      <td>{currencyNumberWithSymbolFormat(element.purchase.paidAmount || 0)}</td>
     </tr>
   ));
 
@@ -105,7 +105,7 @@ const PurchasePaymentsDetails: React.FC<{
               Paid Amount:
             </span>
 
-            {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
+            {currencyNumberWithSymbolFormat(purchasePaymentsRow.paidAmount || 0)}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
@@ -192,7 +192,7 @@ const PurchasePaymentsDetails: React.FC<{
           </span>{' '}
           <span>
             {' '}
-            {currencyNumberFormat(purchasePaymentsRow.paidAmount || 0)}
+            {currencyNumberWithSymbolFormat(purchasePaymentsRow.paidAmount || 0)}
           </span>
         </Text>
       </Paper>

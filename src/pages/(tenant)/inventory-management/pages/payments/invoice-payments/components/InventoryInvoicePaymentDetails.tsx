@@ -14,7 +14,7 @@ import {
   Title,
 } from '@mantine/core';
 import { INVENTORY_INVOICE_SINGLE_PAYMENT_QUERY } from '../utils/query.invoice-payments';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -54,7 +54,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
     <tr>
       <th></th>
       <th className="!text-center">Total Amount</th>
-      <th>{currencyNumberFormat(totalAmount!)}</th>
+      <th>{currencyNumberWithSymbolFormat(totalAmount!)}</th>
     </tr>
   );
 

@@ -1,4 +1,4 @@
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import { ProductPurchase } from '@/commons/graphql-models/graphql';
 import {
   Button,
@@ -59,11 +59,11 @@ const PurchaseCardList: React.FC<{
               {purchase?.purchaseUID}
             </Text>
             <Text size={'sm'}>
-              Due amount: {currencyNumberFormat(dueAmount(purchase))}
+              Due amount: {currencyNumberWithSymbolFormat(dueAmount(purchase))}
               BDT
             </Text>
             <Text size={'sm'}>
-              Net total: {currencyNumberFormat(purchase?.netTotal || 0)} BDT{' '}
+              Net total: {currencyNumberWithSymbolFormat(purchase?.netTotal || 0)} BDT{' '}
             </Text>
           </Paper>
         ))}

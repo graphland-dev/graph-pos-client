@@ -18,7 +18,7 @@ import {
   ACCOUNTING_ACCOUNT_DELETE_MUTATION,
 } from './utils/query';
 import PageTitle from '@/commons/components/PageTitle';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import { useSearchParams } from 'react-router-dom';
 
 interface IState {
@@ -96,7 +96,7 @@ const AccountsPage = () => {
       },
       {
         accessorFn: (row: Account) =>
-          currencyNumberFormat(
+          currencyNumberWithSymbolFormat(
             (row?.creditAmount || 0) - (row?.debitAmount || 0),
           ),
         header: 'Balance',

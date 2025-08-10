@@ -1,5 +1,5 @@
 import Attachments from '@/commons/components/Attactment/Attachments.tsx';
-import currencyNumberFormat from '@/commons/utils/commaNumber';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
 import dateFormat from '@/commons/utils/dateFormat';
 import { Expense } from '@/commons/graphql-models/graphql';
 import { FOLDER__NAME } from '@/commons/models/FolderName';
@@ -56,7 +56,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">Amount: </span>
-            {currencyNumberFormat(expenseDetails?.amount || 0)} BDT
+            {currencyNumberWithSymbolFormat(expenseDetails?.amount || 0)} BDT
           </Text>
         </Paper>
         <Paper

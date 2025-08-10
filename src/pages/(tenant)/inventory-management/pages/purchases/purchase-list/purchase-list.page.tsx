@@ -1,7 +1,7 @@
 import PageTitle from "@/commons/components/PageTitle";
 import { confirmModal } from "@/commons/components/confirm.tsx";
 import DataTable from "@/commons/components/DataTable.tsx";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import {
   MatchOperator,
@@ -119,7 +119,7 @@ const PurchaseListPage = () => {
             color = "yellow";
           }
           return (
-            <Badge color={color}>{`${currencyNumberFormat(
+            <Badge color={color}>{`${currencyNumberWithSymbolFormat(
               originalRow?.netTotal - (originalRow?.paidAmount || 0)
             )} BDT`}</Badge>
           );
@@ -130,13 +130,13 @@ const PurchaseListPage = () => {
       {
         accessorKey: "paidAmount",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.paidAmount || 0)} BDT`,
         header: "Paid Amount",
       },
       {
         accessorKey: "netTotal",
         accessorFn: (originalRow: ProductPurchase) =>
-          `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
         header: "Net Total",
       },
     ],

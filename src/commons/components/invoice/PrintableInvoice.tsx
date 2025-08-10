@@ -1,5 +1,5 @@
 import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { Button } from "@mantine/core";
 import { Printer } from "lucide-react";
 import numberToWords from "number-to-words";
@@ -176,13 +176,13 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                         {item.quantity}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {currencyNumberFormat(item.unitPrice)}
+                        {currencyNumberWithSymbolFormat(item.unitPrice)}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
-                        {currencyNumberFormat(item.discountAmount)}
+                        {currencyNumberWithSymbolFormat(item.discountAmount)}
                       </td>
                       <td className="py-2 font-semibold text-right text-foreground">
-                        {currencyNumberFormat(item.netAmount)}
+                        {currencyNumberWithSymbolFormat(item.netAmount)}
                       </td>
                     </tr>
                   ))}
@@ -198,13 +198,13 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal:</span>
                   <span className="font-semibold text-foreground">
-                    {currencyNumberFormat(subtotal)}
+                    {currencyNumberWithSymbolFormat(subtotal)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Tax:</span>
                   <span className="font-semibold text-foreground">
-                    {currencyNumberFormat(netTaxAmount)}
+                    {currencyNumberWithSymbolFormat(netTaxAmount)}
                   </span>
                 </div>
                 {netDiscountAmount ? (
@@ -217,7 +217,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                       :
                     </span>
                     <span className="font-semibold text-foreground">
-                      {currencyNumberFormat(netDiscountAmount)}
+                      {currencyNumberWithSymbolFormat(netDiscountAmount)}
                     </span>
                   </div>
                 ) : null}
@@ -227,7 +227,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                     Grant total:
                   </span>
                   <span className="font-bold">
-                    {currencyNumberFormat(netTotal)}
+                    {currencyNumberWithSymbolFormat(netTotal)}
                   </span>
                 </div>
                 <div className="flex flex-col justify-between">
@@ -240,14 +240,14 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                     Paid Amount:
                   </span>
                   <span className="font-bold">
-                    {currencyNumberFormat(paidAmount)}
+                    {currencyNumberWithSymbolFormat(paidAmount)}
                   </span>
                 </div>
 
                 <div className="flex justify-between">
                   <span className="font-bold text-foreground">Due Amount:</span>
                   <span className="font-bold">
-                    {currencyNumberFormat(netTotal - paidAmount)}
+                    {currencyNumberWithSymbolFormat(netTotal - paidAmount)}
                   </span>
                 </div>
                 {/*  */}

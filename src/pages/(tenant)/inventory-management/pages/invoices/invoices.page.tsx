@@ -6,7 +6,7 @@ import {
   ProductInvoice,
   ProductInvoicesWithPagination,
 } from "@/commons/graphql-models/graphql";
-import currencyNumberFormat from "@/commons/utils/commaNumber";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
@@ -77,7 +77,7 @@ const InvoicesPage = () => {
       {
         accessorKey: "subTotal",
         accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
         header: "Sub Total",
       },
       {
@@ -97,7 +97,7 @@ const InvoicesPage = () => {
           }
 
           return (
-            <Badge color={color}>{`${currencyNumberFormat(
+            <Badge color={color}>{`${currencyNumberWithSymbolFormat(
               originalRow?.netTotal - (originalRow?.paidAmount || 0)
             )} BDT`}</Badge>
           );
@@ -108,13 +108,13 @@ const InvoicesPage = () => {
       {
         accessorKey: "paidAmount",
         accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberFormat(originalRow?.paidAmount || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.paidAmount || 0)} BDT`,
         header: "Paid Amount",
       },
       {
         accessorKey: "netTotal",
         accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberFormat(originalRow?.netTotal || 0)} BDT`,
+          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
         header: "Net Total",
       },
       {
