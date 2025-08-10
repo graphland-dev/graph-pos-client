@@ -545,26 +545,24 @@ const PosPage = () => {
               <Paper withBorder p={"sm"} mb={"xl"}>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Sub total</Text>
-                  <Text>{currencyNumberFormat(getNetSubtotal())} BDT</Text>
+                  <Text>{currencyNumberFormat(getNetSubtotal())}</Text>
                 </Flex>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Sell price</Text>
-                  <Text>{currencyNumberFormat(getNetSellPrice())} BDT</Text>
+                  <Text>{currencyNumberFormat(getNetSellPrice())}</Text>
                 </Flex>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Sub total discount</Text>
-                  <Text>
-                    {currencyNumberFormat(getNetSubtotalDiscount())} BDT
-                  </Text>
+                  <Text>{currencyNumberFormat(getNetSubtotalDiscount())}</Text>
                 </Flex>
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Extra discount</Text>
-                  <Text>{currencyNumberFormat(getNetExtraDiscount())} BDT</Text>
+                  <Text>{currencyNumberFormat(getNetExtraDiscount())}</Text>
                 </Flex>
 
                 <Flex justify={"space-between"}>
                   <Text fw={"bold"}>Tax amount</Text>
-                  <Text>{currencyNumberFormat(getNetTaxAmount())} BDT</Text>
+                  <Text>{currencyNumberFormat(getNetTaxAmount())}</Text>
                 </Flex>
 
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
@@ -572,7 +570,7 @@ const PosPage = () => {
                 <Space h={"sm"} />
                 <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50 text-primary-foreground">
                   <div>Net Total (SellPrice + Tax - Discount)</div>{" "}
-                  <div>{currencyNumberFormat(invoiceNetTotal())} BDT</div>
+                  <div>{currencyNumberFormat(invoiceNetTotal())}</div>
                 </div>
               </Paper>
 
