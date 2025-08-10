@@ -6,4 +6,6 @@ function currencyNumberFormat(inputNumber: number) {
   return `${numberFormatter.format(inputNumber)} BDT`;
 }
 
+// export const currencyNumber
+
 export default currencyNumberFormat;

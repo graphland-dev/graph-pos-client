@@ -135,7 +135,7 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
                   <p className="whitespace-pre-line">{customer.address}</p>
                 )}
                 {customer.phone && <p>{customer.phone}</p>}
-                {customer.email && <p>{customer.email}</p>}
+                {/* {customer.email && <p>{customer.email}</p>} */}
               </div>
             </div>
           </div>
