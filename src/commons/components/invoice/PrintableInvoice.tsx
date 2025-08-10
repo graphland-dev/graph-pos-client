@@ -73,9 +73,9 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
   };
 
   return (
-    <div className="min-h-screen p-4 bg-muted">
+    <div className="min-h-screen p-4">
       {/* Print Controls */}
-      <div className="my-10 text-center">
+      <div className="my-10 text-center print:hidden">
         <Button onClick={handlePrint}>
           <Printer className="w-4 h-4" />
           Print
