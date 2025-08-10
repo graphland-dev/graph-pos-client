@@ -281,13 +281,17 @@ const SignatureBlock = () => {
       <div className="text-center">
         <div className="mb-16"></div>
         <div className="pt-2 border-t border-black">
-          <span className="font-semibold text-foreground">Customer Sign</span>
+          <span className="font-semibold text-foreground">
+            Customer signature
+          </span>
         </div>
       </div>
       <div className="text-center">
         <div className="mb-16"></div>
         <div className="pt-2 border-t border-black">
-          <span className="font-semibold text-foreground">Authorizer Sign</span>
+          <span className="font-semibold text-foreground">
+            Authorised signature
+          </span>
         </div>
       </div>
     </div>
