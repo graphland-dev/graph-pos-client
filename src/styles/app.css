@@ -176,25 +176,18 @@
   }
 
   @media print {
-    * {
-      visibility: hidden;
-    }
-
-    .invoice-container,
-    .invoice-container * {
-      visibility: visible;
-    }
-
     .invoice-container {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100% !important;
-      box-shadow: none !important;
-      border: none !important;
-      background: white !important;
-      margin: 0 !important;
-      padding: 0 !important;
+      height: 100vh;
+      /* background-color: orange; */
+      .invoice-container-inner {
+        /* background-color: red; */
+        flex: 1;
+      }
+      .signature-block {
+        /* background-color: #5b6d3c; */
+        /* height: 100px; */
+        flex: none;
+      }
     }
 
     @page {

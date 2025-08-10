@@ -5,6 +5,7 @@ import { Printer } from "lucide-react";
 import numberToWords from "number-to-words";
 
 import React, { useRef } from "react";
+import { useReactToPrint } from "react-to-print";
 
 interface InvoiceItem {
   name: string;
@@ -60,9 +61,13 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
   // invoiceDiscountAmount,
 }) => {
   const printRef = useRef<HTMLDivElement | null>(null);
-  const handlePrint = () => {
-    window.print();
-  };
+  // const handlePrint = () => {
+  //   window.print();
+  // };
+
+  const handlePrint = useReactToPrint({
+    contentRef: printRef,
+  });
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -85,9 +90,9 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
       {/* Invoice Container */}
       <div
         ref={printRef}
-        className={`invoice-container max-w-4xl mx-auto bg-card shadow-lg print-font-small min-h-[297mm] flex flex-col`}
+        className={`invoice-container flex flex-col max-w-4xl mx-auto bg-card print-font-small`}
       >
-        <div className="relative flex-1 invoice-container-inner">
+        <div className="relative invoice-container-inner">
           {/* Header */}
           <div className="flex flex-row items-start justify-between mb-8">
             <div>
@@ -266,8 +271,8 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
           )}
 
           {/* Signature Blocks - Always at Bottom */}
-          <SignatureBlock />
         </div>
+        <SignatureBlock />
       </div>
     </div>
   );
@@ -277,7 +282,7 @@ export default InvoiceTemplate;
 
 const SignatureBlock = () => {
   return (
-    <div className="hidden grid-cols-2 signature-block gap-80 print:grid">
+    <div className="flex-none hidden grid-cols-2 signature-block gap-80 print:grid">
       <div className="text-center">
         <div className="mb-16"></div>
         <div className="pt-2 border-t border-black">
