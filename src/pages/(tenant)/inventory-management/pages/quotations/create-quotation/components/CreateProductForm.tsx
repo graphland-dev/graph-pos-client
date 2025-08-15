@@ -40,7 +40,18 @@ const createProductSchema = yup.object({
   price: yup
     .number()
     .min(0, "Price must be positive")
-    .required("Sell price is required"),
+    .required("Sell price is required")
+    .test(
+      "greater-than-purchase",
+      "Selling price must be greater than purchase price",
+      function (value) {
+        const { purchasePrice } = this.parent;
+        if (purchasePrice && value) {
+          return value > purchasePrice;
+        }
+        return true;
+      }
+    ),
 });
 
 interface CreateProductFormProps {
