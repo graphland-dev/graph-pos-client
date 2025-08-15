@@ -1,5 +1,5 @@
 import DataTable from "@/commons/components/DataTable.tsx";
-import PrintableFullQuotation from "@/commons/components/quotation/PrintableFullQuotation";
+import QuotationPrintModal from "@/commons/components/quotation/QuotationPrintModal";
 import PageTitle from "@/commons/components/PageTitle";
 import {
   MatchOperator,
@@ -11,7 +11,6 @@ import dateFormat from "@/commons/utils/dateFormat";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { IconFileInfo, IconEdit } from "@tabler/icons-react";
 import { PrinterIcon } from "lucide-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useEffect, useMemo } from "react";
@@ -23,7 +22,7 @@ import { INVENTORY_PRODUCT_QUOTATIONS_QUERY } from "./utils/query.quotations";
 interface IState {
   refetching: boolean;
   openDrawer: boolean;
-  openPrintableQuotation: boolean;
+  openPrintModal: boolean;
   printableQuotationId?: string;
 }
 
@@ -32,7 +31,7 @@ const QuotationsPage = () => {
   const [state, setState] = useSetState<IState>({
     refetching: false,
     openDrawer: false,
-    openPrintableQuotation: false,
+    openPrintModal: false,
     printableQuotationId: undefined,
   });
   const { data, loading, refetch } = useQuery<{
@@ -189,8 +188,7 @@ const QuotationsPage = () => {
               leftIcon={<PrinterIcon />}
               onClick={() =>
                 setState({
-                  openPrintableQuotation: true,
-                  printableQuotationId: state.printableQuotationId ?? "",
+                  openPrintModal: true,
                 })
               }
             >
@@ -206,61 +204,29 @@ const QuotationsPage = () => {
         />
       </Drawer>
 
-      <Drawer
-        onClose={() =>
-          setState({
-            openPrintableQuotation: false,
-          })
-        }
-        title={
-          <Text className="text-2xl font-semibold">Printable Quotation</Text>
-        }
-        opened={state.openPrintableQuotation}
-        size={"100%"}
-      >
-        {state.printableQuotationId && (
-          <PrintableFullQuotation
-            quotationId={state.printableQuotationId}
-            tenant={params.tenant ?? ""}
-          />
-        )}
-      </Drawer>
+      <QuotationPrintModal
+        opened={state.openPrintModal}
+        onClose={() => setState({ openPrintModal: false })}
+        quotationId={state.printableQuotationId ?? ""}
+        tenant={params.tenant ?? ""}
+      />
 
       <DataTable
         columns={columns}
         data={data?.inventory__productQuotations.nodes ?? []}
         refetch={handleRefetch}
         totalCount={data?.inventory__productQuotations.meta?.totalCount ?? 100}
+        onRowClick={(row: ProductQuotation) => {
+          navigate(
+            `/${params.tenant}/inventory-management/quotations/${row._id}`
+          );
+        }}
         RowActionMenu={(row: ProductQuotation) => (
-          <>
-            <Menu.Item
-              icon={<IconFileInfo size={18} />}
-              onClick={() => {
-                setState({
-                  openDrawer: true,
-                  printableQuotationId: row._id,
-                });
-              }}
-            >
-              View
-            </Menu.Item>
-            <Menu.Item
-              icon={<IconEdit size={18} />}
-              onClick={() => {
-                navigate(
-                  `/${params.tenant}/inventory-management/quotations/create?quotationId=${row._id}`
-                );
-              }}
-            >
-              Edit
-            </Menu.Item>
-            <Menu.Divider />
-            <QuotationStatusActions
-              quotationId={row._id}
-              currentStatus={row.status || "DRAFT"}
-              onStatusChange={() => handleRefetch({})}
-            />
-          </>
+          <QuotationStatusActions
+            quotationId={row._id}
+            currentStatus={row.status || "DRAFT"}
+            onStatusChange={() => handleRefetch({})}
+          />
         )}
         loading={loading || state.refetching}
       />

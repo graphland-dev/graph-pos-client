@@ -16,7 +16,7 @@ import UnitPage from "./pages/settings/pages/unit/unit.page";
 import BrandPage from "./pages/settings/pages/brand/brand.page";
 import InvoicesPage from "./pages/invoices/invoices.page";
 import QuotationsPage from "./pages/quotations/quotations.page";
-import CreateQuotationPage from "./pages/quotations/create-quotation/create-quotation.page";
+import CreateOrUpdateQuotationPage from "./pages/quotations/create-quotation/create-or-update-quotation.page";
 import InvoicePaymentsPage from "./pages/payments/invoice-payments/invoice-payments.page";
 import InventoryManagementRoot from "./module-root.page";
 
@@ -52,7 +52,11 @@ export const inventoryModuleRouter: RouteObject[] = [
           },
           {
             path: "create",
-            element: <CreateQuotationPage />,
+            element: <CreateOrUpdateQuotationPage />,
+          },
+          {
+            path: ":quotationId",
+            element: <CreateOrUpdateQuotationPage />,
           },
         ],
       },

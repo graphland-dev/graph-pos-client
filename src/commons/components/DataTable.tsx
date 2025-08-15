@@ -26,6 +26,7 @@ interface Prop {
   loading: boolean;
   ActionArea?: React.ReactNode;
   RowActionMenu?: (row: any) => React.ReactNode;
+  onRowClick?: (row: any) => void;
 }
 
 // const csvConfig = mkConfig({
@@ -43,6 +44,7 @@ const DataTable: React.FC<Prop> = ({
   ActionArea,
   RowActionMenu,
   totalCount,
+  onRowClick,
 }) => {
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -123,6 +125,12 @@ const DataTable: React.FC<Prop> = ({
     enableRowActions: RowActionMenu ? true : false,
     positionActionsColumn: "last",
     renderRowActionMenuItems: (_row) => RowActionMenu?.(_row?.row?.original),
+    mantineTableBodyRowProps: onRowClick
+      ? ({ row }) => ({
+          onClick: () => onRowClick(row.original),
+          style: { cursor: "pointer" },
+        })
+      : undefined,
     renderTopToolbar: () => {
       return (
         <div className="flex justify-between p-2">

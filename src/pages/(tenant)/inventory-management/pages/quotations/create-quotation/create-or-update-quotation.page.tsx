@@ -6,7 +6,6 @@ import {
   Product,
   ProductDiscountMode,
   ProductsWithPagination,
-  Where_Operator,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { PEOPLE_CLIENTS_QUERY } from "@/pages/(tenant)/people/pages/client/utils/client.query";
@@ -33,21 +32,22 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconX, IconInfoCircle, IconEye } from "@tabler/icons-react";
+import { IconEye, IconInfoCircle, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import * as yup from "yup";
 import { INVENTORY_PRODUCTS_LIST_QUERY } from "../../products/products-list/utils/product.query";
 import {
+  CONVERT_QUOTATION_TO_INVOICE_MUTATION,
   CREATE_PRODUCT_QUOTATION_MUTATION,
   INVENTORY_PRODUCT_QUOTATION_QUERY,
-  CONVERT_QUOTATION_TO_INVOICE_MUTATION,
 } from "../utils/query.quotations";
 import ClientsCardList from "./components/ClientsCardList";
 import CreateClientForm from "./components/CreateClientForm";
 import CreateProductForm from "./components/CreateProductForm";
 import ProductsCardList from "./components/ProductsCardList";
+import QuotationPrintModal from "@/commons/components/quotation/QuotationPrintModal";
 
 const quotationSchema = yup.object({
   clientId: yup.string().required("Please select a client"),
@@ -91,13 +91,15 @@ const quotationSchema = yup.object({
 
 type IFormData = yup.InferType<typeof quotationSchema>;
 
-const CreateQuotationPage = () => {
-  const [searchParams] = useSearchParams();
-  const quotationId = searchParams.get("quotationId");
-  const isEditMode = !!quotationId;
-
+const CreateOrUpdateQuotationPage = () => {
   const navigate = useNavigate();
-  const params = useParams<{ tenant: string }>();
+  const params = useParams<{ tenant: string; quotationId?: string }>();
+  const [searchParams] = useSearchParams();
+
+  const quotationIdFromQuery = searchParams.get("quotationId");
+  const quotationIdFromParams = params.quotationId;
+  const quotationId = quotationIdFromParams || quotationIdFromQuery;
+  const isEditMode = !!quotationId;
 
   const [
     clientDrawerOpened,
@@ -118,6 +120,10 @@ const CreateQuotationPage = () => {
   const [
     convertModalOpened,
     { open: openConvertModal, close: closeConvertModal },
+  ] = useDisclosure(false);
+  const [
+    printModalOpened,
+    { open: openPrintModal, close: closePrintModal },
   ] = useDisclosure(false);
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
@@ -436,9 +442,20 @@ const CreateQuotationPage = () => {
 
   return (
     <Box p="md">
-      <Title order={2} mb="lg">
-        {isEditMode ? "Edit Quotation" : "Create Quotation"}
-      </Title>
+      <div className="flex items-center justify-between mb-6">
+        <Title order={2}>
+          {isEditMode ? "Edit Quotation" : "Create Quotation"}
+        </Title>
+        {isEditMode && (
+          <Button
+            variant="outline"
+            leftIcon={<IconEye size={16} />}
+            onClick={openPrintModal}
+          >
+            Print Preview
+          </Button>
+        )}
+      </div>
 
       {isConverted && (
         <Alert
@@ -871,8 +888,16 @@ const CreateQuotationPage = () => {
           </Button>
         </Group>
       </Modal>
+
+      {/* Print Preview Modal */}
+      <QuotationPrintModal
+        opened={printModalOpened}
+        onClose={closePrintModal}
+        quotationId={quotationId || ""}
+        tenant={params.tenant || ""}
+      />
     </Box>
   );
 };
 
-export default CreateQuotationPage;
+export default CreateOrUpdateQuotationPage;
