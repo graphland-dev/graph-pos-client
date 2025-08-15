@@ -15,11 +15,13 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ActionIcon,
+  Alert,
   Box,
   Button,
   Card,
   Drawer,
   Group,
+  Modal,
   NumberInput,
   Select,
   Space,
@@ -31,7 +33,7 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconX } from "@tabler/icons-react";
+import { IconX, IconInfoCircle, IconEye } from "@tabler/icons-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -40,6 +42,7 @@ import { INVENTORY_PRODUCTS_LIST_QUERY } from "../../products/products-list/util
 import {
   CREATE_PRODUCT_QUOTATION_MUTATION,
   INVENTORY_PRODUCT_QUOTATION_QUERY,
+  CONVERT_QUOTATION_TO_INVOICE_MUTATION,
 } from "../utils/query.quotations";
 import ClientsCardList from "./components/ClientsCardList";
 import CreateClientForm from "./components/CreateClientForm";
@@ -112,10 +115,15 @@ const CreateQuotationPage = () => {
     createProductOpened,
     { open: openCreateProduct, close: closeCreateProduct },
   ] = useDisclosure(false);
+  const [
+    convertModalOpened,
+    { open: openConvertModal, close: closeConvertModal },
+  ] = useDisclosure(false);
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [productSearchQuery, setProductSearchQuery] = useState("");
   const [clientSearchQuery, setClientSearchQuery] = useState("");
+  const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -147,9 +155,9 @@ const CreateQuotationPage = () => {
   useQuery(INVENTORY_PRODUCT_QUOTATION_QUERY, {
     variables: {
       where: {
-        filters: [
-          { key: "_id", operator: MatchOperator.Eq, value: quotationId },
-        ],
+        key: "_id",
+        operator: "eq",
+        value: quotationId,
       },
     },
     skip: !isEditMode,
@@ -168,6 +176,7 @@ const CreateQuotationPage = () => {
           discountValue: quotation.quotationDiscountAmount || 0,
         });
         setSelectedClient(quotation.client);
+        setQuotationStatus(quotation.status);
       }
     },
   });
@@ -256,7 +265,30 @@ const CreateQuotationPage = () => {
     }
   );
 
+  const [convertToInvoice, { loading: converting }] = useMutation(
+    CONVERT_QUOTATION_TO_INVOICE_MUTATION,
+    {
+      onCompleted: (data) => {
+        showNotification({
+          title: "Success",
+          message: `Quotation converted to invoice successfully!`,
+          color: "green",
+        });
+        closeConvertModal();
+        navigate(`/${params.tenant}/inventory-management/invoices`);
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error.message,
+          color: "red",
+        });
+      },
+    }
+  );
+
   const formData = watch();
+  const isConverted = quotationStatus === "CONVERTED";
 
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
@@ -288,13 +320,27 @@ const CreateQuotationPage = () => {
         referenceId: product._id,
         name: product.name,
         code: product.code || "",
-        unitPrice: product.purchasePrice || 0,
-        unitSellPrice: product.price || 0,
+        unitPrice: product.price || 0, // Original selling price from product
+        unitSellPrice: product.price || 0, // Editable selling price (starts with same value)
         quantity: 1,
         taxRate: 0,
       });
     }
     closeProductDrawer();
+  };
+
+  const handleConvertToInvoice = () => {
+    if (!quotationId) return;
+
+    convertToInvoice({
+      variables: {
+        where: {
+          key: "_id",
+          operator: "eq",
+          value: quotationId,
+        },
+      },
+    });
   };
 
   const handleQuantityChange = (index: number, quantity: number) => {
@@ -314,7 +360,11 @@ const CreateQuotationPage = () => {
   };
 
   const calculateTotals = () => {
-    const subTotal = fields.reduce((sum) => sum + 0, 0);
+    const subTotal = fields.reduce((sum, product) => {
+      const productTotal =
+        (product.unitSellPrice || 0) * (product.quantity || 0);
+      return sum + productTotal;
+    }, 0);
     const discountAmount =
       formData.discountMode === ProductDiscountMode.Percentage
         ? (subTotal * (formData.discountValue || 0)) / 100
@@ -388,6 +438,32 @@ const CreateQuotationPage = () => {
         {isEditMode ? "Edit Quotation" : "Create Quotation"}
       </Title>
 
+      {isConverted && (
+        <Alert
+          icon={<IconInfoCircle size={16} />}
+          title="Quotation Already Converted"
+          color="blue"
+          mb="lg"
+        >
+          <div className="flex items-center justify-between">
+            <Text size="sm">
+              This quotation has already been converted to an invoice. You
+              cannot edit this quotation.
+            </Text>
+            <Button
+              size="xs"
+              variant="light"
+              leftIcon={<IconEye size={14} />}
+              onClick={() =>
+                navigate(`/${params.tenant}/inventory-management/invoices`)
+              }
+            >
+              View Invoice
+            </Button>
+          </div>
+        </Alert>
+      )}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Left Column - Main Form */}
@@ -406,15 +482,17 @@ const CreateQuotationPage = () => {
                       {selectedClient.email}
                     </Text>
                   </div>
-                  <ActionIcon
-                    color="red"
-                    onClick={() => {
-                      setSelectedClient(null);
-                      setValue("clientId", "");
-                    }}
-                  >
-                    <IconX size={16} />
-                  </ActionIcon>
+                  {!isConverted && (
+                    <ActionIcon
+                      color="red"
+                      onClick={() => {
+                        setSelectedClient(null);
+                        setValue("clientId", "");
+                      }}
+                    >
+                      <IconX size={16} />
+                    </ActionIcon>
+                  )}
                 </div>
               ) : (
                 <Button
@@ -422,6 +500,7 @@ const CreateQuotationPage = () => {
                   onClick={openClientDrawer}
                   fullWidth
                   color={errors.clientId ? "red" : undefined}
+                  disabled={isConverted}
                 >
                   Select Client *
                 </Button>
@@ -447,6 +526,7 @@ const CreateQuotationPage = () => {
                   onChange={(date) => setValue("date", date || new Date())}
                   error={<ErrorMessage errors={errors} name="date" />}
                   required
+                  readOnly={isConverted}
                 />
 
                 <DateInput
@@ -457,6 +537,7 @@ const CreateQuotationPage = () => {
                   }
                   error={<ErrorMessage errors={errors} name="validUntil" />}
                   required
+                  readOnly={isConverted}
                 />
               </div>
 
@@ -468,6 +549,7 @@ const CreateQuotationPage = () => {
                 value={formData.note}
                 onChange={(e) => setValue("note", e.currentTarget.value)}
                 rows={3}
+                readOnly={isConverted}
               />
 
               <Space h="md" />
@@ -478,6 +560,7 @@ const CreateQuotationPage = () => {
                 value={formData.terms}
                 onChange={(e) => setValue("terms", e.currentTarget.value)}
                 rows={3}
+                readOnly={isConverted}
               />
             </Card>
 
@@ -485,7 +568,9 @@ const CreateQuotationPage = () => {
             <Card withBorder p="md">
               <div className="flex items-center justify-between mb-4">
                 <Title order={4}>Products</Title>
-                <Button onClick={openProductDrawer}>Add Product</Button>
+                {!isConverted && (
+                  <Button onClick={openProductDrawer}>Add Product</Button>
+                )}
               </div>
 
               {fields.length > 0 ? (
@@ -511,15 +596,18 @@ const CreateQuotationPage = () => {
                           </div>
                         </td>
                         <td>
-                          <NumberInput
-                            value={product.unitSellPrice || 0}
-                            onChange={(value) =>
-                              handleUnitPriceChange(index, value || 0)
-                            }
-                            min={0}
-                            precision={2}
-                            size="sm"
-                          />
+                          <div>
+                            <NumberInput
+                              value={product.unitSellPrice || 0}
+                              onChange={(value) =>
+                                handleUnitPriceChange(index, value || 0)
+                              }
+                              min={0}
+                              precision={2}
+                              size="sm"
+                              readOnly={isConverted}
+                            />
+                          </div>
                         </td>
                         <td>
                           <NumberInput
@@ -529,17 +617,26 @@ const CreateQuotationPage = () => {
                             }
                             min={1}
                             size="sm"
+                            readOnly={isConverted}
                           />
                         </td>
                         <td>
                           <Text weight={500}>
-                            {currencyNumberWithSymbolFormat(0)}
+                            {currencyNumberWithSymbolFormat(
+                              (product.unitSellPrice || 0) *
+                                (product.quantity || 0)
+                            )}
                           </Text>
                         </td>
                         <td>
-                          <ActionIcon color="red" onClick={() => remove(index)}>
-                            <IconX size={16} />
-                          </ActionIcon>
+                          {!isConverted && (
+                            <ActionIcon
+                              color="red"
+                              onClick={() => remove(index)}
+                            >
+                              <IconX size={16} />
+                            </ActionIcon>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -569,7 +666,7 @@ const CreateQuotationPage = () => {
                 <div className="flex justify-between">
                   <Text>Subtotal:</Text>
                   <Text weight={500}>
-                    {currencyNumberWithSymbolFormat(totals.subTotal)} BDT
+                    {currencyNumberWithSymbolFormat(totals.subTotal)}
                   </Text>
                 </div>
 
@@ -591,6 +688,7 @@ const CreateQuotationPage = () => {
                       }
                       style={{ width: 80 }}
                       size="sm"
+                      readOnly={isConverted}
                     />
                     <NumberInput
                       value={formData.discountValue}
@@ -611,6 +709,7 @@ const CreateQuotationPage = () => {
                       placeholder="0"
                       style={{ flex: 1 }}
                       size="sm"
+                      readOnly={isConverted}
                     />
                   </div>
                 </div>
@@ -620,7 +719,6 @@ const CreateQuotationPage = () => {
                     <Text>Discount Applied:</Text>
                     <Text weight={500} color="red">
                       -{currencyNumberWithSymbolFormat(totals.discountAmount)}{" "}
-                      BDT
                     </Text>
                   </div>
                 )}
@@ -631,7 +729,7 @@ const CreateQuotationPage = () => {
                       Net Total:
                     </Text>
                     <Text size="lg" weight={700}>
-                      {currencyNumberWithSymbolFormat(totals.netTotal)} BDT
+                      {currencyNumberWithSymbolFormat(totals.netTotal)}
                     </Text>
                   </div>
                 </div>
@@ -648,15 +746,27 @@ const CreateQuotationPage = () => {
                     )
                   }
                 >
-                  Cancel
+                  {isConverted ? "Close" : "Cancel"}
                 </Button>
-                <Button
-                  type="submit"
-                  loading={creating}
-                  disabled={fields.length === 0 || !formData.clientId}
-                >
-                  {isEditMode ? "Update Quotation" : "Create Quotation"}
-                </Button>
+                {isEditMode && !isConverted && (
+                  <Button
+                    variant="filled"
+                    color="green"
+                    onClick={openConvertModal}
+                    disabled={fields.length === 0 || !formData.clientId}
+                  >
+                    Convert to Invoice
+                  </Button>
+                )}
+                {!isConverted && (
+                  <Button
+                    type="submit"
+                    loading={creating}
+                    disabled={fields.length === 0 || !formData.clientId}
+                  >
+                    {isEditMode ? "Update Quotation" : "Create Quotation"}
+                  </Button>
+                )}
               </Group>
             </Card>
           </div>
@@ -740,6 +850,35 @@ const CreateQuotationPage = () => {
           onCancel={closeCreateProduct}
         />
       </Drawer>
+
+      {/* Convert to Invoice Confirmation Modal */}
+      <Modal
+        opened={convertModalOpened}
+        onClose={closeConvertModal}
+        title="Convert Quotation to Invoice"
+        centered
+      >
+        <Text mb="md">
+          Are you sure you want to convert this quotation to an invoice? This
+          action cannot be undone.
+        </Text>
+        <Text size="sm" color="dimmed" mb="lg">
+          The quotation will be converted to an invoice and you will be
+          redirected to the invoices page.
+        </Text>
+        <Group position="right">
+          <Button variant="outline" onClick={closeConvertModal}>
+            Cancel
+          </Button>
+          <Button
+            color="green"
+            onClick={handleConvertToInvoice}
+            loading={converting}
+          >
+            Convert to Invoice
+          </Button>
+        </Group>
+      </Modal>
     </Box>
   );
 };

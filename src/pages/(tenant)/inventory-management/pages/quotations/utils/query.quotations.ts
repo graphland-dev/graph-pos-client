@@ -38,6 +38,7 @@ export const INVENTORY_PRODUCT_QUOTATIONS_QUERY = gql`
         costAmount
         netTotal
         note
+        terms
         createdAt
         updatedAt
         committedBy {
@@ -105,6 +106,7 @@ export const INVENTORY_PRODUCT_QUOTATION_QUERY = gql`
       costAmount
       netTotal
       note
+      terms
       createdAt
       updatedAt
       committedBy {

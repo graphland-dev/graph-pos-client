@@ -11,7 +11,7 @@ import dateFormat from "@/commons/utils/dateFormat";
 import { useLazyQuery, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { IconFileInfo } from "@tabler/icons-react";
+import { IconFileInfo, IconEdit } from "@tabler/icons-react";
 import { PrinterIcon } from "lucide-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useEffect, useMemo } from "react";
@@ -243,6 +243,16 @@ const QuotationsPage = () => {
               }}
             >
               View
+            </Menu.Item>
+            <Menu.Item
+              icon={<IconEdit size={18} />}
+              onClick={() => {
+                navigate(
+                  `/${params.tenant}/inventory-management/quotations/create?quotationId=${row._id}`
+                );
+              }}
+            >
+              Edit
             </Menu.Item>
             <Menu.Divider />
             <QuotationStatusActions

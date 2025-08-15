@@ -18,6 +18,8 @@ const documents = {
     "\n  query ROOT_QUERY {\n    identity__me {\n      _id\n      email\n      name\n      memberships {\n        tenant\n        roles\n      }\n      avatar {\n        meta\n        path\n        provider\n      }\n    }\n    #    identity__myPermissions(tenant: $tenant) {\n    #      collectionName\n    #      actions\n    #    }\n\n    identity__myTenants {\n      nodes {\n        _id\n        name\n        uid\n        address\n        businessPhoneNumber\n        description\n        createdAt\n        logo {\n          meta\n          path\n          provider\n        }\n      }\n    }\n  }\n": types.Root_QueryDocument,
     "\n  query Accounts($where: CommonPaginationDto) {\n    accounting__accounts(where: $where) {\n      meta {\n        totalCount\n      }\n      nodes {\n        _id\n        name\n        referenceNumber\n        brunchName\n        openedAt\n        note\n        isActive\n        creditAmount\n        debitAmount\n        createdAt\n        updatedAt\n      }\n    }\n  }\n": types.AccountsDocument,
     "\n  mutation Accounting__createInventoryInvoicePayment(\n    $body: CreateInventoryInvoicePaymentInput!\n  ) {\n    accounting__createInventoryInvoicePayment(body: $body) {\n      _id\n    }\n  }\n": types.Accounting__CreateInventoryInvoicePaymentDocument,
+    "\n  query GetClient($where: CommonFindDocumentDto!) {\n    people__client(where: $where) {\n      _id\n      name\n      contactNumber\n      email\n      address\n      createdAt\n      updatedAt\n    }\n  }\n": types.GetClientDocument,
+    "\n  query GetProduct($where: CommonFindDocumentDto!) {\n    inventory__product(where: $where) {\n      _id\n      name\n      code\n      stockInQuantity\n      stockOutQuantity\n      isSellableWithoutStock\n      price\n      purchasePrice\n    }\n  }\n": types.GetProductDocument,
     "\n   query Setup__brands {\n  setup__brands {\n    meta {\n      totalCount\n    }\n    nodes {\n      _id\n      code\n      createdAt\n      name\n      note\n      updatedAt\n    }\n  }\n}\n\n": types.Setup__BrandsDocument,
     "\n    mutation Setup__createBrand($body: CreateBrandInput!) {\n  setup__createBrand(body: $body) {\n    _id\n  }\n}\n": types.Setup__CreateBrandDocument,
     "\nmutation Setup__updateBrand($where: CommonFindDocumentDto!, $body: UpdateBrandInput!) {\n  setup__updateBrand(where: $where, body: $body)\n}\n\n": types.Setup__UpdateBrandDocument,
@@ -60,6 +62,14 @@ export function graphql(source: "\n  query Accounts($where: CommonPaginationDto)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation Accounting__createInventoryInvoicePayment(\n    $body: CreateInventoryInvoicePaymentInput!\n  ) {\n    accounting__createInventoryInvoicePayment(body: $body) {\n      _id\n    }\n  }\n"): (typeof documents)["\n  mutation Accounting__createInventoryInvoicePayment(\n    $body: CreateInventoryInvoicePaymentInput!\n  ) {\n    accounting__createInventoryInvoicePayment(body: $body) {\n      _id\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetClient($where: CommonFindDocumentDto!) {\n    people__client(where: $where) {\n      _id\n      name\n      contactNumber\n      email\n      address\n      createdAt\n      updatedAt\n    }\n  }\n"): (typeof documents)["\n  query GetClient($where: CommonFindDocumentDto!) {\n    people__client(where: $where) {\n      _id\n      name\n      contactNumber\n      email\n      address\n      createdAt\n      updatedAt\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetProduct($where: CommonFindDocumentDto!) {\n    inventory__product(where: $where) {\n      _id\n      name\n      code\n      stockInQuantity\n      stockOutQuantity\n      isSellableWithoutStock\n      price\n      purchasePrice\n    }\n  }\n"): (typeof documents)["\n  query GetProduct($where: CommonFindDocumentDto!) {\n    inventory__product(where: $where) {\n      _id\n      name\n      code\n      stockInQuantity\n      stockOutQuantity\n      isSellableWithoutStock\n      price\n      purchasePrice\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
