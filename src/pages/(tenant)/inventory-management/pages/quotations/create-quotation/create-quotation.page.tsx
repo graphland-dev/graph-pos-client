@@ -173,7 +173,10 @@ const CreateQuotationPage = () => {
           products: quotation.products || [],
           discountMode:
             quotation.quotationDiscountMode || ProductDiscountMode.Amount,
-          discountValue: quotation.quotationDiscountAmount || 0,
+          discountValue:
+            quotation.quotationDiscountMode === ProductDiscountMode.Percentage
+              ? quotation.quotationDiscountPercentage || 0
+              : quotation.quotationDiscountAmount || 0,
         });
         setSelectedClient(quotation.client);
         setQuotationStatus(quotation.status);
@@ -268,7 +271,7 @@ const CreateQuotationPage = () => {
   const [convertToInvoice, { loading: converting }] = useMutation(
     CONVERT_QUOTATION_TO_INVOICE_MUTATION,
     {
-      onCompleted: (data) => {
+      onCompleted: () => {
         showNotification({
           title: "Success",
           message: `Quotation converted to invoice successfully!`,
@@ -334,11 +337,7 @@ const CreateQuotationPage = () => {
 
     convertToInvoice({
       variables: {
-        where: {
-          key: "_id",
-          operator: "eq",
-          value: quotationId,
-        },
+        quotationId: quotationId,
       },
     });
   };
@@ -416,10 +415,13 @@ const CreateQuotationPage = () => {
         taxRate: product.taxRate || 0,
       })),
       quotationDiscountMode: data.discountMode,
-      quotationDiscountAmount: totals.discountAmount,
+      quotationDiscountAmount:
+        data.discountMode === ProductDiscountMode.Amount
+          ? data.discountValue || 0
+          : totals.discountAmount,
       quotationDiscountPercentage:
         data.discountMode === ProductDiscountMode.Percentage
-          ? data.discountValue
+          ? data.discountValue || 0
           : 0,
     };
 
@@ -738,16 +740,6 @@ const CreateQuotationPage = () => {
               <Space h="xl" />
 
               <Group>
-                <Button
-                  variant="outline"
-                  onClick={() =>
-                    navigate(
-                      `/${params.tenant}/inventory-management/quotations`
-                    )
-                  }
-                >
-                  {isConverted ? "Close" : "Cancel"}
-                </Button>
                 {isEditMode && !isConverted && (
                   <Button
                     variant="filled"

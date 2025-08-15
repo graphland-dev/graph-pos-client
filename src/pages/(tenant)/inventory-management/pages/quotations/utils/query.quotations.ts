@@ -174,12 +174,9 @@ export const UPDATE_QUOTATION_STATUS_MUTATION = gql`
 `;
 
 export const CONVERT_QUOTATION_TO_INVOICE_MUTATION = gql`
-  mutation Inventory__convertQuotationToInvoice(
-    $where: CommonFindDocumentDto!
-  ) {
-    inventory__convertQuotationToInvoice(where: $where) {
+  mutation Inventory__convertQuotationToInvoice($quotationId: String!) {
+    inventory__convertQuotationToInvoice(quotationId: $quotationId) {
       _id
-      invoiceUID
     }
   }
 `;
