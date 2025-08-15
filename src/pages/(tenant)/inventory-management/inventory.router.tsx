@@ -15,6 +15,8 @@ import VatPage from "./pages/settings/pages/vat/vat.page";
 import UnitPage from "./pages/settings/pages/unit/unit.page";
 import BrandPage from "./pages/settings/pages/brand/brand.page";
 import InvoicesPage from "./pages/invoices/invoices.page";
+import QuotationsPage from "./pages/quotations/quotations.page";
+import CreateQuotationPage from "./pages/quotations/create-quotation/create-quotation.page";
 import InvoicePaymentsPage from "./pages/payments/invoice-payments/invoice-payments.page";
 import InventoryManagementRoot from "./module-root.page";
 
@@ -40,6 +42,19 @@ export const inventoryModuleRouter: RouteObject[] = [
       {
         path: "invoices",
         element: <InvoicesPage />,
+      },
+      {
+        path: "quotations",
+        children: [
+          {
+            path: "",
+            element: <QuotationsPage />,
+          },
+          {
+            path: "create",
+            element: <CreateQuotationPage />,
+          },
+        ],
       },
       {
         path: "products",

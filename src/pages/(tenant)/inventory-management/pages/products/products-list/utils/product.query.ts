@@ -12,10 +12,15 @@ export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
           _id
           name
         }
+        brand {
+          _id
+          name
+        }
         stockInQuantity
         stockOutQuantity
         isSellableWithoutStock
         price
+        purchasePrice
       }
       meta {
         totalCount

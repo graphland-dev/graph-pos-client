@@ -22,6 +22,11 @@ export const inventoryNavlinks: AppNavLink[] = [
     href: "invoices",
   },
   {
+    label: "Quotations",
+    icon: IconReceipt2,
+    href: "quotations",
+  },
+  {
     label: "Products",
     icon: IconBrandProducthunt,
     href: "products",
