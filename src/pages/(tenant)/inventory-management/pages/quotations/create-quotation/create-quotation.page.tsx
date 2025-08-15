@@ -115,6 +115,7 @@ const CreateQuotationPage = () => {
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const [productSearchQuery, setProductSearchQuery] = useState("");
+  const [clientSearchQuery, setClientSearchQuery] = useState("");
 
   const {
     handleSubmit,
@@ -171,10 +172,38 @@ const CreateQuotationPage = () => {
     },
   });
 
-  const { data: clientsData } = useQuery<{
+  const { data: clientsData, loading: clientsLoading } = useQuery<{
     people__clients: ClientsWithPagination;
   }>(PEOPLE_CLIENTS_QUERY, {
-    variables: { where: { limit: -1, page: 1 } },
+    variables: {
+      where: {
+        limit: 100,
+        page: 1,
+        ...(clientSearchQuery && {
+          filters: [
+            {
+              or: [
+                {
+                  key: "name",
+                  operator: MatchOperator.Contains,
+                  value: clientSearchQuery,
+                },
+                {
+                  key: "email",
+                  operator: MatchOperator.Contains,
+                  value: clientSearchQuery,
+                },
+                {
+                  key: "contactNumber",
+                  operator: MatchOperator.Contains,
+                  value: clientSearchQuery,
+                },
+              ],
+            },
+          ],
+        }),
+      },
+    },
   });
 
   const { data: productsData, loading: productsLoading } = useQuery<{
@@ -237,6 +266,10 @@ const CreateQuotationPage = () => {
 
   const handleProductSearch = (query: string) => {
     setProductSearchQuery(query);
+  };
+
+  const handleClientSearch = (query: string) => {
+    setClientSearchQuery(query);
   };
 
   const handleProductSelect = (product: Product) => {
@@ -645,6 +678,9 @@ const CreateQuotationPage = () => {
           <ClientsCardList
             clients={clientsData?.people__clients.nodes || []}
             onClientSelect={handleClientSelect}
+            onSearch={handleClientSearch}
+            loading={clientsLoading}
+            totalCount={clientsData?.people__clients?.meta?.totalCount || 0}
           />
         </div>
       </Drawer>
