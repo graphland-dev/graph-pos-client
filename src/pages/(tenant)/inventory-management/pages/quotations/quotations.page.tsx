@@ -1,35 +1,98 @@
-import DataTable from "@/commons/components/DataTable.tsx";
+import AppDatatable, { ColumnDef } from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import {
   MatchOperator,
   ProductQuotation,
   ProductQuotationsWithPagination,
+  ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
-import { Badge, Button, Menu, Text } from "@mantine/core";
+import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconTrash } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { 
   INVENTORY_PRODUCT_QUOTATIONS_QUERY, 
   DELETE_PRODUCT_QUOTATION_MUTATION 
 } from "./utils/query.quotations";
+import { PEOPLE_CLIENTS_QUERY } from "../../../people/pages/client/utils/client.query";
+
+interface PaginationState {
+  page: number;
+  pageSize: number;
+}
+
+interface SortingState {
+  column: string;
+  direction: "asc" | "desc" | null;
+}
 
 const QuotationsPage = () => {
   const navigate = useNavigate();
   const [refetching, setRefetching] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({ page: 1, pageSize: 10 });
+  const [sorting, setSorting] = useState<SortingState>({ column: "", direction: null });
+  const [filters, setFilters] = useState<Record<string, string>>({});
+
+  // Build query variables
+  const buildQueryVariables = () => {
+    const graphqlFilters = [];
+
+    // Add search filters
+    if (filters.quotationUID) {
+      graphqlFilters.push({
+        key: "quotationUID",
+        operator: MatchOperator.Contains,
+        value: filters.quotationUID,
+      });
+    }
+
+    if (filters.client) {
+      graphqlFilters.push({
+        key: "client",
+        operator: MatchOperator.Eq,
+        value: filters.client,
+      });
+    }
+
+    if (filters.status) {
+      graphqlFilters.push({
+        key: "status",
+        operator: MatchOperator.Eq,
+        value: filters.status,
+      });
+    }
+
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
+      filters: graphqlFilters,
+    };
+  };
+
   const { data, loading, refetch } = useQuery<{
     inventory__productQuotations: ProductQuotationsWithPagination;
   }>(INVENTORY_PRODUCT_QUOTATIONS_QUERY, {
     variables: {
+      where: buildQueryVariables(),
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
+  // Fetch clients for dropdown filter
+  const { data: clientsData, loading: clientsLoading } = useQuery<{
+    people__clients: ClientsWithPagination;
+  }>(PEOPLE_CLIENTS_QUERY, {
+    variables: {
       where: {
-        limit: -1,
         page: 1,
+        limit: -1, // Get all clients for dropdown
       },
     },
   });
@@ -81,48 +144,84 @@ const QuotationsPage = () => {
     });
   };
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  // Process client options for Select component
+  const clientOptions = useMemo(() => {
+    if (!clientsData?.people__clients?.nodes) return [];
+    return clientsData.people__clients.nodes.map((client) => ({
+      value: client._id,
+      label: client.name,
+    }));
+  }, [clientsData]);
+
+  // Status options for filter
+  const statusOptions = [
+    { value: "DRAFT", label: "Draft" },
+    { value: "SENT", label: "Sent" },
+    { value: "ACCEPTED", label: "Accepted" },
+    { value: "REJECTED", label: "Rejected" },
+    { value: "CONVERTED", label: "Converted" },
+    { value: "EXPIRED", label: "Expired" },
+  ];
+
+  const columns = useMemo<ColumnDef<ProductQuotation>[]>(
     () => [
       {
-        accessorKey: "quotationUID",
-        header: "Quotation UID",
+        accessor: "quotationUID",
+        title: "Quotation UID",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            type="text"
+            placeholder="Search quotation UID..."
+            onChange={(e) => setValue("quotationUID", e.target.value)}
+          />
+        ),
       },
       {
-        accessorFn(originalRow) {
-          return (
-            originalRow?.client?.name || (
-              <p className="px-2 bg-destructive/10">No Client</p>
-            )
-          );
-        },
-        header: "Client Name",
+        accessor: (row) => row?.client?.name || "No Client",
+        title: "Client Name",
+        sortKey: "client",
+        sortable: true,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by client..."
+            value={filters.client || null}
+            data={clientOptions}
+            disabled={clientsLoading}
+            onChange={(value) => setValue("client", value || "")}
+            clearable
+            searchable
+            style={{ minWidth: 200 }}
+          />
+        ),
       },
       {
-        accessorFn: (row: ProductQuotation) =>
-          row?.date ? dateFormat(row?.date) : "",
-        header: "Quotation Date",
+        accessor: (row) => row?.date ? dateFormat(row?.date) : "",
+        title: "Quotation Date",
+        sortKey: "date",
+        sortable: true,
       },
       {
-        accessorFn: (row: ProductQuotation) =>
-          row?.validUntil ? dateFormat(row?.validUntil) : "",
-        header: "Valid Until",
+        accessor: (row) => row?.validUntil ? dateFormat(row?.validUntil) : "",
+        title: "Valid Until",
+        sortKey: "validUntil", 
+        sortable: true,
       },
       {
-        accessorKey: "subTotal",
-        accessorFn: (originalRow: ProductQuotation) =>
-          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Sub Total",
+        accessor: (row) => `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        title: "Sub Total",
+        sortKey: "netTotal",
+        sortable: true,
       },
       {
-        accessorKey: "netTotal",
-        accessorFn: (originalRow: ProductQuotation) =>
-          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Net Total",
+        accessor: (row) => `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        title: "Net Total",
+        sortKey: "netTotal",
+        sortable: true,
       },
       {
-        accessorKey: "status",
-        accessorFn: (originalRow: ProductQuotation) => {
-          const status = originalRow?.status || "DRAFT";
+        accessor: (row) => {
+          const status = row?.status || "DRAFT";
           let color = "gray";
 
           switch (status) {
@@ -145,15 +244,27 @@ const QuotationsPage = () => {
 
           return <Badge color={color}>{status}</Badge>;
         },
-        header: "Status",
+        title: "Status",
+        sortKey: "status",
+        sortable: true,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by status..."
+            value={filters.status || null}
+            data={statusOptions}
+            onChange={(value) => setValue("status", value || "")}
+            clearable
+            style={{ minWidth: 150 }}
+          />
+        ),
       },
     ],
-    []
+    [clientOptions, clientsLoading, filters.client, filters.status]
   );
 
-  const handleRefetch = (variables: any) => {
+  const handleRefetch = () => {
     setRefetching(true);
-    refetch(variables).finally(() => {
+    refetch({ where: buildQueryVariables() }).finally(() => {
       setRefetching(false);
     });
   };
@@ -171,46 +282,74 @@ const QuotationsPage = () => {
             Manage and track your quotations
           </Text>
         </div>
-        <Button
-          onClick={() =>
-            navigate(`/${params.tenant}/inventory-management/quotations/create`)
-          }
-        >
-          Create Quotation
-        </Button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleRefetch}
+            disabled={refetching}
+            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
+          >
+            {refetching ? "Refreshing..." : "Refresh"}
+          </button>
+          <Button
+            onClick={() =>
+              navigate(`/${params.tenant}/inventory-management/quotations/create`)
+            }
+          >
+            Create Quotation
+          </Button>
+        </div>
       </div>
 
-      <DataTable
+      <AppDatatable
         columns={columns}
         data={data?.inventory__productQuotations.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.inventory__productQuotations.meta?.totalCount ?? 100}
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.inventory__productQuotations.meta?.totalCount ?? 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={(row: ProductQuotation) => (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(
+                  `/${params.tenant}/inventory-management/quotations/${row._id}`
+                );
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100"
+            >
+              Edit
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteQuotation(row);
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 bg-red-50 rounded-md hover:bg-red-100"
+            >
+              <IconTrash size={14} />
+              Delete
+            </button>
+          </div>
+        )}
         onRowClick={(row: ProductQuotation) => {
           navigate(
             `/${params.tenant}/inventory-management/quotations/${row._id}`
           );
         }}
-        RowActionMenu={(row: ProductQuotation) => (
-          <Menu>
-            <Menu.Item
-              onClick={() =>
-                navigate(
-                  `/${params.tenant}/inventory-management/quotations/${row._id}`
-                )
-              }
-            >
-              Edit Quotation
-            </Menu.Item>
-            <Menu.Item
-              icon={<IconTrash size={18} />}
-              color="red"
-              onClick={() => handleDeleteQuotation(row)}
-            >
-              Delete
-            </Menu.Item>
-          </Menu>
-        )}
+        onSortChange={(column, direction) => {
+          setSorting({ column, direction });
+        }}
+        onFilterChange={(column, value) => {
+          setFilters(prev => ({ ...prev, [column]: value }));
+          setPagination(prev => ({ ...prev, page: 1 }));
+        }}
+        onPaginationChange={(page, pageSize) => {
+          setPagination({ page, pageSize });
+        }}
         loading={loading || refetching}
+        emptyMessage="No quotations found. Try adjusting your filters."
       />
     </>
   );
