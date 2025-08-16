@@ -1,12 +1,13 @@
 import { INVENTORY_PRODUCT_QUOTATION_QUERY } from "@/pages/(tenant)/inventory-management/pages/quotations/utils/query.quotations";
-import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
+import { ProductDiscountMode, Tenant } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
+import { getFileUrl } from "@/commons/utils/getFileUrl";
 import { Button } from "@mantine/core";
 import { Printer } from "lucide-react";
 import numberToWords from "number-to-words";
-import React, { useRef } from "react";
+import React, { useRef, useMemo } from "react";
 import { useReactToPrint } from "react-to-print";
-import { useQuery } from "@apollo/client";
+import { gql, useQuery } from "@apollo/client";
 
 interface PrintableFullQuotationProps {
   quotationId: string;
@@ -299,7 +300,7 @@ const PrintableFullQuotation = ({
   quotationId,
   tenant,
 }: PrintableFullQuotationProps) => {
-  const { data, loading } = useQuery(INVENTORY_PRODUCT_QUOTATION_QUERY, {
+  const quotationQuery = useQuery(INVENTORY_PRODUCT_QUOTATION_QUERY, {
     variables: {
       where: {
         key: "_id",
@@ -310,9 +311,19 @@ const PrintableFullQuotation = ({
     skip: !quotationId,
   });
 
-  const quotation = data?.inventory__productQuotation;
+  const tenantQuery = useQuery<{ identity__tenant: Tenant }>(
+    TENANT_DETAILS_QUERY,
+    {
+      variables: { tenant },
+    }
+  );
 
-  if (loading) {
+  const quotation = useMemo(
+    () => quotationQuery.data?.inventory__productQuotation,
+    [quotationQuery.data]
+  );
+
+  if (quotationQuery.loading || tenantQuery.loading) {
     return <div className="p-4 text-center">Loading quotation...</div>;
   }
 
@@ -326,10 +337,13 @@ const PrintableFullQuotation = ({
     date: quotation.date,
     validUntil: quotation.validUntil,
     company: {
-      name: "Your Company Name", // You can get this from tenant data
-      address: "Your Company Address",
-      phone: "Your Company Phone",
-      email: "Your Company Email",
+      logoUrl: tenantQuery.data?.identity__tenant.logo
+        ? getFileUrl(tenantQuery.data?.identity__tenant.logo)
+        : undefined,
+      name: tenantQuery.data?.identity__tenant.name || "Company Name",
+      address: tenantQuery.data?.identity__tenant.address || undefined,
+      phone: tenantQuery.data?.identity__tenant.businessPhoneNumber || undefined,
+      email: undefined, // Tenant doesn't have email field
     },
     customer: {
       name: quotation.client?.name || "No Client",
@@ -360,3 +374,24 @@ const PrintableFullQuotation = ({
 };
 
 export default PrintableFullQuotation;
+
+const TENANT_DETAILS_QUERY = gql`
+  query Identity__tenant($tenant: String!) {
+    identity__tenant(tenant: $tenant) {
+      _id
+      name
+      logo {
+        path
+        provider
+      }
+      address
+      businessPhoneNumber
+      description
+      uid
+      subscriptionType
+      allowedCollections
+      createdAt
+      updatedAt
+    }
+  }
+`;
