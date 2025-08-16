@@ -1,19 +1,25 @@
 import DataTable from "@/commons/components/DataTable.tsx";
 import PageTitle from "@/commons/components/PageTitle";
 import {
+  MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Menu, Text } from "@mantine/core";
-import { IconEdit } from "@tabler/icons-react";
+import { modals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { IconEdit, IconTrash } from "@tabler/icons-react";
+import { EyeIcon } from "lucide-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
-import { EyeIcon } from "lucide-react";
+import {
+  DELETE_PRODUCT_INVOICE_MUTATION,
+  INVENTORY_PRODUCT_INVOICES_QUERY,
+} from "./utils/query.invoices";
 
 const InvoicesPage = () => {
   const navigate = useNavigate();
@@ -30,6 +36,51 @@ const InvoicesPage = () => {
   });
 
   const params = useParams<{ tenant: string }>();
+
+  const [deleteInvoice, { loading: deleting }] = useMutation(
+    DELETE_PRODUCT_INVOICE_MUTATION,
+    {
+      onCompleted: () => {
+        showNotification({
+          title: "Success",
+          message: "Invoice deleted successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error.message,
+          color: "red",
+        });
+      },
+    }
+  );
+
+  const handleDeleteInvoice = (invoice: ProductInvoice) => {
+    modals.openConfirmModal({
+      title: "Delete Invoice",
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete invoice{" "}
+          <strong>{invoice.invoiceUID}</strong>? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red", loading: deleting },
+      onConfirm: () =>
+        deleteInvoice({
+          variables: {
+            where: {
+              key: "_id",
+              operator: MatchOperator.Eq,
+              value: invoice?._id,
+            },
+          },
+        }),
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -163,6 +214,13 @@ const InvoicesPage = () => {
               }}
             >
               Edit
+            </Menu.Item>
+            <Menu.Item
+              icon={<IconTrash size={18} />}
+              color="red"
+              onClick={() => handleDeleteInvoice(row)}
+            >
+              Delete
             </Menu.Item>
           </Menu>
         )}

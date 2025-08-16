@@ -184,3 +184,9 @@ export const CONVERT_QUOTATION_TO_INVOICE_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_PRODUCT_QUOTATION_MUTATION = gql`
+  mutation Inventory__removeProductQuotation($where: CommonFindDocumentDto!) {
+    inventory__removeProductQuotation(where: $where)
+  }
+`;

@@ -1,17 +1,24 @@
 import DataTable from "@/commons/components/DataTable.tsx";
 import PageTitle from "@/commons/components/PageTitle";
 import {
+  MatchOperator,
   ProductQuotation,
   ProductQuotationsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Menu, Text } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
+import { IconTrash } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { INVENTORY_PRODUCT_QUOTATIONS_QUERY } from "./utils/query.quotations";
+import { 
+  INVENTORY_PRODUCT_QUOTATIONS_QUERY, 
+  DELETE_PRODUCT_QUOTATION_MUTATION 
+} from "./utils/query.quotations";
 
 const QuotationsPage = () => {
   const navigate = useNavigate();
@@ -28,6 +35,51 @@ const QuotationsPage = () => {
   });
 
   const params = useParams<{ tenant: string }>();
+
+  const [deleteQuotation, { loading: deleting }] = useMutation(
+    DELETE_PRODUCT_QUOTATION_MUTATION,
+    {
+      onCompleted: () => {
+        showNotification({
+          title: "Success",
+          message: "Quotation deleted successfully",
+          color: "green",
+        });
+        refetch();
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error.message,
+          color: "red",
+        });
+      },
+    }
+  );
+
+  const handleDeleteQuotation = (quotation: ProductQuotation) => {
+    modals.openConfirmModal({
+      title: "Delete Quotation",
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete quotation{" "}
+          <strong>{quotation.quotationUID}</strong>? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red", loading: deleting },
+      onConfirm: () =>
+        deleteQuotation({
+          variables: {
+            where: {
+              key: "_id",
+              operator: MatchOperator.Eq,
+              value: quotation?._id,
+            },
+          },
+        }),
+    });
+  };
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -148,6 +200,13 @@ const QuotationsPage = () => {
               }
             >
               Edit Quotation
+            </Menu.Item>
+            <Menu.Item
+              icon={<IconTrash size={18} />}
+              color="red"
+              onClick={() => handleDeleteQuotation(row)}
+            >
+              Delete
             </Menu.Item>
           </Menu>
         )}

@@ -172,3 +172,9 @@ export const UPDATE_PRODUCT_INVOICE_MUTATION = gql`
     }
   }
 `;
+
+export const DELETE_PRODUCT_INVOICE_MUTATION = gql`
+  mutation Inventory__removeProductInvoice($where: CommonFindDocumentDto!) {
+    inventory__removeProductInvoice(where: $where)
+  }
+`;
