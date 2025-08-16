@@ -2,9 +2,9 @@
   areas where it's used:
 
   Inventory Management:
-  - products-list/productsList.page.tsx:221 (where you selected)
+  ✅ - products-list/productsList.page.tsx:221 (CONVERTED to AppDatatable)
   - quotations/quotations.page.tsx
-  - invoices/invoices.page.tsx
+  ✅ - invoices/invoices.page.tsx (CONVERTED to AppDatatable)
   - purchases/purchase-list/purchase-list.page.tsx
   - payments/invoice-payments/invoice-payments.page.tsx
   - payments/purchase-payments/purchase-payments.page.tsx

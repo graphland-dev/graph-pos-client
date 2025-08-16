@@ -4,8 +4,13 @@ I need a data table component that can handle various data types and provide fea
 ```tsx
 const columns = [
   { accessor: "id", title: "ID", sortable: true },
-  { accessor: "name", title: "Name", Filter: (setValue) => <Input placeholder="Search Name" onChange={e => setValue(e.target.value)} /> },
-  { title: "Email", accessor: (row) => row?.email ?? "N/A" },
+  { accessor: "name", title: "Name", Filter: (setValue) => <Input placeholder="Search Name" onChange={e => setValue("name", e.target.value)} /> },
+  { 
+    accessor: (row) => row?.email ?? "N/A", 
+    title: "Email", 
+    sortKey: "email", // Use sortKey when accessor is a function
+    sortable: true 
+  },
 ];
 
 const data = [

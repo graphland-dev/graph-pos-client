@@ -153,6 +153,7 @@ const ProductsExample: React.FC = () => {
       {
         accessor: (row) => formatPrice(row.price),
         title: "Price",
+        sortKey: "price", // Use the actual field name for sorting
         sortable: true,
         Filter: (setValue) => (
           <input

@@ -4,6 +4,7 @@ export interface ColumnDef<T = any> {
   accessor: string | ((row: T) => any);
   title: string;
   sortable?: boolean;
+  sortKey?: string; // Use this key for sorting when accessor is a function
   Filter?: (setValue: (key: string, value: any) => void) => React.ReactNode;
   width?: string | number;
 }
@@ -59,12 +60,15 @@ const AppDatatable = <T extends Record<string, any>>({
   );
 
   // Handle sorting
-  const handleSort = (column: string, sortable?: boolean) => {
+  const handleSort = (column: string, sortKey: string | undefined, sortable?: boolean) => {
     if (!sortable) return;
 
+    // Use sortKey if provided, otherwise use column
+    const sortColumn = sortKey || column;
+    
     let newDirection: "asc" | "desc" | null = "asc";
 
-    if (sortState.column === column) {
+    if (sortState.column === sortColumn) {
       if (sortState.direction === "asc") {
         newDirection = "desc";
       } else if (sortState.direction === "desc") {
@@ -73,11 +77,11 @@ const AppDatatable = <T extends Record<string, any>>({
     }
 
     const newSortState = {
-      column: newDirection ? column : null,
+      column: newDirection ? sortColumn : null,
       direction: newDirection,
     };
     setSortState(newSortState);
-    onSortChange?.(column, newDirection);
+    onSortChange?.(sortColumn, newDirection);
   };
 
   // Handle filtering
@@ -233,7 +237,10 @@ const AppDatatable = <T extends Record<string, any>>({
                   typeof column.accessor === "string"
                     ? column.accessor
                     : `column_${index}`;
-                const isSorted = sortState.column === accessor;
+                
+                // Use sortKey if provided, otherwise use accessor for sorting comparison
+                const sortColumn = column.sortKey || accessor;
+                const isSorted = sortState.column === sortColumn;
                 const isAsc = isSorted && sortState.direction === "asc";
                 const isDesc = isSorted && sortState.direction === "desc";
 
@@ -246,7 +253,7 @@ const AppDatatable = <T extends Record<string, any>>({
                         ? "cursor-pointer hover:bg-gray-100 select-none"
                         : ""
                     }`}
-                    onClick={() => handleSort(accessor, column.sortable)}
+                    onClick={() => handleSort(accessor, column.sortKey, column.sortable)}
                   >
                     <div className="flex items-center justify-between">
                       <span>{column.title}</span>
@@ -334,7 +341,13 @@ const AppDatatable = <T extends Record<string, any>>({
                         key={accessor}
                         className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap"
                       >
-                        {value != null ? String(value) : ""}
+                        {value != null ? (
+                          typeof value === 'object' && React.isValidElement(value) ? (
+                            value
+                          ) : (
+                            String(value)
+                          )
+                        ) : ""}
                       </td>
                     );
                   })}
