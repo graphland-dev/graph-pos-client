@@ -2,6 +2,7 @@ import QuotationPrintModal from "@/commons/components/quotation/QuotationPrintMo
 import {
   Client,
   ClientsWithPagination,
+  CommonPaginationDto,
   CreateProductQuotationInput,
   MatchOperator,
   Product,
@@ -10,6 +11,7 @@ import {
   ProductQuotation,
   ProductsWithPagination,
   UpdateProductQuotationInput,
+  Where_Operator,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { PEOPLE_CLIENTS_QUERY } from "@/pages/(tenant)/people/pages/client/utils/client.query";
@@ -135,6 +137,12 @@ const CreateOrUpdateQuotationPage = () => {
   const [productSearchQuery, setProductSearchQuery] = useState("");
   const [clientSearchQuery, setClientSearchQuery] = useState("");
   const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
+  const [filteredableCategoryId, setFilteredableCategoryId] = useState<
+    string | null
+  >(null);
+  const [filterableBrandId, setFilteredableBrandId] = useState<string | null>(
+    null
+  );
 
   const {
     handleSubmit,
@@ -231,32 +239,46 @@ const CreateOrUpdateQuotationPage = () => {
     },
   });
 
+  const buildProductFilter = () => {
+    const where: CommonPaginationDto = {
+      page: 1,
+      limit: -1,
+      filters: [],
+      filterOperator: Where_Operator.Or,
+    };
+
+    if (productSearchQuery) {
+      where?.filters?.push({
+        key: "product.name",
+        operator: MatchOperator.Contains,
+        value: productSearchQuery,
+      });
+    }
+
+    if (filteredableCategoryId) {
+      where?.filters?.push({
+        key: "category",
+        operator: MatchOperator.Eq,
+        value: filteredableCategoryId,
+      });
+    }
+
+    if (filterableBrandId) {
+      where?.filters?.push({
+        key: "brand",
+        operator: MatchOperator.Eq,
+        value: filterableBrandId,
+      });
+    }
+
+    return where;
+  };
+
   const { data: productsData, loading: productsLoading } = useQuery<{
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: {
-      where: {
-        limit: -1,
-        page: 1,
-        ...(productSearchQuery && {
-          filters: [
-            {
-              or: [
-                {
-                  key: "name",
-                  operator: MatchOperator.Contains,
-                  value: productSearchQuery,
-                },
-                {
-                  key: "code",
-                  operator: MatchOperator.Contains,
-                  value: productSearchQuery,
-                },
-              ],
-            },
-          ],
-        }),
-      },
+      where: buildProductFilter(),
     },
   });
 
@@ -891,6 +913,10 @@ const CreateOrUpdateQuotationPage = () => {
             products={productsData?.inventory__products.nodes || []}
             onProductSelect={handleProductSelect}
             onSearch={handleProductSearch}
+            onCategoryFilter={setFilteredableCategoryId}
+            onBrandFilter={setFilteredableBrandId}
+            selectedCategoryId={filteredableCategoryId}
+            selectedBrandId={filterableBrandId}
             loading={productsLoading}
             totalCount={
               productsData?.inventory__products?.meta?.totalCount || 0
