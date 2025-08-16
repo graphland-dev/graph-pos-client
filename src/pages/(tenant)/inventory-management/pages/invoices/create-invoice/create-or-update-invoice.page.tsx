@@ -129,6 +129,7 @@ const CreateOrUpdateInvoicePage = () => {
     watch,
     control,
     reset,
+    trigger,
   } = useForm<IFormData>({
     resolver: yupResolver(invoiceSchema),
     defaultValues: {
@@ -278,7 +279,9 @@ const CreateOrUpdateInvoicePage = () => {
           color: "green",
         });
         // Navigate back to details page
-        navigate(`/${params.tenant}/inventory-management/invoices/${invoiceId}`);
+        navigate(
+          `/${params.tenant}/inventory-management/invoices/${invoiceId}`
+        );
       },
       onError: (error) => {
         showNotification({
@@ -290,7 +293,12 @@ const CreateOrUpdateInvoicePage = () => {
     }
   );
 
-  const formData = watch();
+  const watchedProducts = watch("products");
+  const watchedDiscountMode = watch("discountMode");
+  const watchedDiscountValue = watch("discountValue");
+  const watchedClientId = watch("clientId");
+  const watchedDate = watch("date");
+  const watchedNote = watch("note");
 
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
@@ -331,39 +339,37 @@ const CreateOrUpdateInvoicePage = () => {
     closeProductDrawer();
   };
 
-  const handleQuantityChange = (index: number, quantity: number) => {
-    const product = fields[index];
-    update(index, {
-      ...product,
-      quantity,
-    });
+  const handleQuantityChange = async (index: number, quantity: number) => {
+    setValue(`products.${index}.quantity`, quantity);
+    await trigger(`products.${index}.quantity`);
   };
 
-  const handleUnitPriceChange = (index: number, unitSellPrice: number) => {
-    const product = fields[index];
-    update(index, {
-      ...product,
-      unitSellPrice,
-    });
+  const handleUnitPriceChange = async (
+    index: number,
+    unitSellPrice: number
+  ) => {
+    setValue(`products.${index}.unitSellPrice`, unitSellPrice);
+    await trigger(`products.${index}.unitSellPrice`);
   };
 
   const calculateTotals = () => {
-    const subTotal = fields.reduce((sum, product) => {
+    const products = watchedProducts || [];
+    const subTotal = products.reduce((sum, product) => {
       const productTotal =
         (product.unitSellPrice || 0) * (product.quantity || 0);
       return sum + productTotal;
     }, 0);
     const discountAmount =
-      formData.discountMode === ProductDiscountMode.Percentage
-        ? (subTotal * (formData.discountValue || 0)) / 100
-        : formData.discountValue || 0;
+      watchedDiscountMode === ProductDiscountMode.Percentage
+        ? (subTotal * (watchedDiscountValue || 0)) / 100
+        : watchedDiscountValue || 0;
     const netTotal = subTotal - discountAmount;
 
     return {
       subTotal,
       discountAmount,
       netTotal,
-      itemCount: fields.length,
+      itemCount: products.length,
     };
   };
 
@@ -392,15 +398,16 @@ const CreateOrUpdateInvoicePage = () => {
       clientId: data.clientId,
       date: data.date,
       note: data.note,
-      products: fields.map((product) => ({
-        referenceId: product.referenceId,
-        name: product.name,
-        code: product.code,
-        unitPrice: product.unitPrice || 0,
-        quantity: product.quantity,
-        unitSellPrice: product.unitSellPrice || 0,
-        taxRate: product.taxRate || 0,
-      })),
+      products:
+        data?.products?.map((product) => ({
+          referenceId: product.referenceId,
+          name: product.name,
+          code: product.code,
+          unitPrice: product.unitPrice || 0,
+          quantity: product.quantity,
+          unitSellPrice: product.unitSellPrice || 0,
+          taxRate: product.taxRate || 0,
+        })) ?? [],
       invoiceDiscountMode: data.discountMode,
       invoiceDiscountAmount:
         data.discountMode === ProductDiscountMode.Amount
@@ -535,7 +542,7 @@ const CreateOrUpdateInvoicePage = () => {
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <DateInput
                   label="Date"
-                  value={formData.date}
+                  value={watchedDate}
                   onChange={(date) => setValue("date", date || new Date())}
                   error={<ErrorMessage errors={errors} name="date" />}
                   required
@@ -547,7 +554,7 @@ const CreateOrUpdateInvoicePage = () => {
               <Textarea
                 label="Notes"
                 placeholder="Additional notes for the invoice..."
-                value={formData.note}
+                value={watchedNote}
                 onChange={(e) => setValue("note", e.currentTarget.value)}
                 rows={3}
               />
@@ -585,7 +592,9 @@ const CreateOrUpdateInvoicePage = () => {
                         <td>
                           <div>
                             <NumberInput
-                              value={product.unitSellPrice || 0}
+                              value={
+                                watchedProducts?.[index]?.unitSellPrice || 0
+                              }
                               onChange={(value) =>
                                 handleUnitPriceChange(index, value || 0)
                               }
@@ -597,7 +606,7 @@ const CreateOrUpdateInvoicePage = () => {
                         </td>
                         <td>
                           <NumberInput
-                            value={product.quantity}
+                            value={watchedProducts?.[index]?.quantity || 0}
                             onChange={(value) =>
                               handleQuantityChange(index, value || 0)
                             }
@@ -608,8 +617,8 @@ const CreateOrUpdateInvoicePage = () => {
                         <td>
                           <Text weight={500}>
                             {currencyNumberWithSymbolFormat(
-                              (product.unitSellPrice || 0) *
-                                (product.quantity || 0)
+                              (watchedProducts?.[index]?.unitSellPrice || 0) *
+                                (watchedProducts?.[index]?.quantity || 0)
                             )}
                           </Text>
                         </td>
@@ -662,7 +671,7 @@ const CreateOrUpdateInvoicePage = () => {
                         { value: ProductDiscountMode.Amount, label: "BDT" },
                         { value: ProductDiscountMode.Percentage, label: "%" },
                       ]}
-                      value={formData.discountMode}
+                      value={watchedDiscountMode}
                       onChange={(value) =>
                         setValue("discountMode", value as ProductDiscountMode)
                       }
@@ -670,18 +679,18 @@ const CreateOrUpdateInvoicePage = () => {
                       size="sm"
                     />
                     <NumberInput
-                      value={formData.discountValue}
+                      value={watchedDiscountValue}
                       onChange={(value) =>
                         setValue("discountValue", value || 0)
                       }
                       min={0}
                       max={
-                        formData.discountMode === ProductDiscountMode.Percentage
+                        watchedDiscountMode === ProductDiscountMode.Percentage
                           ? 100
                           : undefined
                       }
                       precision={
-                        formData.discountMode === ProductDiscountMode.Amount
+                        watchedDiscountMode === ProductDiscountMode.Amount
                           ? 2
                           : 0
                       }
@@ -719,7 +728,7 @@ const CreateOrUpdateInvoicePage = () => {
                 <Button
                   type="submit"
                   loading={creating || updating}
-                  disabled={fields.length === 0 || !formData.clientId}
+                  disabled={fields.length === 0 || !watchedClientId}
                 >
                   {isEditMode ? "Update Invoice" : "Create Invoice"}
                 </Button>
