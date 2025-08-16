@@ -81,6 +81,8 @@ export const INVENTORY_PRODUCT_QUOTATION_QUERY = gql`
       tenant
       quotationUID
       status
+      convertedInvoiceUid
+      convertedInvoiceId
       client {
         address
         contactNumber
@@ -154,12 +156,14 @@ export const CREATE_PRODUCT_QUOTATION_MUTATION = gql`
 
 export const UPDATE_PRODUCT_QUOTATION_MUTATION = gql`
   mutation Inventory__updateProductQuotation(
-    $where: CommonFindDocumentDto!
+    $quotationId: String!
     $input: UpdateProductQuotationInput!
   ) {
-    inventory__updateProductQuotation(where: $where, input: $input) {
+    inventory__updateProductQuotation(
+      quotationId: $quotationId
+      input: $input
+    ) {
       _id
-      quotationUID
     }
   }
 `;

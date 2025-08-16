@@ -600,12 +600,12 @@ export type Mutation = {
   identity__updateMyPassword?: Maybe<Scalars['Boolean']['output']>;
   identity__updateRole: Scalars['Boolean']['output'];
   identity__updateTenant: CommonMutationResponse;
-  inventory__convertQuotationToInvoice: CommonMutationResponse;
+  inventory__convertQuotationToInvoice?: Maybe<ProductInvoice>;
   inventory__createProduct: CommonMutationResponse;
   inventory__createProductCategory: CommonMutationResponse;
   inventory__createProductInvoice: CommonMutationResponse;
   inventory__createProductPurchase: CommonMutationResponse;
-  inventory__createProductQuotation: CommonMutationResponse;
+  inventory__createProductQuotation?: Maybe<ProductQuotation>;
   inventory__createProductStock: CommonMutationResponse;
   inventory__loadDemoProducts: Scalars['Boolean']['output'];
   inventory__removeProduct: Scalars['Boolean']['output'];
@@ -617,6 +617,7 @@ export type Mutation = {
   inventory__syncInvoiceItemsStock: Scalars['Boolean']['output'];
   inventory__updateProduct: Scalars['Boolean']['output'];
   inventory__updateProductCategory: Scalars['Boolean']['output'];
+  inventory__updateProductInvoice: ProductInvoice;
   inventory__updateProductQuotation: ProductQuotation;
   people__createClient: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
@@ -884,6 +885,12 @@ export type MutationInventory__UpdateProductArgs = {
 export type MutationInventory__UpdateProductCategoryArgs = {
   body: UpdateProductCategoryInput;
   where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__UpdateProductInvoiceArgs = {
+  input: UpdateProductInvoiceInput;
+  invoiceId: Scalars['String']['input'];
 };
 
 
@@ -1266,6 +1273,7 @@ export type ProductQuotation = {
   client?: Maybe<Client>;
   committedBy?: Maybe<UserReference>;
   convertedInvoiceId?: Maybe<Scalars['String']['output']>;
+  convertedInvoiceUid?: Maybe<Scalars['String']['output']>;
   costAmount: Scalars['Float']['output'];
   costs: Array<CostItemReference>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
@@ -1941,6 +1949,18 @@ export type UpdateProductInput = {
   vatId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type UpdateProductInvoiceInput = {
+  clientId?: InputMaybe<Scalars['String']['input']>;
+  date?: InputMaybe<Scalars['DateTime']['input']>;
+  invoiceDiscountAmount?: InputMaybe<Scalars['Float']['input']>;
+  invoiceDiscountMode?: InputMaybe<ProductDiscountMode>;
+  invoiceDiscountPercentage?: InputMaybe<Scalars['Float']['input']>;
+  note?: InputMaybe<Scalars['String']['input']>;
+  products?: InputMaybe<Array<ProductItemReferenceInput>>;
+  reference?: InputMaybe<Scalars['String']['input']>;
+  status?: InputMaybe<Purchase_Invoice_Status>;
+};
+
 export type UpdateProductQuotationInput = {
   clientId?: InputMaybe<Scalars['String']['input']>;
   date?: InputMaybe<Scalars['DateTime']['input']>;
@@ -2108,20 +2128,6 @@ export type Accounting__CreateInventoryInvoicePaymentMutationVariables = Exact<{
 
 export type Accounting__CreateInventoryInvoicePaymentMutation = { __typename?: 'Mutation', accounting__createInventoryInvoicePayment: { __typename?: 'CommonMutationResponse', _id: string } };
 
-export type GetClientQueryVariables = Exact<{
-  where: CommonFindDocumentDto;
-}>;
-
-
-export type GetClientQuery = { __typename?: 'Query', people__client: { __typename?: 'Client', _id: string, name: string, contactNumber: string, email?: string | null, address?: string | null, createdAt?: any | null, updatedAt?: any | null } };
-
-export type GetProductQueryVariables = Exact<{
-  where: CommonFindDocumentDto;
-}>;
-
-
-export type GetProductQuery = { __typename?: 'Query', inventory__product: { __typename?: 'Product', _id: string, name: string, code?: string | null, stockInQuantity: number, stockOutQuantity: number, isSellableWithoutStock?: boolean | null, price?: number | null, purchasePrice?: number | null } };
-
 export type Setup__BrandsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2149,6 +2155,20 @@ export type Setup__RemoveBrandMutationVariables = Exact<{
 
 export type Setup__RemoveBrandMutation = { __typename?: 'Mutation', setup__removeBrand: boolean };
 
+export type GetClientQueryVariables = Exact<{
+  where: CommonFindDocumentDto;
+}>;
+
+
+export type GetClientQuery = { __typename?: 'Query', people__client: { __typename?: 'Client', _id: string, name: string, contactNumber: string, email?: string | null, address?: string | null, createdAt?: any | null, updatedAt?: any | null } };
+
+export type GetProductQueryVariables = Exact<{
+  where: CommonFindDocumentDto;
+}>;
+
+
+export type GetProductQuery = { __typename?: 'Query', inventory__product: { __typename?: 'Product', _id: string, name: string, code?: string | null, stockInQuantity: number, stockOutQuantity: number, isSellableWithoutStock?: boolean | null, price?: number | null, purchasePrice?: number | null } };
+
 export type Identity__LoginMutationVariables = Exact<{
   input: LoginInput;
 }>;
@@ -2167,11 +2187,11 @@ export const Identity__TenantDocument = {"kind":"Document","definitions":[{"kind
 export const Root_QueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ROOT_QUERY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Root_QueryQuery, Root_QueryQueryVariables>;
 export const AccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Accounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"referenceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"brunchName"}},{"kind":"Field","name":{"kind":"Name","value":"openedAt"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"creditAmount"}},{"kind":"Field","name":{"kind":"Name","value":"debitAmount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<AccountsQuery, AccountsQueryVariables>;
 export const Accounting__CreateInventoryInvoicePaymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Accounting__createInventoryInvoicePayment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInventoryInvoicePaymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__createInventoryInvoicePayment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Accounting__CreateInventoryInvoicePaymentMutation, Accounting__CreateInventoryInvoicePaymentMutationVariables>;
-export const GetClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__client"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetClientQuery, GetClientQueryVariables>;
-export const GetProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"stockInQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"stockOutQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isSellableWithoutStock"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"purchasePrice"}}]}}]}}]} as unknown as DocumentNode<GetProductQuery, GetProductQueryVariables>;
 export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
 export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;
 export const Setup__UpdateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__updateBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__updateBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}]}]}}]} as unknown as DocumentNode<Setup__UpdateBrandMutation, Setup__UpdateBrandMutationVariables>;
 export const Setup__RemoveBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__removeBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__removeBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<Setup__RemoveBrandMutation, Setup__RemoveBrandMutationVariables>;
+export const GetClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__client"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetClientQuery, GetClientQueryVariables>;
+export const GetProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"stockInQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"stockOutQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isSellableWithoutStock"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"purchasePrice"}}]}}]}}]} as unknown as DocumentNode<GetProductQuery, GetProductQueryVariables>;
 export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;
 export const Identity__MyTenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Identity__MyTenantsQuery, Identity__MyTenantsQueryVariables>;

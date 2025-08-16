@@ -67,6 +67,7 @@ const InvoicePaymentEntry: React.FC<IProps> = ({
 
   const form = useForm({
     defaultValues: {
+      date: new Date(),
       payments: [
         // Required
         {

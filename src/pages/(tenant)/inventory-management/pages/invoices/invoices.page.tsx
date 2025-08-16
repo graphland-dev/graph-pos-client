@@ -1,37 +1,23 @@
 import DataTable from "@/commons/components/DataTable.tsx";
-import PrintableFullInvoice from "@/commons/components/invoice/PrintableFullInvoice";
 import PageTitle from "@/commons/components/PageTitle";
 import {
-  MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Badge, Button, Drawer, Menu, Text } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { IconFileInfo } from "@tabler/icons-react";
-import { PrinterIcon } from "lucide-react";
+import { useQuery } from "@apollo/client";
+import { Badge, Button, Menu, Text } from "@mantine/core";
+import { IconEdit } from "@tabler/icons-react";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
-import ProductInvoiceDetails from "./components/ProductInvoiceDetails";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { INVENTORY_PRODUCT_INVOICES_QUERY } from "./utils/query.invoices";
-interface IState {
-  refetching: boolean;
-  openDrawer: boolean;
-  openPrintableInvoice: boolean;
-  printableInvoiceId?: string;
-}
+import { EyeIcon } from "lucide-react";
 
 const InvoicesPage = () => {
-  const [state, setState] = useSetState<IState>({
-    refetching: false,
-    openDrawer: false,
-    openPrintableInvoice: false,
-    printableInvoiceId: undefined,
-  });
+  const navigate = useNavigate();
+  const [refetching, setRefetching] = useState(false);
   const { data, loading, refetch } = useQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
   }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
@@ -43,15 +29,7 @@ const InvoicesPage = () => {
     },
   });
 
-  const [searchParams] = useSearchParams();
-  const invoiceId = searchParams.get("invoiceId");
   const params = useParams<{ tenant: string }>();
-
-  const [productInvoice] = useLazyQuery<{
-    inventory__productInvoices: ProductInvoicesWithPagination;
-  }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
-    fetchPolicy: "network-only",
-  });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -126,106 +104,69 @@ const InvoicesPage = () => {
   );
 
   const handleRefetch = (variables: any) => {
-    setState({ refetching: true });
+    setRefetching(true);
     refetch(variables).finally(() => {
-      setState({ refetching: false });
+      setRefetching(false);
     });
   };
-
-  useEffect(() => {
-    if (invoiceId) {
-      productInvoice({
-        variables: {
-          where: {
-            filters: [
-              {
-                key: "_id",
-                operator: MatchOperator.Eq,
-                value: invoiceId,
-              },
-            ],
-          },
-        },
-      }).then((res) => {
-        setState({
-          openDrawer: true,
-          printableInvoiceId:
-            res.data?.inventory__productInvoices?.nodes?.[0]?._id,
-        });
-      });
-    }
-  }, [searchParams]);
 
   return (
     <>
       <PageTitle title="invoice-details" />
 
-      <Drawer
-        onClose={() => setState({ openDrawer: false })}
-        title={
-          <div className="flex items-center justify-between gap-3">
-            <Text className="text-2xl font-semibold">Invoice Details</Text>
-            <Button
-              variant="outline"
-              leftIcon={<PrinterIcon />}
-              onClick={() =>
-                setState({
-                  openPrintableInvoice: true,
-                  printableInvoiceId: state.printableInvoiceId ?? "",
-                })
-              }
-            >
-              Print
-            </Button>
-          </div>
-        }
-        opened={state.openDrawer}
-        size={"100%"}
-      >
-        <ProductInvoiceDetails invoiceId={state.printableInvoiceId ?? ""} />
-      </Drawer>
-
-      <Drawer
-        onClose={() =>
-          setState({
-            openPrintableInvoice: false,
-          })
-        }
-        title={
-          <Text className="text-2xl font-semibold">Printable Invoice</Text>
-        }
-        opened={state.openPrintableInvoice}
-        size={"100%"}
-      >
-        {state.printableInvoiceId && (
-          <PrintableFullInvoice
-            invoiceId={state.printableInvoiceId}
-            tenant={params.tenant ?? ""}
-          />
-        )}
-      </Drawer>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <Text size="xl" weight={600}>
+            Invoices
+          </Text>
+          <Text size="sm" color="dimmed">
+            Manage and track your invoices
+          </Text>
+        </div>
+        <Button
+          onClick={() =>
+            navigate(`/${params.tenant}/inventory-management/invoices/create`)
+          }
+        >
+          Create Invoice
+        </Button>
+      </div>
 
       <DataTable
         columns={columns}
         data={data?.inventory__productInvoices.nodes ?? []}
         refetch={handleRefetch}
         totalCount={data?.inventory__productInvoices.meta?.totalCount ?? 100}
+        onRowClick={(row: ProductInvoice) => {
+          navigate(
+            `/${params.tenant}/inventory-management/invoices/${row._id}`
+          );
+        }}
         RowActionMenu={(row: ProductInvoice) => (
-          <>
+          <Menu>
             <Menu.Item
-              icon={<IconFileInfo size={18} />}
+              icon={<EyeIcon size={18} />}
               onClick={() => {
-                setState({
-                  openDrawer: true,
-                  printableInvoiceId: row._id,
-                });
+                navigate(
+                  `/${params.tenant}/inventory-management/invoices/${row._id}`
+                );
               }}
             >
-              View
+              View Details
             </Menu.Item>
-          </>
+            <Menu.Item
+              icon={<IconEdit size={18} />}
+              onClick={() => {
+                navigate(
+                  `/${params.tenant}/inventory-management/invoices/${row._id}/edit`
+                );
+              }}
+            >
+              Edit
+            </Menu.Item>
+          </Menu>
         )}
-        loading={loading || state.refetching}
+        loading={loading || refetching}
       />
     </>
   );

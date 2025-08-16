@@ -1,15 +1,12 @@
-import QuotationPrintModal from "@/commons/components/quotation/QuotationPrintModal";
 import {
   Client,
   ClientsWithPagination,
-  CreateProductQuotationInput,
+  CreateProductInvoiceInput,
+  UpdateProductInvoiceInput,
   MatchOperator,
   Product,
   ProductDiscountMode,
-  ProductInvoice,
-  ProductQuotation,
   ProductsWithPagination,
-  UpdateProductQuotationInput,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { PEOPLE_CLIENTS_QUERY } from "@/pages/(tenant)/people/pages/client/utils/client.query";
@@ -18,13 +15,11 @@ import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   ActionIcon,
-  Alert,
   Box,
   Button,
   Card,
   Drawer,
   Group,
-  Modal,
   NumberInput,
   Select,
   Space,
@@ -36,31 +31,30 @@ import {
 import { DateInput } from "@mantine/dates";
 import { useDisclosure } from "@mantine/hooks";
 import { showNotification } from "@mantine/notifications";
-import { IconEye, IconInfoCircle, IconX } from "@tabler/icons-react";
+import { IconArrowLeft, IconEye, IconX } from "@tabler/icons-react";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import * as yup from "yup";
+import { INVENTORY_PRODUCTS_LIST_QUERY } from "../../products/products-list/utils/product.query";
+import {
+  CREATE_PRODUCT_INVOICE_MUTATION,
+  UPDATE_PRODUCT_INVOICE_MUTATION,
+  INVENTORY_PRODUCT_INVOICE_QUERY,
+} from "../utils/query.invoices";
 import {
   ClientsCardList,
   CreateClientForm,
   CreateProductForm,
   ProductsCardList,
 } from "../../../shared/components";
-import { INVENTORY_PRODUCTS_LIST_QUERY } from "../../products/products-list/utils/product.query";
-import {
-  CONVERT_QUOTATION_TO_INVOICE_MUTATION,
-  CREATE_PRODUCT_QUOTATION_MUTATION,
-  INVENTORY_PRODUCT_QUOTATION_QUERY,
-  UPDATE_PRODUCT_QUOTATION_MUTATION,
-} from "../utils/query.quotations";
+import InvoicePrintModal from "@/commons/components/invoice/InvoicePrintModal";
+import { Printer } from "lucide-react";
 
-const quotationSchema = yup.object({
+const invoiceSchema = yup.object({
   clientId: yup.string().required("Please select a client"),
   date: yup.date().required("Date is required"),
-  validUntil: yup.date().required("Valid until date is required"),
   note: yup.string().default(""),
-  terms: yup.string().default(""),
   products: yup
     .array()
     .of(
@@ -95,17 +89,15 @@ const quotationSchema = yup.object({
   discountValue: yup.number().min(0, "Discount cannot be negative").default(0),
 });
 
-type IFormData = yup.InferType<typeof quotationSchema>;
+type IFormData = yup.InferType<typeof invoiceSchema>;
 
-const CreateOrUpdateQuotationPage = () => {
+const CreateOrUpdateInvoicePage = () => {
   const navigate = useNavigate();
-  const params = useParams<{ tenant: string; quotationId?: string }>();
-  const [searchParams] = useSearchParams();
+  const location = useLocation();
+  const params = useParams<{ tenant: string; invoiceId?: string }>();
 
-  const quotationIdFromQuery = searchParams.get("quotationId");
-  const quotationIdFromParams = params.quotationId;
-  const quotationId = quotationIdFromParams || quotationIdFromQuery;
-  const isEditMode = !!quotationId;
+  const invoiceId = params.invoiceId;
+  const isEditMode = !!invoiceId && location.pathname.includes("/edit");
 
   const [
     clientDrawerOpened,
@@ -123,18 +115,12 @@ const CreateOrUpdateQuotationPage = () => {
     createProductOpened,
     { open: openCreateProduct, close: closeCreateProduct },
   ] = useDisclosure(false);
-  const [
-    convertModalOpened,
-    { open: openConvertModal, close: closeConvertModal },
-  ] = useDisclosure(false);
   const [printModalOpened, { open: openPrintModal, close: closePrintModal }] =
     useDisclosure(false);
 
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
-  const [quotation, setQuotation] = useState<ProductQuotation | null>(null);
   const [productSearchQuery, setProductSearchQuery] = useState("");
   const [clientSearchQuery, setClientSearchQuery] = useState("");
-  const [quotationStatus, setQuotationStatus] = useState<string | null>(null);
 
   const {
     handleSubmit,
@@ -144,13 +130,11 @@ const CreateOrUpdateQuotationPage = () => {
     control,
     reset,
   } = useForm<IFormData>({
-    resolver: yupResolver(quotationSchema),
+    resolver: yupResolver(invoiceSchema),
     defaultValues: {
       clientId: "",
       date: new Date(),
-      validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
       note: "",
-      terms: "",
       products: [],
       discountMode: ProductDiscountMode.Amount,
       discountValue: 0,
@@ -162,36 +146,32 @@ const CreateOrUpdateQuotationPage = () => {
     name: "products",
   });
 
-  // Fetch existing quotation data if in edit mode
-  useQuery(INVENTORY_PRODUCT_QUOTATION_QUERY, {
+  // Fetch existing invoice data if in edit mode
+  useQuery(INVENTORY_PRODUCT_INVOICE_QUERY, {
     variables: {
       where: {
         key: "_id",
         operator: "eq",
-        value: quotationId,
+        value: invoiceId,
       },
     },
     skip: !isEditMode,
     onCompleted: (data) => {
-      if (data.inventory__productQuotation) {
-        const quotation = data.inventory__productQuotation;
+      if (data.inventory__productInvoice) {
+        const invoice = data.inventory__productInvoice;
         reset({
-          clientId: quotation.client?._id || "",
-          date: new Date(quotation.date),
-          validUntil: new Date(quotation.validUntil),
-          note: quotation.note || "",
-          terms: quotation.terms || "",
-          products: quotation.products || [],
+          clientId: invoice.client?._id || "",
+          date: new Date(invoice.date),
+          note: invoice.note || "",
+          products: invoice.products || [],
           discountMode:
-            quotation.quotationDiscountMode || ProductDiscountMode.Amount,
+            invoice.invoiceDiscountMode || ProductDiscountMode.Amount,
           discountValue:
-            quotation.quotationDiscountMode === ProductDiscountMode.Percentage
-              ? quotation.quotationDiscountPercentage || 0
-              : quotation.quotationDiscountAmount || 0,
+            invoice.invoiceDiscountMode === ProductDiscountMode.Percentage
+              ? invoice.invoiceDiscountPercentage || 0
+              : invoice.invoiceDiscountAmount || 0,
         });
-        setSelectedClient(quotation.client);
-        setQuotationStatus(quotation.status);
-        setQuotation(quotation);
+        setSelectedClient(invoice.client);
       }
     },
   });
@@ -259,23 +239,23 @@ const CreateOrUpdateQuotationPage = () => {
     },
   });
 
-  const [createQuotation, { loading: creating }] = useMutation(
-    CREATE_PRODUCT_QUOTATION_MUTATION,
+  const [createInvoice, { loading: creating }] = useMutation(
+    CREATE_PRODUCT_INVOICE_MUTATION,
     {
       onCompleted: (data) => {
         showNotification({
           title: "Success",
-          message: `Quotation created successfully`,
+          message: "Invoice created successfully",
           color: "green",
         });
-        // Navigate to new quotation details page
-        const newQuotationId = data?.inventory__createProductQuotation?._id;
-        if (newQuotationId) {
+        // Navigate to new invoice details page
+        const newInvoiceId = data?.inventory__createProductInvoice?._id;
+        if (newInvoiceId) {
           navigate(
-            `/${params.tenant}/inventory-management/quotations/${newQuotationId}`
+            `/${params.tenant}/inventory-management/invoices/${newInvoiceId}`
           );
         } else {
-          navigate(`/${params.tenant}/inventory-management/quotations`);
+          navigate(`/${params.tenant}/inventory-management/invoices`);
         }
       },
       onError: (error) => {
@@ -288,19 +268,17 @@ const CreateOrUpdateQuotationPage = () => {
     }
   );
 
-  const [updateQuotation, { loading: updating }] = useMutation(
-    UPDATE_PRODUCT_QUOTATION_MUTATION,
+  const [updateInvoice, { loading: updating }] = useMutation(
+    UPDATE_PRODUCT_INVOICE_MUTATION,
     {
       onCompleted: () => {
         showNotification({
           title: "Success",
-          message: "Quotation updated successfully",
+          message: "Invoice updated successfully",
           color: "green",
         });
         // Navigate back to details page
-        navigate(
-          `/${params.tenant}/inventory-management/quotations/${quotationId}`
-        );
+        navigate(`/${params.tenant}/inventory-management/invoices/${invoiceId}`);
       },
       onError: (error) => {
         showNotification({
@@ -312,31 +290,7 @@ const CreateOrUpdateQuotationPage = () => {
     }
   );
 
-  const [convertToInvoice, { loading: converting }] = useMutation<{
-    inventory__convertQuotationToInvoice: ProductInvoice;
-  }>(CONVERT_QUOTATION_TO_INVOICE_MUTATION, {
-    onCompleted: (data) => {
-      showNotification({
-        title: "Success",
-        message: `Quotation converted to invoice successfully!`,
-        color: "green",
-      });
-      closeConvertModal();
-      navigate(
-        `/${params.tenant}/inventory-management/invoices/${data.inventory__convertQuotationToInvoice._id}`
-      );
-    },
-    onError: (error) => {
-      showNotification({
-        title: "Error",
-        message: error.message,
-        color: "red",
-      });
-    },
-  });
-
   const formData = watch();
-  const isConverted = quotationStatus === "CONVERTED";
 
   const handleClientSelect = (client: Client) => {
     setSelectedClient(client);
@@ -368,23 +322,13 @@ const CreateOrUpdateQuotationPage = () => {
         referenceId: product._id,
         name: product.name,
         code: product.code || "",
-        unitPrice: product.price || 0, // Original selling price from product
-        unitSellPrice: product.price || 0, // Editable selling price (starts with same value)
+        unitPrice: product.price || 0,
+        unitSellPrice: product.price || 0,
         quantity: 1,
         taxRate: 0,
       });
     }
     closeProductDrawer();
-  };
-
-  const handleConvertToInvoice = () => {
-    if (!quotationId) return;
-
-    convertToInvoice({
-      variables: {
-        quotationId: quotationId,
-      },
-    });
   };
 
   const handleQuantityChange = (index: number, quantity: number) => {
@@ -447,9 +391,7 @@ const CreateOrUpdateQuotationPage = () => {
     const baseInput = {
       clientId: data.clientId,
       date: data.date,
-      validUntil: data.validUntil,
       note: data.note,
-      terms: data.terms,
       products: fields.map((product) => ({
         referenceId: product.referenceId,
         name: product.name,
@@ -459,30 +401,30 @@ const CreateOrUpdateQuotationPage = () => {
         unitSellPrice: product.unitSellPrice || 0,
         taxRate: product.taxRate || 0,
       })),
-      quotationDiscountMode: data.discountMode,
-      quotationDiscountAmount:
+      invoiceDiscountMode: data.discountMode,
+      invoiceDiscountAmount:
         data.discountMode === ProductDiscountMode.Amount
           ? data.discountValue || 0
           : totals.discountAmount,
-      quotationDiscountPercentage:
+      invoiceDiscountPercentage:
         data.discountMode === ProductDiscountMode.Percentage
           ? data.discountValue || 0
           : 0,
     };
 
-    if (isEditMode && quotationId) {
-      // Update existing quotation
-      const updateInput: UpdateProductQuotationInput = baseInput;
-      updateQuotation({
+    if (isEditMode && invoiceId) {
+      // Update existing invoice
+      const updateInput: UpdateProductInvoiceInput = baseInput;
+      updateInvoice({
         variables: {
-          quotationId: quotationId,
+          invoiceId: invoiceId,
           input: updateInput,
         },
       });
     } else {
-      // Create new quotation
-      const createInput: CreateProductQuotationInput = baseInput;
-      createQuotation({
+      // Create new invoice
+      const createInput: CreateProductInvoiceInput = baseInput;
+      createInvoice({
         variables: {
           input: createInput,
         },
@@ -495,54 +437,48 @@ const CreateOrUpdateQuotationPage = () => {
   return (
     <Box p="md">
       <div className="flex items-center justify-between mb-6">
-        <div>
-          <Title order={2}>
-            {isEditMode ? "Edit Quotation" : "Create Quotation"}
-          </Title>
-          {isEditMode && quotation?.quotationUID && (
-            <Text size="sm" color="dimmed" mt="xs">
-              Quotation UID: {quotation.quotationUID}
-            </Text>
-          )}
-        </div>
-        {isEditMode && (
-          <Button
-            variant="outline"
-            leftIcon={<IconEye size={16} />}
-            onClick={openPrintModal}
-          >
-            Print Preview
-          </Button>
-        )}
-      </div>
-
-      {isConverted && (
-        <Alert
-          icon={<IconInfoCircle size={16} />}
-          title="Quotation Already Converted"
-          color="red"
-          mb="lg"
-        >
-          <div className="flex items-center justify-between">
-            <Text size="sm">
-              This quotation has already been converted to an invoice. You
-              cannot edit this quotation.
-            </Text>
+        <div className="flex items-center gap-4">
+          {isEditMode && (
             <Button
-              size="xs"
-              variant="light"
-              leftIcon={<IconEye size={14} />}
+              variant="subtle"
+              size="sm"
+              leftIcon={<IconArrowLeft size={16} />}
               onClick={() =>
                 navigate(
-                  `/${params.tenant}/inventory-management/invoices/${quotation?.convertedInvoiceId}`
+                  `/${params.tenant}/inventory-management/invoices/${invoiceId}`
                 )
               }
             >
-              View Invoice
+              Back to Details
+            </Button>
+          )}
+          <Title order={2}>
+            {isEditMode ? "Edit Invoice" : "Create Invoice"}
+          </Title>
+        </div>
+        {isEditMode && (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              leftIcon={<IconEye size={16} />}
+              onClick={() =>
+                navigate(
+                  `/${params.tenant}/inventory-management/invoices/${invoiceId}`
+                )
+              }
+            >
+              Details View
+            </Button>
+            <Button
+              variant="outline"
+              leftIcon={<Printer size={16} />}
+              onClick={openPrintModal}
+            >
+              Print Preview
             </Button>
           </div>
-        </Alert>
-      )}
+        )}
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -562,17 +498,15 @@ const CreateOrUpdateQuotationPage = () => {
                       {selectedClient.email}
                     </Text>
                   </div>
-                  {!isConverted && (
-                    <ActionIcon
-                      color="red"
-                      onClick={() => {
-                        setSelectedClient(null);
-                        setValue("clientId", "");
-                      }}
-                    >
-                      <IconX size={16} />
-                    </ActionIcon>
-                  )}
+                  <ActionIcon
+                    color="red"
+                    onClick={() => {
+                      setSelectedClient(null);
+                      setValue("clientId", "");
+                    }}
+                  >
+                    <IconX size={16} />
+                  </ActionIcon>
                 </div>
               ) : (
                 <Button
@@ -580,7 +514,6 @@ const CreateOrUpdateQuotationPage = () => {
                   onClick={openClientDrawer}
                   fullWidth
                   color={errors.clientId ? "red" : undefined}
-                  disabled={isConverted}
                 >
                   Select Client *
                 </Button>
@@ -596,7 +529,7 @@ const CreateOrUpdateQuotationPage = () => {
             {/* Date Information */}
             <Card withBorder p="md" className="overflow-visible">
               <Title order={4} mb="md">
-                Quotation Details
+                Invoice Details
               </Title>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -606,18 +539,6 @@ const CreateOrUpdateQuotationPage = () => {
                   onChange={(date) => setValue("date", date || new Date())}
                   error={<ErrorMessage errors={errors} name="date" />}
                   required
-                  readOnly={isConverted}
-                />
-
-                <DateInput
-                  label="Valid Until"
-                  value={formData.validUntil}
-                  onChange={(date) =>
-                    setValue("validUntil", date || new Date())
-                  }
-                  error={<ErrorMessage errors={errors} name="validUntil" />}
-                  required
-                  readOnly={isConverted}
                 />
               </div>
 
@@ -625,22 +546,10 @@ const CreateOrUpdateQuotationPage = () => {
 
               <Textarea
                 label="Notes"
-                placeholder="Additional notes for the quotation..."
+                placeholder="Additional notes for the invoice..."
                 value={formData.note}
                 onChange={(e) => setValue("note", e.currentTarget.value)}
                 rows={3}
-                readOnly={isConverted}
-              />
-
-              <Space h="md" />
-
-              <Textarea
-                label="Terms & Conditions"
-                placeholder="Terms and conditions for the quotation..."
-                value={formData.terms}
-                onChange={(e) => setValue("terms", e.currentTarget.value)}
-                rows={3}
-                readOnly={isConverted}
               />
             </Card>
 
@@ -648,9 +557,7 @@ const CreateOrUpdateQuotationPage = () => {
             <Card withBorder p="md">
               <div className="flex items-center justify-between mb-4">
                 <Title order={4}>Products</Title>
-                {!isConverted && (
-                  <Button onClick={openProductDrawer}>Add Product</Button>
-                )}
+                <Button onClick={openProductDrawer}>Add Product</Button>
               </div>
 
               {fields.length > 0 ? (
@@ -685,7 +592,6 @@ const CreateOrUpdateQuotationPage = () => {
                               min={0}
                               precision={2}
                               size="sm"
-                              readOnly={isConverted}
                             />
                           </div>
                         </td>
@@ -697,7 +603,6 @@ const CreateOrUpdateQuotationPage = () => {
                             }
                             min={1}
                             size="sm"
-                            readOnly={isConverted}
                           />
                         </td>
                         <td>
@@ -709,14 +614,9 @@ const CreateOrUpdateQuotationPage = () => {
                           </Text>
                         </td>
                         <td>
-                          {!isConverted && (
-                            <ActionIcon
-                              color="red"
-                              onClick={() => remove(index)}
-                            >
-                              <IconX size={16} />
-                            </ActionIcon>
-                          )}
+                          <ActionIcon color="red" onClick={() => remove(index)}>
+                            <IconX size={16} />
+                          </ActionIcon>
                         </td>
                       </tr>
                     ))}
@@ -734,7 +634,7 @@ const CreateOrUpdateQuotationPage = () => {
           <div className="lg:col-span-1">
             <Card withBorder p="md" style={{ position: "sticky", top: "20px" }}>
               <Title order={4} mb="md">
-                Quotation Summary
+                Invoice Summary
               </Title>
 
               <div className="space-y-3">
@@ -768,7 +668,6 @@ const CreateOrUpdateQuotationPage = () => {
                       }
                       style={{ width: 80 }}
                       size="sm"
-                      readOnly={isConverted}
                     />
                     <NumberInput
                       value={formData.discountValue}
@@ -789,7 +688,6 @@ const CreateOrUpdateQuotationPage = () => {
                       placeholder="0"
                       style={{ flex: 1 }}
                       size="sm"
-                      readOnly={isConverted}
                     />
                   </div>
                 </div>
@@ -818,25 +716,13 @@ const CreateOrUpdateQuotationPage = () => {
               <Space h="xl" />
 
               <Group>
-                {isEditMode && !isConverted && (
-                  <Button
-                    variant="filled"
-                    color="green"
-                    onClick={openConvertModal}
-                    disabled={fields.length === 0 || !formData.clientId}
-                  >
-                    Convert to Invoice
-                  </Button>
-                )}
-                {!isConverted && (
-                  <Button
-                    type="submit"
-                    loading={creating || updating}
-                    disabled={fields.length === 0 || !formData.clientId}
-                  >
-                    {isEditMode ? "Update Quotation" : "Create Quotation"}
-                  </Button>
-                )}
+                <Button
+                  type="submit"
+                  loading={creating || updating}
+                  disabled={fields.length === 0 || !formData.clientId}
+                >
+                  {isEditMode ? "Update Invoice" : "Create Invoice"}
+                </Button>
               </Group>
             </Card>
           </div>
@@ -897,7 +783,7 @@ const CreateOrUpdateQuotationPage = () => {
         size="lg"
       >
         <CreateClientForm
-          onSuccess={(client) => {
+          onSuccess={(client: Client) => {
             handleClientSelect(client);
             closeCreateClient();
           }}
@@ -913,7 +799,7 @@ const CreateOrUpdateQuotationPage = () => {
         size="lg"
       >
         <CreateProductForm
-          onSuccess={(product) => {
+          onSuccess={(product: Product) => {
             handleProductSelect(product);
             closeCreateProduct();
           }}
@@ -921,44 +807,17 @@ const CreateOrUpdateQuotationPage = () => {
         />
       </Drawer>
 
-      {/* Convert to Invoice Confirmation Modal */}
-      <Modal
-        opened={convertModalOpened}
-        onClose={closeConvertModal}
-        title="Convert Quotation to Invoice"
-        centered
-      >
-        <Text mb="md">
-          Are you sure you want to convert this quotation to an invoice? This
-          action cannot be undone.
-        </Text>
-        <Text size="sm" color="dimmed" mb="lg">
-          The quotation will be converted to an invoice and you will be
-          redirected to the invoices page.
-        </Text>
-        <Group position="right">
-          <Button variant="outline" onClick={closeConvertModal}>
-            Cancel
-          </Button>
-          <Button
-            color="green"
-            onClick={handleConvertToInvoice}
-            loading={converting}
-          >
-            Convert to Invoice
-          </Button>
-        </Group>
-      </Modal>
-
       {/* Print Preview Modal */}
-      <QuotationPrintModal
-        opened={printModalOpened}
-        onClose={closePrintModal}
-        quotationId={quotationId || ""}
-        tenant={params.tenant || ""}
-      />
+      {isEditMode && (
+        <InvoicePrintModal
+          opened={printModalOpened}
+          onClose={closePrintModal}
+          invoiceId={invoiceId || ""}
+          tenant={params.tenant || ""}
+        />
+      )}
     </Box>
   );
 };
 
-export default CreateOrUpdateQuotationPage;
+export default CreateOrUpdateInvoicePage;

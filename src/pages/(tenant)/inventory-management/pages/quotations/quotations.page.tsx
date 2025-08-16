@@ -1,39 +1,21 @@
 import DataTable from "@/commons/components/DataTable.tsx";
-import QuotationPrintModal from "@/commons/components/quotation/QuotationPrintModal";
 import PageTitle from "@/commons/components/PageTitle";
 import {
-  MatchOperator,
   ProductQuotation,
   ProductQuotationsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Badge, Button, Drawer, Text } from "@mantine/core";
-import { useSetState } from "@mantine/hooks";
-import { PrinterIcon } from "lucide-react";
+import { useQuery } from "@apollo/client";
+import { Badge, Button, Menu, Text } from "@mantine/core";
 import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import ProductQuotationDetails from "./components/ProductQuotationDetails";
-import QuotationStatusActions from "./components/QuotationStatusActions";
+import { useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { INVENTORY_PRODUCT_QUOTATIONS_QUERY } from "./utils/query.quotations";
-
-interface IState {
-  refetching: boolean;
-  openDrawer: boolean;
-  openPrintModal: boolean;
-  printableQuotationId?: string;
-}
 
 const QuotationsPage = () => {
   const navigate = useNavigate();
-  const [state, setState] = useSetState<IState>({
-    refetching: false,
-    openDrawer: false,
-    openPrintModal: false,
-    printableQuotationId: undefined,
-  });
+  const [refetching, setRefetching] = useState(false);
   const { data, loading, refetch } = useQuery<{
     inventory__productQuotations: ProductQuotationsWithPagination;
   }>(INVENTORY_PRODUCT_QUOTATIONS_QUERY, {
@@ -45,15 +27,7 @@ const QuotationsPage = () => {
     },
   });
 
-  const [searchParams] = useSearchParams();
-  const quotationId = searchParams.get("quotationId");
   const params = useParams<{ tenant: string }>();
-
-  const [productQuotation] = useLazyQuery<{
-    inventory__productQuotations: ProductQuotationsWithPagination;
-  }>(INVENTORY_PRODUCT_QUOTATIONS_QUERY, {
-    fetchPolicy: "network-only",
-  });
 
   const columns = useMemo<MRT_ColumnDef<any>[]>(
     () => [
@@ -126,35 +100,11 @@ const QuotationsPage = () => {
   );
 
   const handleRefetch = (variables: any) => {
-    setState({ refetching: true });
+    setRefetching(true);
     refetch(variables).finally(() => {
-      setState({ refetching: false });
+      setRefetching(false);
     });
   };
-
-  useEffect(() => {
-    if (quotationId) {
-      productQuotation({
-        variables: {
-          where: {
-            filters: [
-              {
-                key: "_id",
-                operator: MatchOperator.Eq,
-                value: quotationId,
-              },
-            ],
-          },
-        },
-      }).then((res) => {
-        setState({
-          openDrawer: true,
-          printableQuotationId:
-            res.data?.inventory__productQuotations?.nodes?.[0]?._id,
-        });
-      });
-    }
-  }, [searchParams]);
 
   return (
     <>
@@ -178,39 +128,6 @@ const QuotationsPage = () => {
         </Button>
       </div>
 
-      <Drawer
-        onClose={() => setState({ openDrawer: false })}
-        title={
-          <div className="flex items-center justify-between gap-3">
-            <Text className="text-2xl font-semibold">Quotation Details</Text>
-            <Button
-              variant="outline"
-              leftIcon={<PrinterIcon />}
-              onClick={() =>
-                setState({
-                  openPrintModal: true,
-                })
-              }
-            >
-              Print
-            </Button>
-          </div>
-        }
-        opened={state.openDrawer}
-        size={"100%"}
-      >
-        <ProductQuotationDetails
-          quotationId={state.printableQuotationId ?? ""}
-        />
-      </Drawer>
-
-      <QuotationPrintModal
-        opened={state.openPrintModal}
-        onClose={() => setState({ openPrintModal: false })}
-        quotationId={state.printableQuotationId ?? ""}
-        tenant={params.tenant ?? ""}
-      />
-
       <DataTable
         columns={columns}
         data={data?.inventory__productQuotations.nodes ?? []}
@@ -222,13 +139,19 @@ const QuotationsPage = () => {
           );
         }}
         RowActionMenu={(row: ProductQuotation) => (
-          <QuotationStatusActions
-            quotationId={row._id}
-            currentStatus={row.status || "DRAFT"}
-            onStatusChange={() => handleRefetch({})}
-          />
+          <Menu>
+            <Menu.Item
+              onClick={() =>
+                navigate(
+                  `/${params.tenant}/inventory-management/quotations/${row._id}`
+                )
+              }
+            >
+              Edit Quotation
+            </Menu.Item>
+          </Menu>
         )}
-        loading={loading || state.refetching}
+        loading={loading || refetching}
       />
     </>
   );

@@ -94,3 +94,81 @@ export const ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY = gql`
     }
   }
 `;
+
+export const INVENTORY_PRODUCT_INVOICE_QUERY = gql`
+  query Inventory__productInvoice($where: CommonFindDocumentDto!) {
+    inventory__productInvoice(where: $where) {
+      _id
+      tenant
+      invoiceUID
+      status
+      client {
+        _id
+        address
+        contactNumber
+        email
+        name
+        tenant
+        attachments {
+          meta
+          path
+          provider
+        }
+      }
+      date
+      netTaxAmount
+      netSellPrice
+      netSubtotalDiscount
+      invoiceDiscountAmount
+      invoiceDiscountMode
+      invoiceDiscountPercentage
+      netDiscountAmount
+      subTotal
+      costAmount
+      netTotal
+      paidAmount
+      note
+      source
+      createdAt
+      updatedAt
+      committedBy {
+        email
+        name
+        referenceId
+      }
+      products {
+        referenceId
+        name
+        code
+        unitPrice
+        unitSellPrice
+        taxRate
+        taxAmount
+        quantity
+        unitPurchasePrice
+        netSellPrice
+        netPurchaseAmount
+        netProfit
+        discountAmount
+        netSubtotal
+        netAmount
+      }
+    }
+  }
+`;
+
+export const CREATE_PRODUCT_INVOICE_MUTATION = gql`
+  mutation Inventory__createProductInvoice($input: CreateProductInvoiceInput!) {
+    inventory__createProductInvoice(input: $input) {
+      _id
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT_INVOICE_MUTATION = gql`
+  mutation Inventory__updateProductInvoice($invoiceId: String!, $input: UpdateProductInvoiceInput!) {
+    inventory__updateProductInvoice(invoiceId: $invoiceId, input: $input) {
+      _id
+    }
+  }
+`;
