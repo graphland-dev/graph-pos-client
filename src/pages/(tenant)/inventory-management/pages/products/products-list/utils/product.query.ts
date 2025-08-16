@@ -96,3 +96,56 @@ export const INVENTORY_PRODUCT_REMOVE = gql`
     inventory__removeProduct(where: $where)
   }
 `;
+
+// Query for category filter dropdown
+export const GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY = gql`
+  query GetRootCategoriesWithChildren {
+    inventory__rootCategoriesWithChildren {
+      _id
+      name
+      code
+      level
+      path
+      children {
+        _id
+        name
+        code
+        level
+        path
+        children {
+          _id
+          name
+          code
+          level
+          path
+          children {
+            _id
+            name
+            code
+            level
+            path
+            children {
+              _id
+              name
+              code
+              level
+              path
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+// Query for brand filter dropdown
+export const BRANDS_QUERY = gql`
+  query Setup__brands {
+    setup__brands {
+      nodes {
+        _id
+        name
+      }
+    }
+  }
+`;

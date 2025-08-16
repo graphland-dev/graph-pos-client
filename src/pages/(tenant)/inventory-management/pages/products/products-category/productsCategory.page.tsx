@@ -138,17 +138,32 @@ const ProductCategoryPage = () => {
 
 	const handleCategoryMove = async (draggedId: string, targetParentId: string | null) => {
 		try {
+			console.log('handleCategoryMove called:', { draggedId, targetParentId });
+			
 			// Find the dragged category to get its current data
 			const draggedCategory = findCategoryById(categories, draggedId);
 			if (!draggedCategory) {
-				console.error('Dragged category not found');
+				console.error('Dragged category not found:', draggedId);
 				return;
 			}
+
+			console.log('Found dragged category:', {
+				id: draggedCategory._id,
+				name: draggedCategory.name,
+				level: draggedCategory.level,
+				currentParent: draggedCategory.parentCategory
+			});
 
 			// Prevent moving a category to itself or its descendants
 			if (targetParentId) {
 				const targetCategory = findCategoryById(categories, targetParentId);
 				if (targetCategory) {
+					console.log('Found target category:', {
+						id: targetCategory._id,
+						name: targetCategory.name,
+						level: targetCategory.level
+					});
+					
 					// Check if target is a descendant of dragged category
 					const isDescendant = checkIsDescendant(draggedCategory, targetParentId);
 					if (isDescendant) {
@@ -161,9 +176,13 @@ const ProductCategoryPage = () => {
 						console.warn('Maximum category depth (5 levels) would be exceeded');
 						return;
 					}
+				} else {
+					console.error('Target category not found:', targetParentId);
+					return;
 				}
 			}
 
+			console.log('Executing update mutation...');
 			// Update the category with new parent
 			await updateCategoryMutation({
 				variables: {
@@ -173,6 +192,7 @@ const ProductCategoryPage = () => {
 					},
 				},
 			});
+			console.log('Update mutation completed successfully');
 		} catch (error) {
 			console.error('Error moving category:', error);
 		}

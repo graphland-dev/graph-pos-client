@@ -1,10 +1,14 @@
-import { useMemo } from 'react';
-import { Select, SelectProps } from '@mantine/core';
-import { useQuery } from '@apollo/client';
-import { GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY } from '../utils/category.query';
-import { CategoryTreeNode, CategoryPickerOption } from '../utils/category.validations';
+import { useMemo } from "react";
+import { Select, SelectProps } from "@mantine/core";
+import { useQuery } from "@apollo/client";
+import { GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY } from "../utils/category.query";
+import {
+  CategoryTreeNode,
+  CategoryPickerOption,
+} from "../utils/category.validations";
 
-interface CategoryPickerProps extends Omit<SelectProps, 'data' | 'value' | 'onChange'> {
+interface CategoryPickerProps
+  extends Omit<SelectProps, "data" | "value" | "onChange"> {
   value?: string | null;
   onChange: (categoryId: string | null) => void;
   excludeCategory?: string;
@@ -12,6 +16,7 @@ interface CategoryPickerProps extends Omit<SelectProps, 'data' | 'value' | 'onCh
   allowClear?: boolean;
   showPath?: boolean;
   showLevel?: boolean;
+  categories?: CategoryTreeNode[];
 }
 
 const CategoryPicker = ({
@@ -23,19 +28,22 @@ const CategoryPicker = ({
   showPath = true,
   showLevel = false,
   placeholder = "Select category...",
+  categories: externalCategories,
   ...props
 }: CategoryPickerProps) => {
-  const { data } = useQuery(GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY);
-
-  const categories = data?.inventory__rootCategoriesWithChildren || [];
+  const { data } = useQuery(GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY, {
+    skip: !!externalCategories, // Skip query if external categories are provided
+  });
 
   const categoryOptions = useMemo(() => {
+    const categories =
+      externalCategories || data?.inventory__rootCategoriesWithChildren || [];
     const options: CategoryPickerOption[] = [];
 
     const flattenCategories = (
       cats: CategoryTreeNode[],
       level = 0,
-      parentPath = ''
+      parentPath = ""
     ) => {
       cats.forEach((category) => {
         // Skip excluded category and its descendants
@@ -48,18 +56,26 @@ const CategoryPicker = ({
           return;
         }
 
-        const currentPath = parentPath 
+        const currentPath = parentPath
           ? `${parentPath} › ${category.name}`
           : category.name;
 
+        // Create clean hierarchical display with visual indicators
         let label = category.name;
         
-        if (showLevel) {
-          label = `${'  '.repeat(level)}${label} (Level ${level})`;
-        } else if (level > 0) {
-          label = `${'  '.repeat(level)}${label}`;
+        // Add visual hierarchy for child categories using em dashes and non-breaking spaces
+        if (level > 0) {
+          // Use em dashes (—) with non-breaking spaces for clear hierarchy
+          const prefix = "—".repeat(level) + " ";
+          label = `${prefix}${label}`;
         }
-        
+
+        // Optionally show level information
+        if (showLevel) {
+          label = `${label} (Level ${category.level})`;
+        }
+
+        // Optionally show path information
         if (showPath && category.path) {
           label = `${label} - ${category.path}`;
         }
@@ -68,7 +84,7 @@ const CategoryPicker = ({
           value: category._id,
           label,
           level,
-          path: category.path || '',
+          path: category.path || "",
           disabled: false,
         });
 
@@ -81,9 +97,16 @@ const CategoryPicker = ({
 
     flattenCategories(categories);
     return options;
-  }, [categories, excludeCategory, maxLevel, showPath, showLevel]);
+  }, [
+    externalCategories,
+    data?.inventory__rootCategoriesWithChildren,
+    excludeCategory,
+    maxLevel,
+    showPath,
+    showLevel,
+  ]);
 
-  const selectData = categoryOptions.map(option => ({
+  const selectData = categoryOptions.map((option) => ({
     value: option.value,
     label: option.label,
     disabled: option.disabled,

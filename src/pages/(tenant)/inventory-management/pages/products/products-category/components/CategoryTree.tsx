@@ -93,6 +93,11 @@ const CategoryTreeNodeComponent = ({
 
   // Drag and Drop handlers
   const handleDragStart = (e: React.DragEvent) => {
+    console.log('Drag start:', {
+      categoryId: category._id,
+      categoryName: category.name,
+      categoryLevel: category.level
+    });
     e.dataTransfer.setData('text/plain', category._id);
     e.dataTransfer.effectAllowed = 'move';
     setIsDragging(true);
@@ -109,15 +114,9 @@ const CategoryTreeNodeComponent = ({
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault();
-    const draggedId = e.dataTransfer.getData('text/plain') || 'unknown';
-    
-    // Only show drop indicator if it's a different category
-    if (draggedId !== category._id) {
-      const isDescendant = checkIsDescendant(category, draggedId);
-      if (!isDescendant) {
-        setIsDragOver(true);
-      }
-    }
+    // Note: getData() during dragenter is unreliable, so we'll check in handleDrop
+    // For now, just show the drop indicator - validation will happen in handleDrop
+    setIsDragOver(true);
   };
 
   const handleDragLeave = (e: React.DragEvent) => {
@@ -137,12 +136,31 @@ const CategoryTreeNodeComponent = ({
     setIsDragOver(false);
     
     const draggedId = e.dataTransfer.getData('text/plain');
+    console.log('Drop event:', {
+      draggedId,
+      targetId: category._id,
+      targetName: category.name,
+      targetLevel: category.level,
+      onCategoryMove: !!onCategoryMove
+    });
+    
     if (draggedId && draggedId !== category._id && onCategoryMove) {
       // Check if the target is not a descendant of the dragged item
       const isDescendant = checkIsDescendant(category, draggedId);
+      console.log('Descendant check:', { isDescendant, draggedId, targetId: category._id });
+      
       if (!isDescendant) {
+        console.log('Calling onCategoryMove:', draggedId, 'to parent:', category._id);
         onCategoryMove(draggedId, category._id);
+      } else {
+        console.warn('Cannot drop category on its descendant');
       }
+    } else {
+      console.warn('Drop cancelled:', {
+        noDraggedId: !draggedId,
+        sameCategory: draggedId === category._id,
+        noCallback: !onCategoryMove
+      });
     }
   };
 
@@ -158,7 +176,7 @@ const CategoryTreeNodeComponent = ({
   const handleToggleExpand = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (hasChildren) {
-      onNodeExpand?.(category._id, !isExpanded);
+      onNodeExpand?.(category._id, !actualIsExpanded);
     }
   };
 
