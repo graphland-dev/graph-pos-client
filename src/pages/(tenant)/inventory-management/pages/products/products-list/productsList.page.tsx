@@ -1,39 +1,54 @@
+import AppDatatable, {
+  ColumnDef,
+} from "@/commons/components/AppDatatable/AppDatatable";
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
 import { confirmModal } from "@/commons/components/confirm.tsx";
-import DataTable from "@/commons/components/DataTable.tsx";
 import {
+  BrandsWithPagination,
+  CommonFindDocumentDto,
+  CommonPaginationDto,
   MatchOperator,
   Product,
   ProductsWithPagination,
-  BrandsWithPagination,
-  CommonPaginationDto,
-  CommonFindDocumentDto,
 } from "@/commons/graphql-models/graphql";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { useMutation, useQuery } from "@apollo/client";
-import { Button, Menu, Group, Select, Stack, Title } from "@mantine/core";
+import { ActionIcon, Button, Input, Select, Title } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import {
   IconBrandProducthunt,
   IconFileInfo,
   IconPlus,
+  IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import CategoryPicker from "../products-category/components/CategoryPicker";
+import { CategoryTreeNode } from "../products-category/utils/category.validations";
 import {
+  BRANDS_QUERY,
+  GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,
   INVENTORY_PRODUCTS_LIST_QUERY,
   INVENTORY_PRODUCT_CREATE,
   INVENTORY_PRODUCT_REMOVE,
-  GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,
-  BRANDS_QUERY,
 } from "./utils/product.query";
+import PageTitle from "@/commons/components/PageTitle";
 import ImportExportCSV from "./ImportExportCSV";
-import CategoryPicker from "../products-category/components/CategoryPicker";
-import { CategoryTreeNode } from "../products-category/utils/category.validations";
+import clsx from "clsx";
 
 interface IState {
   refetching: boolean;
+}
+
+interface PaginationState {
+  page: number;
+  pageSize: number;
+}
+
+interface SortingState {
+  column: string;
+  direction: "asc" | "desc" | null;
 }
 
 const ProductListPage = () => {
@@ -44,35 +59,63 @@ const ProductListPage = () => {
     refetching: false,
   });
 
-  // Filter states
-  const [filterableCategoryId, setFilterableCategoryId] = useState<
-    string | null
-  >(null);
-  const [filterableBrandId, setFilterableBrandId] = useState<string | null>(
-    null
-  );
+  // Pagination and sorting states
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    pageSize: 100,
+  });
+  const [sorting, setSorting] = useState<SortingState>({
+    column: "",
+    direction: null,
+  });
+  const [datatableFilters, setDatatableFilters] = useState<
+    Record<string, string>
+  >({});
 
   // Build filter variables
-  const buildFilterVariables = () => {
-    const filters: CommonFindDocumentDto[] = [];
+  const buildFilterVariables = (): CommonPaginationDto => {
+    const graphqlFilters: CommonFindDocumentDto[] = [];
 
-    if (filterableCategoryId) {
-      filters.push({
+    if (datatableFilters.category) {
+      graphqlFilters.push({
         key: "category",
         operator: MatchOperator.Eq,
-        value: filterableCategoryId,
+        value: datatableFilters.category,
       });
     }
 
-    if (filterableBrandId) {
-      filters.push({
+    if (datatableFilters.brand) {
+      graphqlFilters.push({
         key: "brand",
         operator: MatchOperator.Eq,
-        value: filterableBrandId,
+        value: datatableFilters.brand,
       });
     }
 
-    return { page: 1, limit: 10, filters } as CommonPaginationDto;
+    // Add search filters
+    if (datatableFilters.name) {
+      graphqlFilters.push({
+        key: "name",
+        operator: MatchOperator.Contains,
+        value: datatableFilters.name,
+      });
+    }
+
+    if (datatableFilters.code) {
+      graphqlFilters.push({
+        key: "code",
+        operator: MatchOperator.Contains,
+        value: datatableFilters.code,
+      });
+    }
+
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
+      filters: graphqlFilters,
+    } as CommonPaginationDto;
   };
 
   const { data, loading, refetch } = useQuery<{
@@ -112,7 +155,7 @@ const ProductListPage = () => {
   const handleRefetch = () => {
     setState({ refetching: true });
 
-    refetch(buildFilterVariables()).finally(() => {
+    refetch({ where: buildFilterVariables() }).finally(() => {
       setState({ refetching: false });
     });
   };
@@ -141,118 +184,120 @@ const ProductListPage = () => {
     }));
   }, [brandsData]);
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  // Get stock quantity helper
+  const getStockQuantity = (product: Product) => {
+    if (product.isSellableWithoutStock) {
+      return "N/A";
+    }
+    return (product.stockInQuantity - product.stockOutQuantity).toString();
+  };
+
+  const columns = useMemo<ColumnDef<Product>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
+        accessor: "name",
+        title: "Product Name",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            type="text"
+            placeholder="Search by name..."
+            onChange={(e) => setValue("name", e.target.value)}
+          />
+        ),
       },
       {
-        accessorKey: "code",
-        header: "Code",
+        accessor: "code",
+        title: "Product Code",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            type="text"
+            placeholder="Search by code..."
+            onChange={(e) => setValue("code", e.target.value)}
+          />
+        ),
       },
       {
-        header: "Stock Quantity",
-        accessorFn(originalRow: Product) {
-          if (originalRow.isSellableWithoutStock) {
-            return "N/A";
-          }
-          return (
-            originalRow?.stockInQuantity - originalRow?.stockOutQuantity || 0
-          );
-        },
+        accessor: (row) => getStockQuantity(row),
+        title: "Stock Quantity",
+        sortable: false,
       },
       {
-        accessorKey: "category.name",
-        header: "Category",
-      },
-      {
-        accessorKey: "brand.name",
-        header: "Brand",
-      },
-      {
-        accessorKey: "price",
-        header: "Price",
-      },
-      {
-        accessorKey: "purchasePrice",
-        header: "Purchase Price",
-      },
-    ],
-    []
-  );
-
-  return (
-    <Stack spacing="md">
-      {/* Header with Title and Filters */}
-      <Group position="apart" align="center">
-        {/* Left side - Title */}
-        <Title order={2}>Inventory Products</Title>
-
-        {/* Right side - Filters */}
-        <Group spacing="md">
+        accessor: "category.name",
+        title: "Category",
+        sortable: false,
+        Filter: (setValue) => (
           <CategoryPicker
             placeholder="Filter by category"
-            value={filterableCategoryId}
+            value={datatableFilters.category}
             categories={
               categoriesData?.inventory__rootCategoriesWithChildren || []
             }
             disabled={categoriesLoading}
-            onChange={setFilterableCategoryId}
+            onChange={(value) => {
+              setValue("category", value);
+            }}
             allowClear={true}
             showPath={false}
             showLevel={false}
             style={{ minWidth: 200 }}
           />
-
+        ),
+      },
+      {
+        accessor: "brand.name",
+        title: "Brand",
+        sortable: false,
+        Filter: (setValue) => (
           <Select
             placeholder="Filter by brand"
-            value={filterableBrandId}
+            value={datatableFilters.brand}
             data={brandOptions}
             disabled={brandsLoading}
-            onChange={setFilterableBrandId}
+            onChange={(value) => {
+              setValue("brand", value);
+            }}
             clearable
             searchable
             style={{ minWidth: 150 }}
           />
-        </Group>
-      </Group>
+        ),
+      },
+      {
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.price || 0),
+        title: "Price",
+        sortable: true,
+      },
+      {
+        accessor: (row) =>
+          currencyNumberWithSymbolFormat(row?.purchasePrice || 0),
+        title: "Purchase Price",
+        sortable: true,
+      },
+    ],
+    [
+      datatableFilters.category,
+      datatableFilters.brand,
+      categoriesData?.inventory__rootCategoriesWithChildren,
+      categoriesLoading,
+      brandOptions,
+      brandsLoading,
+    ]
+  );
 
-      {/* Data Table */}
-      <DataTable
-        columns={columns}
-        data={data?.inventory__products.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.inventory__products.meta?.totalCount ?? 10}
-        RowActionMenu={(row: Product) => (
-          <>
-            <Menu.Item
-              component={Link}
-              to={`/${params.tenant}/inventory-management/products/${row?._id}`}
-              icon={<IconFileInfo size={18} />}
-            >
-              View
-            </Menu.Item>
-            <Menu.Item
-              component={Link}
-              to={`/${params.tenant}/inventory-management/purchases/create?productId=${row?._id}`}
-              icon={<IconBrandProducthunt size={18} />}
-            >
-              Purchase This
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => handleDeleteAccount(row._id)}
-              icon={<IconTrash size={18} />}
-            >
-              Delete
-            </Menu.Item>
-          </>
-        )}
-        ActionArea={
-          <Group spacing="sm">
+  return (
+    <>
+      {/* Header with Title and Filters */}
+      <div>
+        <PageTitle title="Inventory Products" />
+
+        <div className="flex items-center justify-between">
+          <Title order={2}>Product List</Title>
+
+          {/* Action Area */}
+          <div className="flex items-center gap-4 mb-4">
             <Button
-              leftIcon={<IconPlus size={16} />}
-              loading={creatingProduct}
               onClick={() =>
                 createProduct({
                   variables: {
@@ -269,21 +314,82 @@ const ProductListPage = () => {
                   },
                 })
               }
-              size="sm"
+              disabled={creatingProduct}
             >
-              Add new
+              <IconPlus size={16} />
+              {creatingProduct ? "Creating..." : "Add new"}
             </Button>
-            <ImportExportCSV onImportComplete={refetch} />
-          </Group>
-        }
-        onRowClick={(row) => {
+            <ImportExportCSV onImportComplete={handleRefetch} />
+            <ActionIcon
+              onClick={handleRefetch}
+              variant="outline"
+              radius={100}
+              size={"lg"}
+            >
+              <IconRefresh
+                className={clsx({ "animate-reverse-spin": loading })}
+              />
+            </ActionIcon>
+          </div>
+        </div>
+      </div>
+
+      {/* Data Table */}
+      <AppDatatable
+        columns={columns}
+        data={data?.inventory__products.nodes ?? []}
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.inventory__products.meta?.totalCount ?? 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={(row: Product) => (
+          <div className="flex items-center gap-2">
+            <Link
+              to={`/${params.tenant}/inventory-management/products/${row._id}`}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 rounded-md bg-blue-50 hover:bg-blue-100"
+            >
+              <IconFileInfo size={14} />
+              View
+            </Link>
+            <Link
+              to={`/${params.tenant}/inventory-management/purchases/create?productId=${row._id}`}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-green-600 rounded-md bg-green-50 hover:bg-green-100"
+            >
+              <IconBrandProducthunt size={14} />
+              Purchase
+            </Link>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteAccount(row._id);
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 rounded-md bg-red-50 hover:bg-red-100"
+            >
+              <IconTrash size={14} />
+              Delete
+            </button>
+          </div>
+        )}
+        onRowClick={(row: Product) => {
           navigate(
-            `/${params.tenant}/inventory-management/products/${row?._id}`
+            `/${params.tenant}/inventory-management/products/${row._id}`
           );
         }}
+        onSortChange={(column, direction) => {
+          setSorting({ column, direction });
+        }}
+        onFilterChange={(column, value) => {
+          setDatatableFilters((prev) => ({ ...prev, [column]: value }));
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        onPaginationChange={(page, pageSize) => {
+          setPagination({ page, pageSize });
+        }}
         loading={loading || state.refetching}
+        emptyMessage="No products found. Try adjusting your filters."
       />
-    </Stack>
+    </>
   );
 };
 
