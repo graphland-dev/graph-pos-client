@@ -127,7 +127,9 @@ export const QuotationTemplate: React.FC<QuotationData> = ({
 
           {/* Quotation Title */}
           <div className="flex justify-center">
-            <h1 className="mb-2 text-3xl font-bold text-foreground">QUOTATION</h1>
+            <h1 className="mb-2 text-3xl font-bold text-foreground">
+              QUOTATION
+            </h1>
           </div>
 
           {/* Client Information */}
@@ -179,16 +181,11 @@ export const QuotationTemplate: React.FC<QuotationData> = ({
                       <td className="w-8 py-2 text-foreground">{index + 1}</td>
                       <td className="py-2 text-foreground">
                         <div>
-                          <p>{item.name}</p>
-                          {item.code && (
-                            <p className="text-sm text-muted-foreground">
-                              Code: {item.code}
-                            </p>
-                          )}
+                          <p>{item?.name}</p>
                         </div>
                       </td>
                       <td className="py-2 text-center text-muted-foreground">
-                        {item.quantity}
+                        {item?.quantity}
                       </td>
                       <td className="py-2 text-right text-muted-foreground">
                         {currencyNumberWithSymbolFormat(item.unitSellPrice)}
@@ -232,7 +229,9 @@ export const QuotationTemplate: React.FC<QuotationData> = ({
                 ) : null}
 
                 <div className="flex justify-between">
-                  <span className="font-bold text-foreground">Grand total:</span>
+                  <span className="font-bold text-foreground">
+                    Grand total:
+                  </span>
                   <span className="font-bold">
                     {currencyNumberWithSymbolFormat(netTotal)}
                   </span>
@@ -342,7 +341,8 @@ const PrintableFullQuotation = ({
         : undefined,
       name: tenantQuery.data?.identity__tenant.name || "Company Name",
       address: tenantQuery.data?.identity__tenant.address || undefined,
-      phone: tenantQuery.data?.identity__tenant.businessPhoneNumber || undefined,
+      phone:
+        tenantQuery.data?.identity__tenant.businessPhoneNumber || undefined,
       email: undefined, // Tenant doesn't have email field
     },
     customer: {
@@ -353,14 +353,15 @@ const PrintableFullQuotation = ({
     },
     note: quotation.note || "",
     terms: quotation.terms || "",
-    items: quotation.products?.map((product: any) => ({
-      name: product.name,
-      code: product.code || "",
-      quantity: product.quantity,
-      unitSellPrice: product.unitSellPrice || 0,
-      netAmount: product.netAmount || 0,
-      discountAmount: product.discountAmount || 0,
-    })) || [],
+    items:
+      quotation.products?.map((product: any) => ({
+        name: product.name,
+        code: product.code || "",
+        quantity: product.quantity,
+        unitSellPrice: product.unitSellPrice || 0,
+        netAmount: product.netAmount || 0,
+        discountAmount: product.discountAmount || 0,
+      })) || [],
     subtotal: quotation.subTotal || 0,
     netTotal: quotation.netTotal || 0,
     netDiscountAmount: quotation.netDiscountAmount || 0,

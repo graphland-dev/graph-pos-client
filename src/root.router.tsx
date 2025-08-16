@@ -1,34 +1,35 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
-import NotFoundPage from './pages/_404.page';
+import { createBrowserRouter, Navigate } from "react-router-dom";
+import NotFoundPage from "./pages/_404.page";
 
-import { RouteGuardWrapper } from '@/commons/components/wrappers/RouteGuardWrapper.tsx';
-import { accountingModuleRouter } from './pages/(tenant)/accounting/accounting.router';
-import { inventoryModuleRouter } from './pages/(tenant)/inventory-management/inventory.router';
-import ModulesPage from './pages/(tenant)/modules.page';
-import { peopleModuleRouter } from './pages/(tenant)/people/people.route';
-import { reportsModuleRouter } from './pages/(tenant)/reports/report.router';
-import TenantResolverForApollo from './pages/(tenant)/tenant-resolver-for-apollo.tsx';
-import { tenantSettingRouter } from './pages/(tenant)/tenant-settings/tenant-settings.route';
-import { authRouter } from './pages/auth/auth.router';
-import DesignSystem from './pages/design-system.page';
-import SelectOrganization from './pages/select-organization.page';
-import SpotlightWrapper from '@/commons/components/SpotlightWrapper';
+import { RouteGuardWrapper } from "@/commons/components/wrappers/RouteGuardWrapper.tsx";
+import { accountingModuleRouter } from "./pages/(tenant)/accounting/accounting.router";
+import { inventoryModuleRouter } from "./pages/(tenant)/inventory-management/inventory.router";
+import ModulesPage from "./pages/(tenant)/modules.page";
+import { peopleModuleRouter } from "./pages/(tenant)/people/people.route";
+import { reportsModuleRouter } from "./pages/(tenant)/reports/report.router";
+import TenantResolverForApollo from "./pages/(tenant)/tenant-resolver-for-apollo.tsx";
+import { tenantSettingRouter } from "./pages/(tenant)/tenant-settings/tenant-settings.route";
+import { authRouter } from "./pages/auth/auth.router";
+import DesignSystem from "./pages/design-system.page";
+import SelectOrganization from "./pages/select-organization.page";
+import SpotlightWrapper from "@/commons/components/SpotlightWrapper";
+import ProductsExample from "./commons/components/AppDatatable/example/ProductsExample.tsx";
 
 export const rootRouter = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <SpotlightWrapper />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <Navigate to="/select-tenant" />,
       },
       {
-        path: '/design-system',
+        path: "/design-system",
         element: <DesignSystem />,
       },
       {
-        path: '/select-tenant',
+        path: "/select-tenant",
         element: (
           <RouteGuardWrapper guard="private">
             <SelectOrganization />
@@ -36,11 +37,11 @@ export const rootRouter = createBrowserRouter([
         ),
       },
       {
-        path: '/auth',
+        path: "/auth",
         children: authRouter,
       },
       {
-        path: '/:tenant',
+        path: "/:tenant",
         element: (
           <RouteGuardWrapper guard="private">
             <TenantResolverForApollo />
@@ -48,23 +49,27 @@ export const rootRouter = createBrowserRouter([
         ),
         children: [
           {
-            path: '',
+            path: "",
             element: <ModulesPage />,
           },
           {
-            path: 'accounting',
+            path: "products",
+            element: <ProductsExample />,
+          },
+          {
+            path: "accounting",
             children: accountingModuleRouter,
           },
           {
-            path: 'inventory-Management',
+            path: "inventory-Management",
             children: inventoryModuleRouter,
           },
           {
-            path: 'people',
+            path: "people",
             children: peopleModuleRouter,
           },
           {
-            path: 'reports',
+            path: "reports",
             children: reportsModuleRouter,
           },
           // {
@@ -72,13 +77,13 @@ export const rootRouter = createBrowserRouter([
           //   children: settingModuleRouter,
           // },
           {
-            path: 'tenant-settings',
+            path: "tenant-settings",
             children: tenantSettingRouter,
           },
         ],
       },
       {
-        path: '*',
+        path: "*",
         element: <NotFoundPage />,
       },
     ],

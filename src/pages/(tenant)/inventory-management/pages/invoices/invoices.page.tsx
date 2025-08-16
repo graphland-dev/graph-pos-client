@@ -1,36 +1,98 @@
-import DataTable from "@/commons/components/DataTable.tsx";
+import AppDatatable, {
+  ColumnDef,
+} from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import {
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
+  ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
-import { Badge, Button, Menu, Text } from "@mantine/core";
+import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
 import { EyeIcon } from "lucide-react";
-import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   DELETE_PRODUCT_INVOICE_MUTATION,
   INVENTORY_PRODUCT_INVOICES_QUERY,
 } from "./utils/query.invoices";
+import { PEOPLE_CLIENTS_QUERY } from "../../../people/pages/client/utils/client.query";
+
+interface PaginationState {
+  page: number;
+  pageSize: number;
+}
+
+interface SortingState {
+  column: string;
+  direction: "asc" | "desc" | null;
+}
 
 const InvoicesPage = () => {
   const navigate = useNavigate();
   const [refetching, setRefetching] = useState(false);
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    pageSize: 100,
+  });
+  const [sorting, setSorting] = useState<SortingState>({
+    column: "",
+    direction: null,
+  });
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  // Build query variables
+  const buildQueryVariables = () => {
+    const graphqlFilters = [];
+
+    // Add search filters
+    if (filters.invoiceUID) {
+      graphqlFilters.push({
+        key: "invoiceUID",
+        operator: MatchOperator.Contains,
+        value: filters.invoiceUID,
+      });
+    }
+
+    if (filters.client) {
+      graphqlFilters.push({
+        key: "client",
+        operator: MatchOperator.Eq,
+        value: filters.client,
+      });
+    }
+
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
+      filters: graphqlFilters,
+    };
+  };
+
   const { data, loading, refetch } = useQuery<{
     inventory__productInvoices: ProductInvoicesWithPagination;
   }>(INVENTORY_PRODUCT_INVOICES_QUERY, {
     variables: {
+      where: buildQueryVariables(),
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
+  // Fetch clients for dropdown filter
+  const { data: clientsData, loading: clientsLoading } = useQuery<{
+    people__clients: ClientsWithPagination;
+  }>(PEOPLE_CLIENTS_QUERY, {
+    variables: {
       where: {
-        limit: -1,
         page: 1,
+        limit: -1, // Get all clients for dropdown
       },
     },
   });
@@ -82,41 +144,67 @@ const InvoicesPage = () => {
     });
   };
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  // Process client options for Select component
+  const clientOptions = useMemo(() => {
+    if (!clientsData?.people__clients?.nodes) return [];
+    return clientsData.people__clients.nodes.map((client) => ({
+      value: client._id,
+      label: client.name,
+    }));
+  }, [clientsData]);
+
+  const columns = useMemo<ColumnDef<ProductInvoice>[]>(
     () => [
       {
-        accessorKey: "invoiceUID",
-        header: "Invoice UID",
+        accessor: "invoiceUID",
+        title: "Invoice UID",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            type="text"
+            placeholder="Search invoice UID..."
+            onChange={(e) => setValue("invoiceUID", e.target.value)}
+          />
+        ),
       },
       {
-        accessorFn(originalRow) {
-          return (
-            originalRow?.client?.name || (
-              <p className="px-2 bg-destructive/10">No Client</p>
-            )
-          );
-        },
-        header: "Client Name",
+        accessor: (row) => row?.client?.name || "No Client",
+        title: "Client Name",
+        sortKey: "client",
+        sortable: true,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by client..."
+            value={filters.client || null}
+            data={clientOptions}
+            disabled={clientsLoading}
+            onChange={(value) => setValue("client", value || "")}
+            clearable
+            searchable
+            style={{ minWidth: 200 }}
+          />
+        ),
       },
       {
-        accessorFn: (row: ProductInvoice) =>
-          row?.date ? dateFormat(row?.date) : "",
-        header: "Purchase Date",
+        accessor: (row) => (row?.date ? dateFormat(row?.date) : ""),
+        title: "Purchase Date",
+        sortKey: "date",
+        sortable: true,
       },
       {
-        accessorKey: "subTotal",
-        accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Sub Total",
+        accessor: (row) =>
+          `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        title: "Sub Total",
+        sortKey: "netTotal",
+        sortable: true,
       },
       {
-        accessorKey: "dueAmount",
-        accessorFn: (originalRow: ProductInvoice) => {
-          const paidAmount = originalRow?.paidAmount || 0;
-          const netTotal = originalRow?.netTotal || 0;
-
+        accessor: (row) => {
+          const paidAmount = row?.paidAmount || 0;
+          const netTotal = row?.netTotal || 0;
           const totalDue = netTotal - paidAmount;
 
+          // Determine badge color based on payment status
           let color = "red";
           if (totalDue > 0 && paidAmount !== 0) {
             color = "yellow";
@@ -125,38 +213,42 @@ const InvoicesPage = () => {
             color = "green";
           }
 
+          // Return Badge component for custom rendering
           return (
-            <Badge color={color}>{`${currencyNumberWithSymbolFormat(
-              originalRow?.netTotal - (originalRow?.paidAmount || 0)
-            )} BDT`}</Badge>
+            <Badge color={color}>
+              {currencyNumberWithSymbolFormat(totalDue)} BDT
+            </Badge>
           );
         },
-
-        header: "Due Amount",
+        title: "Due Amount",
+        sortable: false, // Disable sorting for custom components
       },
       {
-        accessorKey: "paidAmount",
-        accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberWithSymbolFormat(originalRow?.paidAmount || 0)} BDT`,
-        header: "Paid Amount",
+        accessor: (row) =>
+          `${currencyNumberWithSymbolFormat(row?.paidAmount || 0)} BDT`,
+        title: "Paid Amount",
+        sortKey: "paidAmount",
+        sortable: true,
       },
       {
-        accessorKey: "netTotal",
-        accessorFn: (originalRow: ProductInvoice) =>
-          `${currencyNumberWithSymbolFormat(originalRow?.netTotal || 0)} BDT`,
-        header: "Net Total",
+        accessor: (row) =>
+          `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        title: "Net Total",
+        sortKey: "netTotal",
+        sortable: true,
       },
       {
-        accessorKey: "source",
-        header: "Source",
+        accessor: "source",
+        title: "Source",
+        sortable: true,
       },
     ],
-    []
+    [clientOptions, clientsLoading, filters.client]
   );
 
-  const handleRefetch = (variables: any) => {
+  const handleRefetch = () => {
     setRefetching(true);
-    refetch(variables).finally(() => {
+    refetch({ where: buildQueryVariables() }).finally(() => {
       setRefetching(false);
     });
   };
@@ -174,57 +266,87 @@ const InvoicesPage = () => {
             Manage and track your invoices
           </Text>
         </div>
-        <Button
-          onClick={() =>
-            navigate(`/${params.tenant}/inventory-management/invoices/create`)
-          }
-        >
-          Create Invoice
-        </Button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={handleRefetch}
+            disabled={refetching}
+            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
+          >
+            {refetching ? "Refreshing..." : "Refresh"}
+          </button>
+          <Button
+            onClick={() =>
+              navigate(`/${params.tenant}/inventory-management/invoices/create`)
+            }
+          >
+            Create Invoice
+          </Button>
+        </div>
       </div>
 
-      <DataTable
+      <AppDatatable
         columns={columns}
         data={data?.inventory__productInvoices.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.inventory__productInvoices.meta?.totalCount ?? 100}
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.inventory__productInvoices.meta?.totalCount ?? 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={(row: ProductInvoice) => (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(
+                  `/${params.tenant}/inventory-management/invoices/${row._id}`
+                );
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 rounded-md bg-blue-50 hover:bg-blue-100"
+            >
+              <EyeIcon size={14} />
+              View
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(
+                  `/${params.tenant}/inventory-management/invoices/${row._id}/edit`
+                );
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-green-600 rounded-md bg-green-50 hover:bg-green-100"
+            >
+              <IconEdit size={14} />
+              Edit
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteInvoice(row);
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 rounded-md bg-red-50 hover:bg-red-100"
+            >
+              <IconTrash size={14} />
+              Delete
+            </button>
+          </div>
+        )}
         onRowClick={(row: ProductInvoice) => {
           navigate(
             `/${params.tenant}/inventory-management/invoices/${row._id}`
           );
         }}
-        RowActionMenu={(row: ProductInvoice) => (
-          <Menu>
-            <Menu.Item
-              icon={<EyeIcon size={18} />}
-              onClick={() => {
-                navigate(
-                  `/${params.tenant}/inventory-management/invoices/${row._id}`
-                );
-              }}
-            >
-              View Details
-            </Menu.Item>
-            <Menu.Item
-              icon={<IconEdit size={18} />}
-              onClick={() => {
-                navigate(
-                  `/${params.tenant}/inventory-management/invoices/${row._id}/edit`
-                );
-              }}
-            >
-              Edit
-            </Menu.Item>
-            <Menu.Item
-              icon={<IconTrash size={18} />}
-              color="red"
-              onClick={() => handleDeleteInvoice(row)}
-            >
-              Delete
-            </Menu.Item>
-          </Menu>
-        )}
+        onSortChange={(column, direction) => {
+          setSorting({ column, direction });
+        }}
+        onFilterChange={(column, value) => {
+          setFilters((prev) => ({ ...prev, [column]: value }));
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        onPaginationChange={(page, pageSize) => {
+          setPagination({ page, pageSize });
+        }}
         loading={loading || refetching}
+        emptyMessage="No invoices found. Try adjusting your filters."
       />
     </>
   );

@@ -3,7 +3,6 @@ import {
   BrandsWithPagination,
   MatchOperator,
   Product,
-  ProductCategorysWithPagination,
   UnitsWithPagination,
   VatsWithPagination,
 } from '@/commons/graphql-models/graphql';
@@ -23,6 +22,8 @@ import {
   UNITS_QUERY,
   VATS_QUERY,
 } from '../utils/productEdit.query';
+import CategoryPicker from '../../products-category/components/CategoryPicker';
+import { CategoryTreeNode } from '../../products-category/utils/category.validations';
 
 const AssignmentForm = () => {
   const { productId } = useParams();
@@ -55,7 +56,7 @@ const AssignmentForm = () => {
   });
 
   const { data: categories, loading: categories__loading } = useQuery<{
-    inventory__productCategories: ProductCategorysWithPagination;
+    inventory__rootCategoriesWithChildren: CategoryTreeNode[];
   }>(CATEGORIES_QUERY);
 
   const { data: brands, loading: brands__loading } = useQuery<{
@@ -118,14 +119,14 @@ const AssignmentForm = () => {
           label="Category"
           error={<ErrorMessage errors={errors} name="categoryId" />}
         >
-          <Select
+          <CategoryPicker
             placeholder="Pick a category"
             value={watch('categoryId')}
-            data={getSelectInputData(
-              categories?.inventory__productCategories?.nodes,
-            )}
+            categories={categories?.inventory__rootCategoriesWithChildren || []}
             disabled={categories__loading}
             onChange={(v) => setValue('categoryId', v as string)}
+            showPath={false}
+            showLevel={false}
           />
         </Input.Wrapper>
         <Space h={'sm'} />

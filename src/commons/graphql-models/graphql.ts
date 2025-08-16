@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -232,9 +232,10 @@ export type CreatePayrollInput = {
 };
 
 export type CreateProductCategoryInput = {
-  code: Scalars['String']['input'];
+  code?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   note?: InputMaybe<Scalars['String']['input']>;
+  parentCategoryId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type CreateProductInput = {
@@ -884,7 +885,7 @@ export type MutationInventory__UpdateProductArgs = {
 
 export type MutationInventory__UpdateProductCategoryArgs = {
   body: UpdateProductCategoryInput;
-  where: CommonFindDocumentDto;
+  categoryId: Scalars['ID']['input'];
 };
 
 
@@ -1123,11 +1124,16 @@ export type Product = {
 export type ProductCategory = {
   __typename?: 'ProductCategory';
   _id: Scalars['ID']['output'];
+  children?: Maybe<Array<ProductCategory>>;
   code?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   isDemo?: Maybe<Scalars['Boolean']['output']>;
+  level: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
+  parent?: Maybe<ProductCategory>;
+  parentCategory?: Maybe<Scalars['ID']['output']>;
+  path?: Maybe<Scalars['String']['output']>;
   tenant?: Maybe<Scalars['String']['output']>;
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
@@ -1423,6 +1429,10 @@ export type Query = {
   identity__tenant?: Maybe<Tenant>;
   identity__tenants: TenantsWithPagination;
   identity__users: UsersWithPagination;
+  inventory__categoryAncestors: Array<ProductCategory>;
+  inventory__categoryChildren: Array<ProductCategory>;
+  inventory__categoryDescendants: Array<ProductCategory>;
+  inventory__categoryTree: Array<ProductCategory>;
   inventory__product: Product;
   inventory__productCategories: ProductCategorysWithPagination;
   inventory__productCategory: ProductCategory;
@@ -1434,6 +1444,8 @@ export type Query = {
   inventory__productQuotations: ProductQuotationsWithPagination;
   inventory__productStocks: ProductStocksWithPagination;
   inventory__products: ProductsWithPagination;
+  inventory__rootCategories: Array<ProductCategory>;
+  inventory__rootCategoriesWithChildren: Array<ProductCategory>;
   people__client: Client;
   people__clients: ClientsWithPagination;
   people__employee: Employee;
@@ -1550,6 +1562,26 @@ export type QueryIdentity__TenantsArgs = {
 
 export type QueryIdentity__UsersArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryInventory__CategoryAncestorsArgs = {
+  categoryId: Scalars['ID']['input'];
+};
+
+
+export type QueryInventory__CategoryChildrenArgs = {
+  categoryId: Scalars['ID']['input'];
+};
+
+
+export type QueryInventory__CategoryDescendantsArgs = {
+  categoryId: Scalars['ID']['input'];
+};
+
+
+export type QueryInventory__CategoryTreeArgs = {
+  rootCategoryId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 
@@ -1927,6 +1959,7 @@ export type UpdateProductCategoryInput = {
   code?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
   note?: InputMaybe<Scalars['String']['input']>;
+  parentCategoryId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type UpdateProductInput = {

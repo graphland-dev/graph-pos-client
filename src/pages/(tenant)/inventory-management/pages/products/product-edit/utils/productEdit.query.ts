@@ -72,11 +72,40 @@ export const INVENTORY_PRODUCT_UPDATE = gql`
 `;
 
 export const CATEGORIES_QUERY = gql`
-  query Inventory__productCategories {
-    inventory__productCategories {
-      nodes {
+  query GetRootCategoriesWithChildren {
+    inventory__rootCategoriesWithChildren {
+      _id
+      name
+      code
+      level
+      path
+      children {
         _id
         name
+        code
+        level
+        path
+        children {
+          _id
+          name
+          code
+          level
+          path
+          children {
+            _id
+            name
+            code
+            level
+            path
+            children {
+              _id
+              name
+              code
+              level
+              path
+            }
+          }
+        }
       }
     }
   }
