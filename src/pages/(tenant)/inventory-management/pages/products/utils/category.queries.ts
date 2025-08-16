@@ -84,6 +84,18 @@ export const GET_CATEGORY_CHILDREN_QUERY = gql`
 	}
 `;
 
+export const GET_CATEGORY_DESCENDANTS_QUERY = gql`
+	query GetCategoryDescendants($categoryId: ID!) {
+		inventory__categoryDescendants(categoryId: $categoryId) {
+			_id
+			name
+			code
+			level
+			path
+		}
+	}
+`;
+
 export const GET_CATEGORY_TREE_QUERY = gql`
 	query GetCategoryTree($rootCategoryId: ID) {
 		inventory__categoryTree(rootCategoryId: $rootCategoryId) {
@@ -107,29 +119,6 @@ export const GET_CATEGORY_TREE_QUERY = gql`
 				}
 			}
 		}
-	}
-`;
-
-export const INVENTORY_PRODUCT_CATEGORY_CREATE = gql`
-	mutation Mutation($body: CreateProductCategoryInput!) {
-		inventory__createProductCategory(body: $body) {
-			_id
-		}
-	}
-`;
-
-export const INVENTORY_PRODUCT_CATEGORY_UPDATE = gql`
-	mutation Inventory__updateProductCategory(
-		$categoryId: ID!
-		$body: UpdateProductCategoryInput!
-	) {
-		inventory__updateProductCategory(categoryId: $categoryId, body: $body)
-	}
-`;
-
-export const INVENTORY_PRODUCT_CATEGORY_REMOVE = gql`
-	mutation Inventory__removeProductCategory($categoryId: ID!) {
-		inventory__removeProductCategory(categoryId: $categoryId)
 	}
 `;
 
@@ -160,5 +149,26 @@ export const GET_CATEGORY_QUERY = gql`
 			createdAt
 			updatedAt
 		}
+	}
+`;
+
+// Category mutations
+export const CREATE_CATEGORY_MUTATION = gql`
+	mutation CreateCategory($input: CreateProductCategoryInput!) {
+		inventory__createProductCategory(body: $input) {
+			_id
+		}
+	}
+`;
+
+export const UPDATE_CATEGORY_MUTATION = gql`
+	mutation UpdateCategory($categoryId: ID!, $input: UpdateProductCategoryInput!) {
+		inventory__updateProductCategory(categoryId: $categoryId, body: $input)
+	}
+`;
+
+export const DELETE_CATEGORY_MUTATION = gql`
+	mutation DeleteCategory($categoryId: ID!) {
+		inventory__removeProductCategory(where: { key: "_id", operator: "eq", value: $categoryId })
 	}
 `;

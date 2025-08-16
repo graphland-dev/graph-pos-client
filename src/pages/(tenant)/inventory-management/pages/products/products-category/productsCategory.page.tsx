@@ -1,21 +1,17 @@
 import { confirmModal } from '@/commons/components/confirm.tsx';
-import DataTable from '@/commons/components/DataTable.tsx';
-import {
-	MatchOperator,
-	ProductCategory,
-	ProductCategorysWithPagination,
-} from '@/commons/graphql-models/graphql';
 import { useMutation, useQuery } from '@apollo/client';
-import { Button, Drawer, Menu } from '@mantine/core';
+import { Button, Drawer, Group, Stack } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
-import { IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
-import { MRT_ColumnDef } from 'mantine-react-table';
-import { useMemo } from 'react';
+import { IconPlus } from '@tabler/icons-react';
+import { useState } from 'react';
 import CreateAndUpdateCategoryForm from './components/CreateAndUpdateCategoryForm';
+import CategoryTree from './components/CategoryTree';
 import {
-	INVENTORY_PRODUCT_CATEGORIES_QUERY,
+	GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,
 	INVENTORY_PRODUCT_CATEGORY_REMOVE,
+	INVENTORY_PRODUCT_CATEGORY_UPDATE,
 } from './utils/category.query';
+import { CategoryTreeNode } from './utils/category.validations';
 import PageTitle from '@/commons/components/PageTitle';
 
 interface IState {
@@ -24,6 +20,7 @@ interface IState {
 	operationId?: string | null;
 	operationPayload?: any;
 	refetching: boolean;
+	parentCategoryId?: string | null;
 }
 
 const ProductCategoryPage = () => {
@@ -33,21 +30,26 @@ const ProductCategoryPage = () => {
 		operationId: null,
 		operationPayload: {},
 		refetching: false,
+		parentCategoryId: null,
 	});
 
-	const { data, loading, refetch } = useQuery<{
-		inventory__productCategories: ProductCategorysWithPagination;
-	}>(INVENTORY_PRODUCT_CATEGORIES_QUERY, {
-		variables: {
-			where: {
-				limit: 10,
-				page: 1,
-			},
-		},
+	const [searchQuery, setSearchQuery] = useState('');
+	const [selectedCategory, setSelectedCategory] = useState<CategoryTreeNode | null>(null);
+	const [expandedNodes, setExpandedNodes] = useState<Set<string>>(new Set());
+
+	const { data, refetch } = useQuery(GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY, {
+		fetchPolicy: 'cache-and-network',
 	});
+
+	const categories: CategoryTreeNode[] = data?.inventory__rootCategoriesWithChildren || [];
 
 	const [deleteCategoryMutation] = useMutation(
 		INVENTORY_PRODUCT_CATEGORY_REMOVE,
+		{ onCompleted: () => handleRefetch({}) }
+	);
+
+	const [updateCategoryMutation] = useMutation(
+		INVENTORY_PRODUCT_CATEGORY_UPDATE,
 		{ onCompleted: () => handleRefetch({}) }
 	);
 
@@ -58,103 +60,188 @@ const ProductCategoryPage = () => {
 		});
 	};
 
-	const handleDeleteAccount = (_id: string) => {
+	const handleDeleteCategory = (categoryId: string) => {
+		const category = findCategoryById(categories, categoryId);
 		confirmModal({
-			title: 'Sure to delete category?',
-			description: 'Be careful!! Once you deleted, it can not be undone',
+			title: 'Delete Category',
+			description: `Are you sure you want to delete "${category?.name}"? This action cannot be undone and will also delete all subcategories.`,
 			isDangerous: true,
 			onConfirm() {
 				deleteCategoryMutation({
 					variables: {
-						where: { key: '_id', operator: MatchOperator.Eq, value: _id },
+						categoryId: categoryId,
 					},
 				});
 			},
 		});
 	};
 
-	const columns = useMemo<MRT_ColumnDef<any>[]>(
-		() => [
-			{
-				accessorKey: 'name',
-				header: 'Name',
-			},
-			{
-				accessorKey: 'code',
-				header: 'Code',
-			},
+	const handleCategoryCreate = (parentCategoryId?: string) => {
+		setState({
+			modalOpened: true,
+			operationType: 'create',
+			operationId: null,
+			operationPayload: {},
+			parentCategoryId: parentCategoryId || null,
+		});
+	};
 
-			{
-				accessorKey: 'note',
-				header: 'Note',
-			},
-		],
-		[]
-	);
+	const handleCategoryEdit = (category: CategoryTreeNode) => {
+		setState({
+			modalOpened: true,
+			operationType: 'update',
+			operationId: category._id,
+			operationPayload: category,
+			parentCategoryId: null,
+		});
+	};
+
+	const handleNodeExpand = (categoryId: string, expanded: boolean) => {
+		const newExpandedNodes = new Set(expandedNodes);
+		if (expanded) {
+			newExpandedNodes.add(categoryId);
+		} else {
+			newExpandedNodes.delete(categoryId);
+		}
+		setExpandedNodes(newExpandedNodes);
+	};
+
+	const findCategoryById = (cats: CategoryTreeNode[], id: string): CategoryTreeNode | null => {
+		for (const cat of cats) {
+			if (cat._id === id) return cat;
+			if (cat.children) {
+				const found = findCategoryById(cat.children, id);
+				if (found) return found;
+			}
+		}
+		return null;
+	};
+
+	const filterCategories = (cats: CategoryTreeNode[], query: string): CategoryTreeNode[] => {
+		if (!query) return cats;
+		
+		return cats.filter(cat => {
+			const matchesQuery = cat.name.toLowerCase().includes(query.toLowerCase()) ||
+				(cat.code && cat.code.toLowerCase().includes(query.toLowerCase()));
+			
+			const hasMatchingChildren = cat.children && 
+				filterCategories(cat.children, query).length > 0;
+			
+			return matchesQuery || hasMatchingChildren;
+		}).map(cat => ({
+			...cat,
+			children: cat.children ? filterCategories(cat.children, query) : undefined
+		}));
+	};
+
+	const filteredCategories = filterCategories(categories, searchQuery);
+
+	const handleCategoryMove = async (draggedId: string, targetParentId: string | null) => {
+		try {
+			// Find the dragged category to get its current data
+			const draggedCategory = findCategoryById(categories, draggedId);
+			if (!draggedCategory) {
+				console.error('Dragged category not found');
+				return;
+			}
+
+			// Prevent moving a category to itself or its descendants
+			if (targetParentId) {
+				const targetCategory = findCategoryById(categories, targetParentId);
+				if (targetCategory) {
+					// Check if target is a descendant of dragged category
+					const isDescendant = checkIsDescendant(draggedCategory, targetParentId);
+					if (isDescendant) {
+						console.warn('Cannot move category to its own descendant');
+						return;
+					}
+
+					// Check depth limit (max 5 levels)
+					if (targetCategory.level >= 4) {
+						console.warn('Maximum category depth (5 levels) would be exceeded');
+						return;
+					}
+				}
+			}
+
+			// Update the category with new parent
+			await updateCategoryMutation({
+				variables: {
+					categoryId: draggedId,
+					body: {
+						parentCategoryId: targetParentId,
+					},
+				},
+			});
+		} catch (error) {
+			console.error('Error moving category:', error);
+		}
+	};
+
+	const checkIsDescendant = (parentCategory: CategoryTreeNode, targetId: string): boolean => {
+		if (parentCategory._id === targetId) return true;
+		if (parentCategory.children) {
+			return parentCategory.children.some(child => checkIsDescendant(child, targetId));
+		}
+		return false;
+	};
+
 
 	return (
-    <>
-      <PageTitle title="product-category" />
-      <Drawer
-        opened={state.modalOpened}
-        onClose={() => setState({ modalOpened: false })}
-        position="right"
-      >
-        <CreateAndUpdateCategoryForm
-          onSubmissionDone={() => {
-            handleRefetch({});
-            setState({ modalOpened: false });
-          }}
-          operationType={state.operationType}
-          operationId={state.operationId}
-          formData={state.operationPayload}
-        />
-      </Drawer>
-      <DataTable
-        columns={columns}
-        data={data?.inventory__productCategories.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.inventory__productCategories.meta?.totalCount ?? 10}
-        RowActionMenu={(row: ProductCategory) => (
-          <>
-            <Menu.Item
-              onClick={() =>
-                setState({
-                  modalOpened: true,
-                  operationType: "update",
-                  operationId: row._id,
-                  operationPayload: row,
-                })
-              }
-              icon={<IconPencil size={18} />}
-            >
-              Edit
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => handleDeleteAccount(row._id)}
-              icon={<IconTrash size={18} />}
-            >
-              Delete
-            </Menu.Item>
-          </>
-        )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              onClick={() =>
-                setState({ modalOpened: true, operationType: "create" })
-              }
-              size="sm"
-            >
-              Add new
-            </Button>
-          </>
-        }
-        loading={loading || state.refetching}
-      />
-    </>
-  );
+		<Stack spacing="md">
+			<PageTitle title="Product Categories" />
+			
+			{/* Header Controls */}
+			<Group position="apart">
+				<Button
+					leftIcon={<IconPlus size={16} />}
+					onClick={() => handleCategoryCreate()}
+					size="sm"
+				>
+					Add Category
+				</Button>
+			</Group>
+
+			{/* Category Tree Display */}
+			<CategoryTree
+				categories={filteredCategories}
+				selectedCategory={selectedCategory}
+				expandedNodes={expandedNodes}
+				onNodeClick={setSelectedCategory}
+				onNodeExpand={handleNodeExpand}
+				onNodeEdit={handleCategoryEdit}
+				onNodeDelete={(category) => handleDeleteCategory(category._id)}
+				onAddSubcategory={(parent) => handleCategoryCreate(parent._id)}
+				onCategoryMove={handleCategoryMove}
+				allowEdit={true}
+				allowDelete={true}
+				allowDragDrop={true}
+				showActions={true}
+				searchQuery={searchQuery}
+				onSearchChange={setSearchQuery}
+			/>
+
+			{/* Category Form Drawer */}
+			<Drawer
+				opened={state.modalOpened}
+				onClose={() => setState({ modalOpened: false })}
+				position="right"
+				size="md"
+				title={`${state.operationType === 'create' ? 'Create' : 'Edit'} Category`}
+			>
+				<CreateAndUpdateCategoryForm
+					onSubmissionDone={() => {
+						handleRefetch({});
+						setState({ modalOpened: false });
+					}}
+					operationType={state.operationType}
+					operationId={state.operationId}
+					formData={state.operationPayload}
+					parentCategoryId={state.parentCategoryId}
+				/>
+			</Drawer>
+		</Stack>
+	);
 };
 
 export default ProductCategoryPage;
