@@ -13,7 +13,7 @@ import {
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { useMutation, useQuery } from "@apollo/client";
-import { ActionIcon, Button, Input, Select, Title } from "@mantine/core";
+import { ActionIcon, Button, Input, NumberInput, Select, Title } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import {
   IconBrandProducthunt,
@@ -106,6 +106,40 @@ const ProductListPage = () => {
         key: "code",
         operator: MatchOperator.Contains,
         value: datatableFilters.code,
+      });
+    }
+
+    // Add price range filters
+    if (datatableFilters.minPrice) {
+      graphqlFilters.push({
+        key: "price",
+        operator: MatchOperator.Gte,
+        value: datatableFilters.minPrice,
+      });
+    }
+
+    if (datatableFilters.maxPrice) {
+      graphqlFilters.push({
+        key: "price",
+        operator: MatchOperator.Lte,
+        value: datatableFilters.maxPrice,
+      });
+    }
+
+    // Add purchase price range filters
+    if (datatableFilters.minPurchasePrice) {
+      graphqlFilters.push({
+        key: "purchasePrice",
+        operator: MatchOperator.Gte,
+        value: datatableFilters.minPurchasePrice,
+      });
+    }
+
+    if (datatableFilters.maxPurchasePrice) {
+      graphqlFilters.push({
+        key: "purchasePrice",
+        operator: MatchOperator.Lte,
+        value: datatableFilters.maxPurchasePrice,
       });
     }
 
@@ -267,18 +301,60 @@ const ProductListPage = () => {
       {
         accessor: (row) => currencyNumberWithSymbolFormat(row?.price || 0),
         title: "Price",
+        sortKey: "price",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex gap-2" style={{ minWidth: 200 }}>
+            <NumberInput
+              placeholder="Min"
+              value={datatableFilters.minPrice ? Number(datatableFilters.minPrice) : undefined}
+              onChange={(value) => setValue("minPrice", value?.toString() || "")}
+              size="sm"
+              min={0}
+            />
+            <NumberInput
+              placeholder="Max"
+              value={datatableFilters.maxPrice ? Number(datatableFilters.maxPrice) : undefined}
+              onChange={(value) => setValue("maxPrice", value?.toString() || "")}
+              size="sm"
+              min={0}
+            />
+          </div>
+        ),
       },
       {
         accessor: (row) =>
           currencyNumberWithSymbolFormat(row?.purchasePrice || 0),
         title: "Purchase Price",
+        sortKey: "purchasePrice",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex gap-2" style={{ minWidth: 200 }}>
+            <NumberInput
+              placeholder="Min"
+              value={datatableFilters.minPurchasePrice ? Number(datatableFilters.minPurchasePrice) : undefined}
+              onChange={(value) => setValue("minPurchasePrice", value?.toString() || "")}
+              size="sm"
+              min={0}
+            />
+            <NumberInput
+              placeholder="Max"
+              value={datatableFilters.maxPurchasePrice ? Number(datatableFilters.maxPurchasePrice) : undefined}
+              onChange={(value) => setValue("maxPurchasePrice", value?.toString() || "")}
+              size="sm"
+              min={0}
+            />
+          </div>
+        ),
       },
     ],
     [
       datatableFilters.category,
       datatableFilters.brand,
+      datatableFilters.minPrice,
+      datatableFilters.maxPrice,
+      datatableFilters.minPurchasePrice,
+      datatableFilters.maxPurchasePrice,
       categoriesData?.inventory__rootCategoriesWithChildren,
       categoriesLoading,
       brandOptions,

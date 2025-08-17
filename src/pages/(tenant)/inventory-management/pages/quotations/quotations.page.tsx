@@ -10,6 +10,7 @@ import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconTrash } from "@tabler/icons-react";
@@ -64,6 +65,23 @@ const QuotationsPage = () => {
         key: "status",
         operator: MatchOperator.Eq,
         value: filters.status,
+      });
+    }
+
+    // Add date range filters
+    if (filters.startDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Gte,
+        value: filters.startDate,
+      });
+    }
+
+    if (filters.endDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Lte,
+        value: filters.endDate,
       });
     }
 
@@ -200,6 +218,28 @@ const QuotationsPage = () => {
         title: "Quotation Date",
         sortKey: "date",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+            <DatePickerInput
+              label="Start date"
+              value={filters.startDate ? new Date(filters.startDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("startDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+            <DatePickerInput
+              label="End date"
+              value={filters.endDate ? new Date(filters.endDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("endDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+          </div>
+        ),
       },
       {
         accessor: (row) => row?.validUntil ? dateFormat(row?.validUntil) : "",
@@ -259,7 +299,14 @@ const QuotationsPage = () => {
         ),
       },
     ],
-    [clientOptions, clientsLoading, filters.client, filters.status]
+    [
+      clientOptions,
+      clientsLoading,
+      filters.client,
+      filters.status,
+      filters.startDate,
+      filters.endDate,
+    ]
   );
 
   const handleRefetch = () => {

@@ -1,19 +1,32 @@
-import PageTitle from "@/commons/components/PageTitle";
 import { ACCOUNTS_LIST_DROPDOWN } from "@/commons/components/common-gql";
-import { confirmModal } from "@/commons/components/confirm.tsx";
-import DataTable from "@/commons/components/DataTable.tsx";
+import AppDatatable, {
+  ColumnDef,
+} from "@/commons/components/AppDatatable/AppDatatable";
+import PageTitle from "@/commons/components/PageTitle";
 import {
   AccountsWithPagination,
+  CommonFindDocumentDto,
   Expense,
   ExpensesWithPagination,
   MatchOperator,
 } from "@/commons/graphql-models/graphql";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
+import dateFormat from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu, Title } from "@mantine/core";
+import {
+  Button,
+  Drawer,
+  Input,
+  NumberInput,
+  Select,
+  Text,
+  Title,
+} from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useSetState } from "@mantine/hooks";
+import { modals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import { IconEye, IconPlus, IconTrash } from "@tabler/icons-react";
-import dayjs from "dayjs";
-import { MRT_ColumnDef } from "mantine-react-table";
 import { useMemo, useState } from "react";
 import ExpenseForm from "./components/ExpenseForm";
 import ViewExpenseDetails from "./components/ViewExpenseDetails";
@@ -31,6 +44,16 @@ interface IState {
   viewDetailsOpened: boolean;
 }
 
+interface PaginationState {
+  page: number;
+  pageSize: number;
+}
+
+interface SortingState {
+  column: string;
+  direction: "asc" | "desc" | null;
+}
+
 const ExpenseListPage = () => {
   const [state, setState] = useSetState<IState>({
     modalOpened: false,
@@ -40,14 +63,102 @@ const ExpenseListPage = () => {
     refetching: false,
     viewDetailsOpened: false,
   });
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    pageSize: 100,
+  });
+  const [sorting, setSorting] = useState<SortingState>({
+    column: "",
+    direction: null,
+  });
+  const [filters, setFilters] = useState<Record<string, string>>({});
 
   const [expenseViewDetails, setExpenseViewDetails] = useState<Expense | null>(
     null
   );
 
+  // Build query variables
+  const buildQueryVariables = () => {
+    const graphqlFilters: CommonFindDocumentDto[] = [];
+
+    // Add search filters for purpose
+    if (filters.purpose) {
+      graphqlFilters.push({
+        key: "purpose",
+        operator: MatchOperator.Contains,
+        value: filters.purpose,
+      });
+    }
+
+    // Add search filters for note
+    if (filters.note) {
+      graphqlFilters.push({
+        key: "note",
+        operator: MatchOperator.Contains,
+        value: filters.note,
+      });
+    }
+
+    // Add search filters for account
+    if (filters.account) {
+      graphqlFilters.push({
+        key: "account",
+        operator: MatchOperator.Eq,
+        value: filters.account,
+      });
+    }
+
+    // Add amount range filters
+    if (filters.minAmount) {
+      graphqlFilters.push({
+        key: "amount",
+        operator: MatchOperator.Gte,
+        value: filters.minAmount,
+      });
+    }
+
+    if (filters.maxAmount) {
+      graphqlFilters.push({
+        key: "amount",
+        operator: MatchOperator.Lte,
+        value: filters.maxAmount,
+      });
+    }
+
+    // Add date range filters
+    if (filters.startDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Gte,
+        value: filters.startDate,
+      });
+    }
+
+    if (filters.endDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Lte,
+        value: filters.endDate,
+      });
+    }
+
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
+      filters: graphqlFilters,
+    };
+  };
+
   const { data, loading, refetch } = useQuery<{
     accounting__expenses: ExpensesWithPagination;
-  }>(ACCOUNTING_EXPENSE_QUERY_LIST);
+  }>(ACCOUNTING_EXPENSE_QUERY_LIST, {
+    variables: {
+      where: buildQueryVariables(),
+    },
+    fetchPolicy: "cache-and-network",
+  });
 
   const { data: accountData, refetch: refetchAccounts } = useQuery<{
     accounting__accounts: AccountsWithPagination;
@@ -57,9 +168,34 @@ const ExpenseListPage = () => {
     },
   });
 
-  const [deleteExpenseMutation] = useMutation(
+  // Process account options for Select component
+  const accountOptions = useMemo(() => {
+    if (!accountData?.accounting__accounts?.nodes) return [];
+    return accountData.accounting__accounts.nodes.map((account) => ({
+      value: account._id,
+      label: `${account.name} [${account.referenceNumber}]`,
+    }));
+  }, [accountData]);
+
+  const [deleteExpenseMutation, { loading: deleting }] = useMutation(
     ACCOUNTING_EXPENSE_DELETE_MUTATION,
-    { onCompleted: () => handleRefetch({}) }
+    {
+      onCompleted: () => {
+        showNotification({
+          title: "Success",
+          message: "Expense deleted successfully",
+          color: "green",
+        });
+        handleRefetch({});
+      },
+      onError: (error) => {
+        showNotification({
+          title: "Error",
+          message: error.message,
+          color: "red",
+        });
+      },
+    }
   );
 
   const handleRefetch = (variables: any) => {
@@ -70,55 +206,155 @@ const ExpenseListPage = () => {
     });
   };
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  const columns = useMemo<ColumnDef<Expense>[]>(
     () => [
       {
-        accessorKey: "purpose",
-        header: "Purpose",
-      },
-
-      {
-        accessorKey: "note",
-        header: "Note",
-      },
-
-      {
-        accessorFn: (row: Expense) =>
-          dayjs(row?.date)?.format("MMMM D, YYYY h:mm A"),
-        accessorKey: "date",
-        header: "Date",
+        accessor: (row: Expense) => row?.purpose || "",
+        title: "Purpose",
+        sortKey: "purpose",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            placeholder="Filter by purpose..."
+            value={filters.purpose || ""}
+            onChange={(e) => setValue("purpose", e.target.value)}
+            style={{ minWidth: 200 }}
+          />
+        ),
       },
       {
-        accessorFn: (row: Expense) =>
+        accessor: (row: Expense) => row?.note || "",
+        title: "Note",
+        sortKey: "note",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            placeholder="Filter by note..."
+            value={filters.note || ""}
+            onChange={(e) => setValue("note", e.target.value)}
+            style={{ minWidth: 200 }}
+          />
+        ),
+      },
+      {
+        accessor: (row: Expense) => (row?.date ? dateFormat(row?.date) : ""),
+        title: "Date",
+        sortKey: "date",
+        sortable: true,
+        Filter: (setValue) => (
+          <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+            <DatePickerInput
+              label="Start date"
+              value={filters.startDate ? new Date(filters.startDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("startDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+            <DatePickerInput
+              label="End date"
+              value={filters.endDate ? new Date(filters.endDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("endDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+          </div>
+        ),
+      },
+      {
+        accessor: (row: Expense) =>
           `${row?.account?.name}${
             row?.account?.referenceNumber
               ? ` [${row?.account?.referenceNumber}]`
               : ""
           }`,
-        accessorKey: "account",
-        header: "Account",
+        title: "Account",
+        sortKey: "account",
+        sortable: true,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by account..."
+            value={filters.account || null}
+            data={accountOptions}
+            disabled={!accountData?.accounting__accounts?.nodes}
+            onChange={(value) => setValue("account", value || "")}
+            clearable
+            searchable
+            style={{ minWidth: 250 }}
+          />
+        ),
       },
       {
-        accessorFn: (row: Expense) => row?.amount,
-        accessorKey: "amount",
-        header: "Amount",
+        accessor: (row: Expense) =>
+          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+        title: "Amount",
+        sortKey: "amount",
+        sortable: true,
+        Filter: (setValue) => (
+          <div className="flex gap-2" style={{ minWidth: 200 }}>
+            <NumberInput
+              placeholder="Min"
+              value={filters.minAmount ? Number(filters.minAmount) : undefined}
+              onChange={(value) =>
+                setValue("minAmount", value?.toString() || "")
+              }
+              size="sm"
+              min={0}
+            />
+            <NumberInput
+              placeholder="Max"
+              value={filters.maxAmount ? Number(filters.maxAmount) : undefined}
+              onChange={(value) =>
+                setValue("maxAmount", value?.toString() || "")
+              }
+              size="sm"
+              min={0}
+            />
+          </div>
+        ),
       },
     ],
-    []
+    [
+      filters.purpose,
+      filters.note,
+      filters.account,
+      filters.minAmount,
+      filters.maxAmount,
+      filters.startDate,
+      filters.endDate,
+      accountOptions,
+      accountData?.accounting__accounts?.nodes,
+    ]
   );
 
-  const handleDeleteAccount = (_id: string) => {
-    confirmModal({
-      title: "Sure to delete account?",
-      description: "Be careful!! Once you deleted, it can not be undone",
-      isDangerous: true,
-      onConfirm() {
+  const handleDeleteExpense = (expense: Expense) => {
+    modals.openConfirmModal({
+      title: "Delete Expense",
+      children: (
+        <Text size="sm">
+          Are you sure you want to delete expense for{" "}
+          <strong>{expense.purpose}</strong> with amount{" "}
+          <strong>
+            {currencyNumberWithSymbolFormat(expense.amount || 0)} BDT
+          </strong>
+          ? This action cannot be undone.
+        </Text>
+      ),
+      labels: { confirm: "Delete", cancel: "Cancel" },
+      confirmProps: { color: "red", loading: deleting },
+      onConfirm: () =>
         deleteExpenseMutation({
           variables: {
-            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+            where: {
+              key: "_id",
+              operator: MatchOperator.Eq,
+              value: expense._id,
+            },
           },
-        });
-      },
+        }),
     });
   };
 
@@ -141,57 +377,79 @@ const ExpenseListPage = () => {
           accounts={accountData?.accounting__accounts?.nodes || []}
         />
       </Drawer>
-      <DataTable
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <Text size="xl" weight={600}>
+            Expense Management
+          </Text>
+          <Text size="sm" color="dimmed">
+            Manage company expenses and track spending
+          </Text>
+        </div>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => handleRefetch({})}
+            disabled={state.refetching}
+            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
+          >
+            {state.refetching ? "Refreshing..." : "Refresh"}
+          </button>
+          <Button
+            leftIcon={<IconPlus size={16} />}
+            onClick={() =>
+              setState({ modalOpened: true, operationType: "create" })
+            }
+          >
+            Add Expense
+          </Button>
+        </div>
+      </div>
+
+      <AppDatatable
         columns={columns}
         data={data?.accounting__expenses?.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.accounting__expenses?.meta?.totalCount ?? 10}
-        RowActionMenu={(row: Expense) => (
-          <>
-            {/* <Menu.Item
-              onClick={() =>
-                setState({
-                  modalOpened: true,
-                  operationType: "update",
-                  operationId: row._id,
-                  operationPayload: row,
-                })
-              }
-              icon={<IconPencil size={18} />}
-            >
-              Edit
-            </Menu.Item> */}
-            <Menu.Item
-              onClick={() => {
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.accounting__expenses?.meta?.totalCount ?? 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={(row: Expense) => (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 setState({ viewDetailsOpened: true });
                 setExpenseViewDetails(row);
               }}
-              icon={<IconEye size={18} />}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 rounded-md bg-blue-50 hover:bg-blue-100"
             >
+              <IconEye size={14} />
               Details
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => handleDeleteAccount(row._id)}
-              icon={<IconTrash size={18} />}
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteExpense(row);
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-red-600 rounded-md bg-red-50 hover:bg-red-100"
             >
+              <IconTrash size={14} />
               Delete
-            </Menu.Item>
-          </>
+            </button>
+          </div>
         )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              onClick={() =>
-                setState({ modalOpened: true, operationType: "create" })
-              }
-              size="sm"
-            >
-              Add new
-            </Button>
-          </>
-        }
+        onSortChange={(column, direction) => {
+          setSorting({ column, direction });
+        }}
+        onFilterChange={(column, value) => {
+          setFilters((prev) => ({ ...prev, [column]: value }));
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        onPaginationChange={(page, pageSize) => {
+          setPagination({ page, pageSize });
+        }}
         loading={loading || state.refetching}
+        emptyMessage="No expenses found. Try adjusting your filters."
       />
 
       <Drawer
