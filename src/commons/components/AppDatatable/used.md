@@ -12,19 +12,19 @@
 
   People Management:
   - suppliers/suppliers.page.tsx
-  - employees/employees/employees.page.tsx
-  - employees/increments/increments.page.tsx
+  ✅ - employees/employees/employees.page.tsx (CONVERTED to AppDatatable)
+  ✅ - employees/increments/increments.page.tsx (CONVERTED to AppDatatable)
   ✅ - client/client.page.tsx (CONVERTED to AppDatatable)
   - Employee detail components for payrolls and increments
   - Supplier details for purchases
 
   Accounting:
   ✅ - cashbook/accounts/accounts.page.tsx (CONVERTED to AppDatatable)
-  - expense/expenseList/expenseList.page.tsx
+  ✅ - expense/expenseList/expenseList.page.tsx (CONVERTED to AppDatatable)
   - expense/expenseCategory/expenseCategory.page.tsx
   ✅ - cashbook/transfers/transfer.page.tsx (CONVERTED to AppDatatable)
   ✅ - cashbook/statements/statements.page.tsx (CONVERTED to AppDatatable)
-  - cashbook/payroll/payroll.page.tsx
+  ✅ - cashbook/payroll/payroll.page.tsx (CONVERTED to AppDatatable)
   ✅ - cashbook/adjustment/adjustment.page.tsx (CONVERTED to AppDatatable)
 
   The component definition is in src/commons/components/DataTable.tsx.

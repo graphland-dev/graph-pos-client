@@ -1,8 +1,8 @@
 import { gql } from "@apollo/client";
 
 export const ACCOUNTING_EXPENSE_QUERY_LIST = gql`
-  query Accounting__expenses {
-    accounting__expenses {
+  query Accounting__expenses($where: CommonPaginationDto) {
+    accounting__expenses(where: $where) {
       meta {
         totalCount
       }
@@ -48,7 +48,6 @@ export const ACCOUNTING_EXPENSE_CREATE_MUTATION = gql`
     }
   }
 `;
-
 
 export const ACCOUNTING_EXPENSE_DELETE_MUTATION = gql`
   mutation Accounting__removeExpense($where: CommonFindDocumentDto!) {
