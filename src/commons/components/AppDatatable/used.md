@@ -3,7 +3,7 @@
 
   Inventory Management:
   ✅ - products-list/productsList.page.tsx:221 (CONVERTED to AppDatatable)
-  - quotations/quotations.page.tsx
+  ✅ quotations/quotations.page.tsx
   ✅ - invoices/invoices.page.tsx (CONVERTED to AppDatatable)
   - purchases/purchase-list/purchase-list.page.tsx
   - payments/invoice-payments/invoice-payments.page.tsx
@@ -14,17 +14,17 @@
   - suppliers/suppliers.page.tsx
   - employees/employees/employees.page.tsx
   - employees/increments/increments.page.tsx
-  - client/client.page.tsx
+  ✅ - client/client.page.tsx (CONVERTED to AppDatatable)
   - Employee detail components for payrolls and increments
   - Supplier details for purchases
 
   Accounting:
-  - cashbook/accounts/accounts.page.tsx
+  ✅ - cashbook/accounts/accounts.page.tsx (CONVERTED to AppDatatable)
   - expense/expenseList/expenseList.page.tsx
   - expense/expenseCategory/expenseCategory.page.tsx
-  - cashbook/transfers/transfer.page.tsx
-  - cashbook/statements/statements.page.tsx
+  ✅ - cashbook/transfers/transfer.page.tsx (CONVERTED to AppDatatable)
+  ✅ - cashbook/statements/statements.page.tsx (CONVERTED to AppDatatable)
   - cashbook/payroll/payroll.page.tsx
-  - cashbook/adjustment/adjustment.page.tsx
+  ✅ - cashbook/adjustment/adjustment.page.tsx (CONVERTED to AppDatatable)
 
   The component definition is in src/commons/components/DataTable.tsx.
