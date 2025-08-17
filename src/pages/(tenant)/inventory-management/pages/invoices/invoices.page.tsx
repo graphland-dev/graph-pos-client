@@ -12,6 +12,7 @@ import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
@@ -64,6 +65,23 @@ const InvoicesPage = () => {
         key: "client",
         operator: MatchOperator.Eq,
         value: filters.client,
+      });
+    }
+
+    // Add date range filters
+    if (filters.startDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Gte,
+        value: filters.startDate,
+      });
+    }
+
+    if (filters.endDate) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Lte,
+        value: filters.endDate,
       });
     }
 
@@ -190,6 +208,28 @@ const InvoicesPage = () => {
         title: "Purchase Date",
         sortKey: "date",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+            <DatePickerInput
+              label="Start date"
+              value={filters.startDate ? new Date(filters.startDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("startDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+            <DatePickerInput
+              label="End date"
+              value={filters.endDate ? new Date(filters.endDate) : null}
+              onChange={(value: Date | null) =>
+                setValue("endDate", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+          </div>
+        ),
       },
       {
         accessor: (row) =>
@@ -243,7 +283,13 @@ const InvoicesPage = () => {
         sortable: true,
       },
     ],
-    [clientOptions, clientsLoading, filters.client]
+    [
+      clientOptions,
+      clientsLoading,
+      filters.client,
+      filters.startDate,
+      filters.endDate,
+    ]
   );
 
   const handleRefetch = () => {
