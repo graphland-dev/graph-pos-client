@@ -24,8 +24,8 @@ import {
 } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import CategoryPicker from "../products-category/components/CategoryPicker";
-import { CategoryTreeNode } from "../products-category/utils/category.validations";
+import { CategoryPicker } from "../../../shared/components";
+import { CategoryTreeNode } from "../../../shared/types";
 import {
   BRANDS_QUERY,
   GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,

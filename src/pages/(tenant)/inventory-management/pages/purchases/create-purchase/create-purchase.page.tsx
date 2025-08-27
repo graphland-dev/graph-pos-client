@@ -1,6 +1,9 @@
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
 import {
+  BrandsWithPagination,
   CostItemReferenceInput,
+  CommonFindDocumentDto,
+  CommonPaginationDto,
   MatchOperator,
   Product,
   ProductItemReference,
@@ -11,9 +14,8 @@ import {
   Vat,
   VatsWithPagination,
 } from "@/commons/graphql-models/graphql";
-import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
 
-import { useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -43,6 +45,8 @@ import { getVatProfileSelectInputData } from "./utils/helpers";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { SETTINGS_VAT_QUERY } from "../../settings/pages/vat/utils/query";
+import { CategoryPicker } from "../../../shared/components";
+import { CategoryTreeNode } from "../../../shared/types";
 import CreateProductForm from "./components/CreateProductForm";
 import CreateSupplierForm from "./components/CreateSupplierForm";
 import ProductsCardList from "./components/ProductsCardList";
@@ -59,10 +63,71 @@ const CreatePurchasePage = () => {
   const [openCreateProduct, createProductDrawerHandler] = useDisclosure();
   const [openCreateSupplier, createSupplierDrawerHandler] = useDisclosure();
 
+  // Product filter states
+  const [productFilters, setProductFilters] = useState<Record<string, string>>({
+    name: "",
+    code: "",
+    category: "",
+    brand: "",
+  });
+
   const navigate = useNavigate();
 
   const params = useParams<{ tenant: string }>();
   const [searchParams] = useSearchParams();
+
+  // Build product filter variables
+  const buildProductFilterVariables = (): CommonPaginationDto => {
+    const graphqlFilters: CommonFindDocumentDto[] = [];
+
+    // Add URL-based product filter first
+    const productId = searchParams.get("productId");
+    if (productId) {
+      graphqlFilters.push({
+        key: "_id",
+        operator: MatchOperator.Eq,
+        value: productId,
+      });
+    }
+
+    // Add search filters only if no specific productId
+    if (!productId) {
+      if (productFilters.name) {
+        graphqlFilters.push({
+          key: "name",
+          operator: MatchOperator.Contains,
+          value: productFilters.name,
+        });
+      }
+      if (productFilters.code) {
+        graphqlFilters.push({
+          key: "code",
+          operator: MatchOperator.Contains,
+          value: productFilters.code,
+        });
+      }
+      if (productFilters.category) {
+        graphqlFilters.push({
+          key: "category",
+          operator: MatchOperator.Eq,
+          value: productFilters.category,
+        });
+      }
+      if (productFilters.brand) {
+        graphqlFilters.push({
+          key: "brand",
+          operator: MatchOperator.Eq,
+          value: productFilters.brand,
+        });
+      }
+    }
+
+    return {
+      page: productPage,
+      limit: 12,
+      filters: graphqlFilters,
+    } as CommonPaginationDto;
+  };
 
   const {
     data,
@@ -70,7 +135,7 @@ const CreatePurchasePage = () => {
     refetch: refetchSuppliers,
   } = useQuery<{
     people__suppliers: SuppliersWithPagination;
-  }>(PEOPLE_SUPPLIERS_QUERY, {
+  }>(CREATE_PURCHASE_SUPPLIERS_QUERY, {
     variables: {
       where: {
         page: supplierPage,
@@ -87,23 +152,20 @@ const CreatePurchasePage = () => {
     inventory__products: ProductsWithPagination;
   }>(PURCHASE_PRODUCT_LIST, {
     variables: {
-      where: {
-        page: productPage,
-        limit: 12,
-
-        filters: [
-          {
-            // key: "price",
-            // operator: MatchOperator.Gte,
-            // value: `${0}`,
-            key: "_id",
-            operator: MatchOperator.Eq,
-            value: searchParams.get("productId"),
-          },
-        ],
-      },
+      where: buildProductFilterVariables(),
     },
+    fetchPolicy: "cache-and-network",
   });
+
+  // Fetch categories for filter
+  const { data: categoriesData, loading: categoriesLoading } = useQuery<{
+    inventory__rootCategoriesWithChildren: CategoryTreeNode[];
+  }>(CREATE_PURCHASE_CATEGORIES_QUERY);
+
+  // Fetch brands for filter
+  const { data: brandsData, loading: brandsLoading } = useQuery<{
+    setup__brands: BrandsWithPagination;
+  }>(CREATE_PURCHASE_BRANDS_QUERY);
 
   const { data: vatProfile, loading: vatProfileLoading } = useQuery<{
     setup__vats: VatsWithPagination;
@@ -113,26 +175,6 @@ const CreatePurchasePage = () => {
     },
   });
 
-  // const {
-  // 	register,
-  // 	setValue,
-  // 	formState: { errors },
-  // 	control,
-  // 	watch,
-  // 	handleSubmit,
-  // } = useForm<ICreatePurchaseFormState>({
-  // 	// defaultValues: {
-  // 	//   purchaseDate: new Date(),
-  // 	//   purchaseOrderDate: new Date(),
-  // 	//   note: "",
-  // 	//   products: [],
-  // 	//   costs: [],
-  // 	//   supplierId: "",
-  // 	//   taxRate: 0,
-  // 	// },
-  // 	resolver: yupResolver(Schema_Validation),
-  // 	mode: 'onChange',
-  // });
   const {
     register,
     setValue,
@@ -140,15 +182,10 @@ const CreatePurchasePage = () => {
     control,
     watch,
     handleSubmit,
-    // } = useForm<ICreatePurchaseFormState>({
   } = useForm({
     defaultValues: {
       purchaseDate: new Date(),
       purchaseOrderDate: new Date(),
-      // note: "",
-      // products: [],
-      // costs: [],
-      // supplierId: "",
       taxRate: 0,
     },
     resolver: yupResolver(Schema_Validation),
@@ -349,6 +386,98 @@ const CreatePurchasePage = () => {
             </Button>
           </Flex>
           <Space h={"md"} />
+
+          {/* Product Filters */}
+          {!searchParams.get("productId") && (
+            <Paper withBorder p="sm" mb="md">
+              <Title order={5} mb="sm">
+                Filter Products
+              </Title>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                <Input
+                  placeholder="Search by name..."
+                  value={productFilters.name}
+                  onChange={(e) => {
+                    setProductFilters((prev) => ({
+                      ...prev,
+                      name: e.target.value,
+                    }));
+                    onChangeProductPage(1);
+                  }}
+                />
+                <Input
+                  placeholder="Search by code..."
+                  value={productFilters.code}
+                  onChange={(e) => {
+                    setProductFilters((prev) => ({
+                      ...prev,
+                      code: e.target.value,
+                    }));
+                    onChangeProductPage(1);
+                  }}
+                />
+                <CategoryPicker
+                  placeholder="Filter by category"
+                  value={productFilters.category}
+                  categories={
+                    categoriesData?.inventory__rootCategoriesWithChildren || []
+                  }
+                  disabled={categoriesLoading}
+                  onChange={(value: string | null) => {
+                    setProductFilters((prev) => ({
+                      ...prev,
+                      category: value || "",
+                    }));
+                    onChangeProductPage(1);
+                  }}
+                  allowClear={true}
+                  showPath={false}
+                  showLevel={false}
+                />
+                <Select
+                  placeholder="Filter by brand"
+                  value={productFilters.brand || null}
+                  data={
+                    brandsData?.setup__brands?.nodes?.map((brand) => ({
+                      value: brand._id,
+                      label: brand.name,
+                    })) || []
+                  }
+                  disabled={brandsLoading}
+                  onChange={(value) => {
+                    setProductFilters((prev) => ({
+                      ...prev,
+                      brand: value || "",
+                    }));
+                    onChangeProductPage(1);
+                  }}
+                  clearable
+                  searchable
+                />
+              </div>
+              {(productFilters.name ||
+                productFilters.code ||
+                productFilters.category ||
+                productFilters.brand) && (
+                <Button
+                  variant="subtle"
+                  size="xs"
+                  mt="sm"
+                  onClick={() => {
+                    setProductFilters({
+                      name: "",
+                      code: "",
+                      category: "",
+                      brand: "",
+                    });
+                    onChangeProductPage(1);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              )}
+            </Paper>
+          )}
 
           {/* Product List to select */}
           <ProductsCardList
@@ -623,5 +752,53 @@ const CreatePurchasePage = () => {
     </>
   );
 };
+
+// Local queries for create purchase - isolated from other usages
+const CREATE_PURCHASE_SUPPLIERS_QUERY = gql`
+  query CreatePurchase__suppliers($where: CommonPaginationDto) {
+    people__suppliers(where: $where) {
+      meta {
+        hasNextPage
+        totalCount
+      }
+      nodes {
+        _id
+        name
+        companyName
+        contactNumber
+        email
+        address
+      }
+    }
+  }
+`;
+
+const CREATE_PURCHASE_CATEGORIES_QUERY = gql`
+  query CreatePurchase__categories {
+    inventory__rootCategoriesWithChildren {
+      _id
+      name
+      children {
+        _id
+        name
+        children {
+          _id
+          name
+        }
+      }
+    }
+  }
+`;
+
+const CREATE_PURCHASE_BRANDS_QUERY = gql`
+  query CreatePurchase__brands {
+    setup__brands(where: { limit: -1 }) {
+      nodes {
+        _id
+        name
+      }
+    }
+  }
+`;
 
 export default CreatePurchasePage;

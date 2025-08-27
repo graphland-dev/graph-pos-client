@@ -34,6 +34,7 @@ export const PURCHASE_PAYMENTS_QUERY = gql`
         paidAmount
         paymentUID
         receptNo
+        date
         supplier {
           _id
           name

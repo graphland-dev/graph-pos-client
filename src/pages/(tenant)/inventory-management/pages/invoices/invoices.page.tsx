@@ -3,6 +3,8 @@ import AppDatatable, {
 } from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import {
+  CommonFindDocumentDto,
+  CommonPaginationDto,
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
@@ -10,7 +12,7 @@ import {
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import dateFormat from "@/commons/utils/dateFormat";
-import { useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
@@ -23,7 +25,6 @@ import {
   DELETE_PRODUCT_INVOICE_MUTATION,
   INVENTORY_PRODUCT_INVOICES_QUERY,
 } from "./utils/query.invoices";
-import { PEOPLE_CLIENTS_QUERY } from "../../../people/pages/client/utils/client.query";
 
 interface PaginationState {
   page: number;
@@ -48,8 +49,8 @@ const InvoicesPage = () => {
   });
   const [filters, setFilters] = useState<Record<string, string>>({});
   // Build query variables
-  const buildQueryVariables = () => {
-    const graphqlFilters = [];
+  const buildQueryVariables = (): CommonPaginationDto => {
+    const graphqlFilters: CommonFindDocumentDto[] = [];
 
     // Add search filters
     if (filters.invoiceUID) {
@@ -91,7 +92,7 @@ const InvoicesPage = () => {
       sortBy: sorting.column || "createdAt",
       sort: sorting.direction === "asc" ? "ASC" : "DESC",
       filters: graphqlFilters,
-    };
+    } as CommonPaginationDto;
   };
 
   const { data, loading, refetch } = useQuery<{
@@ -106,11 +107,11 @@ const InvoicesPage = () => {
   // Fetch clients for dropdown filter
   const { data: clientsData, loading: clientsLoading } = useQuery<{
     people__clients: ClientsWithPagination;
-  }>(PEOPLE_CLIENTS_QUERY, {
+  }>(INVOICES_CLIENTS_QUERY, {
     variables: {
       where: {
         page: 1,
-        limit: -1, // Get all clients for dropdown
+        limit: 1000, // Get all clients for dropdown
       },
     },
   });
@@ -397,5 +398,17 @@ const InvoicesPage = () => {
     </>
   );
 };
+
+// Local query for clients dropdown - isolated from other usages
+const INVOICES_CLIENTS_QUERY = gql`
+  query InvoicesList__clients($where: CommonPaginationDto) {
+    people__clients(where: $where) {
+      nodes {
+        _id
+        name
+      }
+    }
+  }
+`;
 
 export default InvoicesPage;
