@@ -13,12 +13,10 @@ import {
   IconShoppingCart,
   IconTableShare,
   IconUsersGroup,
-  IconVectorTriangle,
   IconWallet,
   IconCreditCard,
   IconFileInvoice,
   IconUserCheck,
-  IconLoadBalancer,
 } from "@tabler/icons-react";
 
 export const getSpotlightItems = (tenant: string) => {

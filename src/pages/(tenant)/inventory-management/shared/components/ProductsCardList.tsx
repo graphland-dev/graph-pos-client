@@ -22,8 +22,8 @@ import {
 import { useState, useEffect, useMemo } from "react";
 import { useDebouncedValue } from "@mantine/hooks";
 import { useQuery } from "@apollo/client";
-import CategoryPicker from "../../pages/products/products-category/components/CategoryPicker";
-import { CategoryTreeNode } from "../../pages/products/products-category/utils/category.validations";
+import CategoryPicker from "./CategoryPicker";
+import { CategoryTreeNode } from "../types";
 import {
   GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,
   BRANDS_QUERY,

@@ -22,8 +22,8 @@ import {
   UNITS_QUERY,
   VATS_QUERY,
 } from '../utils/productEdit.query';
-import CategoryPicker from '../../products-category/components/CategoryPicker';
-import { CategoryTreeNode } from '../../products-category/utils/category.validations';
+import { CategoryPicker } from '../../../../shared/components';
+import { CategoryTreeNode } from '../../../../shared/types';
 
 const AssignmentForm = () => {
   const { productId } = useParams();

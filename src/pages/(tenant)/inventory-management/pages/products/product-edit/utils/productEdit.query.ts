@@ -63,7 +63,7 @@ export const INVENTORY_PRODUCT_ASSIGNMENT_QUERY = gql`
 `;
 
 export const INVENTORY_PRODUCT_UPDATE = gql`
-  mutation Inventory__removeProduct(
+  mutation inventory__updateProduct(
     $body: UpdateProductInput!
     $where: CommonFindDocumentDto!
   ) {

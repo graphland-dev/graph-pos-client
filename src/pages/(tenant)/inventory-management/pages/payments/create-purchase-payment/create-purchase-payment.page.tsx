@@ -1,5 +1,4 @@
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
-import { ACCOUNTS_LIST_DROPDOWN } from "@/commons/components/common-gql";
 import {
   AccountsWithPagination,
   MatchOperator,
@@ -11,7 +10,7 @@ import {
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { getAccountBalance } from "@/commons/utils/getBalance";
 import { PEOPLE_SUPPLIERS_QUERY } from "@/pages/(tenant)/people/pages/suppliers/utils/suppliers.query";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation, useQuery, gql } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
@@ -138,12 +137,19 @@ const CreatePurchasePayment = () => {
     if (supplierId) setValue("supplierId", supplierId!);
 
     if (purchaseId) {
-      setValue(
-        `items`,
-        purchases?.inventory__productPurchases?.nodes?.filter(
-          (purchase: ProductPurchase) => purchase?._id === purchaseId
-        ) || []
-      );
+      const filteredPurchases =
+        purchases?.inventory__productPurchases?.nodes
+          ?.filter((purchase: ProductPurchase) => purchase?._id === purchaseId)
+          ?.map((purchase: ProductPurchase) => ({
+            _id: purchase._id,
+            purchaseUID: purchase.purchaseUID || "",
+            amount: 0, // Initialize with default amount
+            // Keep other properties for display purposes
+            netTotal: purchase.netTotal || 0,
+            paidAmount: purchase.paidAmount || 0,
+          })) || [];
+
+      setValue(`items`, filteredPurchases);
     }
   }, [supplierId, purchaseId, purchases]);
 
@@ -153,11 +159,13 @@ const CreatePurchasePayment = () => {
         body: {
           supplierId: v?.supplierId,
           accountId: v?.accountId,
-          items: v?.items?.map((item: any) => ({
-            purchaseId: item?._id,
-            purchaseUID: item?.purchaseUID,
-            amount: item?.amount,
-          })),
+          items: v?.items
+            ?.filter((item: any) => item?.amount && item?.amount > 0)
+            ?.map((item: any) => ({
+              purchaseId: item?._id,
+              purchaseUID: item?.purchaseUID,
+              amount: parseFloat(item?.amount) || 0,
+            })),
           checkNo: v?.checkNo,
           receptNo: v?.receptNo,
           note: v?.note,
@@ -169,9 +177,18 @@ const CreatePurchasePayment = () => {
 
   const { data: accountData } = useQuery<{
     accounting__accounts: AccountsWithPagination;
-  }>(ACCOUNTS_LIST_DROPDOWN, {
+  }>(PURCHASE_PAYMENT_ACTIVE_ACCOUNTS_QUERY, {
     variables: {
-      where: { limit: -1 },
+      where: {
+        limit: -1,
+        filters: [
+          {
+            key: "isActive",
+            operator: MatchOperator.Eq,
+            value: "true",
+          },
+        ],
+      },
     },
   });
 
@@ -247,7 +264,7 @@ const CreatePurchasePayment = () => {
             </thead>
 
             <tbody>
-              {itemsFields?.map((item: ProductPurchase, idx: number) => (
+              {itemsFields?.map((item: any, idx: number) => (
                 <tr key={idx}>
                   <td className="font-medium">{item?.purchaseUID}</td>
                   <td className="font-medium">
@@ -256,14 +273,32 @@ const CreatePurchasePayment = () => {
                     )}
                   </td>
                   <td className="font-medium">
-                    <NumberInput
-                      w={100}
-                      onChange={(v) =>
-                        setValue(`items.${idx}.amount`, parseInt(v as string))
-                      }
-                      min={1}
-                      value={watch(`items.${idx}.amount`)}
-                    />
+                    <div>
+                      <NumberInput
+                        w={100}
+                        onChange={(v) =>
+                          setValue(
+                            `items.${idx}.amount`,
+                            parseFloat(v as string) || 0,
+                            {
+                              shouldValidate: true,
+                            }
+                          )
+                        }
+                        min={0.01}
+                        max={(item?.netTotal || 0) - (item?.paidAmount || 0)}
+                        step={0.01}
+                        precision={2}
+                        value={watch(`items.${idx}.amount`) || 0}
+                        error={errors?.items?.[idx]?.amount?.message}
+                      />
+                      <Text size="xs" color="red">
+                        <ErrorMessage
+                          errors={errors}
+                          name={`items.${idx}.amount`}
+                        />
+                      </Text>
+                    </div>
                   </td>
                   <td className="font-medium">
                     <ActionIcon
@@ -372,3 +407,19 @@ const CreatePurchasePayment = () => {
 };
 
 export default CreatePurchasePayment;
+
+// Local GraphQL query for active accounts only
+const PURCHASE_PAYMENT_ACTIVE_ACCOUNTS_QUERY = gql`
+  query PurchasePaymentActiveAccounts($where: CommonPaginationDto) {
+    accounting__accounts(where: $where) {
+      nodes {
+        _id
+        name
+        referenceNumber
+        creditAmount
+        debitAmount
+        isActive
+      }
+    }
+  }
+`;

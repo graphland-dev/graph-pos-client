@@ -1,3 +1,4 @@
+export { default as CategoryPicker } from './CategoryPicker';
 export { default as ClientsCardList } from './ClientsCardList';
 export { default as CreateClientForm } from './CreateClientForm';
 export { default as CreateProductForm } from './CreateProductForm';

@@ -1,16 +1,24 @@
+import AppDatatable, {
+  ColumnDef,
+} from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
-import DataTable from "@/commons/components/DataTable.tsx";
 import {
+  AccountsWithPagination,
+  CommonFindDocumentDto,
+  CommonPaginationDto,
   MatchOperator,
   PurchasePayment,
   PurchasePaymentsWithPagination,
+  SuppliersWithPagination,
 } from "@/commons/graphql-models/graphql";
-import { useLazyQuery, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu, Title } from "@mantine/core";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
+import dateFormat from "@/commons/utils/dateFormat";
+import { gql, useLazyQuery, useQuery } from "@apollo/client";
+import { Button, Drawer, Input, Select, Title, Flex } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
+import { DateInput } from "@mantine/dates";
 import { IconListDetails, IconPlus } from "@tabler/icons-react";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import PurchasePaymentsDetails from "./components/PurchasePaymentsDetails";
 import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
@@ -18,6 +26,16 @@ import { PURCHASE_PAYMENTS_QUERY } from "./utils/query.gql";
 interface IState {
   refetching: boolean;
   purchasePaymentsRow: null | PurchasePayment;
+}
+
+interface PaginationState {
+  page: number;
+  pageSize: number;
+}
+
+interface SortingState {
+  column: string;
+  direction: "asc" | "desc" | null;
 }
 
 const PurchasePaymentPage = () => {
@@ -28,217 +46,328 @@ const PurchasePaymentPage = () => {
   const [openedDetailsDrawer, detailsDrawerHandler] = useDisclosure();
   const params = useParams<{ tenant: string }>();
 
-  const { data, loading, refetch } = useQuery<{
+  // Pagination and sorting states
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    pageSize: 100,
+  });
+  const [sorting, setSorting] = useState<SortingState>({
+    column: "",
+    direction: null,
+  });
+  const [datatableFilters, setDatatableFilters] = useState<Record<string, any>>(
+    {}
+  );
+
+  // Build filter variables
+  const buildFilterVariables = (): CommonPaginationDto => {
+    const graphqlFilters: CommonFindDocumentDto[] = [];
+
+    // Add search filters
+    if (datatableFilters.paymentUID) {
+      graphqlFilters.push({
+        key: "paymentUID",
+        operator: MatchOperator.Contains,
+        value: datatableFilters.paymentUID,
+      });
+    }
+
+    if (datatableFilters.supplierName) {
+      graphqlFilters.push({
+        key: "supplier.name",
+        operator: MatchOperator.Contains,
+        value: datatableFilters.supplierName,
+      });
+    }
+
+    if (datatableFilters.supplierId) {
+      graphqlFilters.push({
+        key: "supplier",
+        operator: MatchOperator.Eq,
+        value: datatableFilters.supplierId,
+      });
+    }
+
+    if (datatableFilters.account) {
+      graphqlFilters.push({
+        key: "account",
+        operator: MatchOperator.Eq,
+        value: datatableFilters.account,
+      });
+    }
+
+    // Add date range filters
+    if (
+      datatableFilters.fromDate &&
+      datatableFilters.fromDate instanceof Date
+    ) {
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Gte,
+        value: datatableFilters.fromDate.toISOString(),
+      });
+    }
+
+    if (datatableFilters.toDate && datatableFilters.toDate instanceof Date) {
+      // Set end of day for toDate to include the entire day
+      const endOfDay = new Date(datatableFilters.toDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      graphqlFilters.push({
+        key: "date",
+        operator: MatchOperator.Lte,
+        value: endOfDay.toISOString(),
+      });
+    }
+
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
+      filters: graphqlFilters,
+    } as CommonPaginationDto;
+  };
+
+  const { data, loading } = useQuery<{
     accounting__purchasePayments: PurchasePaymentsWithPagination;
   }>(PURCHASE_PAYMENTS_QUERY, {
-    variables: { where: { limit: 100, page: 1 } },
+    variables: { where: buildFilterVariables() },
+    fetchPolicy: "cache-and-network",
+  });
+
+  // Fetch accounts for filter dropdown
+  const { data: accountsData, loading: accountsLoading } = useQuery<{
+    accounting__accounts: AccountsWithPagination;
+  }>(PURCHASE_PAYMENTS_ACCOUNTS_QUERY, {
+    variables: {
+      where: {
+        page: 1,
+        limit: 1000, // Get all accounts for dropdown
+      },
+    },
+  });
+
+  // Fetch suppliers for filter dropdown
+  const { data: suppliersData, loading: suppliersLoading } = useQuery<{
+    people__suppliers: SuppliersWithPagination;
+  }>(PURCHASE_PAYMENTS_SUPPLIERS_QUERY, {
+    variables: {
+      where: {
+        page: 1,
+        limit: 1000, // Get all suppliers for dropdown
+      },
+    },
   });
 
   const [searchParams] = useSearchParams();
   const purchasePaymentId = searchParams.get("purchasePaymentId");
 
+  const [productPurchase] = useLazyQuery<{
+    accounting__purchasePayments: PurchasePaymentsWithPagination;
+  }>(PURCHASE_PAYMENTS_QUERY, {
+    fetchPolicy: "network-only",
+  });
 
-    const [productPurchase] = useLazyQuery<{
-      accounting__purchasePayments: PurchasePaymentsWithPagination;
-    }>(PURCHASE_PAYMENTS_QUERY, {
-      fetchPolicy: "network-only",
-    });
+  // Process account options for Select component
+  const accountOptions = useMemo(() => {
+    if (!accountsData?.accounting__accounts?.nodes) return [];
+    return accountsData.accounting__accounts.nodes.map((account) => ({
+      value: account._id,
+      label: `${account.name} [${account.referenceNumber}]`,
+    }));
+  }, [accountsData]);
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  // Process supplier options for Select component
+  const supplierOptions = useMemo(() => {
+    if (!suppliersData?.people__suppliers?.nodes) return [];
+    return suppliersData.people__suppliers.nodes.map((supplier) => ({
+      value: supplier._id,
+      label: supplier.name,
+    }));
+  }, [suppliersData]);
+
+  const columns = useMemo<ColumnDef<PurchasePayment>[]>(
     () => [
       {
-        accessorKey: "paymentUID",
-        header: "Payment UID",
+        accessor: "paymentUID",
+        title: "Payment UID",
+        sortable: true,
+        Filter: (setValue) => (
+          <Input
+            type="text"
+            placeholder="Search by payment UID..."
+            onChange={(e) => setValue("paymentUID", e.target.value)}
+          />
+        ),
       },
       {
-        accessorFn: (row: PurchasePayment) =>
+        accessor: (row) =>
           `${row?.account?.name} [${row?.account?.referenceNumber}]`,
-        header: "Account",
+        title: "Account",
+        sortable: false,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by account"
+            value={datatableFilters.account}
+            data={accountOptions}
+            disabled={accountsLoading}
+            onChange={(value) => {
+              setValue("account", value);
+            }}
+            clearable
+            searchable
+            style={{ minWidth: 250 }}
+          />
+        ),
       },
       {
-        accessorKey: "supplier",
-        accessorFn: (row: PurchasePayment) => `${row?.supplier.name}`,
-        header: "Supplier",
+        accessor: (row) => row?.supplier?.name || "",
+        title: "Supplier",
+        sortable: false,
+        Filter: (setValue) => (
+          <Select
+            placeholder="Filter by supplier"
+            value={datatableFilters.supplierId}
+            data={supplierOptions}
+            disabled={suppliersLoading}
+            onChange={(value) => {
+              setValue("supplierId", value);
+            }}
+            clearable
+            searchable
+            style={{ minWidth: 200 }}
+          />
+        ),
       },
       {
-        accessorKey: "paidAmount",
-        // accessorFn: (row: PurchasePayment) => {
-        //   const totalAmount = row?.items?.reduce(
-        //     (total, current) => total + (current?.purchase.paidAmount ?? 0),
-        //     0
-        //   );
-
-        //   let color = "red";
-        //   if (totalAmount - row.paidAmount === 0) {
-        //     color = "green"
-        //   }
-        //   if (totalAmount - row.paidAmount > 0) {
-        //     color = "yellow"
-        //   }
-
-        //   return <Badge color={color}>{row.paidAmount}</Badge>;
-        // },
-        header: "Paid Amount",
+        accessor: (row) => (row?.date ? dateFormat(row?.date) : ""),
+        title: "Date",
+        sortKey: "date",
+        sortable: true,
+        Filter: (setValue) => (
+          <Flex gap="xs" direction="column">
+            <DateInput
+              placeholder="From date"
+              value={datatableFilters.fromDate || null}
+              onChange={(date) => setValue("fromDate", date)}
+              clearable
+              size="xs"
+            />
+            <DateInput
+              placeholder="To date"
+              value={datatableFilters.toDate || null}
+              onChange={(date) => setValue("toDate", date)}
+              clearable
+              size="xs"
+            />
+          </Flex>
+        ),
       },
-      // {
-      //   accessorFn: (row: PurchasePayment) =>
-      //     `${row?.account?.name} [${row?.account?.referenceNumber}]`,
-      //   header: "Account",
-      // },
-      // {
-      //   accessorFn: (row: PurchasePayment) =>
-      //   {
-      //     return (
-      //       <>
-
-      //         <Menu.Item
-      //           icon={<IconListDetails size={18} />}
-      //           onClick={() => {
-      //             setState({
-      //               purchasePaymentsRow: row,
-      //             });
-      //             detailsDrawerHandler.open();
-      //           }}
-      //         >
-      //           View
-      //         </Menu.Item>
-      //       </>
-      //     );
-      //     },
-      //   header: "Action",
-      // },
+      {
+        accessor: (row) =>
+          `${currencyNumberWithSymbolFormat(row?.paidAmount || 0)} BDT`,
+        title: "Paid Amount",
+        sortKey: "paidAmount",
+        sortable: true,
+      },
     ],
-    []
+    [
+      datatableFilters.account,
+      datatableFilters.supplierId,
+      datatableFilters.fromDate,
+      datatableFilters.toDate,
+      accountOptions,
+      supplierOptions,
+      accountsLoading,
+      suppliersLoading,
+    ]
   );
 
-  const handleRefetch = (variables: any) => {
-    setState({ refetching: true });
-    refetch(variables).finally(() => {
-      setState({ refetching: false });
-    });
-  };
-
-    useEffect(() => {
-   
-      if (purchasePaymentId) {
-        // alert(invoiceId);
-        productPurchase({
-          variables: {
-            where: {
-              filters: [
-                {
-                  key: "_id",
-                  operator: MatchOperator.Eq,
-                  value: purchasePaymentId,
-                },
-              ],
-            },
+  useEffect(() => {
+    if (purchasePaymentId) {
+      productPurchase({
+        variables: {
+          where: {
+            filters: [
+              {
+                key: "_id",
+                operator: MatchOperator.Eq,
+                value: purchasePaymentId,
+              },
+            ],
           },
-          onError: (err) => console.log(err)
-        }).then((res) => {
-         
-          setState({
-            purchasePaymentsRow:
-              res.data?.accounting__purchasePayments?.nodes?.[0],
-          });
-          detailsDrawerHandler.open();
+        },
+        onError: (err) => console.log(err),
+      }).then((res) => {
+        setState({
+          purchasePaymentsRow:
+            res.data?.accounting__purchasePayments?.nodes?.[0],
         });
-      }
-    }, [searchParams]);
+        detailsDrawerHandler.open();
+      });
+    }
+  }, [purchasePaymentId, productPurchase, setState, detailsDrawerHandler]);
 
   return (
     <>
       <PageTitle title="Purchase Payment-list" />
-      <DataTable
+
+      <div className="flex items-center justify-between mb-4">
+        <div></div>
+        <Button
+          leftIcon={<IconPlus size={16} />}
+          component={Link}
+          to={`/${params.tenant}/inventory-management/payments/create-purchase-payment`}
+          size="sm"
+        >
+          Make a payment
+        </Button>
+      </div>
+
+      <AppDatatable
         columns={columns}
         data={data?.accounting__purchasePayments.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.accounting__purchasePayments?.meta?.totalCount ?? 100}
-        RowActionMenu={(row: PurchasePayment) => (
-          <>
-            <Menu.Item
-              icon={<IconListDetails size={18} />}
-              onClick={() => {
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.accounting__purchasePayments?.meta?.totalCount ?? 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={(row: PurchasePayment) => (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
                 setState({
                   purchasePaymentsRow: row,
                 });
                 detailsDrawerHandler.open();
               }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-blue-600 rounded-md bg-blue-50 hover:bg-blue-100"
             >
+              <IconListDetails size={14} />
               View
-            </Menu.Item>
-          </>
+            </button>
+          </div>
         )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              component={Link}
-              to={`/${params.tenant}/inventory-management/payments/create-purchase-payment`}
-              size="sm"
-            >
-              Make a payment
-            </Button>
-          </>
-        }
+        onRowClick={(row: PurchasePayment) => {
+          setState({
+            purchasePaymentsRow: row,
+          });
+          detailsDrawerHandler.open();
+        }}
+        onSortChange={(column, direction) => {
+          setSorting({ column, direction });
+        }}
+        onFilterChange={(column, value) => {
+          setDatatableFilters((prev) => ({ ...prev, [column]: value }));
+          setPagination((prev) => ({ ...prev, page: 1 }));
+        }}
+        onPaginationChange={(page, pageSize) => {
+          setPagination({ page, pageSize });
+        }}
         loading={loading || state.refetching}
+        emptyMessage="No purchase payments found. Try adjusting your filters."
       />
-      {/* <MantineReactTable
-        columns={columns}
-        data={data?.accounting__purchasePayments.nodes ?? []}
-        // refetch={handleRefetch}
-        totalCount={data?.accounting__purchasePayments?.meta?.totalCount ?? 100}
-        mantineTableBodyRowProps={({ row }) => {
-          let background = "unset";
-          console.log(row.original);
-          if (row.original.paidAmount >= 0) {
-            background = "lightgreen"; // or any color you prefer
-          } else {
-            background = "salmon"; // or any color you prefer for negative paidAmount
-          }
-          return {
-            sx: { background, color: "white" },
-          };
-        }}
-        mantineTableBodyProps={{
-          sx: {
-            //stripe the rows, make odd rows a darker color
-            // "& tr:nth-of-type(odd)": {
-            //   backgroundColor: "#f5f5f5",
-            // },
-            "& td": {
-              backgroundColor: "unset",
-            },
-          },
-        }}
-        RowActionMenu={(row: PurchasePayment) => (
-          <>
-            <Menu.Item
-              icon={<IconListDetails size={18} />}
-              onClick={() => {
-                setState({
-                  purchasePaymentsRow: row,
-                });
-                detailsDrawerHandler.open();
-              }}
-            >
-              View
-            </Menu.Item>
-          </>
-        )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              component={Link}
-              to={`/${params.tenant}/inventory-management/payments/create-purchase-payment`}
-              size="sm"
-            >
-              Make a payment
-            </Button>
-          </>
-        }
-      /> */}
 
       <Drawer
         opened={openedDetailsDrawer}
@@ -256,5 +385,30 @@ const PurchasePaymentPage = () => {
     </>
   );
 };
+
+// Local query for accounts dropdown - isolated from other usages
+const PURCHASE_PAYMENTS_ACCOUNTS_QUERY = gql`
+  query PurchasePayments__accounts($where: CommonPaginationDto) {
+    accounting__accounts(where: $where) {
+      nodes {
+        _id
+        name
+        referenceNumber
+      }
+    }
+  }
+`;
+
+// Local query for suppliers dropdown - isolated from other usages
+const PURCHASE_PAYMENTS_SUPPLIERS_QUERY = gql`
+  query PurchasePayments__suppliers($where: CommonPaginationDto) {
+    people__suppliers(where: $where) {
+      nodes {
+        _id
+        name
+      }
+    }
+  }
+`;
 
 export default PurchasePaymentPage;
