@@ -12,7 +12,7 @@ import {
   PayrollsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
 import { INCREMENT_EMPLOYEE_QUERY } from "@/pages/(tenant)/people/pages/employees/increments/utils/increment.query";
 import { useMutation, useQuery } from "@apollo/client";
 import { Button, Drawer, NumberInput, Select, Text } from "@mantine/core";
@@ -202,7 +202,7 @@ const PayrollPage = () => {
         <Text size="sm">
           Are you sure you want to delete payroll for{" "}
           <strong>{payroll.employee?.name}</strong> with amount{" "}
-          <strong>{currencyNumberWithSymbolFormat(payroll.amount || 0)} BDT</strong>?
+          <strong>{currencyNumberWithSymbolFormat(payroll.amount || 0)}</strong>?
           This action cannot be undone.
         </Text>
       ),
@@ -262,7 +262,7 @@ const PayrollPage = () => {
       },
       {
         accessor: (row: Payroll) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: "Amount",
         sortKey: "amount",
         sortable: true,
@@ -287,7 +287,7 @@ const PayrollPage = () => {
       },
       {
         accessor: (row: Payroll) =>
-          row?.salaryDate ? dateFormat(row?.salaryDate) : "",
+          row?.salaryDate ? dateTimeFormatter.displayDate(row?.salaryDate) : "",
         title: "Salary Date",
         sortKey: "salaryDate",
         sortable: true,

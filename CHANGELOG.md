@@ -5,6 +5,45 @@ All notable changes to Graph POS Client will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2024-12-28
+
+### 🎉 Feature Release
+
+This release focuses on enhancing data formatting consistency, filtering capabilities, and developer experience across the application.
+
+### Added
+- **Date range filters** to purchase list page - Users can now filter purchases by purchase date and order date ranges for better data analysis and record management
+- **Centralized date formatting system** - New `dateTimeFormatter` utility with multiple predefined formatters (fullDateTime, displayDate, shortDate, etc.) for consistent date display across the application
+- **Table-specific date formatter** - New `formatTableColumnDate()` function allows centralized control over all table column date formats that can be easily changed from a single location
+
+### Changed
+- **Source dropdown in statements page** - Updated to use correct `Accounting_Transaction_Source` enum values for accurate transaction source filtering
+- **All table column date formatting** - Migrated 12 files from direct `dateTimeFormatter.displayDate()` calls to `formatTableColumnDate()` for better centralized control and consistency
+- **Date formatter utility structure** - Enhanced with example comments showing expected output formats (e.g., "01/01/2024", "Jan 1, 2024") for better developer understanding
+
+### Fixed
+- **Currency display duplication** - Removed redundant "BDT" text from 30 instances across 15 files since `currencyNumberWithSymbolFormat()` already includes currency symbols, eliminating display issues like "৳1,000 BDT"
+- **Date formatting inconsistency** - Replaced remaining `dateFormat()` calls with explicit `dateTimeFormatter` methods for consistent date display across all modules
+- **Table column date display** - Purchase and invoice dates now display consistently using the centralized formatter system
+
+### User Experience
+- **Improved filtering capabilities** - Enhanced data discovery with date range filters allowing users to narrow down large datasets more effectively
+- **Consistent currency display** - Clean, professional currency formatting without duplicate symbols throughout all financial displays
+- **Uniform date presentation** - All table columns now show dates in consistent DD/MM/YYYY format, making data easier to read and understand
+
+### 🚀 Technical Highlights
+
+#### Developer Experience
+- **Centralized formatting control** - Changes to date or currency formats can now be made from single locations, reducing maintenance overhead
+- **Type-safe enum usage** - Source dropdowns now use proper GraphQL enum values for better type safety and data integrity
+- **Clear formatting intent** - Explicit formatter method names make code more readable and self-documenting
+- **Comprehensive documentation** - Detailed changelog guidelines ensure consistent project documentation going forward
+
+#### Code Quality
+- **Reduced code duplication** - Centralized formatters eliminate repeated formatting logic across components
+- **Improved maintainability** - Single source of truth for formatting rules makes updates easier and less error-prone
+- **Better separation of concerns** - Table-specific formatters separated from general-purpose formatters for clearer responsibilities
+
 ## [0.0.1] - 2024-12-28
 
 ### 🎉 Initial Release

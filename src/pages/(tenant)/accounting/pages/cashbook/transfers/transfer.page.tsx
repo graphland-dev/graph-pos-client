@@ -10,7 +10,7 @@ import {
   TransfersWithPagination,
 } from '@/commons/graphql-models/graphql';
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter } from '@/commons/utils/dateFormat';
 import { useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Select, Text } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -215,14 +215,14 @@ const TransferPage = () => {
       },
       {
         accessor: (row: Transfer) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: 'Amount',
         sortKey: 'amount',
         sortable: true,
       },
       {
         accessor: (row: Transfer) =>
-          row?.date ? dateFormat(row?.date) : '',
+          row?.date ? dateTimeFormatter.displayDate(row?.date) : '',
         title: 'Date',
         sortKey: 'date',
         sortable: true,

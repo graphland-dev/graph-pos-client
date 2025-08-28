@@ -21,7 +21,7 @@ import {
   INCREMENT_DELETE_MUTATION,
 } from '../../../increments/utils/increment.query';
 import EmployeeIncrementsForm from './employee_details_form/EmployeeIncrementsForm';
-import dateFormat from '@/commons/utils/dateFormat';
+import { formatTableColumnDate } from '@/commons/utils/dateFormat';
 
 interface IState {
   refetching: boolean;
@@ -96,7 +96,7 @@ const EmployeeDetailsIncrements: React.FC<IIncrementsDetailsProps> = ({
         header: 'Note',
       },
       {
-        accessorFn: (row: EmployeeIncrement) => dateFormat(row?.date),
+        accessorFn: (row: EmployeeIncrement) => formatTableColumnDate(row?.date),
         accessorKey: 'date',
         header: 'Date',
       },

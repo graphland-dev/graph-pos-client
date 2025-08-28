@@ -1,6 +1,6 @@
 import Attachments from '@/commons/components/Attactment/Attachments.tsx';
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter } from '@/commons/utils/dateFormat';
 import { Expense } from '@/commons/graphql-models/graphql';
 import { FOLDER__NAME } from '@/commons/models/FolderName';
 import { Divider, Paper, Text, Title } from '@mantine/core';
@@ -56,7 +56,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">Amount: </span>
-            {currencyNumberWithSymbolFormat(expenseDetails?.amount || 0)} BDT
+            {currencyNumberWithSymbolFormat(expenseDetails?.amount || 0)}
           </Text>
         </Paper>
         <Paper
@@ -69,7 +69,7 @@ const ViewExpenseDetails: React.FC<IExpenseDetailsProps> = ({
           <Divider />
           <Text className="flex justify-between mt-2">
             <span className="font-semibold text-neutral-primary">Date: </span>
-            {dateFormat(expenseDetails?.date)}
+            {dateTimeFormatter.displayDate(expenseDetails?.date)}
           </Text>
         </Paper>
         <Paper

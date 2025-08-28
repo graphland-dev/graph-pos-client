@@ -60,10 +60,9 @@ const PurchaseCardList: React.FC<{
             </Text>
             <Text size={'sm'}>
               Due amount: {currencyNumberWithSymbolFormat(dueAmount(purchase))}
-              BDT
             </Text>
             <Text size={'sm'}>
-              Net total: {currencyNumberWithSymbolFormat(purchase?.netTotal || 0)} BDT{' '}
+              Net total: {currencyNumberWithSymbolFormat(purchase?.netTotal || 0)}{' '}
             </Text>
           </Paper>
         ))}

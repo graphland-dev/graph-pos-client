@@ -12,7 +12,7 @@ import {
   SuppliersWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { gql, useLazyQuery, useQuery } from "@apollo/client";
 import { Button, Drawer, Input, Select, Title, Flex } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
@@ -240,7 +240,7 @@ const PurchasePaymentPage = () => {
         ),
       },
       {
-        accessor: (row) => (row?.date ? dateFormat(row?.date) : ""),
+        accessor: (row) => (row?.date ? formatTableColumnDate(row?.date) : ""),
         title: "Date",
         sortKey: "date",
         sortable: true,
@@ -265,7 +265,7 @@ const PurchasePaymentPage = () => {
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.paidAmount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.paidAmount || 0),
         title: "Paid Amount",
         sortKey: "paidAmount",
         sortable: true,

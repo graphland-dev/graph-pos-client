@@ -11,7 +11,7 @@ import {
   MatchOperator,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import {
   Button,
@@ -237,7 +237,7 @@ const ExpenseListPage = () => {
         ),
       },
       {
-        accessor: (row: Expense) => (row?.date ? dateFormat(row?.date) : ""),
+        accessor: (row: Expense) => (row?.date ? formatTableColumnDate(row?.date) : ""),
         title: "Date",
         sortKey: "date",
         sortable: true,
@@ -289,7 +289,7 @@ const ExpenseListPage = () => {
       },
       {
         accessor: (row: Expense) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: "Amount",
         sortKey: "amount",
         sortable: true,
@@ -338,7 +338,7 @@ const ExpenseListPage = () => {
           Are you sure you want to delete expense for{" "}
           <strong>{expense.purpose}</strong> with amount{" "}
           <strong>
-            {currencyNumberWithSymbolFormat(expense.amount || 0)} BDT
+            {currencyNumberWithSymbolFormat(expense.amount || 0)}
           </strong>
           ? This action cannot be undone.
         </Text>

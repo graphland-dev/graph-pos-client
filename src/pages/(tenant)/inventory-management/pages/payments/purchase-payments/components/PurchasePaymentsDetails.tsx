@@ -1,5 +1,5 @@
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter, formatTableColumnDate } from '@/commons/utils/dateFormat';
 import { PurchasePayment } from '@/commons/graphql-models/graphql';
 import {
   Anchor,
@@ -74,7 +74,7 @@ const PurchasePaymentsDetails: React.FC<{
           {element.purchaseUID}
         </Anchor>
       </td>
-      <td>{dateFormat(element.purchase.purchaseDate)} </td>
+      <td>{formatTableColumnDate(element.purchase.purchaseDate)} </td>
       <td>{currencyNumberWithSymbolFormat(element.purchase.netTotal)}</td>
       <td>{currencyNumberWithSymbolFormat(element.purchase.paidAmount || 0)}</td>
     </tr>

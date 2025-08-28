@@ -24,7 +24,7 @@ import {
   INCREMENT_EMPLOYEE_QUERY,
 } from './utils/increment.query';
 import PageTitle from '@/commons/components/PageTitle';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter } from '@/commons/utils/dateFormat';
 
 interface IState {
   refetching: boolean;
@@ -182,7 +182,7 @@ const Increments = () => {
           Are you sure you want to delete increment for{' '}
           <strong>{increment.employee?.name}</strong> with amount{' '}
           <strong>
-            {currencyNumberWithSymbolFormat(increment.amount || 0)} BDT
+            {currencyNumberWithSymbolFormat(increment.amount || 0)}
           </strong>
           ? This action cannot be undone.
         </Text>
@@ -224,7 +224,7 @@ const Increments = () => {
       },
       {
         accessor: (row: EmployeeIncrement) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: 'Increment Amount',
         sortKey: 'amount',
         sortable: true,
@@ -267,7 +267,7 @@ const Increments = () => {
       },
       {
         accessor: (row: EmployeeIncrement) =>
-          row?.date ? dateFormat(row?.date) : '',
+          row?.date ? dateTimeFormatter.displayDate(row?.date) : '',
         title: 'Date',
         sortKey: 'date',
         sortable: true,
