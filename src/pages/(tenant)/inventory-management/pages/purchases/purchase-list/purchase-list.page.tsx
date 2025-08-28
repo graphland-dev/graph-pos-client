@@ -4,7 +4,7 @@ import AppDatatable, {
 import PageTitle from "@/commons/components/PageTitle";
 import { confirmModal } from "@/commons/components/confirm.tsx";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import {
   CommonFindDocumentDto,
   CommonPaginationDto,
@@ -15,6 +15,7 @@ import {
 } from "@/commons/graphql-models/graphql";
 import { gql, useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Input, Select } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useSetState } from "@mantine/hooks";
 import { IconFileInfo, IconPlus, IconTrash } from "@tabler/icons-react";
 import { useEffect, useMemo, useState } from "react";
@@ -80,6 +81,40 @@ const PurchaseListPage = () => {
         key: "supplier",
         operator: MatchOperator.Eq,
         value: datatableFilters.supplier,
+      });
+    }
+
+    // Add date range filters for purchase date
+    if (datatableFilters.purchaseDateStart) {
+      graphqlFilters.push({
+        key: "purchaseDate",
+        operator: MatchOperator.Gte,
+        value: datatableFilters.purchaseDateStart,
+      });
+    }
+
+    if (datatableFilters.purchaseDateEnd) {
+      graphqlFilters.push({
+        key: "purchaseDate",
+        operator: MatchOperator.Lte,
+        value: datatableFilters.purchaseDateEnd,
+      });
+    }
+
+    // Add date range filters for purchase order date
+    if (datatableFilters.orderDateStart) {
+      graphqlFilters.push({
+        key: "purchaseOrderDate",
+        operator: MatchOperator.Gte,
+        value: datatableFilters.orderDateStart,
+      });
+    }
+
+    if (datatableFilters.orderDateEnd) {
+      graphqlFilters.push({
+        key: "purchaseOrderDate",
+        operator: MatchOperator.Lte,
+        value: datatableFilters.orderDateEnd,
       });
     }
 
@@ -195,16 +230,76 @@ const PurchaseListPage = () => {
         ),
       },
       {
-        accessor: (row) => dateFormat(row?.purchaseDate),
+        accessor: (row) => formatTableColumnDate(row?.purchaseDate),
         title: "Purchase Date",
         sortKey: "purchaseDate",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+            <DatePickerInput
+              label="Start date"
+              value={
+                datatableFilters.purchaseDateStart
+                  ? new Date(datatableFilters.purchaseDateStart)
+                  : null
+              }
+              onChange={(value: Date | null) =>
+                setValue("purchaseDateStart", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+            <DatePickerInput
+              label="End date"
+              value={
+                datatableFilters.purchaseDateEnd
+                  ? new Date(datatableFilters.purchaseDateEnd)
+                  : null
+              }
+              onChange={(value: Date | null) =>
+                setValue("purchaseDateEnd", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+          </div>
+        ),
       },
       {
-        accessor: (row) => dateFormat(row?.purchaseOrderDate),
+        accessor: (row) => formatTableColumnDate(row?.purchaseOrderDate),
         title: "Order Date",
         sortKey: "purchaseOrderDate",
         sortable: true,
+        Filter: (setValue) => (
+          <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
+            <DatePickerInput
+              label="Start date"
+              value={
+                datatableFilters.orderDateStart
+                  ? new Date(datatableFilters.orderDateStart)
+                  : null
+              }
+              onChange={(value: Date | null) =>
+                setValue("orderDateStart", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+            <DatePickerInput
+              label="End date"
+              value={
+                datatableFilters.orderDateEnd
+                  ? new Date(datatableFilters.orderDateEnd)
+                  : null
+              }
+              onChange={(value: Date | null) =>
+                setValue("orderDateEnd", value?.toISOString() || "")
+              }
+              size="sm"
+              clearable
+            />
+          </div>
+        ),
       },
       {
         accessor: (row) => {
@@ -217,9 +312,9 @@ const PurchaseListPage = () => {
             color = "yellow";
           }
           return (
-            <Badge color={color}>{`${currencyNumberWithSymbolFormat(
+            <Badge color={color}>{currencyNumberWithSymbolFormat(
               totalDue
-            )} BDT`}</Badge>
+            )}</Badge>
           );
         },
         title: "Due Amount",
@@ -227,20 +322,28 @@ const PurchaseListPage = () => {
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.paidAmount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.paidAmount || 0),
         title: "Paid Amount",
         sortKey: "paidAmount",
         sortable: true,
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Net Total",
         sortKey: "netTotal",
         sortable: true,
       },
     ],
-    [datatableFilters.supplier, supplierOptions, suppliersLoading]
+    [
+      datatableFilters.supplier,
+      datatableFilters.purchaseDateStart,
+      datatableFilters.purchaseDateEnd,
+      datatableFilters.orderDateStart,
+      datatableFilters.orderDateEnd,
+      supplierOptions,
+      suppliersLoading,
+    ]
   );
 
   useEffect(() => {

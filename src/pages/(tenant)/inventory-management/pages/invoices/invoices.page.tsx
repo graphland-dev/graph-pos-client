@@ -11,7 +11,7 @@ import {
   ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -205,7 +205,7 @@ const InvoicesPage = () => {
         ),
       },
       {
-        accessor: (row) => (row?.date ? dateFormat(row?.date) : ""),
+        accessor: (row) => (row?.date ? formatTableColumnDate(row?.date) : ""),
         title: "Purchase Date",
         sortKey: "date",
         sortable: true,
@@ -234,7 +234,7 @@ const InvoicesPage = () => {
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Sub Total",
         sortKey: "netTotal",
         sortable: true,
@@ -257,7 +257,7 @@ const InvoicesPage = () => {
           // Return Badge component for custom rendering
           return (
             <Badge color={color}>
-              {currencyNumberWithSymbolFormat(totalDue)} BDT
+              {currencyNumberWithSymbolFormat(totalDue)}
             </Badge>
           );
         },
@@ -266,14 +266,14 @@ const InvoicesPage = () => {
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.paidAmount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.paidAmount || 0),
         title: "Paid Amount",
         sortKey: "paidAmount",
         sortable: true,
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Net Total",
         sortKey: "netTotal",
         sortable: true,

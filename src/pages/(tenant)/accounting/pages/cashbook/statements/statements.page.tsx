@@ -5,12 +5,13 @@ import AppDatatable, {
 import PageTitle from '@/commons/components/PageTitle';
 import {
   AccountsWithPagination,
+  Accounting_Transaction_Source,
   MatchOperator,
   Transaction,
   TransactionsWithPagination,
 } from '@/commons/graphql-models/graphql';
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter } from '@/commons/utils/dateFormat';
 import { useQuery } from '@apollo/client';
 import { Badge, NumberInput, Select, Text, Tooltip } from '@mantine/core';
 import { DatePickerInput } from '@mantine/dates';
@@ -155,14 +156,17 @@ const StatementPage = () => {
     }));
   }, [accountData]);
 
-  // Source options (these would typically come from an enum or be configured)
+  // Source options from enum
   const sourceOptions = useMemo(() => [
-    { value: 'BalanceAdjustment', label: 'Balance Adjustment' },
-    { value: 'Transfer', label: 'Transfer' },
-    { value: 'Invoice', label: 'Invoice' },
-    { value: 'Purchase', label: 'Purchase' },
-    { value: 'Expense', label: 'Expense' },
-    { value: 'Payroll', label: 'Payroll' },
+    { value: Accounting_Transaction_Source.BalanceAdjustment, label: 'Balance Adjustment' },
+    { value: Accounting_Transaction_Source.BalanceTransfer, label: 'Balance Transfer' },
+    { value: Accounting_Transaction_Source.ClientInvoicePayment, label: 'Client Invoice Payment' },
+    { value: Accounting_Transaction_Source.EmployeeSalary, label: 'Employee Salary' },
+    { value: Accounting_Transaction_Source.Expense, label: 'Expense' },
+    { value: Accounting_Transaction_Source.InventoryInvoicePayment, label: 'Inventory Invoice Payment' },
+    { value: Accounting_Transaction_Source.LoanPayment, label: 'Loan Payment' },
+    { value: Accounting_Transaction_Source.Payroll, label: 'Payroll' },
+    { value: Accounting_Transaction_Source.PurchasePayment, label: 'Purchase Payment' },
   ], []);
 
   // Type options
@@ -182,7 +186,7 @@ const StatementPage = () => {
     () => [
       {
         accessor: (row: Transaction) =>
-          row?.createdAt ? dateFormat(row?.createdAt) : '',
+          row?.createdAt ? dateTimeFormatter.displayDate(row?.createdAt) : '',
         title: 'Date',
         sortKey: 'createdAt',
         sortable: true,
@@ -247,7 +251,7 @@ const StatementPage = () => {
       },
       {
         accessor: (row: Transaction) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: 'Amount',
         sortKey: 'amount',
         sortable: true,

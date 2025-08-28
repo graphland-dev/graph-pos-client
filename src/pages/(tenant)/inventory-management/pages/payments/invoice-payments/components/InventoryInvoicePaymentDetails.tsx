@@ -1,4 +1,4 @@
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter } from '@/commons/utils/dateFormat';
 import {
   InventoryInvoicePayment,
   MatchOperator,
@@ -136,7 +136,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">Date:</span>
-            {dateFormat(data?.accounting__InventoryInvoicePayment.date)}
+            {dateTimeFormatter.displayDate(data?.accounting__InventoryInvoicePayment.date)}
           </Text>
           <Text className="flex justify-between">
             <span className="font-semibold text-neutral-primary">
@@ -226,7 +226,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
             <span className="font-semibold text-neutral-primary">
               Purchase Date:
             </span>
-            {dateFormat(
+            {dateTimeFormatter.displayDate(
               data?.accounting__InventoryInvoicePayment.invoice?.date,
             )}
           </Text>

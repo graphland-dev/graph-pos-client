@@ -1,5 +1,5 @@
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
 import { useQuery } from "@apollo/client";
 import { Badge, Card, Group, Stack, Table, Text, Title } from "@mantine/core";
 import { INVENTORY_PRODUCT_QUOTATION_QUERY } from "../utils/query.quotations";
@@ -62,11 +62,11 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
           </div>
           <div>
             <Text size="sm" color="dimmed">Date</Text>
-            <Text weight={500}>{dateFormat(quotation.date)}</Text>
+            <Text weight={500}>{dateTimeFormatter.displayDate(quotation.date)}</Text>
           </div>
           <div>
             <Text size="sm" color="dimmed">Valid Until</Text>
-            <Text weight={500}>{quotation.validUntil ? dateFormat(quotation.validUntil) : "N/A"}</Text>
+            <Text weight={500}>{quotation.validUntil ? dateTimeFormatter.displayDate(quotation.validUntil) : "N/A"}</Text>
           </div>
         </Group>
 
@@ -96,8 +96,8 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
                 <td>{product.name}</td>
                 <td>{product.code}</td>
                 <td>{product.quantity}</td>
-                <td>{currencyNumberWithSymbolFormat(product.unitSellPrice || 0)} BDT</td>
-                <td>{currencyNumberWithSymbolFormat(product.netAmount || 0)} BDT</td>
+                <td>{currencyNumberWithSymbolFormat(product.unitSellPrice || 0)}</td>
+                <td>{currencyNumberWithSymbolFormat(product.netAmount || 0)}</td>
               </tr>
             ))}
           </tbody>
@@ -109,26 +109,26 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
         <Stack spacing="xs">
           <Group position="apart">
             <Text>Subtotal:</Text>
-            <Text>{currencyNumberWithSymbolFormat(quotation.subTotal || 0)} BDT</Text>
+            <Text>{currencyNumberWithSymbolFormat(quotation.subTotal || 0)}</Text>
           </Group>
           
           {quotation.netDiscountAmount > 0 && (
             <Group position="apart">
               <Text>Discount:</Text>
-              <Text>-{currencyNumberWithSymbolFormat(quotation.netDiscountAmount)} BDT</Text>
+              <Text>-{currencyNumberWithSymbolFormat(quotation.netDiscountAmount)}</Text>
             </Group>
           )}
           
           {quotation.netTaxAmount > 0 && (
             <Group position="apart">
               <Text>Tax:</Text>
-              <Text>{currencyNumberWithSymbolFormat(quotation.netTaxAmount)} BDT</Text>
+              <Text>{currencyNumberWithSymbolFormat(quotation.netTaxAmount)}</Text>
             </Group>
           )}
           
           <Group position="apart" style={{ borderTop: "1px solid #e0e0e0", paddingTop: 8 }}>
             <Text weight={700}>Net Total:</Text>
-            <Text weight={700}>{currencyNumberWithSymbolFormat(quotation.netTotal || 0)} BDT</Text>
+            <Text weight={700}>{currencyNumberWithSymbolFormat(quotation.netTotal || 0)}</Text>
           </Group>
         </Stack>
       </Card>

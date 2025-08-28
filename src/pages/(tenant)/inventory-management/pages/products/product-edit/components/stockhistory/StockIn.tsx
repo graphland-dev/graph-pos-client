@@ -1,4 +1,4 @@
-import dateFormat from '@/commons/utils/dateFormat';
+import { formatTableColumnDate } from '@/commons/utils/dateFormat';
 import { ProductStock } from '@/commons/graphql-models/graphql';
 import { Table } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
@@ -17,7 +17,7 @@ const StockIn: React.FC<IStockProps> = ({ data, removeStock }) => {
   const rows = data.map((item) => (
     <tr key={item._id}>
       <td>{item?.purchaseUID}</td>
-      <td>{dateFormat(item?.createdAt)}</td>
+      <td>{formatTableColumnDate(item?.createdAt)}</td>
       <td>{item?.quantity}</td>
       <td>{item?.note}</td>
       <td>{item?.source}</td>

@@ -11,7 +11,7 @@ import {
   TransactionsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Drawer, Select, Text } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
@@ -199,7 +199,7 @@ const AdjustmentPage = () => {
       },
       {
         accessor: (row: Transaction) =>
-          `${currencyNumberWithSymbolFormat(row?.amount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.amount || 0),
         title: "Amount",
         sortKey: "amount",
         sortable: true,
@@ -218,7 +218,7 @@ const AdjustmentPage = () => {
       },
       {
         accessor: (row: Transaction) =>
-          row?.createdAt ? dateFormat(row?.createdAt) : "",
+          row?.createdAt ? dateTimeFormatter.displayDate(row?.createdAt) : "",
         title: "Date",
         sortKey: "createdAt",
         sortable: true,

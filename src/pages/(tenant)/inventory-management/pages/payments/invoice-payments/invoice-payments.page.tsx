@@ -3,7 +3,7 @@ import AppDatatable, {
 } from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import {
   CommonFindDocumentDto,
   CommonPaginationDto,
@@ -177,7 +177,7 @@ const InvoicePaymentsPage = () => {
         ),
       },
       {
-        accessor: (row) => (row?.date ? dateFormat(row?.date) : ""),
+        accessor: (row) => (row?.date ? formatTableColumnDate(row?.date) : ""),
         title: "Date",
         sortKey: "date",
         sortable: true,
@@ -202,7 +202,7 @@ const InvoicePaymentsPage = () => {
       },
       {
         accessor: (row) =>
-          `${currencyNumberWithSymbolFormat(row?.netAmount || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.netAmount || 0),
         title: "Net Total",
         sortKey: "netAmount",
         sortable: true,

@@ -1,4 +1,4 @@
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
 import { ProductPurchase } from "@/commons/graphql-models/graphql";
 import { Flex, Paper, Space, Text, Title } from "@mantine/core";
 import React from "react";
@@ -26,10 +26,10 @@ const PurchaseDetails: React.FC<{
 
               <div className="!text-right">
                 <Text size={"sm"} fw={500}>
-                  {dateFormat(details?.purchaseDate)}
+                  {dateTimeFormatter.displayDate(details?.purchaseDate)}
                 </Text>
                 <Text size={"sm"} fw={500}>
-                  {dateFormat(details?.purchaseOrderDate)}
+                  {dateTimeFormatter.displayDate(details?.purchaseOrderDate)}
                 </Text>
                 <Text size={"sm"} fw={500}>
                   {details?.purchaseUID}
@@ -88,7 +88,7 @@ const PurchaseDetails: React.FC<{
               <Text fw={500}>{details?.supplier?.name}</Text>
               <Text fw={500}>{details?.supplier?.contactNumber}</Text>
               <Text fw={500}>{details?.supplier?.companyName}</Text>
-              <Text fw={500}>{dateFormat(details?.supplier?.updatedAt)}</Text>
+              <Text fw={500}>{dateTimeFormatter.displayDate(details?.supplier?.updatedAt)}</Text>
               <Text fw={500}>{details?.supplier?.email}</Text>
               <Text fw={500}>{details?.supplier?.address}</Text>
             </div>
@@ -135,7 +135,7 @@ const PurchaseDetails: React.FC<{
                 <Flex justify={"space-between"} align={"center"}>
                   <Flex gap={8} align={"center"}>
                     <Text fw={500}>{item?.paymentUID}</Text> -
-                    <Text fw={500}>{dateFormat(item?.date)}</Text>
+                    <Text fw={500}>{dateTimeFormatter.displayDate(item?.date)}</Text>
                   </Flex>
                   <Text fw={500}>{item?.amount ?? 0} BDT</Text>
                 </Flex>

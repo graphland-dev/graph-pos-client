@@ -243,7 +243,7 @@ const Employees = () => {
       },
       {
         accessor: (row: Employee) =>
-          `${currencyNumberWithSymbolFormat(row?.salary || 0)} BDT`,
+          currencyNumberWithSymbolFormat(row?.salary || 0),
         title: "Salary",
         sortKey: "salary",
         sortable: true,

@@ -7,7 +7,7 @@ import {
   ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
@@ -214,7 +214,7 @@ const QuotationsPage = () => {
         ),
       },
       {
-        accessor: (row) => row?.date ? dateFormat(row?.date) : "",
+        accessor: (row) => row?.date ? formatTableColumnDate(row?.date) : "",
         title: "Quotation Date",
         sortKey: "date",
         sortable: true,
@@ -242,19 +242,19 @@ const QuotationsPage = () => {
         ),
       },
       {
-        accessor: (row) => row?.validUntil ? dateFormat(row?.validUntil) : "",
+        accessor: (row) => row?.validUntil ? formatTableColumnDate(row?.validUntil) : "",
         title: "Valid Until",
         sortKey: "validUntil", 
         sortable: true,
       },
       {
-        accessor: (row) => `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Sub Total",
         sortKey: "netTotal",
         sortable: true,
       },
       {
-        accessor: (row) => `${currencyNumberWithSymbolFormat(row?.netTotal || 0)} BDT`,
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Net Total",
         sortKey: "netTotal",
         sortable: true,

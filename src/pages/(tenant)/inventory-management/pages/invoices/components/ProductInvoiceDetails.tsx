@@ -4,7 +4,7 @@ import {
   ProductInvoice,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
 import { gql, useQuery } from "@apollo/client";
 import {
   Anchor,
@@ -211,7 +211,7 @@ const ProductInvoiceDetails: React.FC<{
             </Text>
             <Text className="flex justify-between">
               <span className="font-semibold">Date:</span>{" "}
-              {dateFormat(invoice?.date)}
+              {dateTimeFormatter.displayDate(invoice?.date)}
             </Text>
           </Paper>
 
@@ -257,7 +257,7 @@ const ProductInvoiceDetails: React.FC<{
               <span className="font-semibold text-neutral-primary">
                 create Date:
               </span>
-              {dateFormat(invoice?.client?.createdAt)}
+              {dateTimeFormatter.displayDate(invoice?.client?.createdAt)}
             </Text>
           </Paper>
         </div>

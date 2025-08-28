@@ -1,4 +1,4 @@
-import dateFormat from "@/commons/utils/dateFormat";
+import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from "../utils/query.invoices";
 import {
   InventoryInvoicePaymentsWithPagination,
@@ -93,7 +93,7 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
             {element.inventoryInvoicePaymentUID}
           </Anchor>
         </td>
-        <td>{element?.date ? dateFormat(element.date) : ""}</td>
+        <td>{element?.date ? formatTableColumnDate(element.date) : ""}</td>
         <td>{element.netAmount} </td>
       </tr>
     )

@@ -8,7 +8,7 @@ import {
   MatchOperator,
 } from '@/commons/graphql-models/graphql';
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import dateFormat from '@/commons/utils/dateFormat';
+import { dateTimeFormatter, formatTableColumnDate } from '@/commons/utils/dateFormat';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { Button, Drawer, Input, Text } from '@mantine/core';
 import { useSetState } from '@mantine/hooks';
@@ -199,7 +199,7 @@ const AccountsPage = () => {
       },
       {
         accessor: (row: Account) =>
-          row?.openedAt ? dateFormat(row?.openedAt) : '',
+          row?.openedAt ? formatTableColumnDate(row?.openedAt) : '',
         title: 'Date',
         sortKey: 'openedAt',
         sortable: true,
