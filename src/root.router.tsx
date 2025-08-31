@@ -61,7 +61,7 @@ export const rootRouter = createBrowserRouter([
             children: accountingModuleRouter,
           },
           {
-            path: "inventory-Management",
+            path: "inventory-management",
             children: inventoryModuleRouter,
           },
           {

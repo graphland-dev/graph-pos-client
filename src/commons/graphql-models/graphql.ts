@@ -1,4 +1,4 @@
- 
+/* eslint-disable */
 import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/core';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -30,7 +30,10 @@ export enum Accounting_Transaction_Source {
   InventoryInvoicePayment = 'INVENTORY_INVOICE_PAYMENT',
   LoanPayment = 'LOAN_PAYMENT',
   Payroll = 'PAYROLL',
-  PurchasePayment = 'PURCHASE_PAYMENT'
+  ProductReturnRefund = 'PRODUCT_RETURN_REFUND',
+  PurchasePayment = 'PURCHASE_PAYMENT',
+  ReturnProcessingFee = 'RETURN_PROCESSING_FEE',
+  StoreCreditIssue = 'STORE_CREDIT_ISSUE'
 }
 
 export enum Accounting_Transaction_Type {
@@ -294,6 +297,42 @@ export type CreateProductQuotationInput = {
   validUntil?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type CreateProductReturnInput = {
+  /** Notes or comments from the customer about the return. Visible to customer service and may be included in communications. */
+  customerNotes?: InputMaybe<Scalars['String']['input']>;
+  /** Internal staff notes about the return processing. Not visible to customers, used for operational tracking and decision-making. */
+  internalNotes?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the invoice from which products are being returned. Used to validate return eligibility, calculate refund amounts, and automatically associate with the invoice client. */
+  invoiceId: Scalars['String']['input'];
+  /** Primary reason for the return (e.g., DAMAGED, DEFECTIVE, WRONG_ITEM, CUSTOMER_CHANGED_MIND). Affects return policy and processing. */
+  reason: Product_Return_Reason;
+  /** Detailed explanation of the return reason. Provides additional context beyond the primary reason category. */
+  reasonDescription?: InputMaybe<Scalars['String']['input']>;
+  /** External reference number (e.g., RMA number, customer service ticket ID) for tracking and correlation with other systems. */
+  reference?: InputMaybe<Scalars['String']['input']>;
+  /** Fee charged for processing the return and restocking items (e.g., $5.00). This amount is deducted from the total refund. Set to 0 for no fee. */
+  restockingFee?: InputMaybe<Scalars['Float']['input']>;
+  /** Date when the return was initiated. If not provided, defaults to current date and time. */
+  returnDate?: InputMaybe<Scalars['DateTime']['input']>;
+  /** Array of products being returned with quantities and condition details. Each item must have been purchased in the original invoice. */
+  returnItems: Array<CreateProductReturnItemInput>;
+  /** Type of return processing: FULL_REFUND (money back), PARTIAL_REFUND (partial money back), STORE_CREDIT (credit for future purchases), or EXCHANGE (swap for different items). */
+  returnType: Product_Return_Type;
+};
+
+export type CreateProductReturnItemInput = {
+  /** Whether this item can be restocked and resold (true) or should be marked for disposal/repair (false). Defaults to true if not specified. */
+  canRestock?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Physical condition of the returned item (e.g., "New", "Used - Good", "Damaged", "Defective"). Affects restocking and refund decisions. */
+  condition?: InputMaybe<Scalars['String']['input']>;
+  /** Specific notes about this individual item being returned. Details about damage, missing parts, or other item-specific issues. */
+  itemNotes?: InputMaybe<Scalars['String']['input']>;
+  /** Reference ID of the product being returned. Must match a product reference that was included in the original invoice. */
+  referenceId: Scalars['String']['input'];
+  /** Number of units being returned for this product. Must be greater than 0 and cannot exceed the originally purchased quantity. */
+  returnQuantity: Scalars['Int']['input'];
+};
+
 export type CreateProductStockInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   productId: Scalars['String']['input'];
@@ -311,6 +350,26 @@ export type CreatePurchasePaymentInput = {
   note?: InputMaybe<Scalars['String']['input']>;
   receptNo?: InputMaybe<Scalars['String']['input']>;
   supplierId: Scalars['String']['input'];
+};
+
+export type CreateReturnPaymentInput = {
+  /** Array of payment methods used for the refund. Can include multiple methods like cash, card, store credit, etc. Total is calculated from the sum of all payment items. */
+  paymentItems: Array<CreateReturnPaymentItemInput>;
+  /** Internal notes about payment processing, special conditions, or approval details. Used for audit trails and staff communication. */
+  processingNotes?: InputMaybe<Scalars['String']['input']>;
+  /** ID of the approved product return for which payment/refund is being processed. Return must have status APPROVED. */
+  productReturnId: Scalars['String']['input'];
+  /** External payment reference number from payment processor, bank, or accounting system for reconciliation purposes. */
+  reference?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CreateReturnPaymentItemInput = {
+  /** ID of the account to be debited for this refund (e.g., cash register, bank account). Required for accounting entries and reconciliation. */
+  accountId?: InputMaybe<Scalars['String']['input']>;
+  /** Amount to be refunded through this payment method. Must be greater than 0. Multiple payment items can split the total refund amount. */
+  amount?: InputMaybe<Scalars['Float']['input']>;
+  /** Type of payment method for this refund item. */
+  type: Scalars['String']['input'];
 };
 
 export type CreateRoleInput = {
@@ -531,6 +590,29 @@ export type InventoryInvoicePaymentsWithPagination = {
   nodes?: Maybe<Array<InventoryInvoicePayment>>;
 };
 
+export type InvoiceReportFilterInput = {
+  customerId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type InvoiceReportResponse = {
+  __typename?: 'InvoiceReportResponse';
+  totalDiscount: Scalars['Float']['output'];
+  totalDueAmount: Scalars['Float']['output'];
+  totalInvoices: Scalars['Int']['output'];
+  totalProfit: Scalars['Float']['output'];
+  totalPurchasePrice: Scalars['Float']['output'];
+  totalSellPrice: Scalars['Float']['output'];
+};
+
+export type InvoiceTimeSeriesResponse = {
+  __typename?: 'InvoiceTimeSeriesResponse';
+  grouping: TimeSeriesGrouping;
+  profitTimeSeries: Array<TimeSeriesDataPoint>;
+  revenueTimeSeries: Array<TimeSeriesDataPoint>;
+};
+
 export type LoginInput = {
   email: Scalars['String']['input'];
   password: Scalars['String']['input'];
@@ -577,6 +659,7 @@ export type Mutation = {
   accounting__createInventoryInvoicePayment: CommonMutationResponse;
   accounting__createPayroll: CommonMutationResponse;
   accounting__createPurchasePayment: CommonMutationResponse;
+  accounting__createReturnPayment: CommonMutationResponse;
   accounting__createTransaction: CommonMutationResponse;
   accounting__createTransfer: CommonMutationResponse;
   accounting__removeAccount: Scalars['Boolean']['output'];
@@ -607,6 +690,7 @@ export type Mutation = {
   inventory__createProductInvoice: CommonMutationResponse;
   inventory__createProductPurchase: CommonMutationResponse;
   inventory__createProductQuotation?: Maybe<ProductQuotation>;
+  inventory__createProductReturn: CommonMutationResponse;
   inventory__createProductStock: CommonMutationResponse;
   inventory__loadDemoProducts: Scalars['Boolean']['output'];
   inventory__removeProduct: Scalars['Boolean']['output'];
@@ -614,12 +698,14 @@ export type Mutation = {
   inventory__removeProductInvoice: Scalars['Boolean']['output'];
   inventory__removeProductPurchase: Scalars['Boolean']['output'];
   inventory__removeProductQuotation: Scalars['Boolean']['output'];
+  inventory__removeProductReturn: Scalars['Boolean']['output'];
   inventory__removeProductStock: Scalars['Boolean']['output'];
   inventory__syncInvoiceItemsStock: Scalars['Boolean']['output'];
   inventory__updateProduct: Scalars['Boolean']['output'];
   inventory__updateProductCategory: Scalars['Boolean']['output'];
   inventory__updateProductInvoice: ProductInvoice;
   inventory__updateProductQuotation: ProductQuotation;
+  inventory__updateProductReturn: ProductReturn;
   people__createClient: CommonMutationResponse;
   people__createEmployee: CommonMutationResponse;
   people__createEmployeeDepartment: CommonMutationResponse;
@@ -682,6 +768,11 @@ export type MutationAccounting__CreatePayrollArgs = {
 
 export type MutationAccounting__CreatePurchasePaymentArgs = {
   body: CreatePurchasePaymentInput;
+};
+
+
+export type MutationAccounting__CreateReturnPaymentArgs = {
+  input: CreateReturnPaymentInput;
 };
 
 
@@ -836,6 +927,11 @@ export type MutationInventory__CreateProductQuotationArgs = {
 };
 
 
+export type MutationInventory__CreateProductReturnArgs = {
+  input: CreateProductReturnInput;
+};
+
+
 export type MutationInventory__CreateProductStockArgs = {
   body: CreateProductStockInput;
 };
@@ -847,7 +943,7 @@ export type MutationInventory__RemoveProductArgs = {
 
 
 export type MutationInventory__RemoveProductCategoryArgs = {
-  where: CommonFindDocumentDto;
+  categoryId: Scalars['ID']['input'];
 };
 
 
@@ -863,6 +959,11 @@ export type MutationInventory__RemoveProductPurchaseArgs = {
 
 export type MutationInventory__RemoveProductQuotationArgs = {
   where: CommonFindDocumentDto;
+};
+
+
+export type MutationInventory__RemoveProductReturnArgs = {
+  productReturnId: Scalars['ID']['input'];
 };
 
 
@@ -898,6 +999,11 @@ export type MutationInventory__UpdateProductInvoiceArgs = {
 export type MutationInventory__UpdateProductQuotationArgs = {
   input: UpdateProductQuotationInput;
   quotationId: Scalars['String']['input'];
+};
+
+
+export type MutationInventory__UpdateProductReturnArgs = {
+  input: UpdateProductReturnInput;
 };
 
 
@@ -1032,6 +1138,32 @@ export type MutationUpdateEmployeeArgs = {
   body: UpdateEmployeeInput;
   where: CommonFindDocumentDto;
 };
+
+export enum Product_Return_Reason {
+  CustomerChangedMind = 'CUSTOMER_CHANGED_MIND',
+  Damaged = 'DAMAGED',
+  Defective = 'DEFECTIVE',
+  NotAsDescribed = 'NOT_AS_DESCRIBED',
+  Other = 'OTHER',
+  QualityIssue = 'QUALITY_ISSUE',
+  SizeIssue = 'SIZE_ISSUE',
+  WrongItem = 'WRONG_ITEM'
+}
+
+export enum Product_Return_Status {
+  Approved = 'APPROVED',
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  Pending = 'PENDING',
+  Rejected = 'REJECTED'
+}
+
+export enum Product_Return_Type {
+  Exchange = 'EXCHANGE',
+  FullRefund = 'FULL_REFUND',
+  PartialRefund = 'PARTIAL_REFUND',
+  StoreCredit = 'STORE_CREDIT'
+}
 
 export enum Product_Sell_Source {
   Ecommerce = 'ECOMMERCE',
@@ -1311,6 +1443,58 @@ export type ProductQuotationsWithPagination = {
   nodes?: Maybe<Array<ProductQuotation>>;
 };
 
+export type ProductReturn = {
+  __typename?: 'ProductReturn';
+  _id: Scalars['ID']['output'];
+  client?: Maybe<Client>;
+  committedBy?: Maybe<UserReference>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  customerNotes?: Maybe<Scalars['String']['output']>;
+  inspectionDate?: Maybe<Scalars['DateTime']['output']>;
+  internalNotes?: Maybe<Scalars['String']['output']>;
+  invoice?: Maybe<ProductInvoice>;
+  netRefundAmount: Scalars['Float']['output'];
+  processedBy?: Maybe<UserReference>;
+  processedDate?: Maybe<Scalars['DateTime']['output']>;
+  processedRefundAmount?: Maybe<Scalars['Float']['output']>;
+  reason: Product_Return_Reason;
+  reasonDescription?: Maybe<Scalars['String']['output']>;
+  reference?: Maybe<Scalars['String']['output']>;
+  requiresInspection?: Maybe<Scalars['Boolean']['output']>;
+  restockingFee?: Maybe<Scalars['Float']['output']>;
+  returnDate: Scalars['DateTime']['output'];
+  returnItems: Array<ProductReturnItem>;
+  returnType: Product_Return_Type;
+  returnUID?: Maybe<Scalars['String']['output']>;
+  status: Product_Return_Status;
+  tenant?: Maybe<Scalars['String']['output']>;
+  totalReturnAmount: Scalars['Float']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ProductReturnItem = {
+  __typename?: 'ProductReturnItem';
+  canRestock?: Maybe<Scalars['Boolean']['output']>;
+  code?: Maybe<Scalars['String']['output']>;
+  condition?: Maybe<Scalars['String']['output']>;
+  isRestocked?: Maybe<Scalars['Boolean']['output']>;
+  itemNotes?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  originalQuantity: Scalars['Int']['output'];
+  referenceId: Scalars['String']['output'];
+  restockedDate?: Maybe<Scalars['DateTime']['output']>;
+  returnQuantity: Scalars['Int']['output'];
+  totalReturnAmount: Scalars['Float']['output'];
+  unitPrice: Scalars['Float']['output'];
+  unitSellPrice: Scalars['Float']['output'];
+};
+
+export type ProductReturnsWithPagination = {
+  __typename?: 'ProductReturnsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<ProductReturn>>;
+};
+
 export type ProductStock = {
   __typename?: 'ProductStock';
   _id: Scalars['ID']['output'];
@@ -1321,6 +1505,7 @@ export type ProductStock = {
   product: Product;
   purchaseUID?: Maybe<Scalars['String']['output']>;
   quantity: Scalars['Int']['output'];
+  returnUID?: Maybe<Scalars['String']['output']>;
   source: ProductStockSource;
   tenant?: Maybe<Scalars['String']['output']>;
   type: ProductStockType;
@@ -1330,7 +1515,8 @@ export type ProductStock = {
 export enum ProductStockSource {
   Adjustment = 'ADJUSTMENT',
   Invoice = 'INVOICE',
-  Purchase = 'PURCHASE'
+  Purchase = 'PURCHASE',
+  Return = 'RETURN'
 }
 
 export enum ProductStockType {
@@ -1416,6 +1602,8 @@ export type Query = {
   accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   accounting__payrolls: PayrollsWithPagination;
   accounting__purchasePayments: PurchasePaymentsWithPagination;
+  accounting__returnPayment: ReturnPayment;
+  accounting__returnPayments: ReturnPaymentsWithPagination;
   accounting__transaction: Transaction;
   accounting__transactions: TransactionsWithPagination;
   accounting__transfer: Transfer;
@@ -1431,8 +1619,11 @@ export type Query = {
   identity__users: UsersWithPagination;
   inventory__categoryAncestors: Array<ProductCategory>;
   inventory__categoryChildren: Array<ProductCategory>;
+  inventory__categoryDeletePreview: Scalars['Float']['output'];
   inventory__categoryDescendants: Array<ProductCategory>;
   inventory__categoryTree: Array<ProductCategory>;
+  inventory__invoiceReport: InvoiceReportResponse;
+  inventory__invoiceReportTimeSeries: InvoiceTimeSeriesResponse;
   inventory__product: Product;
   inventory__productCategories: ProductCategorysWithPagination;
   inventory__productCategory: ProductCategory;
@@ -1442,6 +1633,8 @@ export type Query = {
   inventory__productPurchases: ProductPurchasesWithPagination;
   inventory__productQuotation: ProductQuotation;
   inventory__productQuotations: ProductQuotationsWithPagination;
+  inventory__productReturn: ProductReturn;
+  inventory__productReturns: ProductReturnsWithPagination;
   inventory__productStocks: ProductStocksWithPagination;
   inventory__products: ProductsWithPagination;
   inventory__rootCategories: Array<ProductCategory>;
@@ -1515,6 +1708,16 @@ export type QueryAccounting__PurchasePaymentsArgs = {
 };
 
 
+export type QueryAccounting__ReturnPaymentArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryAccounting__ReturnPaymentsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
 export type QueryAccounting__TransactionArgs = {
   where?: InputMaybe<CommonFindDocumentDto>;
 };
@@ -1575,6 +1778,11 @@ export type QueryInventory__CategoryChildrenArgs = {
 };
 
 
+export type QueryInventory__CategoryDeletePreviewArgs = {
+  categoryId: Scalars['ID']['input'];
+};
+
+
 export type QueryInventory__CategoryDescendantsArgs = {
   categoryId: Scalars['ID']['input'];
 };
@@ -1582,6 +1790,16 @@ export type QueryInventory__CategoryDescendantsArgs = {
 
 export type QueryInventory__CategoryTreeArgs = {
   rootCategoryId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryInventory__InvoiceReportArgs = {
+  filter?: InputMaybe<InvoiceReportFilterInput>;
+};
+
+
+export type QueryInventory__InvoiceReportTimeSeriesArgs = {
+  filter?: InputMaybe<TimeSeriesFilterInput>;
 };
 
 
@@ -1626,6 +1844,16 @@ export type QueryInventory__ProductQuotationArgs = {
 
 
 export type QueryInventory__ProductQuotationsArgs = {
+  where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryInventory__ProductReturnArgs = {
+  where: CommonFindDocumentDto;
+};
+
+
+export type QueryInventory__ProductReturnsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
 
@@ -1712,6 +1940,48 @@ export type QuerySetup__UnitsArgs = {
 
 export type QuerySetup__VatsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+export enum Return_Payment_Status {
+  Cancelled = 'CANCELLED',
+  Completed = 'COMPLETED',
+  Failed = 'FAILED',
+  Pending = 'PENDING',
+  Processing = 'PROCESSING'
+}
+
+export type ReturnPayment = {
+  __typename?: 'ReturnPayment';
+  _id: Scalars['ID']['output'];
+  client?: Maybe<Client>;
+  coRelationId?: Maybe<Scalars['String']['output']>;
+  createdAt?: Maybe<Scalars['DateTime']['output']>;
+  failureReason?: Maybe<Scalars['String']['output']>;
+  paymentDate?: Maybe<Scalars['DateTime']['output']>;
+  paymentItems: Array<ReturnPaymentItem>;
+  processedAmount?: Maybe<Scalars['Float']['output']>;
+  processedDate?: Maybe<Scalars['DateTime']['output']>;
+  processingNotes?: Maybe<Scalars['String']['output']>;
+  productReturn: ProductReturn;
+  reference?: Maybe<Scalars['String']['output']>;
+  returnPaymentUID?: Maybe<Scalars['String']['output']>;
+  status: Return_Payment_Status;
+  tenant?: Maybe<Scalars['String']['output']>;
+  totalAmount: Scalars['Float']['output'];
+  updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type ReturnPaymentItem = {
+  __typename?: 'ReturnPaymentItem';
+  account?: Maybe<Account>;
+  amount?: Maybe<Scalars['Float']['output']>;
+  type: Scalars['String']['output'];
+};
+
+export type ReturnPaymentsWithPagination = {
+  __typename?: 'ReturnPaymentsWithPagination';
+  meta?: Maybe<PagniationMeta>;
+  nodes?: Maybe<Array<ReturnPayment>>;
 };
 
 export type Role = {
@@ -1812,6 +2082,25 @@ export type TenantsWithPagination = {
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Tenant>>;
 };
+
+export type TimeSeriesDataPoint = {
+  __typename?: 'TimeSeriesDataPoint';
+  label: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
+};
+
+export type TimeSeriesFilterInput = {
+  customerId?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  grouping?: InputMaybe<TimeSeriesGrouping>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum TimeSeriesGrouping {
+  Daily = 'DAILY',
+  Monthly = 'MONTHLY',
+  Yearly = 'YEARLY'
+}
 
 export type Transaction = {
   __typename?: 'Transaction';
@@ -2008,6 +2297,23 @@ export type UpdateProductQuotationInput = {
   validUntil?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type UpdateProductReturnInput = {
+  /** Update customer-facing notes or communications. These may be shared with the customer as part of return status updates. */
+  customerNotes?: InputMaybe<Scalars['String']['input']>;
+  /** Update internal staff notes. Used for operational tracking, decision rationale, and communication between staff members. Not visible to customers. */
+  internalNotes?: InputMaybe<Scalars['String']['input']>;
+  /** Unique identifier of the product return to update. */
+  productReturnId: Scalars['String']['input'];
+  /** Update external reference number for tracking purposes (e.g., RMA number, support ticket ID). */
+  reference?: InputMaybe<Scalars['String']['input']>;
+  /** Update the restocking fee amount. This fee is deducted from the refund total. Set to 0 to remove any existing fee. */
+  restockingFee?: InputMaybe<Scalars['Float']['input']>;
+  /** Update the list of returned items. This replaces all existing return items with the new list provided. */
+  returnItems?: InputMaybe<Array<CreateProductReturnItemInput>>;
+  /** Update the return status. PENDING (awaiting review), APPROVED (accepted for processing), REJECTED (denied), COMPLETED (fully processed), or CANCELLED (return cancelled). */
+  status?: InputMaybe<Product_Return_Status>;
+};
+
 export type UpdateRoleInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   permissions?: InputMaybe<Array<RolePermissionInput>>;
@@ -2161,6 +2467,87 @@ export type Accounting__CreateInventoryInvoicePaymentMutationVariables = Exact<{
 
 export type Accounting__CreateInventoryInvoicePaymentMutation = { __typename?: 'Mutation', accounting__createInventoryInvoicePayment: { __typename?: 'CommonMutationResponse', _id: string } };
 
+export type InvoicesList__ClientsQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type InvoicesList__ClientsQuery = { __typename?: 'Query', people__clients: { __typename?: 'ClientsWithPagination', nodes?: Array<{ __typename?: 'Client', _id: string, name: string }> | null } };
+
+export type PurchasePaymentActiveAccountsQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type PurchasePaymentActiveAccountsQuery = { __typename?: 'Query', accounting__accounts: { __typename?: 'AccountsWithPagination', nodes?: Array<{ __typename?: 'Account', _id: string, name: string, referenceNumber?: string | null, creditAmount?: number | null, debitAmount?: number | null, isActive?: boolean | null }> | null } };
+
+export type InvoicePaymentsClientsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type InvoicePaymentsClientsQuery = { __typename?: 'Query', people__clients: { __typename?: 'ClientsWithPagination', nodes?: Array<{ __typename?: 'Client', _id: string, name: string }> | null } };
+
+export type InvoicePaymentsFilteredQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type InvoicePaymentsFilteredQuery = { __typename?: 'Query', accounting__inventoryInvoicePayments: { __typename?: 'InventoryInvoicePaymentsWithPagination', nodes?: Array<{ __typename?: 'InventoryInvoicePayment', _id: string, inventoryInvoicePaymentUID?: string | null, netAmount?: number | null, date?: any | null, client?: { __typename?: 'Client', _id: string, name: string } | null }> | null, meta?: { __typename?: 'PagniationMeta', totalCount: number, currentPage: number, hasNextPage: boolean, totalPages: number } | null } };
+
+export type PurchasePayments__AccountsQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type PurchasePayments__AccountsQuery = { __typename?: 'Query', accounting__accounts: { __typename?: 'AccountsWithPagination', nodes?: Array<{ __typename?: 'Account', _id: string, name: string, referenceNumber?: string | null }> | null } };
+
+export type PurchasePayments__SuppliersQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type PurchasePayments__SuppliersQuery = { __typename?: 'Query', people__suppliers: { __typename?: 'SuppliersWithPagination', nodes?: Array<{ __typename?: 'Supplier', _id: string, name: string }> | null } };
+
+export type CreateProductCategoriesQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateProductCategoriesQueryQuery = { __typename?: 'Query', inventory__rootCategoriesWithChildren: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null }> | null }> | null }> | null }> };
+
+export type CreateProductBrandsQueryQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreateProductBrandsQueryQuery = { __typename?: 'Query', setup__brands: { __typename?: 'BrandsWithPagination', nodes?: Array<{ __typename?: 'Brand', _id: string, name: string }> | null } };
+
+export type CreatePurchase__SuppliersQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type CreatePurchase__SuppliersQuery = { __typename?: 'Query', people__suppliers: { __typename?: 'SuppliersWithPagination', meta?: { __typename?: 'PagniationMeta', hasNextPage: boolean, totalCount: number } | null, nodes?: Array<{ __typename?: 'Supplier', _id: string, name: string, companyName?: string | null, contactNumber: string, email?: string | null, address?: string | null }> | null } };
+
+export type CreatePurchase__CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreatePurchase__CategoriesQuery = { __typename?: 'Query', inventory__rootCategoriesWithChildren: Array<{ __typename?: 'ProductCategory', _id: string, name: string, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string }> | null }> | null }> };
+
+export type CreatePurchase__BrandsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CreatePurchase__BrandsQuery = { __typename?: 'Query', setup__brands: { __typename?: 'BrandsWithPagination', nodes?: Array<{ __typename?: 'Brand', _id: string, name: string }> | null } };
+
+export type PurchaseList__SuppliersQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type PurchaseList__SuppliersQuery = { __typename?: 'Query', people__suppliers: { __typename?: 'SuppliersWithPagination', nodes?: Array<{ __typename?: 'Supplier', _id: string, name: string }> | null } };
+
+export type BrandsFilteredQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type BrandsFilteredQuery = { __typename?: 'Query', setup__brands: { __typename?: 'BrandsWithPagination', nodes?: Array<{ __typename?: 'Brand', _id: string, name: string, code: string, note?: string | null, createdAt?: any | null, updatedAt?: any | null }> | null, meta?: { __typename?: 'PagniationMeta', totalCount: number, currentPage: number, hasNextPage: boolean, totalPages: number } | null } };
+
 export type Setup__BrandsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -2187,6 +2574,25 @@ export type Setup__RemoveBrandMutationVariables = Exact<{
 
 
 export type Setup__RemoveBrandMutation = { __typename?: 'Mutation', setup__removeBrand: boolean };
+
+export type UnitsFilteredQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type UnitsFilteredQuery = { __typename?: 'Query', setup__units: { __typename?: 'UnitsWithPagination', nodes?: Array<{ __typename?: 'Unit', _id: string, name: string, code: string, note?: string | null, createdAt?: any | null, updatedAt?: any | null }> | null, meta?: { __typename?: 'PagniationMeta', totalCount: number, currentPage: number, hasNextPage: boolean, totalPages: number } | null } };
+
+export type VatProfilesFilteredQueryVariables = Exact<{
+  where?: InputMaybe<CommonPaginationDto>;
+}>;
+
+
+export type VatProfilesFilteredQuery = { __typename?: 'Query', setup__vats: { __typename?: 'VatsWithPagination', nodes?: Array<{ __typename?: 'Vat', _id: string, code: string, name: string, note?: string | null, percentage: number, createdAt?: any | null, updatedAt?: any | null }> | null, meta?: { __typename?: 'PagniationMeta', totalCount: number, currentPage: number, hasNextPage: boolean, totalPages: number } | null } };
+
+export type SharedCategoryPicker__CategoriesQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type SharedCategoryPicker__CategoriesQuery = { __typename?: 'Query', inventory__rootCategoriesWithChildren: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null, children?: Array<{ __typename?: 'ProductCategory', _id: string, name: string, level: number, path?: string | null }> | null }> | null }> | null }> | null }> };
 
 export type GetClientQueryVariables = Exact<{
   where: CommonFindDocumentDto;
@@ -2220,10 +2626,26 @@ export const Identity__TenantDocument = {"kind":"Document","definitions":[{"kind
 export const Root_QueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"ROOT_QUERY"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__me"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"memberships"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tenant"}},{"kind":"Field","name":{"kind":"Name","value":"roles"}}]}},{"kind":"Field","name":{"kind":"Name","value":"avatar"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"businessPhoneNumber"}},{"kind":"Field","name":{"kind":"Name","value":"description"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Root_QueryQuery, Root_QueryQueryVariables>;
 export const AccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Accounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"referenceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"brunchName"}},{"kind":"Field","name":{"kind":"Name","value":"openedAt"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}},{"kind":"Field","name":{"kind":"Name","value":"creditAmount"}},{"kind":"Field","name":{"kind":"Name","value":"debitAmount"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<AccountsQuery, AccountsQueryVariables>;
 export const Accounting__CreateInventoryInvoicePaymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Accounting__createInventoryInvoicePayment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateInventoryInvoicePaymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__createInventoryInvoicePayment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Accounting__CreateInventoryInvoicePaymentMutation, Accounting__CreateInventoryInvoicePaymentMutationVariables>;
+export const InvoicesList__ClientsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvoicesList__clients"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__clients"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<InvoicesList__ClientsQuery, InvoicesList__ClientsQueryVariables>;
+export const PurchasePaymentActiveAccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchasePaymentActiveAccounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"referenceNumber"}},{"kind":"Field","name":{"kind":"Name","value":"creditAmount"}},{"kind":"Field","name":{"kind":"Name","value":"debitAmount"}},{"kind":"Field","name":{"kind":"Name","value":"isActive"}}]}}]}}]}}]} as unknown as DocumentNode<PurchasePaymentActiveAccountsQuery, PurchasePaymentActiveAccountsQueryVariables>;
+export const InvoicePaymentsClientsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvoicePaymentsClients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__clients"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<InvoicePaymentsClientsQuery, InvoicePaymentsClientsQueryVariables>;
+export const InvoicePaymentsFilteredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"InvoicePaymentsFiltered"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__inventoryInvoicePayments"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"inventoryInvoicePaymentUID"}},{"kind":"Field","name":{"kind":"Name","value":"client"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"netAmount"}},{"kind":"Field","name":{"kind":"Name","value":"date"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}}]}}]}}]}}]} as unknown as DocumentNode<InvoicePaymentsFilteredQuery, InvoicePaymentsFilteredQueryVariables>;
+export const PurchasePayments__AccountsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchasePayments__accounts"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__accounts"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"referenceNumber"}}]}}]}}]}}]} as unknown as DocumentNode<PurchasePayments__AccountsQuery, PurchasePayments__AccountsQueryVariables>;
+export const PurchasePayments__SuppliersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchasePayments__suppliers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__suppliers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PurchasePayments__SuppliersQuery, PurchasePayments__SuppliersQueryVariables>;
+export const CreateProductCategoriesQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreateProductCategoriesQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__rootCategoriesWithChildren"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreateProductCategoriesQueryQuery, CreateProductCategoriesQueryQueryVariables>;
+export const CreateProductBrandsQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreateProductBrandsQuery"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreateProductBrandsQueryQuery, CreateProductBrandsQueryQueryVariables>;
+export const CreatePurchase__SuppliersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePurchase__suppliers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__suppliers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"companyName"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"address"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePurchase__SuppliersQuery, CreatePurchase__SuppliersQueryVariables>;
+export const CreatePurchase__CategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePurchase__categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__rootCategoriesWithChildren"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreatePurchase__CategoriesQuery, CreatePurchase__CategoriesQueryVariables>;
+export const CreatePurchase__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePurchase__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"-1"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePurchase__BrandsQuery, CreatePurchase__BrandsQueryVariables>;
+export const PurchaseList__SuppliersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseList__suppliers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__suppliers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseList__SuppliersQuery, PurchaseList__SuppliersQueryVariables>;
+export const BrandsFilteredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BrandsFiltered"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}}]}}]}}]}}]} as unknown as DocumentNode<BrandsFilteredQuery, BrandsFilteredQueryVariables>;
 export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
 export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;
 export const Setup__UpdateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__updateBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"UpdateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__updateBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}},{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}]}]}}]} as unknown as DocumentNode<Setup__UpdateBrandMutation, Setup__UpdateBrandMutationVariables>;
 export const Setup__RemoveBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__removeBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__removeBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}]}]}}]} as unknown as DocumentNode<Setup__RemoveBrandMutation, Setup__RemoveBrandMutationVariables>;
+export const UnitsFilteredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"UnitsFiltered"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__units"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}}]}}]}}]}}]} as unknown as DocumentNode<UnitsFilteredQuery, UnitsFilteredQueryVariables>;
+export const VatProfilesFilteredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"VatProfilesFiltered"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__vats"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"percentage"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}}]}}]}}]}}]} as unknown as DocumentNode<VatProfilesFilteredQuery, VatProfilesFilteredQueryVariables>;
+export const SharedCategoryPicker__CategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SharedCategoryPicker__categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__rootCategoriesWithChildren"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SharedCategoryPicker__CategoriesQuery, SharedCategoryPicker__CategoriesQueryVariables>;
 export const GetClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__client"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetClientQuery, GetClientQueryVariables>;
 export const GetProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"stockInQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"stockOutQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isSellableWithoutStock"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"purchasePrice"}}]}}]}}]} as unknown as DocumentNode<GetProductQuery, GetProductQueryVariables>;
 export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;

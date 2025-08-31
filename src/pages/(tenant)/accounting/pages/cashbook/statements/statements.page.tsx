@@ -1,30 +1,30 @@
-import { ACCOUNTS_LIST_DROPDOWN } from '@/commons/components/common-gql';
+import { ACCOUNTS_LIST_DROPDOWN } from "@/commons/components/common-gql";
 import AppDatatable, {
   ColumnDef,
-} from '@/commons/components/AppDatatable/AppDatatable';
-import PageTitle from '@/commons/components/PageTitle';
+} from "@/commons/components/AppDatatable/AppDatatable";
+import PageTitle from "@/commons/components/PageTitle";
 import {
   AccountsWithPagination,
   Accounting_Transaction_Source,
   MatchOperator,
   Transaction,
   TransactionsWithPagination,
-} from '@/commons/graphql-models/graphql';
-import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import { dateTimeFormatter } from '@/commons/utils/dateFormat';
-import { useQuery } from '@apollo/client';
-import { Badge, NumberInput, Select, Text, Tooltip } from '@mantine/core';
-import { DatePickerInput } from '@mantine/dates';
-import { useSetState } from '@mantine/hooks';
-import { useMemo, useState } from 'react';
-import { ACCOUNTING_STATEMENTS_QUERY_LIST } from './ulits/query';
+} from "@/commons/graphql-models/graphql";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
+import { dateTimeFormatter } from "@/commons/utils/dateFormat";
+import { useQuery } from "@apollo/client";
+import { Badge, NumberInput, Select, Text, Tooltip } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
+import { useSetState } from "@mantine/hooks";
+import { useMemo, useState } from "react";
+import { ACCOUNTING_STATEMENTS_QUERY_LIST } from "./ulits/query";
 
 interface IState {
   modalOpened: boolean;
   operationId?: string | null;
   operationPayload?: any;
   refetching: boolean;
-  operationType: 'create' | 'update';
+  operationType: "create" | "update";
 }
 
 interface PaginationState {
@@ -34,14 +34,14 @@ interface PaginationState {
 
 interface SortingState {
   column: string;
-  direction: 'asc' | 'desc' | null;
+  direction: "asc" | "desc" | null;
 }
 
 const StatementPage = () => {
   const [state, setState] = useSetState<IState>({
     operationId: null,
     modalOpened: false,
-    operationType: 'create',
+    operationType: "create",
     operationPayload: {},
     refetching: false,
   });
@@ -50,7 +50,7 @@ const StatementPage = () => {
     pageSize: 100,
   });
   const [sorting, setSorting] = useState<SortingState>({
-    column: '',
+    column: "",
     direction: null,
   });
   const [filters, setFilters] = useState<Record<string, string>>({});
@@ -62,7 +62,7 @@ const StatementPage = () => {
     // Add search filters for account
     if (filters.account) {
       graphqlFilters.push({
-        key: 'account',
+        key: "account",
         operator: MatchOperator.Eq,
         value: filters.account,
       });
@@ -71,7 +71,7 @@ const StatementPage = () => {
     // Add search filters for source
     if (filters.source) {
       graphqlFilters.push({
-        key: 'source',
+        key: "source",
         operator: MatchOperator.Eq,
         value: filters.source,
       });
@@ -80,7 +80,7 @@ const StatementPage = () => {
     // Add search filters for type
     if (filters.type) {
       graphqlFilters.push({
-        key: 'type',
+        key: "type",
         operator: MatchOperator.Eq,
         value: filters.type,
       });
@@ -89,7 +89,7 @@ const StatementPage = () => {
     // Add amount range filters
     if (filters.minAmount) {
       graphqlFilters.push({
-        key: 'amount',
+        key: "amount",
         operator: MatchOperator.Gte,
         value: filters.minAmount,
       });
@@ -97,7 +97,7 @@ const StatementPage = () => {
 
     if (filters.maxAmount) {
       graphqlFilters.push({
-        key: 'amount',
+        key: "amount",
         operator: MatchOperator.Lte,
         value: filters.maxAmount,
       });
@@ -106,7 +106,7 @@ const StatementPage = () => {
     // Add date range filters
     if (filters.startDate) {
       graphqlFilters.push({
-        key: 'createdAt',
+        key: "createdAt",
         operator: MatchOperator.Gte,
         value: filters.startDate,
       });
@@ -114,7 +114,7 @@ const StatementPage = () => {
 
     if (filters.endDate) {
       graphqlFilters.push({
-        key: 'createdAt',
+        key: "createdAt",
         operator: MatchOperator.Lte,
         value: filters.endDate,
       });
@@ -123,8 +123,8 @@ const StatementPage = () => {
     return {
       page: pagination.page,
       limit: pagination.pageSize,
-      sortBy: sorting.column || 'createdAt',
-      sort: sorting.direction === 'asc' ? 'ASC' : 'DESC',
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? "ASC" : "DESC",
       filters: graphqlFilters,
     };
   };
@@ -135,7 +135,7 @@ const StatementPage = () => {
     variables: {
       where: buildQueryVariables(),
     },
-    fetchPolicy: 'cache-and-network',
+    fetchPolicy: "cache-and-network",
   });
 
   // Fetch accounts for dropdown filter
@@ -157,23 +157,62 @@ const StatementPage = () => {
   }, [accountData]);
 
   // Source options from enum
-  const sourceOptions = useMemo(() => [
-    { value: Accounting_Transaction_Source.BalanceAdjustment, label: 'Balance Adjustment' },
-    { value: Accounting_Transaction_Source.BalanceTransfer, label: 'Balance Transfer' },
-    { value: Accounting_Transaction_Source.ClientInvoicePayment, label: 'Client Invoice Payment' },
-    { value: Accounting_Transaction_Source.EmployeeSalary, label: 'Employee Salary' },
-    { value: Accounting_Transaction_Source.Expense, label: 'Expense' },
-    { value: Accounting_Transaction_Source.InventoryInvoicePayment, label: 'Inventory Invoice Payment' },
-    { value: Accounting_Transaction_Source.LoanPayment, label: 'Loan Payment' },
-    { value: Accounting_Transaction_Source.Payroll, label: 'Payroll' },
-    { value: Accounting_Transaction_Source.PurchasePayment, label: 'Purchase Payment' },
-  ], []);
+  const sourceOptions = useMemo(
+    () => [
+      {
+        value: Accounting_Transaction_Source.BalanceAdjustment,
+        label: "Balance Adjustment",
+      },
+      {
+        value: Accounting_Transaction_Source.BalanceTransfer,
+        label: "Balance Transfer",
+      },
+      {
+        value: Accounting_Transaction_Source.ClientInvoicePayment,
+        label: "Client Invoice Payment",
+      },
+      {
+        value: Accounting_Transaction_Source.EmployeeSalary,
+        label: "Employee Salary",
+      },
+      { value: Accounting_Transaction_Source.Expense, label: "Expense" },
+      {
+        value: Accounting_Transaction_Source.InventoryInvoicePayment,
+        label: "Inventory Invoice Payment",
+      },
+      {
+        value: Accounting_Transaction_Source.LoanPayment,
+        label: "Loan Payment",
+      },
+      { value: Accounting_Transaction_Source.Payroll, label: "Payroll" },
+      {
+        value: Accounting_Transaction_Source.ProductReturnRefund,
+        label: "Product Return Refund",
+      },
+      {
+        value: Accounting_Transaction_Source.PurchasePayment,
+        label: "Purchase Payment",
+      },
+      {
+        value: Accounting_Transaction_Source.ReturnProcessingFee,
+        label: "Return Processing Fee",
+      },
+      {
+        value: Accounting_Transaction_Source.StoreCreditIssue,
+        label: "Store Credit Issue",
+      },
+    ],
+    []
+  );
 
   // Type options
-  const typeOptions = useMemo(() => [
-    { value: 'DEBIT', label: 'Debit' },
-    { value: 'CREDIT', label: 'Credit' },
-  ], []);
+  const typeOptions = useMemo(
+    () => [
+      { value: "DEBIT", label: "Debit" },
+      { value: "CREDIT", label: "Credit" },
+    ],
+    []
+  );
 
   const handleRefetch = () => {
     setState({ refetching: true });
@@ -186,23 +225,27 @@ const StatementPage = () => {
     () => [
       {
         accessor: (row: Transaction) =>
-          row?.createdAt ? dateTimeFormatter.displayDate(row?.createdAt) : '',
-        title: 'Date',
-        sortKey: 'createdAt',
+          row?.createdAt ? dateTimeFormatter.displayDate(row?.createdAt) : "",
+        title: "Date",
+        sortKey: "createdAt",
         sortable: true,
         Filter: (setValue) => (
           <div className="flex flex-col gap-2" style={{ minWidth: 200 }}>
             <DatePickerInput
               label="Start date"
               value={filters.startDate ? new Date(filters.startDate) : null}
-              onChange={(value: Date | null) => setValue('startDate', value?.toISOString() || '')}
+              onChange={(value: Date | null) =>
+                setValue("startDate", value?.toISOString() || "")
+              }
               size="sm"
               clearable
             />
             <DatePickerInput
               label="End date"
               value={filters.endDate ? new Date(filters.endDate) : null}
-              onChange={(value: Date | null) => setValue('endDate', value?.toISOString() || '')}
+              onChange={(value: Date | null) =>
+                setValue("endDate", value?.toISOString() || "")
+              }
               size="sm"
               clearable
             />
@@ -223,7 +266,7 @@ const StatementPage = () => {
             <div className="w-32 overflow-hidden text-ellipsis">{row.note}</div>
           </Tooltip>
         ),
-        title: 'Note',
+        title: "Note",
         sortable: false,
       },
       {
@@ -231,10 +274,10 @@ const StatementPage = () => {
           `${row?.account?.name}${
             row?.account?.referenceNumber
               ? ` [${row?.account?.referenceNumber}]`
-              : ''
+              : ""
           }`,
-        title: 'Account',
-        sortKey: 'account',
+        title: "Account",
+        sortKey: "account",
         sortable: true,
         Filter: (setValue) => (
           <Select
@@ -242,7 +285,7 @@ const StatementPage = () => {
             value={filters.account || null}
             data={accountOptions}
             disabled={!accountData?.accounting__accounts?.nodes}
-            onChange={(value) => setValue('account', value || '')}
+            onChange={(value) => setValue("account", value || "")}
             clearable
             searchable
             style={{ minWidth: 250 }}
@@ -252,22 +295,26 @@ const StatementPage = () => {
       {
         accessor: (row: Transaction) =>
           currencyNumberWithSymbolFormat(row?.amount || 0),
-        title: 'Amount',
-        sortKey: 'amount',
+        title: "Amount",
+        sortKey: "amount",
         sortable: true,
         Filter: (setValue) => (
           <div className="flex gap-2" style={{ minWidth: 200 }}>
             <NumberInput
               placeholder="Min"
               value={filters.minAmount ? Number(filters.minAmount) : undefined}
-              onChange={(value) => setValue('minAmount', value?.toString() || '')}
+              onChange={(value) =>
+                setValue("minAmount", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />
             <NumberInput
               placeholder="Max"
               value={filters.maxAmount ? Number(filters.maxAmount) : undefined}
-              onChange={(value) => setValue('maxAmount', value?.toString() || '')}
+              onChange={(value) =>
+                setValue("maxAmount", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />
@@ -275,15 +322,15 @@ const StatementPage = () => {
         ),
       },
       {
-        accessor: 'source',
-        title: 'Source',
+        accessor: "source",
+        title: "Source",
         sortable: true,
         Filter: (setValue) => (
           <Select
             placeholder="Filter by source..."
             value={filters.source || null}
             data={sourceOptions}
-            onChange={(value) => setValue('source', value || '')}
+            onChange={(value) => setValue("source", value || "")}
             clearable
             searchable
             style={{ minWidth: 180 }}
@@ -292,20 +339,20 @@ const StatementPage = () => {
       },
       {
         accessor: (row: Transaction) =>
-          row?.type === 'DEBIT' ? (
+          row?.type === "DEBIT" ? (
             <Badge color="red">Debit</Badge>
           ) : (
             <Badge color="green">Credit</Badge>
           ),
-        title: 'Type',
-        sortKey: 'type',
+        title: "Type",
+        sortKey: "type",
         sortable: true,
         Filter: (setValue) => (
           <Select
             placeholder="Filter by type..."
             value={filters.type || null}
             data={typeOptions}
-            onChange={(value) => setValue('type', value || '')}
+            onChange={(value) => setValue("type", value || "")}
             clearable
             style={{ minWidth: 120 }}
           />
@@ -324,7 +371,7 @@ const StatementPage = () => {
       accountData?.accounting__accounts?.nodes,
       sourceOptions,
       typeOptions,
-    ],
+    ]
   );
   return (
     <>
@@ -345,7 +392,7 @@ const StatementPage = () => {
             disabled={state.refetching}
             className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
           >
-            {state.refetching ? 'Refreshing...' : 'Refresh'}
+            {state.refetching ? "Refreshing..." : "Refresh"}
           </button>
         </div>
       </div>
