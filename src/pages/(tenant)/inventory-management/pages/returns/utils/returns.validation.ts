@@ -48,8 +48,21 @@ export const createReturnValidationSchema = Yup.object().shape({
   reference: Yup.string().max(100, "Reference cannot exceed 100 characters"),
 
   returnDate: Yup.date()
-    .max(new Date(), "Return date cannot be in the future")
-    .nullable(),
+    .nullable()
+    .test(
+      "not-in-future-date-only",
+      "Return date cannot be in the future",
+      (value) => {
+        if (!value) return true;
+        const picked = new Date(value);
+        // Compare by date only (ignore time)
+        picked.setHours(0, 0, 0, 0);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return picked.getTime() <= today.getTime();
+      }
+    ),
+  // Debt reduction removed in simplified model
 });
 
 export type CreateReturnFormData = Yup.InferType<

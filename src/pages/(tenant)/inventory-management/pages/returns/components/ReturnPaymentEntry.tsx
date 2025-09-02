@@ -3,6 +3,7 @@ import {
   AccountsWithPagination,
   CommonMutationResponse,
 } from "@/commons/graphql-models/graphql";
+import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -19,18 +20,21 @@ import {
 import { DateInput } from "@mantine/dates";
 import { showNotification } from "@mantine/notifications";
 import { SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { useEffect } from "react";
 import * as Yup from "yup";
 
 interface IProps {
   onDone: () => void;
   productReturnId: string;
   remainingAmount: number;
+  invoiceAvailableAmountForReturn?: number;
 }
 
 const ReturnPaymentEntry: React.FC<IProps> = ({
   onDone,
   productReturnId,
   remainingAmount,
+  invoiceAvailableAmountForReturn,
 }) => {
   // accounts API
   const accountListQuery = useQuery<{
@@ -69,7 +73,7 @@ const ReturnPaymentEntry: React.FC<IProps> = ({
       paymentItems: [
         {
           accountId: "",
-          amount: remainingAmount || 0,
+          amount: invoiceAvailableAmountForReturn ?? remainingAmount ?? 0,
           type: "CASH",
         },
       ],
@@ -79,6 +83,20 @@ const ReturnPaymentEntry: React.FC<IProps> = ({
     resolver: yupResolver(ReturnPayment_Form_Validation),
     mode: "onChange",
   });
+
+  // Keep amount in sync if the invoice available amount changes while the drawer is open
+  // Prefill only when the current amount is 0 to avoid overwriting user input
+  useEffect(() => {
+    if (typeof invoiceAvailableAmountForReturn !== "number") return;
+    const current = form.getValues("paymentItems")[0]?.amount ?? 0;
+    if (!current || current === 0) {
+      form.setValue("paymentItems.0.amount", invoiceAvailableAmountForReturn, {
+        shouldDirty: true,
+        shouldValidate: true,
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [invoiceAvailableAmountForReturn]);
 
   const { append, fields, remove } = useFieldArray({
     control: form.control,
@@ -111,6 +129,16 @@ const ReturnPaymentEntry: React.FC<IProps> = ({
   return (
     <form onSubmit={form.handleSubmit(handleSubmit)}>
       <div className="flex flex-col gap-4">
+        {typeof invoiceAvailableAmountForReturn === "number" && (
+          <Paper p={8} withBorder>
+            Current refundable amount :{" "}
+            <strong>
+              {currencyNumberWithSymbolFormat(
+                invoiceAvailableAmountForReturn || 0
+              )}
+            </strong>
+          </Paper>
+        )}
         <Input.Wrapper
           label="Reference"
           error={
@@ -197,12 +225,10 @@ const ReturnPaymentEntry: React.FC<IProps> = ({
           >
             <NumberInput
               placeholder="Amount"
-              onChange={(e) =>
-                form.setValue(
-                  `paymentItems.${idx}.amount`,
-                  parseInt(e as string)
-                )
-              }
+              onChange={(e) => {
+                const val = typeof e === "number" ? e : parseFloat((e as string) || "0");
+                form.setValue(`paymentItems.${idx}.amount`, isNaN(val) ? 0 : val);
+              }}
               value={form.watch(`paymentItems.${idx}.amount`)}
               min={0}
               max={remainingAmount}

@@ -21,6 +21,8 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { modals } from "@mantine/modals";
+import { showNotification } from "@mantine/notifications";
 import { IconAlertCircle, IconArrowLeft } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -83,7 +85,11 @@ const ReturnDetailsPage = () => {
     }
   );
 
-  const { data: paymentsData, loading: paymentsLoading, refetch: refetchPayments } = useQuery<{
+  const {
+    data: paymentsData,
+    loading: paymentsLoading,
+    refetch: refetchPayments,
+  } = useQuery<{
     accounting__returnPayments: ReturnPaymentsWithPagination;
   }>(GET_RETURN_PAYMENTS, {
     variables: {
@@ -100,19 +106,57 @@ const ReturnDetailsPage = () => {
     skip: !returnId,
   });
 
-  const handleStatusUpdate = async (newStatus: string) => {
-    try {
-      await updateProductReturn({
-        variables: {
-          input: {
-            productReturnId: returnId,
-            status: newStatus,
-          },
-        },
-      });
-    } catch (err) {
-      console.error("Error updating return status:", err);
-    }
+  const handleStatusUpdate = (newStatus: string) => {
+    const statusLabels: Record<string, string> = {
+      APPROVED: "approve",
+      REJECTED: "reject",
+      COMPLETED: "complete",
+      CANCELLED: "cancel",
+    };
+
+    const statusLabel = statusLabels[newStatus] || "update";
+
+    modals.openConfirmModal({
+      title: `Confirm Status Update`,
+      children: (
+        <Text size="sm">
+          Are you sure you want to <strong>{statusLabel}</strong> this return?
+          This action will change the status from{" "}
+          <strong>{returnData?.status}</strong> to <strong>{newStatus}</strong>.
+        </Text>
+      ),
+      labels: { confirm: `Yes, ${statusLabel}`, cancel: "Cancel" },
+      confirmProps: {
+        color:
+          newStatus === "REJECTED" || newStatus === "CANCELLED"
+            ? "red"
+            : "blue",
+      },
+      onConfirm: async () => {
+        try {
+          await updateProductReturn({
+            variables: {
+              input: {
+                productReturnId: returnId,
+                status: newStatus,
+              },
+            },
+          });
+
+          showNotification({
+            title: "Success",
+            message: `Return status updated to ${newStatus}`,
+            color: "green",
+          });
+        } catch (err: any) {
+          showNotification({
+            title: "Error",
+            message: err?.message || "Failed to update return status",
+            color: "red",
+          });
+        }
+      },
+    });
   };
 
   const returnData = data?.inventory__productReturn;
@@ -250,6 +294,7 @@ const ReturnDetailsPage = () => {
                       </Text>
                     </div>
                   )}
+                  {/* Payment method removed in simplified model */}
                 </div>
                 <div className="flex flex-col gap-4">
                   <div className="flex justify-between">
@@ -287,6 +332,17 @@ const ReturnDetailsPage = () => {
                       )}
                     </Text>
                   </div>
+                  {/* Debt reduction breakdown removed in simplified model */}
+                  <div className="flex justify-between">
+                    <Text c="dimmed" fw={500}>
+                      Max Refundable Amount:
+                    </Text>
+                    <Text fw={500} c="orange">
+                      {currencyNumberWithSymbolFormat(
+                        returnData?.maxRefundableAmount ?? 0
+                      )}
+                    </Text>
+                  </div>
                   {returnData?.processedRefundAmount ? (
                     <div className="flex justify-between">
                       <Text c="dimmed" fw={600}>
@@ -299,6 +355,17 @@ const ReturnDetailsPage = () => {
                       </Text>
                     </div>
                   ) : null}
+                  <div className="flex justify-between">
+                    <Text c="dimmed" fw={600}>
+                      Outstanding Amount:
+                    </Text>
+                    <Text fw={600} size="lg" c="red">
+                      {currencyNumberWithSymbolFormat(
+                        (returnData?.maxRefundableAmount ?? 0) -
+                          (returnData?.processedRefundAmount ?? 0)
+                      )}
+                    </Text>
+                  </div>
                 </div>
               </div>
 
@@ -530,63 +597,115 @@ const ReturnDetailsPage = () => {
                     <tr>
                       <th className="px-4 py-2 text-left border">Payment ID</th>
                       <th className="px-4 py-2 text-left border">Date</th>
-                      <th className="px-4 py-2 text-left border">Amount</th>
                       <th className="px-4 py-2 text-left border">Method</th>
+                      <th className="px-4 py-2 text-left border">Account</th>
                       <th className="px-4 py-2 text-left border">Status</th>
+                      <th className="px-4 py-2 text-left border">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {paymentsLoading ? (
                       <tr>
-                        <td colSpan={5} className="px-4 py-8 text-center border">
+                        <td
+                          colSpan={6}
+                          className="px-4 py-8 text-center border"
+                        >
                           <Loader size="sm" />
                         </td>
                       </tr>
-                    ) : paymentsData?.accounting__returnPayments?.nodes?.length === 0 ? (
+                    ) : paymentsData?.accounting__returnPayments?.nodes
+                        ?.length === 0 ? (
                       <tr>
                         <td
-                          colSpan={5}
+                          colSpan={6}
                           className="px-4 py-8 text-center text-gray-500 border"
                         >
                           No payments found
                         </td>
                       </tr>
                     ) : (
-                      paymentsData?.accounting__returnPayments?.nodes?.map((payment) => (
-                        <tr key={payment._id} className="hover:bg-gray-50">
-                          <td className="px-4 py-2 border">
-                            <Text fw={500}>{payment.returnPaymentUID}</Text>
-                          </td>
-                          <td className="px-4 py-2 border">
-                            {payment.paymentDate
-                              ? formatTableColumnDate(payment.paymentDate)
-                              : formatTableColumnDate(payment.createdAt)}
-                          </td>
-                          <td className="px-4 py-2 border">
-                            {currencyNumberWithSymbolFormat(payment.totalAmount)}
-                          </td>
-                          <td className="px-4 py-2 border">
-                            <div className="flex flex-col gap-1">
-                              {payment.paymentItems?.map((item, idx) => (
-                                <Badge key={idx} size="sm" variant="light">
-                                  {item.type}
+                      <>
+                        {paymentsData?.accounting__returnPayments?.nodes?.map(
+                          (payment) => (
+                            <tr key={payment._id} className="hover:bg-gray-50">
+                              <td className="px-4 py-2 border">
+                                <Text fw={500}>{payment.returnPaymentUID}</Text>
+                              </td>
+                              <td className="px-4 py-2 border">
+                                {payment.paymentDate
+                                  ? formatTableColumnDate(payment.paymentDate)
+                                  : formatTableColumnDate(payment.createdAt)}
+                              </td>
+                              <td className="px-4 py-2 border">
+                                <div className="flex flex-col gap-1">
+                                  {payment.paymentItems?.map((item, idx) => (
+                                    <Badge key={idx} size="sm" variant="light">
+                                      {item.type}
+                                    </Badge>
+                                  )) || (
+                                    <Badge size="sm" variant="light">
+                                      N/A
+                                    </Badge>
+                                  )}
+                                </div>
+                              </td>
+                              <td className="px-4 py-2 border">
+                                <div className="flex flex-col gap-1">
+                                  {payment.paymentItems?.map((item, idx) => (
+                                    <Text key={idx} size="sm" fw={500}>
+                                      {item.account?.name || "N/A"}
+                                    </Text>
+                                  )) || <Text size="sm">N/A</Text>}
+                                </div>
+                              </td>
+                              <td className="px-4 py-2 border">
+                                <Badge
+                                  size="sm"
+                                  color={
+                                    payment.status === "COMPLETED"
+                                      ? "green"
+                                      : payment.status === "FAILED"
+                                      ? "red"
+                                      : payment.status === "PROCESSING"
+                                      ? "blue"
+                                      : "yellow"
+                                  }
+                                  variant="light"
+                                >
+                                  {payment.status}
                                 </Badge>
-                              )) || <Badge size="sm" variant="light">N/A</Badge>}
-                            </div>
-                          </td>
-                          <td className="px-4 py-2 border">
-                            <Badge 
-                              size="sm" 
-                              color={payment.status === 'COMPLETED' ? 'green' : 
-                                     payment.status === 'FAILED' ? 'red' : 
-                                     payment.status === 'PROCESSING' ? 'blue' : 'yellow'}
-                              variant="light"
-                            >
-                              {payment.status}
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))
+                              </td>
+                              <td className="px-4 py-2 border">
+                                {currencyNumberWithSymbolFormat(
+                                  payment.totalAmount
+                                )}
+                              </td>
+                            </tr>
+                          )
+                        )}
+                        {paymentsData?.accounting__returnPayments?.nodes &&
+                          paymentsData?.accounting__returnPayments?.nodes
+                            .length > 0 && (
+                            <tr className="border-t-2 border-blue-200 bg-blue-50">
+                              <td className="px-4 py-3 border" colSpan={5}>
+                                <Text fw={700} size="md">
+                                  Total Refund Payments
+                                </Text>
+                              </td>
+                              <td className="px-4 py-3 border">
+                                <Text fw={700} size="lg" c="blue">
+                                  {currencyNumberWithSymbolFormat(
+                                    paymentsData?.accounting__returnPayments?.nodes?.reduce(
+                                      (total, payment) =>
+                                        total + (payment.totalAmount || 0),
+                                      0
+                                    ) || 0
+                                  )}
+                                </Text>
+                              </td>
+                            </tr>
+                          )}
+                      </>
                     )}
                   </tbody>
                 </table>
@@ -643,12 +762,33 @@ const ReturnDetailsPage = () => {
 
                 <Divider />
                 <div className="flex justify-between">
+                  <Text c="dimmed" fw={500}>
+                    Max Refundable Amount:
+                  </Text>
+                  <Text fw={500} c="orange">
+                    {currencyNumberWithSymbolFormat(
+                      returnData?.maxRefundableAmount ?? 0
+                    )}
+                  </Text>
+                </div>
+                <div className="flex justify-between">
                   <Text c="dimmed" fw={600}>
                     Processed Refund:
                   </Text>
                   <Text fw={600} c="green">
                     {currencyNumberWithSymbolFormat(
                       returnData?.processedRefundAmount ?? 0
+                    )}
+                  </Text>
+                </div>
+                <div className="flex justify-between">
+                  <Text c="dimmed" fw={600}>
+                    Outstanding Amount:
+                  </Text>
+                  <Text fw={600} c="red">
+                    {currencyNumberWithSymbolFormat(
+                      (returnData?.maxRefundableAmount ?? 0) -
+                        (returnData?.processedRefundAmount ?? 0)
                     )}
                   </Text>
                 </div>
@@ -675,6 +815,9 @@ const ReturnDetailsPage = () => {
           remainingAmount={
             (returnData?.netRefundAmount || 0) -
             (returnData?.processedRefundAmount || 0)
+          }
+          invoiceAvailableAmountForReturn={
+            returnData?.invoice?.returnQuota?.availableAmountForReturn || 0
           }
         />
       </Drawer>

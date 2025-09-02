@@ -30,6 +30,7 @@ const documents = {
     "\n  query CreatePurchase__categories {\n    inventory__rootCategoriesWithChildren {\n      _id\n      name\n      children {\n        _id\n        name\n        children {\n          _id\n          name\n        }\n      }\n    }\n  }\n": types.CreatePurchase__CategoriesDocument,
     "\n  query CreatePurchase__brands {\n    setup__brands(where: { limit: -1 }) {\n      nodes {\n        _id\n        name\n      }\n    }\n  }\n": types.CreatePurchase__BrandsDocument,
     "\n  query PurchaseList__suppliers($where: CommonPaginationDto) {\n    people__suppliers(where: $where) {\n      nodes {\n        _id\n        name\n      }\n    }\n  }\n": types.PurchaseList__SuppliersDocument,
+    "\n  mutation Accounting__createReturnPayment($input: CreateReturnPaymentInput!) {\n    accounting__createReturnPayment(input: $input) {\n      _id\n    }\n  }\n": types.Accounting__CreateReturnPaymentDocument,
     "\n  query BrandsFiltered($where: CommonPaginationDto) {\n    setup__brands(where: $where) {\n      nodes {\n        _id\n        name\n        code\n        note\n        createdAt\n        updatedAt\n      }\n      meta {\n        totalCount\n        currentPage\n        hasNextPage\n        totalPages\n      }\n    }\n  }\n": types.BrandsFilteredDocument,
     "\n   query Setup__brands {\n  setup__brands {\n    meta {\n      totalCount\n    }\n    nodes {\n      _id\n      code\n      createdAt\n      name\n      note\n      updatedAt\n    }\n  }\n}\n\n": types.Setup__BrandsDocument,
     "\n    mutation Setup__createBrand($body: CreateBrandInput!) {\n  setup__createBrand(body: $body) {\n    _id\n  }\n}\n": types.Setup__CreateBrandDocument,
@@ -126,6 +127,10 @@ export function graphql(source: "\n  query CreatePurchase__brands {\n    setup__
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query PurchaseList__suppliers($where: CommonPaginationDto) {\n    people__suppliers(where: $where) {\n      nodes {\n        _id\n        name\n      }\n    }\n  }\n"): (typeof documents)["\n  query PurchaseList__suppliers($where: CommonPaginationDto) {\n    people__suppliers(where: $where) {\n      nodes {\n        _id\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation Accounting__createReturnPayment($input: CreateReturnPaymentInput!) {\n    accounting__createReturnPayment(input: $input) {\n      _id\n    }\n  }\n"): (typeof documents)["\n  mutation Accounting__createReturnPayment($input: CreateReturnPaymentInput!) {\n    accounting__createReturnPayment(input: $input) {\n      _id\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

@@ -18,6 +18,7 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import ProductInvoiceDetailsPaymentsTable from "./ProductInvoiceDetailsPaymentsTable";
+import ProductInvoiceReturnsTable from "./ProductInvoiceReturnsTable";
 
 const ProductInvoiceDetails: React.FC<{
   invoiceId: string;
@@ -277,6 +278,13 @@ const ProductInvoiceDetails: React.FC<{
             onDone={function (): void {
               query.refetch();
             }}
+          />
+        )}
+
+        {invoice?._id && (
+          <ProductInvoiceReturnsTable
+            invoiceId={invoice?._id || ""}
+            tenant={invoice?.tenant || undefined}
           />
         )}
 

@@ -71,6 +71,7 @@ export const GET_PRODUCT_RETURN = gql`
       totalReturnAmount
       restockingFee
       netRefundAmount
+      maxRefundableAmount
       processedRefundAmount
       customerNotes
       internalNotes
@@ -81,6 +82,10 @@ export const GET_PRODUCT_RETURN = gql`
         invoiceUID
         netTotal
         date
+        # Add return quota to get invoice-level refund availability
+        returnQuota {
+          availableAmountForReturn
+        }
         client {
           name
           contactNumber
@@ -132,6 +137,25 @@ export const GET_INVOICE_FOR_RETURN = gql`
         email
         address
       }
+      
+      # Return Quota Information (simplified)
+      returnQuota {
+        invoiceTotal
+        totalPaid
+        totalReturned
+        availableAmountForReturn
+        canCreateNewReturn
+        
+        itemAvailability {
+          referenceId
+          name
+          purchasedQuantity
+          alreadyReturnedQuantity
+          availableForReturnQuantity
+          unitPrice
+        }
+      }
+      
       products {
         referenceId
         name

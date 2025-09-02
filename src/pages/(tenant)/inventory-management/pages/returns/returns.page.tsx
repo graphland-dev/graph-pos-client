@@ -1,15 +1,11 @@
 import { useMemo, useState } from "react";
-import {
-  Link,
-  useParams,
-  useSearchParams,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import { Badge, Button, Select, Input } from "@mantine/core";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconPlus, IconEye, IconEdit, IconTrash } from "@tabler/icons-react";
+import InvoiceSelectionModal from "./components/InvoiceSelectionModal";
 import AppDatatable, {
   ColumnDef,
 } from "@/commons/components/AppDatatable/AppDatatable";
@@ -89,6 +85,9 @@ const ReturnsPage = () => {
     reason: searchParams.get("reason") || "",
     returnType: searchParams.get("returnType") || "",
   });
+
+  // Invoice selection modal state
+  const [invoiceModalOpened, setInvoiceModalOpened] = useState(false);
 
   // Build filter variables for GraphQL query
   const buildFilterVariables = (): CommonPaginationDto => {
@@ -306,17 +305,14 @@ const ReturnsPage = () => {
         title: "Items",
       },
     ],
-    [tenant, datatableFilters]
+    [tenant, datatableFilters, navigate]
   );
 
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
         <PageTitle title="Product Returns" />
-        <Button
-          component={Link}
-          to={`/${tenant}/inventory-management/returns/create`}
-        >
+        <Button onClick={() => setInvoiceModalOpened(true)}>
           <IconPlus size={16} style={{ marginRight: 8 }} />
           Create Return
         </Button>
@@ -392,6 +388,11 @@ const ReturnsPage = () => {
             </Button>
           </div>
         )}
+      />
+
+      <InvoiceSelectionModal
+        opened={invoiceModalOpened}
+        onClose={() => setInvoiceModalOpened(false)}
       />
     </div>
   );

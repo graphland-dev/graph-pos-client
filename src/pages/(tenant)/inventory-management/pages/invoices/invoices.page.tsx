@@ -3,22 +3,22 @@ import AppDatatable, {
 } from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import {
+  ClientsWithPagination,
   CommonFindDocumentDto,
   CommonPaginationDto,
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
-  ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
+import { formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { modals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
 import { IconEdit, IconTrash } from "@tabler/icons-react";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, RotateCcw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -233,8 +233,7 @@ const InvoicesPage = () => {
         ),
       },
       {
-        accessor: (row) =>
-          currencyNumberWithSymbolFormat(row?.netTotal || 0),
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Sub Total",
         sortKey: "netTotal",
         sortable: true,
@@ -265,15 +264,13 @@ const InvoicesPage = () => {
         sortable: false, // Disable sorting for custom components
       },
       {
-        accessor: (row) =>
-          currencyNumberWithSymbolFormat(row?.paidAmount || 0),
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.paidAmount || 0),
         title: "Paid Amount",
         sortKey: "paidAmount",
         sortable: true,
       },
       {
-        accessor: (row) =>
-          currencyNumberWithSymbolFormat(row?.netTotal || 0),
+        accessor: (row) => currencyNumberWithSymbolFormat(row?.netTotal || 0),
         title: "Net Total",
         sortKey: "netTotal",
         sortable: true,
@@ -352,6 +349,18 @@ const InvoicesPage = () => {
             >
               <EyeIcon size={14} />
               View
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(
+                  `/${params.tenant}/inventory-management/returns/create/${row._id}`
+                );
+              }}
+              className="flex items-center gap-1 px-3 py-1 text-sm text-orange-600 rounded-md bg-orange-50 hover:bg-orange-100"
+            >
+              <RotateCcw size={14} />
+              Return
             </button>
             <button
               onClick={(e) => {

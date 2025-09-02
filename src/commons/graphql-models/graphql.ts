@@ -606,11 +606,31 @@ export type InvoiceReportResponse = {
   totalSellPrice: Scalars['Float']['output'];
 };
 
+export type InvoiceReturnQuotaType = {
+  __typename?: 'InvoiceReturnQuotaType';
+  availableAmountForReturn: Scalars['Float']['output'];
+  canCreateNewReturn: Scalars['Boolean']['output'];
+  invoiceTotal: Scalars['Float']['output'];
+  itemAvailability: Array<ItemReturnAvailabilityType>;
+  totalPaid: Scalars['Float']['output'];
+  totalReturned: Scalars['Float']['output'];
+};
+
 export type InvoiceTimeSeriesResponse = {
   __typename?: 'InvoiceTimeSeriesResponse';
   grouping: TimeSeriesGrouping;
   profitTimeSeries: Array<TimeSeriesDataPoint>;
   revenueTimeSeries: Array<TimeSeriesDataPoint>;
+};
+
+export type ItemReturnAvailabilityType = {
+  __typename?: 'ItemReturnAvailabilityType';
+  alreadyReturnedQuantity: Scalars['Float']['output'];
+  availableForReturnQuantity: Scalars['Float']['output'];
+  name: Scalars['String']['output'];
+  purchasedQuantity: Scalars['Float']['output'];
+  referenceId: Scalars['String']['output'];
+  unitPrice: Scalars['Float']['output'];
 };
 
 export type LoginInput = {
@@ -1304,6 +1324,7 @@ export type ProductInvoice = {
   paidAmount?: Maybe<Scalars['Float']['output']>;
   products: Array<ProductItemReference>;
   reference?: Maybe<Scalars['String']['output']>;
+  returnQuota: InvoiceReturnQuotaType;
   source?: Maybe<Product_Sell_Source>;
   status?: Maybe<Purchase_Invoice_Status>;
   subTotal: Scalars['Float']['output'];
@@ -1453,6 +1474,7 @@ export type ProductReturn = {
   inspectionDate?: Maybe<Scalars['DateTime']['output']>;
   internalNotes?: Maybe<Scalars['String']['output']>;
   invoice?: Maybe<ProductInvoice>;
+  maxRefundableAmount: Scalars['Float']['output'];
   netRefundAmount: Scalars['Float']['output'];
   processedBy?: Maybe<UserReference>;
   processedDate?: Maybe<Scalars['DateTime']['output']>;
@@ -2541,6 +2563,13 @@ export type PurchaseList__SuppliersQueryVariables = Exact<{
 
 export type PurchaseList__SuppliersQuery = { __typename?: 'Query', people__suppliers: { __typename?: 'SuppliersWithPagination', nodes?: Array<{ __typename?: 'Supplier', _id: string, name: string }> | null } };
 
+export type Accounting__CreateReturnPaymentMutationVariables = Exact<{
+  input: CreateReturnPaymentInput;
+}>;
+
+
+export type Accounting__CreateReturnPaymentMutation = { __typename?: 'Mutation', accounting__createReturnPayment: { __typename?: 'CommonMutationResponse', _id: string } };
+
 export type BrandsFilteredQueryVariables = Exact<{
   where?: InputMaybe<CommonPaginationDto>;
 }>;
@@ -2638,6 +2667,7 @@ export const CreatePurchase__SuppliersDocument = {"kind":"Document","definitions
 export const CreatePurchase__CategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePurchase__categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__rootCategoriesWithChildren"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]}}]} as unknown as DocumentNode<CreatePurchase__CategoriesQuery, CreatePurchase__CategoriesQueryVariables>;
 export const CreatePurchase__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"CreatePurchase__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"limit"},"value":{"kind":"IntValue","value":"-1"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<CreatePurchase__BrandsQuery, CreatePurchase__BrandsQueryVariables>;
 export const PurchaseList__SuppliersDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"PurchaseList__suppliers"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__suppliers"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]}}]} as unknown as DocumentNode<PurchaseList__SuppliersQuery, PurchaseList__SuppliersQueryVariables>;
+export const Accounting__CreateReturnPaymentDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Accounting__createReturnPayment"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateReturnPaymentInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accounting__createReturnPayment"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Accounting__CreateReturnPaymentMutation, Accounting__CreateReturnPaymentMutationVariables>;
 export const BrandsFilteredDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"BrandsFiltered"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonPaginationDto"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}},{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}},{"kind":"Field","name":{"kind":"Name","value":"currentPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"totalPages"}}]}}]}}]}}]} as unknown as DocumentNode<BrandsFilteredQuery, BrandsFilteredQueryVariables>;
 export const Setup__BrandsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__brands"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"totalCount"}}]}},{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"note"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]}}]} as unknown as DocumentNode<Setup__BrandsQuery, Setup__BrandsQueryVariables>;
 export const Setup__CreateBrandDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Setup__createBrand"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"body"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CreateBrandInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"setup__createBrand"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"body"},"value":{"kind":"Variable","name":{"kind":"Name","value":"body"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}}]}}]}}]} as unknown as DocumentNode<Setup__CreateBrandMutation, Setup__CreateBrandMutationVariables>;
