@@ -55,8 +55,7 @@ export const Pos_Products_Query = gql`
           externalUrl
         }
         isSellableWithoutStock
-        stockInQuantity
-        stockOutQuantity
+        currentStockQuantity
         discountAmount
         discountMode
         discountPercentage
@@ -85,7 +84,8 @@ export const Pos_Hold_List = gql`
           _id
         }
         netTotal
-        status
+        paymentStatus
+        lifecycleStatus
         tenant
         invoiceUID
         products {

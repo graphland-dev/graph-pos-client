@@ -6,6 +6,7 @@ import {
   IconCoin,
   IconFile3d,
   IconReceipt2,
+  IconRotate2 as IconRefund,
   IconRulerMeasure,
   IconShoppingCart,
 } from "@tabler/icons-react";
@@ -78,6 +79,11 @@ export const inventoryNavlinks: AppNavLink[] = [
         href: "invoice-payments",
       },
     ],
+  },
+  {
+    label: "Returns",
+    icon: IconRefund,
+    href: "returns",
   },
   {
     label: "Settings",

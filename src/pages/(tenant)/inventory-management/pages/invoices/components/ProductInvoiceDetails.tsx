@@ -18,6 +18,7 @@ import {
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import ProductInvoiceDetailsPaymentsTable from "./ProductInvoiceDetailsPaymentsTable";
+import ProductInvoiceReturnsTable from "./ProductInvoiceReturnsTable";
 
 const ProductInvoiceDetails: React.FC<{
   invoiceId: string;
@@ -280,6 +281,13 @@ const ProductInvoiceDetails: React.FC<{
           />
         )}
 
+        {invoice?._id && (
+          <ProductInvoiceReturnsTable
+            invoiceId={invoice?._id || ""}
+            tenant={invoice?.tenant || undefined}
+          />
+        )}
+
         {/* <Attachments
         attachments={details.attachments ?? []}
         onUploadDone={() => {}}
@@ -294,12 +302,13 @@ const ProductInvoiceDetails: React.FC<{
 export default ProductInvoiceDetails;
 
 const INVOICE_DETAILS_QUERY = gql`
-  query Inventory__productInvoice($where: CommonFindDocumentDto!) {
+  query Inventory__productInvoiceDetails($where: CommonFindDocumentDto!) {
     inventory__productInvoice(where: $where) {
       _id
       tenant
       invoiceUID
-      status
+      paymentStatus
+      lifecycleStatus
       client {
         address
         contactNumber

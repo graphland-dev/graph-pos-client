@@ -16,8 +16,7 @@ export const INVENTORY_PRODUCTS_LIST_QUERY = gql`
           _id
           name
         }
-        stockInQuantity
-        stockOutQuantity
+        currentStockQuantity
         isSellableWithoutStock
         price
         purchasePrice

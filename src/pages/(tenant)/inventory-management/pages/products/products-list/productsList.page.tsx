@@ -223,7 +223,7 @@ const ProductListPage = () => {
     if (product.isSellableWithoutStock) {
       return "N/A";
     }
-    return (product.stockInQuantity - product.stockOutQuantity).toString();
+    return (product.currentStockQuantity || 0).toString();
   };
 
   const columns = useMemo<ColumnDef<Product>[]>(

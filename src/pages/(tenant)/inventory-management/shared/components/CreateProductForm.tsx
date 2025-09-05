@@ -20,8 +20,7 @@ const INVENTORY_PRODUCT_QUERY = gql`
       _id
       name
       code
-      stockInQuantity
-      stockOutQuantity
+      currentStockQuantity
       isSellableWithoutStock
       price
       purchasePrice

@@ -20,6 +20,9 @@ import InvoiceDetailsPage from "./pages/invoices/invoice-details/invoice-details
 import QuotationsPage from "./pages/quotations/quotations.page";
 import CreateOrUpdateQuotationPage from "./pages/quotations/create-quotation/create-or-update-quotation.page";
 import InvoicePaymentsPage from "./pages/payments/invoice-payments/invoice-payments.page";
+import ReturnsPage from "./pages/returns/returns.page";
+import CreateReturnPage from "./pages/returns/create/create-return.page";
+import ReturnDetailsPage from "./pages/returns/return-details/return-details.page";
 import InventoryManagementRoot from "./module-root.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
@@ -134,6 +137,27 @@ export const inventoryModuleRouter: RouteObject[] = [
             // - purchaseId
             path: "create-purchase-payment",
             element: <CreatePurchasePayment />,
+          },
+        ],
+      },
+      {
+        path: "returns",
+        children: [
+          {
+            path: "",
+            element: <ReturnsPage />,
+          },
+          {
+            path: "create/:invoiceId",
+            element: <CreateReturnPage />,
+          },
+          {
+            path: ":returnId",
+            element: <ReturnDetailsPage />,
+          },
+          {
+            path: ":returnId/edit",
+            element: <CreateReturnPage />,
           },
         ],
       },

@@ -169,7 +169,8 @@ const INVOICE_DETAILS_QUERY = gql`
       _id
       tenant
       invoiceUID
-      status
+      paymentStatus
+      lifecycleStatus
       client {
         address
         contactNumber

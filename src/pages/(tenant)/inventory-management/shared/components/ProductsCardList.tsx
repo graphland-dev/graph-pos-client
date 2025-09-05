@@ -80,7 +80,7 @@ const ProductsCardList = ({
   }, [debouncedSearch, onSearch]);
 
   const getStock = (product: Product) => {
-    return (product.stockInQuantity || 0) - (product.stockOutQuantity || 0);
+    return product.currentStockQuantity || 0;
   };
 
   const getStockColor = (stock: number) => {

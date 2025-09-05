@@ -1,5 +1,5 @@
 import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
-import { dateTimeFormatter, formatTableColumnDate } from '@/commons/utils/dateFormat';
+import { formatTableColumnDate } from '@/commons/utils/dateFormat';
 import { PurchasePayment } from '@/commons/graphql-models/graphql';
 import {
   Anchor,

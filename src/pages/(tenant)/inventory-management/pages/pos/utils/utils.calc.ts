@@ -24,10 +24,7 @@ export const getPercentageAmount = (
 };
 
 export const getStock = (product: Product) => {
-  const _in = product.stockInQuantity || 0;
-  const _out = product.stockOutQuantity || 0;
-
-  return _in - _out || 0;
+  return product.currentStockQuantity || 0;
 };
 
 export const getProductReferenceByQuantity = (

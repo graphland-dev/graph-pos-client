@@ -7,7 +7,7 @@ import {
   ClientsWithPagination,
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
+import { formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { useMutation, useQuery } from "@apollo/client";
 import { Badge, Button, Input, Select, Text } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";

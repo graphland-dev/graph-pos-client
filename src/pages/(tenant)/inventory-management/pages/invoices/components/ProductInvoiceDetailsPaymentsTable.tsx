@@ -1,9 +1,8 @@
-import { dateTimeFormatter, formatTableColumnDate } from "@/commons/utils/dateFormat";
-import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from "../utils/query.invoices";
 import {
   InventoryInvoicePaymentsWithPagination,
   MatchOperator,
 } from "@/commons/graphql-models/graphql";
+import { formatTableColumnDate } from "@/commons/utils/dateFormat";
 import { useQuery } from "@apollo/client";
 import {
   Anchor,
@@ -14,8 +13,9 @@ import {
   Table,
   Title,
 } from "@mantine/core";
-import { Link } from "react-router-dom";
 import { useSetState } from "@mantine/hooks";
+import { Link } from "react-router-dom";
+import { ACCOUNT_INVENTORY_INVOICE_PAYMENTS_QUERY } from "../utils/query.invoices";
 import InvoicePaymentEntry from "./InvoicePaymentEntry";
 
 interface IProps {
