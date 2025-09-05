@@ -6,6 +6,7 @@ import {
   ClientsWithPagination,
   CommonFindDocumentDto,
   CommonPaginationDto,
+  Invoice_Status,
   MatchOperator,
   ProductInvoice,
   ProductInvoicesWithPagination,
@@ -357,7 +358,17 @@ const InvoicesPage = () => {
                   `/${params.tenant}/inventory-management/returns/create/${row._id}`
                 );
               }}
-              className="flex items-center gap-1 px-3 py-1 text-sm text-orange-600 rounded-md bg-orange-50 hover:bg-orange-100"
+              disabled={row.lifecycleStatus !== Invoice_Status.Finalized}
+              className={`flex items-center gap-1 px-3 py-1 text-sm rounded-md ${
+                row.lifecycleStatus === Invoice_Status.Finalized
+                  ? "text-orange-600 bg-orange-50 hover:bg-orange-100"
+                  : "text-gray-400 bg-gray-100 cursor-not-allowed"
+              }`}
+              title={
+                row.lifecycleStatus !== Invoice_Status.Finalized
+                  ? "Invoice must be finalized to process returns"
+                  : "Create return for this invoice"
+              }
             >
               <RotateCcw size={14} />
               Return

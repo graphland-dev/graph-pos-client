@@ -160,8 +160,7 @@ export const PRODUCT_STOCK_HISTORY_QUERY = gql`
           code
           name
           note
-          stockInQuantity
-          stockOutQuantity
+          currentStockQuantity
           createdAt
         }
         quantity

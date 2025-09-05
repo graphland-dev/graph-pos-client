@@ -122,8 +122,6 @@ const CreateReturnPage = () => {
 
   // Quota validation
   const returnQuota = invoice?.returnQuota;
-  // Allow creating returns regardless of canCreateNewReturn; server enforces refund caps
-  const canCreateReturn = true;
   const availableItems = useMemo(() => {
     if (!returnQuota?.itemAvailability) return [];
     return returnQuota.itemAvailability.filter(
@@ -391,8 +389,8 @@ const CreateReturnPage = () => {
                   <Text>
                     <strong>Invoice #:</strong> {invoice.invoiceUID}
                   </Text>
-                  <Badge color={invoice.status === "PAID" ? "green" : "orange"}>
-                    {invoice.status}
+                  <Badge color={invoice.paymentStatus === "PAID" ? "green" : "orange"}>
+                    {invoice.paymentStatus || invoice.lifecycleStatus}
                   </Badge>
                 </div>
                 <Text mb="sm">
@@ -745,7 +743,7 @@ const CreateReturnPage = () => {
                             ❌ Issues found:
                           </Text>
                           <ul className="text-sm text-red-600">
-                            {validation.errors.map((error, index) => (
+                            {validation.errors.map((error: string, index: number) => (
                               <li key={index}>• {error}</li>
                             ))}
                           </ul>

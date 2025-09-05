@@ -15,8 +15,7 @@ export const PURCHASE_PRODUCT_LIST = gql`
           _id
           percentage
         }
-        stockInQuantity
-        stockOutQuantity
+        currentStockQuantity
         price
         purchasePrice
       }

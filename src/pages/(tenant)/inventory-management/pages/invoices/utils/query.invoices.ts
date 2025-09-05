@@ -13,7 +13,8 @@ export const INVENTORY_PRODUCT_INVOICES_QUERY = gql`
         _id
         tenant
         invoiceUID
-        status
+        paymentStatus
+        lifecycleStatus
         client {
           address
           contactNumber
@@ -101,7 +102,8 @@ export const INVENTORY_PRODUCT_INVOICE_QUERY = gql`
       _id
       tenant
       invoiceUID
-      status
+      paymentStatus
+      lifecycleStatus
       client {
         _id
         address
@@ -178,3 +180,4 @@ export const DELETE_PRODUCT_INVOICE_MUTATION = gql`
     inventory__removeProductInvoice(where: $where)
   }
 `;
+

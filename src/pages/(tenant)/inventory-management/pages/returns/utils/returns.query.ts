@@ -126,7 +126,8 @@ export const GET_INVOICE_FOR_RETURN = gql`
     inventory__productInvoice(where: $where) {
       _id
       invoiceUID
-      status
+      paymentStatus
+      lifecycleStatus
       netTotal
       paidAmount
       date

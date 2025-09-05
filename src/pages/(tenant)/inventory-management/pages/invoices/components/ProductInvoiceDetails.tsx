@@ -302,12 +302,13 @@ const ProductInvoiceDetails: React.FC<{
 export default ProductInvoiceDetails;
 
 const INVOICE_DETAILS_QUERY = gql`
-  query Inventory__productInvoice($where: CommonFindDocumentDto!) {
+  query Inventory__productInvoiceDetails($where: CommonFindDocumentDto!) {
     inventory__productInvoice(where: $where) {
       _id
       tenant
       invoiceUID
-      status
+      paymentStatus
+      lifecycleStatus
       client {
         address
         contactNumber

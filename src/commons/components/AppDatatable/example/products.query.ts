@@ -13,8 +13,7 @@ export const PRODUCTS_EXAMPLE_QUERY = gql`
           code
           percentage
         }
-        stockInQuantity
-        stockOutQuantity
+        currentStockQuantity
         isSellableWithoutStock
       }
       meta {
@@ -34,8 +33,7 @@ export interface Product {
     code: string;
     percentage: number;
   } | null;
-  stockInQuantity: number;
-  stockOutQuantity: number;
+  currentStockQuantity: number;
   isSellableWithoutStock: boolean;
 }
 

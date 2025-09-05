@@ -158,7 +158,7 @@ const CreateOrUpdateInvoicePage = () => {
   });
 
   // Fetch existing invoice data if in edit mode
-  useQuery(INVENTORY_PRODUCT_INVOICE_QUERY, {
+  const { data: existingInvoiceData } = useQuery(INVENTORY_PRODUCT_INVOICE_QUERY, {
     variables: {
       where: {
         key: "_id",
@@ -444,6 +444,17 @@ const CreateOrUpdateInvoicePage = () => {
     };
 
     if (isEditMode && invoiceId) {
+      // Check if lifecycleStatus is FINALIZED
+      const existingInvoice = existingInvoiceData?.inventory__productInvoice;
+      if (existingInvoice?.lifecycleStatus === 'FINALIZED') {
+        showNotification({
+          title: "Error",
+          message: "Cannot update invoice: Invoice is finalized",
+          color: "red",
+        });
+        return;
+      }
+      
       // Update existing invoice
       const updateInput: UpdateProductInvoiceInput = baseInput;
       updateInvoice({
