@@ -1,4 +1,4 @@
-import { SpotlightProvider } from "@mantine/spotlight";
+import { Spotlight } from "@mantine/spotlight";
 import { Outlet, useParams } from "react-router-dom";
 import { getSpotlightItems } from "../configs/spotlight-items";
 
@@ -6,12 +6,12 @@ const SpotlightWrapper = () => {
   const params = useParams<{ tenant: string }>();
 
   return (
-    <SpotlightProvider
+    <Spotlight
       shortcut={["mod + P", "mod + K"]}
       actions={getSpotlightItems(params.tenant || "")}
     >
       <Outlet />
-    </SpotlightProvider>
+    </Spotlight>
   );
 };
 

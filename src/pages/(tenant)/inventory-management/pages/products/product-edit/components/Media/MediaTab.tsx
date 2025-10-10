@@ -230,7 +230,7 @@ const MediaTab: React.FC = () => {
           Upload Gallery Photos
         </Title>
         <Button
-          leftIcon={<IconPlus size={20} />}
+          leftSection={<IconPlus size={20} />}
           variant="light"
           onClick={() =>
             append({

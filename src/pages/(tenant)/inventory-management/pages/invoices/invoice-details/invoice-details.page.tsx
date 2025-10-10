@@ -142,7 +142,7 @@ const InvoiceDetailsPage = () => {
         <Group>
           <Button
             variant="outline"
-            leftIcon={<IconPrinter size={16} />}
+            leftSection={<IconPrinter size={16} />}
             onClick={openPrintModal}
             disabled={loading}
           >
@@ -153,7 +153,7 @@ const InvoiceDetailsPage = () => {
           {isDraft && (
             <Button
               color="green"
-              leftIcon={<IconCheck size={16} />}
+              leftSection={<IconCheck size={16} />}
               onClick={() => handleStatusUpdate(Invoice_Status.Finalized)}
               loading={updating}
             >
@@ -164,7 +164,7 @@ const InvoiceDetailsPage = () => {
           {/* Edit Button - Only show if not finalized */}
           {!isFinalized && (
             <Button
-              leftIcon={<IconEdit size={16} />}
+              leftSection={<IconEdit size={16} />}
               onClick={() =>
                 navigate(
                   `/${params.tenant}/inventory-management/invoices/${invoiceId}/edit`
@@ -180,7 +180,7 @@ const InvoiceDetailsPage = () => {
           <Button
             color="red"
             variant="outline"
-            leftIcon={<IconTrash size={16} />}
+            leftSection={<IconTrash size={16} />}
             onClick={handleDeleteInvoice}
             loading={deleting}
             disabled={loading}

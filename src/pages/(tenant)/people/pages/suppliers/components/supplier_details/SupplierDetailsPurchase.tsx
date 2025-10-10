@@ -1,12 +1,11 @@
-import DataTable from "@/commons/components/DataTable.tsx";
-import { MatchOperator, ProductPurchase, ProductPurchasesWithPagination, Supplier } from "@/commons/graphql-models/graphql";
+import AppDatatable, { ColumnDef } from "@/commons/components/AppDatatable/AppDatatable";
+import { CommonPaginationDto, MatchOperator, ProductPurchase, ProductPurchasesWithPagination, SortType, Supplier } from "@/commons/graphql-models/graphql";
 import { useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
+import { Button, Drawer } from "@mantine/core";
 import { useDisclosure, useSetState } from "@mantine/hooks";
-import { IconPlus, IconTrash } from "@tabler/icons-react";
+import { IconPlus } from "@tabler/icons-react";
 import dayjs from "dayjs";
-import { MRT_ColumnDef } from "mantine-react-table";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { SUPPLIER_DETAILS_PURCHASE_QUERY } from "../../utils/suppliers.query";
 
 interface ISupplierDetailsProps {
@@ -20,47 +19,78 @@ interface IState {
 const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
   supplierDetails,
 }) => {
-  
+  const [openedDrawer, drawerHandler] = useDisclosure();
+  const [state, _setState] = useSetState<IState>({ refetching: false });
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
+  const [sorting, setSorting] = useState<{
+    column: string;
+    direction: "asc" | "desc" | null;
+  }>({ column: "purchaseDate", direction: "desc" });
 
-     const [openedDrawer, drawerHandler] = useDisclosure();
-    const [state, setState] = useSetState<IState>({ refetching: false });
-    
-
-  const { data: purchaseData, loading: fetchingPurchaseData, refetch } = useQuery<{
-      inventory__productPurchases: ProductPurchasesWithPagination;
-  }>(SUPPLIER_DETAILS_PURCHASE_QUERY);
-   
-    
-    const handleRefetch = (variables: any) => {
-      setState({ refetching: true });
-      refetch(variables).finally(() => {
-        setState({ refetching: false });
-      });
+  const buildWhereClause = (): CommonPaginationDto => {
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "purchaseDate",
+      sort: sorting.direction === "asc" ? SortType.Asc : SortType.Desc,
+      filters: [
+        {
+          key: "supplier",
+          operator: MatchOperator.Eq,
+          value: supplierDetails?._id,
+        },
+      ],
     };
+  };
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  const { data: purchaseData, loading: fetchingPurchaseData, refetch: _refetch } = useQuery<{
+    inventory__productPurchases: ProductPurchasesWithPagination;
+  }>(SUPPLIER_DETAILS_PURCHASE_QUERY, {
+    variables: { where: buildWhereClause() },
+    skip: !supplierDetails?._id,
+  });
+
+  // refetch helper removed as unused
+
+  const handleSortChange = (
+    column: string,
+    direction: "asc" | "desc" | null
+  ) => {
+    setSorting({ column, direction });
+  };
+
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setPagination({ page, pageSize });
+  };
+
+  const columns = useMemo<ColumnDef<ProductPurchase>[]>(
     () => [
       {
-        accessorFn: (row: ProductPurchase) =>
+        accessor: (row) =>
           dayjs(row?.purchaseDate).format("MMMM D, YYYY h:mm A"),
-        accessorKey: "purchaseDate",
-        header: "Purchase Date",
+        title: "Purchase Date",
+        sortKey: "purchaseDate",
+        sortable: true,
       },
       {
-        accessorKey: "taxAmount",
-        header: "TaxAmount",
+        accessor: "taxAmount",
+        title: "Tax Amount",
+        sortable: true,
       },
       {
-        accessorKey: "subTotal",
-        header: "Sub Total",
+        accessor: "subTotal",
+        title: "Sub Total",
+        sortable: true,
       },
       {
-        accessorKey: "costAmount",
-        header: "Cost Amount",
+        accessor: "costAmount",
+        title: "Cost Amount",
+        sortable: true,
       },
       {
-        accessorKey: "netTotal",
-        header: "Net Total",
+        accessor: "netTotal",
+        title: "Net Total",
+        sortable: true,
       },
     ],
     []
@@ -68,45 +98,30 @@ const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
 
   return (
     <div>
-      <DataTable
+      <div className="mb-4 flex justify-end">
+        <Button
+          leftSection={<IconPlus size={16} />}
+          onClick={drawerHandler.open}
+          size="sm"
+        >
+          Add new
+        </Button>
+      </div>
+
+      <AppDatatable
         columns={columns}
         data={purchaseData?.inventory__productPurchases.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={
-          purchaseData?.inventory__productPurchases.meta?.totalCount ?? 100
-        }
-        filters={[
-          {
-            key: "supplier",
-            operator: MatchOperator.Eq,
-            value: supplierDetails?._id,
-          },
-        ]}
-        RowActionMenu={() => (
-          <>
-            <Menu.Item
-              //   onClick={() => {
-              //     handleDeletePurchase(row._id);
-              //   }}
-              icon={<IconTrash size={18} />}
-            >
-              Delete
-            </Menu.Item>
-          </>
-        )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              onClick={drawerHandler.open}
-              size="sm"
-            >
-              Add new
-            </Button>
-          </>
-        }
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: purchaseData?.inventory__productPurchases.meta?.totalCount || 0,
+          currentPage: pagination.page,
+        }}
+        onSortChange={handleSortChange}
+        onPaginationChange={handlePaginationChange}
         loading={fetchingPurchaseData || state.refetching}
+        emptyMessage="No purchases found for this supplier."
       />
+
       <Drawer
         opened={openedDrawer}
         onClose={drawerHandler.close}
@@ -114,18 +129,8 @@ const SupplierDetailsPurchase: React.FC<ISupplierDetailsProps> = ({
         title="Create Purchase"
         withCloseButton={true}
       >
-        {/* <EmployeePurchaseDataForm
-          supplierDetails={supplierDetails}
-          accounts={payRoll_accounts?.accounting__accounts?.nodes as Account[]}
-          onFormSubmitted={() => {
-            refetch();
-            drawerHandler.close();
-          }}
-          currentSalary={undefined}
-        /> */}
+        {/* Form component can be added here */}
       </Drawer>
-      {/* <pre>{JSON.stringify(purchaseData, null, 2)}</pre>
-      <pre>{JSON.stringify(supplierDetails, null, 2)}</pre> */}
     </div>
   );
 };

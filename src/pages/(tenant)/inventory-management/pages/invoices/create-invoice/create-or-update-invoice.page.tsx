@@ -484,7 +484,7 @@ const CreateOrUpdateInvoicePage = () => {
             <Button
               variant="subtle"
               size="sm"
-              leftIcon={<IconArrowLeft size={16} />}
+              leftSection={<IconArrowLeft size={16} />}
               onClick={() =>
                 navigate(
                   `/${params.tenant}/inventory-management/invoices/${invoiceId}`
@@ -502,7 +502,7 @@ const CreateOrUpdateInvoicePage = () => {
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
-              leftIcon={<IconEye size={16} />}
+              leftSection={<IconEye size={16} />}
               onClick={() =>
                 navigate(
                   `/${params.tenant}/inventory-management/invoices/${invoiceId}`
@@ -513,7 +513,7 @@ const CreateOrUpdateInvoicePage = () => {
             </Button>
             <Button
               variant="outline"
-              leftIcon={<Printer size={16} />}
+              leftSection={<Printer size={16} />}
               onClick={openPrintModal}
             >
               Print Preview
@@ -535,7 +535,7 @@ const CreateOrUpdateInvoicePage = () => {
               {selectedClient ? (
                 <div className="flex items-center justify-between p-3 rounded bg-gray-50">
                   <div>
-                    <Text weight={500}>{selectedClient.name}</Text>
+                    <Text fw={500}>{selectedClient.name}</Text>
                     <Text size="sm" color="dimmed">
                       {selectedClient.email}
                     </Text>
@@ -578,7 +578,14 @@ const CreateOrUpdateInvoicePage = () => {
                 <DateInput
                   label="Date"
                   value={watchedDate}
-                  onChange={(date) => setValue("date", date || new Date())}
+                  onChange={(value) =>
+                    setValue(
+                      "date",
+                      (value && typeof value !== "string"
+                        ? (value as Date)
+                        : new Date((value as string) || new Date())) as Date
+                    )
+                  }
                   error={<ErrorMessage errors={errors} name="date" />}
                   required
                 />
@@ -618,7 +625,7 @@ const CreateOrUpdateInvoicePage = () => {
                       <tr key={product.id}>
                         <td>
                           <div>
-                            <Text weight={500}>{product.name}</Text>
+                            <Text fw={500}>{product.name}</Text>
                             <Text size="sm" color="dimmed">
                               {product.code}
                             </Text>
@@ -631,10 +638,9 @@ const CreateOrUpdateInvoicePage = () => {
                                 watchedProducts?.[index]?.unitSellPrice || 0
                               }
                               onChange={(value) =>
-                                handleUnitPriceChange(index, value || 0)
+                                handleUnitPriceChange(index, Number(value || 0))
                               }
                               min={0}
-                              precision={2}
                               size="sm"
                             />
                           </div>
@@ -643,14 +649,14 @@ const CreateOrUpdateInvoicePage = () => {
                           <NumberInput
                             value={watchedProducts?.[index]?.quantity || 0}
                             onChange={(value) =>
-                              handleQuantityChange(index, value || 0)
+                              handleQuantityChange(index, Number(value || 0))
                             }
                             min={1}
                             size="sm"
                           />
                         </td>
                         <td>
-                          <Text weight={500}>
+                          <Text fw={500}>
                             {currencyNumberWithSymbolFormat(
                               (watchedProducts?.[index]?.unitSellPrice || 0) *
                                 (watchedProducts?.[index]?.quantity || 0)
@@ -667,7 +673,7 @@ const CreateOrUpdateInvoicePage = () => {
                   </tbody>
                 </Table>
               ) : (
-                <Text color="dimmed" align="center" py="xl">
+                <Text c="dimmed" ta="center" py="xl">
                   No products added yet. Click "Add Product" to get started.
                 </Text>
               )}
@@ -684,19 +690,19 @@ const CreateOrUpdateInvoicePage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <Text>Items:</Text>
-                  <Text weight={500}>{totals.itemCount}</Text>
+                  <Text fw={500}>{totals.itemCount}</Text>
                 </div>
 
                 <div className="flex justify-between">
                   <Text>Subtotal:</Text>
-                  <Text weight={500}>
+                  <Text fw={500}>
                     {currencyNumberWithSymbolFormat(totals.subTotal)}
                   </Text>
                 </div>
 
                 {/* Discount Controls */}
                 <div className="py-2 space-y-2 border-t border-gray-100">
-                  <Text size="sm" weight={500}>
+                  <Text size="sm" fw={500}>
                     Discount
                   </Text>
 
@@ -716,18 +722,13 @@ const CreateOrUpdateInvoicePage = () => {
                     <NumberInput
                       value={watchedDiscountValue}
                       onChange={(value) =>
-                        setValue("discountValue", value || 0)
+                        setValue("discountValue", Number(value || 0))
                       }
                       min={0}
                       max={
                         watchedDiscountMode === ProductDiscountMode.Percentage
                           ? 100
                           : undefined
-                      }
-                      precision={
-                        watchedDiscountMode === ProductDiscountMode.Amount
-                          ? 2
-                          : 0
                       }
                       placeholder="0"
                       style={{ flex: 1 }}
@@ -739,7 +740,7 @@ const CreateOrUpdateInvoicePage = () => {
                 {totals.discountAmount > 0 && (
                   <div className="flex justify-between">
                     <Text>Discount Applied:</Text>
-                    <Text weight={500} color="red">
+                    <Text fw={500} c="red">
                       -{currencyNumberWithSymbolFormat(totals.discountAmount)}{" "}
                     </Text>
                   </div>
@@ -747,10 +748,10 @@ const CreateOrUpdateInvoicePage = () => {
 
                 <div className="pt-3 border-t">
                   <div className="flex justify-between">
-                    <Text size="lg" weight={700}>
+                    <Text size="lg" fw={700}>
                       Net Total:
                     </Text>
-                    <Text size="lg" weight={700}>
+                    <Text size="lg" fw={700}>
                       {currencyNumberWithSymbolFormat(totals.netTotal)}
                     </Text>
                   </div>

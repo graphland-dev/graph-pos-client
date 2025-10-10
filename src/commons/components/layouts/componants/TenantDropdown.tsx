@@ -15,7 +15,7 @@ import { useAtomValue } from "jotai";
 import { Link, useParams } from "react-router-dom";
 import { ArrowDownUp, CircleCheck, Cog } from "lucide-react";
 import { getFileUrl } from "../../../utils/getFileUrl";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { modals } from "@mantine/modals";
 
 const TenantDropdown = () => {

@@ -12,7 +12,7 @@ const PurchaseDetails: React.FC<{
         <div className="grid grid-cols-2 gap-5 lg:w-7/12">
           <Paper shadow="md" p={10} withBorder>
             <div className="flex items-center justify-between">
-              <div className="!text-left">
+              <div className="text-left!">
                 <Text size={"sm"} fw={500}>
                   Purchase Date:
                 </Text>
@@ -24,7 +24,7 @@ const PurchaseDetails: React.FC<{
                 </Text>
               </div>
 
-              <div className="!text-right">
+              <div className="text-right!">
                 <Text size={"sm"} fw={500}>
                   {dateTimeFormatter.displayDate(details?.purchaseDate)}
                 </Text>
@@ -40,7 +40,7 @@ const PurchaseDetails: React.FC<{
 
           <Paper shadow="md" p={10} withBorder>
             <div className="flex items-center justify-between">
-              <div className="!text-left">
+              <div className="text-left!">
                 <Text size={"sm"} fw={500}>
                   Net Bill:
                 </Text>
@@ -52,7 +52,7 @@ const PurchaseDetails: React.FC<{
                 </Text>
               </div>
 
-              <div className="!text-right">
+              <div className="text-right!">
                 <Text size={"sm"} fw={500}>
                   {details?.netTotal?.toFixed(2) ?? 0.0}
                   {" BDT"}
@@ -75,7 +75,7 @@ const PurchaseDetails: React.FC<{
           </div>
 
           <div className="grid grid-cols-2 p-3">
-            <div className="!text-left">
+            <div className="text-left!">
               <Text fw={500}>Name: </Text>
               <Text fw={500}>Contact number: </Text>
               <Text fw={500}>Company name: </Text>
@@ -84,7 +84,7 @@ const PurchaseDetails: React.FC<{
               <Text fw={500}>Address: </Text>
             </div>
 
-            <div className="!text-right">
+            <div className="text-right!">
               <Text fw={500}>{details?.supplier?.name}</Text>
               <Text fw={500}>{details?.supplier?.contactNumber}</Text>
               <Text fw={500}>{details?.supplier?.companyName}</Text>

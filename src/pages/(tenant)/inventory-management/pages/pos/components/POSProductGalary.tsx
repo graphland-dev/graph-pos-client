@@ -18,7 +18,7 @@ import {
 } from "../utils/query.pos";
 import { getProductReferenceByQuantity } from "../utils/utils.calc";
 import PosItemCard from "./PosItemCard";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { playBipSound } from "@/commons/utils/play-bip-sound";
 
 interface IProp {

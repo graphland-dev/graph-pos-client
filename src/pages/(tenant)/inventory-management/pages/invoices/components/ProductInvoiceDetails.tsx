@@ -60,7 +60,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Total sell Price
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netSellPrice || 0)}</th>
@@ -69,7 +69,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Total vat amount
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netTaxAmount || 0)}</th>
@@ -78,7 +78,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Total Item wise discount
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netSubtotalDiscount || 0)}</th>
@@ -87,7 +87,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Extra discount{" "}
           {invoice?.invoiceDiscountMode == ProductDiscountMode.Percentage
             ? `(${invoice?.invoiceDiscountPercentage}%)`
@@ -99,7 +99,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Total applied discount
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netDiscountAmount || 0)}</th>
@@ -108,7 +108,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Net Profit (Purchase price - Sell price)
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netProfit || 0)}</th>
@@ -118,7 +118,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Net payable bill (bill - discount + vat)
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.netTotal || 0)}</th>
@@ -127,7 +127,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Paid amount
         </th>
         <th>{currencyNumberWithSymbolFormat(invoice?.paidAmount || 0)}</th>
@@ -136,7 +136,7 @@ const ProductInvoiceDetails: React.FC<{
         <th></th>
         <th></th>
         <th></th>
-        <th className="!text-right" colSpan={7}>
+        <th className="text-right!" colSpan={7}>
           Due
         </th>
         <th>
@@ -264,7 +264,7 @@ const ProductInvoiceDetails: React.FC<{
         </div>
         <Paper p={"sm"}>
           <Title order={4}>Items</Title>
-          <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
+          <Table mt={"sm"} withColumnBorders withTableBorder captionSide="bottom">
             <thead className="bg-card-header">{ths}</thead>
             <tbody>{query.loading ? trSkeleton : rows}</tbody>
             <tfoot>{tfs}</tfoot>

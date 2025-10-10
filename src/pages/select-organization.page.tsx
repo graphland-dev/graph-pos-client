@@ -58,7 +58,7 @@ const SelectOrganization = () => {
 
   return (
     <div className="relative p-14">
-      <LoadingOverlay visible={!data} overlayBlur={1000} />
+      <LoadingOverlay visible={!data} overlayProps={{ blur: 2 }} />
       <Title order={2}>Select Organization</Title>
       <div className="grid content-center gap-4 mx-4 mt-8 md:grid-cols-3">
         {data?.identity__myTenants.nodes?.map((tenant, idx) => (

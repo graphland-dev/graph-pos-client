@@ -132,10 +132,9 @@ const AccountForm: React.FC<IAccountFormProps> = ({
           value={new Date(watch("openedAt"))}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
-          onChange={(e) => {
-            const dateTimeValue =
-              e?.toISOString() || new Date()?.toISOString() || "";
-            setValue("openedAt", dateTimeValue);
+          onChange={(value) => {
+            const d = typeof value === 'string' ? new Date(value) : (value ?? new Date());
+            setValue("openedAt", d.toISOString());
           }}
           label="Date & Time"
           placeholder="Select your date and time"

@@ -140,11 +140,11 @@ const ImportExportCSV: React.FC<{
 
   return (
     <>
-      <Group spacing="sm">
+      <Group gap="sm">
         <Button
           size="sm"
           variant="outline"
-          leftIcon={<IconUpload size={16} />}
+          leftSection={<IconUpload size={16} />}
           onClick={openImport}
         >
           Import
@@ -152,7 +152,7 @@ const ImportExportCSV: React.FC<{
         <Button
           size="sm"
           variant="outline"
-          leftIcon={<IconDownload size={16} />}
+          leftSection={<IconDownload size={16} />}
           onClick={handleExport}
           loading={isExporting}
         >
@@ -170,7 +170,7 @@ const ImportExportCSV: React.FC<{
         title="Import Products from CSV"
         size="lg"
       >
-        <Stack spacing="md">
+        <Stack gap="md">
           <Alert icon={<IconAlertCircle size="1rem" />} color="blue">
             <Text size="sm">
               Before importing, please ensure your CSV file follows the correct
@@ -180,7 +180,7 @@ const ImportExportCSV: React.FC<{
 
           <Group>
             <Button
-              leftIcon={<IconDownload size={16} />}
+              leftSection={<IconDownload size={16} />}
               onClick={handleTemplateDownload}
               loading={isDownloadingTemplate}
             >
@@ -188,7 +188,7 @@ const ImportExportCSV: React.FC<{
             </Button>
           </Group>
 
-          <Text weight={600}>Instructions:</Text>
+          <Text fw={600}>Instructions:</Text>
           <List className="list-disc list-inside">
             <List.Item>Only 'name' field is required</List.Item>
             <List.Item>Use 'code' field to update existing products.</List.Item>
@@ -219,8 +219,8 @@ const ImportExportCSV: React.FC<{
             multiple={false}
           >
             <Group
-              position="center"
-              spacing="xl"
+              justify="center"
+              gap="xl"
               style={{ minHeight: 120, pointerEvents: "none" }}
             >
               <Dropzone.Accept>
@@ -245,14 +245,14 @@ const ImportExportCSV: React.FC<{
           </Dropzone>
 
           {isValidating && (
-            <Stack spacing="xs">
+            <Stack gap="xs">
               <Text size="sm">Validating CSV file...</Text>
-              <Progress value={100} animate />
+              <Progress value={100} animated />
             </Stack>
           )}
 
           {validationResult && (
-            <Stack spacing="md">
+            <Stack gap="md">
               <Alert
                 icon={
                   validationResult.success ? (
@@ -268,7 +268,7 @@ const ImportExportCSV: React.FC<{
                     : "yellow"
                 }
               >
-                <Stack spacing="xs">
+                <Stack gap="xs">
                   <Text size="sm">
                     Total rows: {validationResult.totalRows}
                   </Text>
@@ -284,8 +284,8 @@ const ImportExportCSV: React.FC<{
               </Alert>
 
               {validationResult.errors.length > 0 && (
-                <Stack spacing="xs">
-                  <Text weight={600} size="sm" color="red">
+                <Stack gap="xs">
+                  <Text fw={600} size="sm" c="red">
                     Validation Errors:
                   </Text>
                   <div style={{ maxHeight: 200, overflowY: "auto" }}>
@@ -303,7 +303,7 @@ const ImportExportCSV: React.FC<{
               )}
 
               {validationResult.success && (
-                <Group position="right">
+                <Group justify="flex-end">
                   <Button
                     onClick={handleImport}
                     loading={isImporting}

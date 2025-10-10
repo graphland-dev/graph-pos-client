@@ -20,7 +20,7 @@ import {
 } from "@tabler/icons-react";
 
 export const getSpotlightItems = (tenant: string) => {
-  return [
+  const items = [
     {
       title: "Home",
       description: "Get to home page",
@@ -341,4 +341,5 @@ export const getSpotlightItems = (tenant: string) => {
       icon: <IconUserCheck size="1.2rem" />,
     },
   ];
+  return items.map((item, index) => ({ id: `${index}-${item.title}`, ...item }));
 };

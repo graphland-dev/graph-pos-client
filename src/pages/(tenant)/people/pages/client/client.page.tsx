@@ -242,7 +242,7 @@ const ClientPage = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Text size="xl" weight={600}>
+          <Text size="xl" fw={600}>
             Clients
           </Text>
           <Text size="sm" color="dimmed">
@@ -258,7 +258,7 @@ const ClientPage = () => {
             {state.refetching ? "Refreshing..." : "Refresh"}
           </button>
           <Button
-            leftIcon={<IconPlus size={16} />}
+            leftSection={<IconPlus size={16} />}
             onClick={() => {
               drawerHandler.open();
               setState({

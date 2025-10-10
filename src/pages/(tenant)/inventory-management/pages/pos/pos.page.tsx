@@ -268,14 +268,14 @@ const PosPage = () => {
               color="accent"
               component={Link}
               to={"/"}
-              leftIcon={<IconDashboard size={16} />}
+              leftSection={<IconDashboard size={16} />}
             >
               Dashboard
             </Button>
             <Button
               variant="subtle"
               color="accent"
-              leftIcon={<IconList size={16} />}
+              leftSection={<IconList size={16} />}
               component={Link}
               to={`/${params?.tenant}/inventory-management/invoices`}
             >
@@ -284,7 +284,7 @@ const PosPage = () => {
             <Button
               variant="subtle"
               color="accent"
-              leftIcon={<IconUsers size={16} />}
+              leftSection={<IconUsers size={16} />}
               component={Link}
               to={`/${params?.tenant}/people/client`}
             >
@@ -293,7 +293,7 @@ const PosPage = () => {
             <Button
               variant="subtle"
               color="accent"
-              leftIcon={<IconBox size={16} />}
+              leftSection={<IconBox size={16} />}
               component={Link}
               to={`/${params?.tenant}/inventory-management/products/products-list
 						`}
@@ -303,7 +303,7 @@ const PosPage = () => {
             <Button
               variant="subtle"
               color="accent"
-              leftIcon={<IconCalculator size={16} />}
+              leftSection={<IconCalculator size={16} />}
               onClick={() =>
                 reset({
                   clientId: "",
@@ -361,9 +361,9 @@ const PosPage = () => {
 
               {Boolean(productFields?.length) && (
                 <>
-                  <Table withBorder withColumnBorders>
+                  <Table withTableBorder withColumnBorders>
                     <thead className="bg-card-header">
-                      <tr className="!p-2 rounded-md">
+                      <tr className="p-2! rounded-md">
                         <th>Name</th>
                         <th>Quantity</th>
                         <th>Sell Price</th>
@@ -631,7 +631,7 @@ const PosPage = () => {
                 />
               </Modal> */}
 
-              <Group position="apart">
+              <Group justify="space-between">
                 {/* <Button
                   size="md"
                   type="submit"
@@ -643,7 +643,7 @@ const PosPage = () => {
                 <Button
                   size="md"
                   type="submit"
-                  leftIcon={<IconCreditCard size={16} />}
+                  leftSection={<IconCreditCard size={16} />}
                   onClick={() => setAction("PAYMENT")}
                   disabled={!watch("products")?.length || !watch("clientId")}
                 >
@@ -660,7 +660,7 @@ const PosPage = () => {
                       costAmount: 0,
                     })
                   }
-                  leftIcon={<IconRefresh size={16} />}
+                  leftSection={<IconRefresh size={16} />}
                   color="red"
                 >
                   Reset

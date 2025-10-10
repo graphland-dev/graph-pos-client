@@ -30,7 +30,7 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
-import clsx from "clsx";
+import { clsx } from "clsx";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CategoryPicker } from "../../../shared/components";

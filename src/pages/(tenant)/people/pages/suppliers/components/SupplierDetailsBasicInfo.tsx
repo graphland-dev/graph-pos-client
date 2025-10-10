@@ -22,25 +22,25 @@ const SupplierDetailsBasicInfo: React.FC<ISupplierDetailsProps> = ({
         <Divider my="sm" />
         <div className="flex flex-col w-5/12 gap-3">
           <div className="flex justify-between ">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Name:
             </Title>
             <Text>{supplierDetails?.name}</Text>
           </div>
           <div className="flex justify-between ">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Contact number:
             </Title>
             <Text>{supplierDetails?.contactNumber}</Text>
           </div>
           <div className="flex justify-between ">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Company Name:
             </Title>
             <Text>{supplierDetails?.companyName}</Text>
           </div>
           <div className="flex justify-between ">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Updated Date:
             </Title>
             <Text>
@@ -48,13 +48,13 @@ const SupplierDetailsBasicInfo: React.FC<ISupplierDetailsProps> = ({
             </Text>
           </div>
           <div className="flex justify-between">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Email:
             </Title>
             <Text>{supplierDetails?.email}</Text>
           </div>
           <div className="flex justify-between">
-            <Title color="gray" order={4}>
+            <Title c="gray" order={4}>
               Address:
             </Title>
             <Text>{supplierDetails?.address}</Text>

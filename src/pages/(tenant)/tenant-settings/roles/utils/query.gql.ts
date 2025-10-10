@@ -30,3 +30,9 @@ export const UPDATE_ROLE_PERMISSIONS_MUTATION = gql`
 		identity__updateRole(body: $body, where: $where)
 	}
 `;
+
+export const DELETE_ROLE_MUTATION = gql`
+	mutation Identity__removeRole($where: CommonFindDocumentDto!) {
+		identity__removeRole(where: $where)
+	}
+`;

@@ -90,9 +90,9 @@ const ProductsCardList = ({
   };
 
   return (
-    <Stack spacing="md">
+    <Stack gap="md">
       {/* Filter Controls */}
-      <Group spacing="md" grow>
+      <Group gap="md" grow>
         <CategoryPicker
           placeholder="Filter by category"
           value={selectedCategoryId}
@@ -122,7 +122,7 @@ const ProductsCardList = ({
         placeholder="Search products by name or code..."
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.currentTarget.value)}
-        icon={<IconSearch size={16} />}
+        leftSection={<IconSearch size={16} />}
         size="md"
       />
 
@@ -135,11 +135,11 @@ const ProductsCardList = ({
 
       {/* Products List */}
       {loading ? (
-        <Text color="dimmed" align="center" py="xl">
+        <Text c="dimmed" ta="center" py="xl">
           Searching products...
         </Text>
       ) : products.length === 0 ? (
-        <Text color="dimmed" align="center" py="xl">
+        <Text c="dimmed" ta="center" py="xl">
           {searchQuery
             ? "No products match your search."
             : "No products found."}
@@ -158,8 +158,8 @@ const ProductsCardList = ({
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Group position="apart" mb="xs">
-                      <Text weight={600} size="md">
+                    <Group justify="space-between" mb="xs">
+                      <Text fw={600} size="md">
                         {product.name}
                       </Text>
                       <Badge color={getStockColor(stock)} size="sm">
@@ -169,7 +169,7 @@ const ProductsCardList = ({
 
                     <div className="mb-3 space-y-1">
                       {product.code && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconBarcode size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {product.code}
@@ -178,7 +178,7 @@ const ProductsCardList = ({
                       )}
 
                       {product.category?.name && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconTag size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {product.category.name}
@@ -187,7 +187,7 @@ const ProductsCardList = ({
                       )}
 
                       {product.brand?.name && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconPackage size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {product.brand.name}
@@ -196,12 +196,12 @@ const ProductsCardList = ({
                       )}
                     </div>
 
-                    <Group spacing="lg">
+                    <Group gap="lg">
                       <div>
                         <Text size="xs" color="dimmed">
                           Purchase Price
                         </Text>
-                        <Text weight={500} size="sm">
+                        <Text fw={500} size="sm">
                           {currencyNumberWithSymbolFormat(
                             product.purchasePrice || 0
                           )}{" "}
@@ -212,7 +212,7 @@ const ProductsCardList = ({
                         <Text size="xs" color="dimmed">
                           Sell Price
                         </Text>
-                        <Text weight={600} size="sm" color="blue">
+                        <Text fw={600} size="sm" c="blue">
                           {currencyNumberWithSymbolFormat(product.price || 0)}{" "}
                           BDT
                         </Text>

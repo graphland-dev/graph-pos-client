@@ -1,11 +1,14 @@
-import { commonNotifierCallback } from '@/commons/components/Notification/commonNotifierCallback.ts';
-import { MatchOperator, RolePermission } from '@/commons/graphql-models/graphql';
-import { useMutation } from '@apollo/client';
-import { Button, Checkbox, Flex, Space, Title } from '@mantine/core';
-import { useEffect } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
-import { UPDATE_ROLE_PERMISSIONS_MUTATION } from '../utils/query.gql';
-import { rolesWithPermissions } from '../utils/roles-with-permissions';
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
+import {
+  MatchOperator,
+  RolePermission,
+} from "@/commons/graphql-models/graphql";
+import { useMutation } from "@apollo/client";
+import { Button, Checkbox, Flex, Text, Title } from "@mantine/core";
+import { useEffect } from "react";
+import { useFieldArray, useForm } from "react-hook-form";
+import { UPDATE_ROLE_PERMISSIONS_MUTATION } from "../utils/query.gql";
+import { rolesWithPermissions } from "../utils/roles-with-permissions";
 
 interface IRolePermissionFormProps {
   rolePermissions: RolePermission[];
@@ -31,27 +34,27 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
 
   const { append } = useFieldArray({
     control,
-    name: 'rolePermissions',
+    name: "rolePermissions",
   });
 
   useEffect(() => {
-    setValue('rolePermissions', rolePermissions);
+    setValue("rolePermissions", rolePermissions);
   }, [rolePermissions]);
 
   const isPermissionChecked = (collectionName: string, action: string) => {
-    return watch('rolePermissions').some(
+    return watch("rolePermissions").some(
       (permission) =>
         permission?.collectionName === collectionName &&
-        permission.actions.includes(action),
+        permission.actions.includes(action)
     );
   };
 
   const onChangeRolePermissionAction = (
     collectionName: string,
-    action: string,
+    action: string
   ) => {
-    const index = watch('rolePermissions').findIndex(
-      (permission) => permission?.collectionName === collectionName,
+    const index = watch("rolePermissions").findIndex(
+      (permission) => permission?.collectionName === collectionName
     );
 
     if (index === -1) {
@@ -62,23 +65,23 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
     } else {
       const actions = watch(`rolePermissions.${index}.actions`);
 
-      if (action === '*' && !actions.includes('*')) {
-        setValue(`rolePermissions.${index}.actions`, ['*']);
+      if (action === "*" && !actions.includes("*")) {
+        setValue(`rolePermissions.${index}.actions`, ["*"]);
         return;
       }
 
       if (
-        [...actions, action].includes('read') &&
-        [...actions, action].includes('create') &&
-        [...actions, action].includes('update') &&
-        [...actions, action].includes('delete')
+        [...actions, action].includes("read") &&
+        [...actions, action].includes("create") &&
+        [...actions, action].includes("update") &&
+        [...actions, action].includes("delete")
       ) {
-        setValue(`rolePermissions.${index}.actions`, ['*']);
+        setValue(`rolePermissions.${index}.actions`, ["*"]);
         return;
       }
 
-      if (actions.includes('*') && action !== '*') {
-        const actionIndex = actions.findIndex((a) => a === '*');
+      if (actions.includes("*") && action !== "*") {
+        const actionIndex = actions.findIndex((a) => a === "*");
         actions.splice(actionIndex, 1);
         setValue(`rolePermissions.${index}.actions`, [...actions, action]);
         return;
@@ -98,9 +101,9 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
   const [updatePermissions, { loading }] = useMutation(
     UPDATE_ROLE_PERMISSIONS_MUTATION,
     commonNotifierCallback({
-      successTitle: 'Role permissions updated successfully.',
-      errorMessage: 'Role permissions update failed!',
-    }),
+      successTitle: "Role permissions updated successfully.",
+      errorMessage: "Role permissions update failed!",
+    })
   );
 
   // submit permissions form
@@ -116,7 +119,7 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
           permissions: values?.rolePermissions,
         },
         where: {
-          key: 'name',
+          key: "name",
           operator: MatchOperator.Eq,
           value: roleName,
         },
@@ -125,77 +128,96 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-10">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
       {rolesWithPermissions.map((module) => (
-        <div className="p-5 border border-gray-300 border-dashed">
-          <Title order={5}>{module.name}</Title>
-          <Space h={'xs'} />
-          {module.collections.map((collection) => (
-            <div>
-              {collection.split('__')[1]}
-              <Flex gap={30} my={10}>
-                <Checkbox
-                  label="*"
-                  value={'*'}
-                  color="teal"
-                  radius={0}
-                  disabled={isReadOnly}
-                  onChange={() => onChangeRolePermissionAction(collection, '*')}
-                  checked={isPermissionChecked(collection, '*')}
-                />
-                <Checkbox
-                  label="Read"
-                  value={'read'}
-                  color="teal"
-                  radius={0}
-                  disabled={isReadOnly}
-                  onChange={() =>
-                    onChangeRolePermissionAction(collection, 'read')
-                  }
-                  checked={isPermissionChecked(collection, 'read')}
-                />
-                <Checkbox
-                  label="Create"
-                  value={'create'}
-                  color="teal"
-                  radius={0}
-                  disabled={isReadOnly}
-                  onChange={() =>
-                    onChangeRolePermissionAction(collection, 'create')
-                  }
-                  checked={isPermissionChecked(collection, 'create')}
-                />
-                <Checkbox
-                  label="Update"
-                  value={'update'}
-                  color="teal"
-                  disabled={isReadOnly}
-                  radius={0}
-                  onChange={() =>
-                    onChangeRolePermissionAction(collection, 'update')
-                  }
-                  checked={isPermissionChecked(collection, 'update')}
-                />
-                <Checkbox
-                  label="Delete"
-                  value={'delete'}
-                  color="teal"
-                  disabled={isReadOnly}
-                  radius={0}
-                  onChange={() =>
-                    onChangeRolePermissionAction(collection, 'delete')
-                  }
-                  checked={isPermissionChecked(collection, 'delete')}
-                />
-              </Flex>
+        <div key={module.name}>
+          <Flex align="center" gap="sm" mb="xs">
+            <div className="flex items-center justify-center bg-teal-100 rounded size-8">
+              <Text size="sm" fw={700} className="text-teal-700">
+                {module.name.charAt(0)}
+              </Text>
             </div>
-          ))}
+            <Title order={4}>{module.name}</Title>
+          </Flex>
+          <Text size="sm" color="dimmed" mb="lg">
+            {module.description}
+          </Text>
+          <div className="flex flex-col gap-4 border">
+            {module.collections.map((collection) => (
+              <div key={collection} className="p-4">
+                <Text fw={500} mb="sm">
+                  {collection.split("__")[1]}
+                </Text>
+                <Flex gap={20} wrap="wrap">
+                  <Checkbox
+                    label="ALL"
+                    value={"*"}
+                    color="teal"
+                    radius={0}
+                    disabled={isReadOnly}
+                    onChange={() =>
+                      onChangeRolePermissionAction(collection, "*")
+                    }
+                    checked={isPermissionChecked(collection, "*")}
+                  />
+                  <Checkbox
+                    label="Read"
+                    value={"read"}
+                    color="teal"
+                    radius={0}
+                    disabled={isReadOnly}
+                    onChange={() =>
+                      onChangeRolePermissionAction(collection, "read")
+                    }
+                    checked={isPermissionChecked(collection, "read")}
+                  />
+                  <Checkbox
+                    label="Create"
+                    value={"create"}
+                    color="teal"
+                    radius={0}
+                    disabled={isReadOnly}
+                    onChange={() =>
+                      onChangeRolePermissionAction(collection, "create")
+                    }
+                    checked={isPermissionChecked(collection, "create")}
+                  />
+                  <Checkbox
+                    label="Update"
+                    value={"update"}
+                    color="teal"
+                    disabled={isReadOnly}
+                    radius={0}
+                    onChange={() =>
+                      onChangeRolePermissionAction(collection, "update")
+                    }
+                    checked={isPermissionChecked(collection, "update")}
+                  />
+                  <Checkbox
+                    label="Delete"
+                    value={"delete"}
+                    color="teal"
+                    disabled={isReadOnly}
+                    radius={0}
+                    onChange={() =>
+                      onChangeRolePermissionAction(collection, "delete")
+                    }
+                    checked={isPermissionChecked(collection, "delete")}
+                  />
+                </Flex>
+              </div>
+            ))}
+          </div>
         </div>
       ))}
 
-      <Button type="submit" loading={loading}>
-        Save
-      </Button>
+      {!isReadOnly && (
+        <div className="flex justify-end pt-4">
+          <Button type="submit" loading={loading} size="md">
+            Save Permissions
+          </Button>
+        </div>
+      )}
     </form>
   );
 };

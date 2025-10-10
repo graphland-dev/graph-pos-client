@@ -101,14 +101,14 @@ const ProductInvoiceReturnsTable: React.FC<{ invoiceId: string; tenant?: string 
         <Title order={4}>Returns</Title>
         <Button
           size="xs"
-          leftIcon={<IconPlus size={14} />}
+          leftSection={<IconPlus size={14} />}
           component={Link}
           to={`/${effectiveTenant}/inventory-management/returns/create/${invoiceId}`}
         >
           Create Return
         </Button>
       </div>
-      <Table withBorder withColumnBorders>
+      <Table withTableBorder withColumnBorders>
         <thead>
           <tr>
             <th>Return ID</th>
@@ -138,4 +138,3 @@ const ProductInvoiceReturnsTable: React.FC<{ invoiceId: string; tenant?: string 
 };
 
 export default ProductInvoiceReturnsTable;
-

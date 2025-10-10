@@ -138,7 +138,7 @@ const CreateProductForm = ({ onSuccess, onCancel }: CreateProductFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing="md">
+      <Stack gap="md">
         <TextInput
           label="Product Name"
           placeholder="Enter product name"
@@ -168,10 +168,9 @@ const CreateProductForm = ({ onSuccess, onCancel }: CreateProductFormProps) => {
           label="Purchase Price"
           placeholder="Enter purchase price"
           value={formData.purchasePrice}
-          onChange={(value) => setValue("purchasePrice", value || 0)}
+          onChange={(value) => setValue("purchasePrice", Number(value) || 0)}
           error={errors.purchasePrice?.message}
           min={0}
-          precision={2}
           required
         />
 
@@ -179,14 +178,13 @@ const CreateProductForm = ({ onSuccess, onCancel }: CreateProductFormProps) => {
           label="Selling Price"
           placeholder="Enter selling price"
           value={formData.price}
-          onChange={(value) => setValue("price", value || 0)}
+          onChange={(value) => setValue("price", Number(value) || 0)}
           error={errors.price?.message}
           min={0}
-          precision={2}
           required
         />
 
-        <Group position="right" mt="md">
+        <Group justify="flex-end" mt="md">
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>

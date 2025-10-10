@@ -223,8 +223,8 @@ const CategoryTreeNodeComponent = ({
         }}
         onClick={handleNodeClick}
       >
-        <Group position="apart" spacing="xs">
-          <Group spacing="xs" style={{ flex: 1 }}>
+        <Group justify="space-between" gap="xs">
+          <Group gap="xs" style={{ flex: 1 }}>
             {/* Drag Handle */}
             {allowDragDrop && (
               <ActionIcon
@@ -268,7 +268,7 @@ const CategoryTreeNodeComponent = ({
 
             {/* Category Info */}
             <Box style={{ flex: 1 }}>
-              <Group spacing="xs" align="center">
+              <Group gap="xs" align="center">
                 <Text size="sm" fw={500}>
                   {category.name}
                 </Text>
@@ -307,7 +307,7 @@ const CategoryTreeNodeComponent = ({
 
               <Menu.Dropdown>
                 <Menu.Item
-                  icon={<IconPlus size={16} />}
+                  leftSection={<IconPlus size={16} />}
                   onClick={(e) => {
                     e.stopPropagation();
                     onAddSubcategory?.(category);
@@ -318,7 +318,7 @@ const CategoryTreeNodeComponent = ({
 
                 {allowEdit && (
                   <Menu.Item
-                    icon={<IconPencil size={16} />}
+                    leftSection={<IconPencil size={16} />}
                     onClick={(e) => {
                       e.stopPropagation();
                       onNodeEdit?.(category);
@@ -330,7 +330,7 @@ const CategoryTreeNodeComponent = ({
 
                 {allowDelete && (
                   <Menu.Item
-                    icon={<IconTrash size={16} />}
+                    leftSection={<IconTrash size={16} />}
                     color="red"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -420,14 +420,14 @@ const CategoryTree = ({
   }
 
   return (
-    <Stack spacing="md" className={className}>
+    <Stack gap="md" className={className}>
       {/* Search Box */}
       {onSearchChange && (
         <TextInput
           placeholder="Search categories..."
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
-          icon={<IconSearch size={16} />}
+          leftSection={<IconSearch size={16} />}
           rightSection={
             searchQuery ? (
               <ActionIcon
@@ -466,7 +466,7 @@ const CategoryTree = ({
           }
         }}
       >
-        <Stack spacing="xs">
+        <Stack gap="xs">
           {categories.map((category) => (
             <CategoryTreeNodeComponent
               key={category._id}

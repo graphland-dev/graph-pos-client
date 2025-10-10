@@ -104,7 +104,7 @@ const DesignSystem = () => {
               variant="subtle"
               component={Link}
               to={"/"}
-              leftIcon={<IconDashboard size={16} />}
+              leftSection={<IconDashboard size={16} />}
             >
               Dashboard
             </Button>

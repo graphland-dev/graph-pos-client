@@ -89,7 +89,7 @@ const CreateClientForm = ({ onSuccess, onCancel }: CreateClientFormProps) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <Stack spacing="md">
+      <Stack gap="md">
         <TextInput
           label="Client Name"
           placeholder="Enter client name"
@@ -121,7 +121,7 @@ const CreateClientForm = ({ onSuccess, onCancel }: CreateClientFormProps) => {
           rows={3}
         />
 
-        <Group position="right" mt="md">
+        <Group justify="flex-end" mt="md">
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>

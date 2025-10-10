@@ -87,44 +87,44 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 				<Divider my='sm' />
 				<div className='flex flex-col w-5/12 gap-3'>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Name:
 						</Title>
 						<Text>{employeeDetails?.name}</Text>
 					</div>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Contact number:
 						</Title>
 						<Text>{employeeDetails?.contactNumber}</Text>
 					</div>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Religion:
 						</Title>
 						<Text>{employeeDetails?.religion}</Text>
 					</div>
 
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Department name:
 						</Title>
 						<Text>{employeeDetails?.department?.name}</Text>
 					</div>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Gender:
 						</Title>
 						<Text>{employeeDetails?.gender}</Text>
 					</div>
 					<div className='flex justify-between'>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Salary:
 						</Title>
 						<Text>{employeeDetails?.salary}</Text>
 					</div>
 					<div className='flex justify-between'>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Address:
 						</Title>
 						<Text>{employeeDetails?.address}</Text>
@@ -141,13 +141,13 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 				<Divider my='sm' />
 				<div className='flex flex-col w-5/12 gap-3'>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Designation:
 						</Title>
 						<Text>{employeeDetails?.designation}</Text>
 					</div>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Date Of Birth:
 						</Title>
 						<Text>
@@ -157,19 +157,19 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 						</Text>
 					</div>
 					<div className='flex justify-between '>
-						<Title color='gray' order={4}>
+						<Title c='gray' order={4}>
 							Blood Group:
 						</Title>
 						<Text>{employeeDetails?.bloodGroup}</Text>
 					</div>
 					<div className='flex justify-between'>
-						<Title color='gray' order={4}>
+							<Title c='gray' order={4}>
 							Starting Salary:
 						</Title>
 						<Text>{employeeDetails?.startingSalary}</Text>
 					</div>
 					<div className='flex justify-between'>
-						<Title color='gray' order={4}>
+							<Title c='gray' order={4}>
 							Appointment Date:
 						</Title>
 						<Text>
@@ -179,7 +179,7 @@ const EmployeeDetailsBasicInfo: React.FC<IEmployeesDetailsProps> = ({
 						</Text>
 					</div>
 					<div className='flex justify-between'>
-						<Title color='gray' order={4}>
+							<Title c='gray' order={4}>
 							Joining Date:
 						</Title>
 						<Text>

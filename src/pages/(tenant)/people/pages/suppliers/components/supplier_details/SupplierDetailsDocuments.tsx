@@ -74,7 +74,7 @@ const SupplierDetailsDocuments: React.FC<ISupplierDetailsProps> = ({
             color="yellow.8"
             onClick={handleUpload}
             loading={loading}
-            leftIcon={<IconUpload size={20} />}
+            leftSection={<IconUpload size={20} />}
           >
             Upload
           </Button>

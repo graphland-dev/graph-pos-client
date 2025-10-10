@@ -86,7 +86,14 @@ const EmployeeIncrementsForm: React.FC<IIncrementDetailsFormProps> = ({
           <DateInput
             placeholder="Pick a date"
             defaultValue={watch('date')}
-            onChange={(d) => setValue('date', d!)}
+            onChange={(value) =>
+              setValue(
+                'date',
+                (value && typeof value !== 'string'
+                  ? (value as Date)
+                  : new Date((value as string) || new Date())) as Date
+              )
+            }
           />
         </Input.Wrapper>
 

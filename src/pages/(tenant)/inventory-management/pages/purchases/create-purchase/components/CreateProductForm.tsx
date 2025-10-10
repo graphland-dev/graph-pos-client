@@ -174,7 +174,6 @@ const CreateProductForm: React.FC<ICreateProductFormProps> = ({
           value={watch("purchasePrice")}
           onChange={(value) => setValue("purchasePrice", Number(value) || 0)}
           min={0}
-          precision={2}
           step={0.01}
         />
       </Input.Wrapper>
@@ -193,7 +192,6 @@ const CreateProductForm: React.FC<ICreateProductFormProps> = ({
           value={watch("price")}
           onChange={(value) => setValue("price", Number(value) || 0)}
           min={0}
-          precision={2}
           step={0.01}
         />
       </Input.Wrapper>

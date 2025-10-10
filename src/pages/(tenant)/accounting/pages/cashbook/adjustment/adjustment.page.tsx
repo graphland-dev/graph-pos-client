@@ -233,7 +233,7 @@ const AdjustmentPage = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Text size="xl" weight={600}>
+          <Text size="xl" fw={600}>
             Balance Adjustments
           </Text>
           <Text size="sm" color="dimmed">
@@ -249,7 +249,7 @@ const AdjustmentPage = () => {
             {state.refetching ? "Refreshing..." : "Refresh"}
           </button>
           <Button
-            leftIcon={<IconPlus size={16} />}
+            leftSection={<IconPlus size={16} />}
             onClick={() =>
               setState({ modalOpened: true, operationType: "create" })
             }

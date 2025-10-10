@@ -385,7 +385,7 @@ const AppDatatable = <T extends Record<string, any>>({
               <select
                 value={paginationConfig.pageSize}
                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>

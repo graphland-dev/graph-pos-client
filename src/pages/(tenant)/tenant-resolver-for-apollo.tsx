@@ -98,7 +98,7 @@ const TenantResolverForApollo: React.FC = () => {
   return (
     <ApolloProvider client={client}>
       {errors.length > 0 && (
-        <div className="fixed top-0 left-0 right-0 z-[500] border-b border-red-500 shadow-lg bg-red-500">
+        <div className="fixed top-0 left-0 right-0 z-500 border-b border-red-500 shadow-lg bg-red-500">
           <div className="container px-4 py-3 mx-auto">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -120,7 +120,7 @@ const TenantResolverForApollo: React.FC = () => {
               </div>
               <button
                 onClick={() => setErrors([])}
-                className="flex-shrink-0"
+                className="shrink-0"
                 aria-label="Dismiss errors"
               >
                 <XIcon className="text-white" />

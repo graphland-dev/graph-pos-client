@@ -215,8 +215,13 @@ const InvoicesPage = () => {
             <DatePickerInput
               label="Start date"
               value={filters.startDate ? new Date(filters.startDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("startDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "startDate",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -224,8 +229,13 @@ const InvoicesPage = () => {
             <DatePickerInput
               label="End date"
               value={filters.endDate ? new Date(filters.endDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("endDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "endDate",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -304,7 +314,7 @@ const InvoicesPage = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Text size="xl" weight={600}>
+          <Text size="xl" fw={600}>
             Invoices
           </Text>
           <Text size="sm" color="dimmed">

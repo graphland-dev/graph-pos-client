@@ -2,17 +2,18 @@ import { AppNavLink } from '@/commons/models/AppNavLink.type';
 import {
   AppShell,
   NavLink,
-  Navbar,
   ScrollArea,
   UnstyledButton,
-  clsx,
+  Burger,
 } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
 import React from 'react';
 import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
 import CommonHeader from './componants/CommonHeader';
 import { navbarIsCollapsedAtom } from '@/commons/states/navbar.atom';
 import { useAtom } from 'jotai';
 import { IconChevronLeft } from '@tabler/icons-react';
+import clsx from 'clsx';
 
 interface Prop {
   navlinks: AppNavLink[];
@@ -23,7 +24,7 @@ interface Prop {
 const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const { pathname } = useLocation();
   const params = useParams<{ tenant: string }>();
-
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopNavbarCollapsed, setDesktopNavbarCollapsed] = useAtom(
     navbarIsCollapsedAtom,
   );
@@ -35,94 +36,111 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
 
   return (
     <AppShell
-      navbarOffsetBreakpoint="sm"
-      asideOffsetBreakpoint="sm"
-      header={<CommonHeader />}
-      layout="alt"
-      classNames={{
-        root: 'app-shell-root',
-        body: 'app-shell-body',
-        main: 'app-shell-main',
+      header={{ height: 56 }}
+      navbar={{
+        width: desktopNavbarCollapsed ? 72 : 300,
+        breakpoint: 'sm',
+        collapsed: { mobile: !mobileOpened, desktop: desktopNavbarCollapsed },
       }}
-      styles={{
-        root: {
-          '--mantine-navbar-width': desktopNavbarCollapsed ? '1px' : '18.75rem',
-        },
-      }}
-      navbar={
-        <Navbar
-          p="md"
-          hiddenBreakpoint="sm"
-          width={{ sm: 300 }}
-          className="transition-all duration-300 border-0 app-shell__navbar"
-          left={desktopNavbarCollapsed ? -300 : 0}
-        >
-          <UnstyledButton
-            onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
-            className={clsx(
-              'absolute top-14 -right-4 bg-theme-primary text-theme-light',
-              {
-                '-right-6': desktopNavbarCollapsed,
-              },
-            )}
-          >
-            <IconChevronLeft
-              size={30}
-              className={clsx('transition-all duration-300', {
-                'rotate-180': desktopNavbarCollapsed,
-              })}
-            />
-          </UnstyledButton>
+      padding="md"
+    >
+      <AppShell.Header>
+        <CommonHeader />
+      </AppShell.Header>
 
-          {title && (
-            <Navbar.Section p={'sm'}>
-              <p className="font-semibold uppercase app-module-title">
-                {title}
-              </p>
-            </Navbar.Section>
+      <AppShell.Navbar
+        p="md"
+        className="transition-all duration-300 border-0 app-shell__navbar"
+      >
+        {/* Desktop Collapse Button */}
+        <UnstyledButton
+          onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
+          className={clsx(
+            'absolute top-14 -right-4 z-10 bg-primary-500 text-white rounded-full p-1 shadow-md hover:bg-primary-600 transition-colors',
+            'hidden sm:flex items-center justify-center',
+            {
+              '-right-6': desktopNavbarCollapsed,
+            },
           )}
-          <Navbar.Section grow mt="md" component={ScrollArea}>
+        >
+          <IconChevronLeft
+            size={24}
+            className={clsx('transition-all duration-300', {
+              'rotate-180': desktopNavbarCollapsed,
+            })}
+          />
+        </UnstyledButton>
+
+        {/* Mobile Burger (hidden on desktop) */}
+        <div className="sm:hidden mb-4">
+          <Burger
+            opened={mobileOpened}
+            onClick={toggleMobile}
+            size="sm"
+          />
+        </div>
+
+        {/* Title Section */}
+        {title && (
+          <div className="p-2 mb-4">
+            <p className="font-semibold uppercase text-sm tracking-wide app-module-title">
+              {title}
+            </p>
+          </div>
+        )}
+
+        {/* Navigation Links */}
+        <ScrollArea className="flex-1">
+          <div className="space-y-1">
             {navlinks.map((item, index) => (
               <NavLink
                 key={index}
-                label={item.label}
+                label={desktopNavbarCollapsed ? undefined : item.label}
                 component={Link}
                 to={linkWithTenant(`${path}/${item?.href}`)}
-                icon={
+                leftSection={
                   item.icon ? (
                     <item.icon
-                      size="1.2rem"
+                      size={20}
                       className="app-navbar-item__icon"
                     />
                   ) : undefined
                 }
                 className={clsx(
-                  'text-white rounded-md app-shell__navbar-item',
+                  'rounded-md app-shell__navbar-item',
                 )}
                 active={pathname.includes(item?.href as string)}
+                onClick={() => {
+                  // Close mobile menu when clicking a link
+                  if (mobileOpened) toggleMobile();
+                }}
               >
                 {item?.children &&
                   item.children.map((_item, key) => (
                     <NavLink
                       key={key}
-                      label={_item.label}
+                      label={desktopNavbarCollapsed ? undefined : _item.label}
                       component={Link}
-                      px={'xs'}
-                      py={2}
-                      className="app-navbar-item"
+                      className="app-navbar-item text-sm"
                       active={pathname.startsWith(
                         linkWithTenant(`${path}/${item?.href}/${_item.href}`),
                       )}
                       to={linkWithTenant(`${path}/${item?.href}/${_item.href}`)}
+                      onClick={() => {
+                        // Close mobile menu when clicking a child link
+                        if (mobileOpened) toggleMobile();
+                      }}
                     />
                   ))}
               </NavLink>
             ))}
-          </Navbar.Section>
-        </Navbar>
-      }
-    >
-      <Outlet />
+          </div>
+        </ScrollArea>
+      </AppShell.Navbar>
+
+      <AppShell.Main>
+        <Outlet />
+      </AppShell.Main>
     </AppShell>
   );
 };

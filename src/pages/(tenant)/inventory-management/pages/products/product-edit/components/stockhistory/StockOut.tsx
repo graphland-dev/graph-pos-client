@@ -25,7 +25,7 @@ const StockOut: React.FC<IStockProps> = ({ data, removeStock }) => {
   ));
   return (
     <>
-      <Table withBorder withColumnBorders>
+      <Table withTableBorder withColumnBorders>
         <thead>
           <tr>
             <th>Invoice UID</th>

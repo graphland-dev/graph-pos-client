@@ -61,7 +61,7 @@ const ProductsCardList: React.FC<IProductCardListProps> = ({
       )}
 
       <Space h={10} />
-      <Group position="left">
+      <Group justify="flex-start">
         <Button
           variant="subtle"
           size="xs"

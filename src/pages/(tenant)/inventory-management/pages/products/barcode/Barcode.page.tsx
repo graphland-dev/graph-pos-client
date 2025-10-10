@@ -114,10 +114,10 @@ const BarcodePage = () => {
       </td>
       <td>
         <NumberInput
-          type="number"
           placeholder="Quantity"
           value={product.quantity}
-          onChange={(quantity: number) => {
+          onChange={(value) => {
+            const quantity = Number(value) || 0;
             const _products = [...productItems];
             _products[index].quantity = quantity;
             setProductItems(_products);
@@ -169,7 +169,7 @@ const BarcodePage = () => {
         <Table
           mt={"md"}
           highlightOnHover
-          withBorder
+          withTableBorder
           withColumnBorders
           captionSide="bottom"
         >
@@ -192,7 +192,7 @@ const BarcodePage = () => {
             />
           </div>
           <div>
-            <Button onClick={handlePrint} leftIcon={<IconPrinter size={16} />}>
+            <Button onClick={handlePrint} leftSection={<IconPrinter size={16} />}>
               Print
             </Button>
           </div>

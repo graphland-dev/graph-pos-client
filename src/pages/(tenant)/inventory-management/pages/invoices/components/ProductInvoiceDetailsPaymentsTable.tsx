@@ -108,7 +108,7 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
             Add Payment
           </Button>
         </div>
-        <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
+        <Table mt={"sm"} withColumnBorders withTableBorder captionSide="bottom">
           <thead className="bg-card-header">{paymentsThs}</thead>
           <tbody>{loading ? trSkeleton : rows}</tbody>
         </Table>

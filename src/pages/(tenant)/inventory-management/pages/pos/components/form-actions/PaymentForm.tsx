@@ -274,7 +274,14 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
           >
             <DateInput
               placeholder="Pick a Date"
-              onChange={(e) => setValue(`date`, e!)}
+              onChange={(value) =>
+                setValue(
+                  `date`,
+                  (value && typeof value !== "string"
+                    ? (value as Date)
+                    : new Date((value as string) || new Date())) as Date
+                )
+              }
               defaultValue={watch(`date`)}
             />
           </Input.Wrapper>
@@ -354,7 +361,7 @@ const PaymentForm: React.FC<IPaymentFormProps> = ({
             </Input.Wrapper>
             <Space h={5} />
 
-            <Group position="right">
+            <Group justify="flex-end">
               <Button color="red" onClick={() => remove(idx)} size="xs">
                 Remove
               </Button>

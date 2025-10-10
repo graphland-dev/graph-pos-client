@@ -315,7 +315,7 @@ const PurchasePaymentPage = () => {
       <div className="flex items-center justify-between mb-4">
         <div></div>
         <Button
-          leftIcon={<IconPlus size={16} />}
+          leftSection={<IconPlus size={16} />}
           component={Link}
           to={`/${params.tenant}/inventory-management/payments/create-purchase-payment`}
           size="sm"

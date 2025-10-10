@@ -133,7 +133,7 @@ const ProductsExample: React.FC = () => {
             type="text"
             placeholder="Search by name..."
             onChange={(e) => setValue("name", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         ),
       },
@@ -146,7 +146,7 @@ const ProductsExample: React.FC = () => {
             type="text"
             placeholder="Exact code..."
             onChange={(e) => setValue("code", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         ),
       },
@@ -162,7 +162,7 @@ const ProductsExample: React.FC = () => {
             min="0"
             step="0.01"
             onChange={(e) => setValue("price", e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         ),
       },

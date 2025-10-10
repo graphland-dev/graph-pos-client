@@ -90,7 +90,7 @@ const RootWrapper: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div area-label="root-app-wrapper" className="relative">
-      <LoadingOverlay visible={loading} opacity={10000} overlayBlur={1000} />
+      <LoadingOverlay visible={loading} overlayProps={{ opacity: 1, blur: 2 }} />
       {children}
     </div>
   );

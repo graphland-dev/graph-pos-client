@@ -39,7 +39,7 @@ const ClientsCardList = ({
         placeholder="Search clients by name, email, or contact number..."
         value={searchQuery}
         onChange={handleSearchChange}
-        icon={<IconSearch size={16} />}
+        leftSection={<IconSearch size={16} />}
         size="md"
       />
 
@@ -56,7 +56,7 @@ const ClientsCardList = ({
         
         {/* Results */}
         {!loading && clients.length === 0 ? (
-          <Text color="dimmed" align="center" py="xl">
+          <Text c="dimmed" ta="center" py="xl">
             {debouncedSearchQuery ? 'No clients match your search.' : 'No clients found. Create a new client to get started.'}
           </Text>
         ) : (
@@ -65,13 +65,13 @@ const ClientsCardList = ({
               <Card key={client._id} withBorder p="md" className="hover:shadow-md transition-shadow">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <Text weight={600} size="md" mb="xs">
+                    <Text fw={600} size="md" mb="xs">
                       {client.name}
                     </Text>
                     
                     <div className="space-y-1">
                       {client.email && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconMail size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {client.email}
@@ -80,7 +80,7 @@ const ClientsCardList = ({
                       )}
                       
                       {client.contactNumber && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconPhone size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {client.contactNumber}
@@ -89,7 +89,7 @@ const ClientsCardList = ({
                       )}
                       
                       {client.address && (
-                        <Group spacing="xs">
+                        <Group gap="xs">
                           <IconMapPin size={14} color="gray" />
                           <Text size="sm" color="dimmed">
                             {client.address}
