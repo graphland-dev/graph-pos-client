@@ -583,7 +583,7 @@ const PosPage = () => {
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
 
                 <Space h={"sm"} />
-                <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary-50 text-primary-foreground">
+                <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary text-primary-foreground">
                   <div>Net Total (SellPrice + Tax - Discount)</div>{" "}
                   <div>{currencyNumberWithSymbolFormat(invoiceNetTotal())}</div>
                 </div>

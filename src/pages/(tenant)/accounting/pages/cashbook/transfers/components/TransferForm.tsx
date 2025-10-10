@@ -167,8 +167,6 @@ const TransferForm: React.FC<IAccountTransferFormProps> = ({
           label="Date & Time"
           placeholder="Select your date and time"
           mx="auto"
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
         />
 
         <Button

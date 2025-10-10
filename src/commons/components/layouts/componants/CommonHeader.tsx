@@ -13,8 +13,8 @@ const CommonHeader = () => {
   const [mobileMenuOpened, mobileMenuHandler] = useDisclosure(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-card border-primary border-b">
-      <div className="flex h-14 items-center justify-between px-4">
+    <header className="sticky top-0 z-50 w-full bg-primary">
+      <div className="flex h-12 items-center justify-between px-4">
         {/* Left Section */}
         <div className="flex items-center gap-3">
           <HamburgerButton onClick={mobileMenuHandler.toggle} />
@@ -22,10 +22,7 @@ const CommonHeader = () => {
             className="flex items-center gap-2 no-underline transition-opacity hover:opacity-80"
             to={params?.tenant ? `/${params.tenant}/` : "/"}
           >
-            <div className="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-              GP
-            </div>
-            <span className="hidden sm:inline-block text-lg font-semibold tracking-tight">
+            <span className="hidden sm:inline-block text-lg tracking-tight text-primary-foreground">
               Graph POS
             </span>
           </Link>
@@ -85,7 +82,7 @@ const MegaMenuWrapper = () => {
           className="p-2 rounded-lg transition-colors"
           aria-label="Open apps menu"
         >
-          <LayoutGridIcon className="size-5 text-gray-700 dark:text-gray-300" />
+          <LayoutGridIcon className="size-5 text-primary-foreground" />
         </UnstyledButton>
       </Tooltip>
       <Modal

@@ -252,7 +252,7 @@ const AppDatatable = <T extends Record<string, any>>({
                   <th
                     key={accessor}
                     style={{ width: column.width }}
-                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider ${
+                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap align-middle ${
                       column.sortable
                         ? "cursor-pointer hover:bg-muted select-none"
                         : ""
@@ -261,8 +261,8 @@ const AppDatatable = <T extends Record<string, any>>({
                       handleSort(accessor, column.sortKey, column.sortable)
                     }
                   >
-                    <div className="flex items-center justify-between">
-                      <span>{column.title}</span>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <span className="truncate">{column.title}</span>
                       {column.sortable && (
                         <div className="flex flex-col ml-1">
                           <svg
@@ -296,7 +296,7 @@ const AppDatatable = <T extends Record<string, any>>({
                 );
               })}
               {ActionColumn && (
-                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase whitespace-nowrap align-middle">
                   Actions
                 </th>
               )}
@@ -340,7 +340,7 @@ const AppDatatable = <T extends Record<string, any>>({
                     return (
                       <td
                         key={accessor}
-                        className="px-6 py-4 text-sm whitespace-nowrap"
+                        className="px-6 py-4 text-sm whitespace-normal break-words align-middle"
                       >
                         {value != null
                           ? typeof value === "object" &&
@@ -353,7 +353,7 @@ const AppDatatable = <T extends Record<string, any>>({
                   })}
                   {ActionColumn && (
                     <td
-                      className="px-6 py-4 text-sm whitespace-nowrap"
+                      className="px-6 py-4 text-sm whitespace-normal break-words align-middle"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {ActionColumn(row)}

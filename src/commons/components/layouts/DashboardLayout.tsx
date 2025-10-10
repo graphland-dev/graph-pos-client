@@ -46,19 +46,16 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
       }}
       padding="md"
     >
-      <AppShell.Header>
-        <CommonHeader />
-      </AppShell.Header>
+      <CommonHeader />
 
       <AppShell.Navbar className="border-r border-border bg-card!">
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-border">
           {!desktopNavbarCollapsed && title && (
             <div className="flex-1 min-w-0">
               <h2 className="text-lg font-bold text-card-foreground truncate">
                 {title}
               </h2>
-              <p className="text-xs text-muted-foreground">Module Navigation</p>
             </div>
           )}
 

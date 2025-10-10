@@ -204,8 +204,6 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           <Input placeholder="Check Number" {...register("checkNo")} />
         </Input.Wrapper>
         <DateTimePicker
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
           {...register("date")}
           value={new Date(watch("date"))}
           className="w-full"

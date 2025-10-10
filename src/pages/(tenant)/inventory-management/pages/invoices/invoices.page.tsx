@@ -218,7 +218,7 @@ const InvoicesPage = () => {
               onChange={(value) =>
                 setValue(
                   "startDate",
-                  (value && typeof value !== 'string'
+                  (value && typeof value !== "string"
                     ? (value as Date).toISOString()
                     : (value as string)) || ""
                 )
@@ -232,7 +232,7 @@ const InvoicesPage = () => {
               onChange={(value) =>
                 setValue(
                   "endDate",
-                  (value && typeof value !== 'string'
+                  (value && typeof value !== "string"
                     ? (value as Date).toISOString()
                     : (value as string)) || ""
                 )
@@ -322,13 +322,9 @@ const InvoicesPage = () => {
           </Text>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefetch}
-            disabled={refetching}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
-          >
+          <Button onClick={handleRefetch} disabled={refetching} variant="light">
             {refetching ? "Refreshing..." : "Refresh"}
-          </button>
+          </Button>
           <Button
             onClick={() =>
               navigate(`/${params.tenant}/inventory-management/invoices/create`)

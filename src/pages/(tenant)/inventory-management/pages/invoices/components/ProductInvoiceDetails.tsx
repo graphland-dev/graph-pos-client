@@ -39,137 +39,137 @@ const ProductInvoiceDetails: React.FC<{
   const invoice = useMemo(() => query.data?.inventory__productInvoice, [query]);
 
   const ths = (
-    <tr>
-      <th>Product Name</th>
-      <th>Code</th>
-      <th>Unit purchase price</th>
-      <th>Unit label price</th>
-      <th>Unit sell price</th>
-      <th>Quantity</th>
-      <th>Tax rate</th>
-      <th>Tax amount</th>
-      <th>Net sell price</th>
-      <th>Net Profit</th>
-      <th>Net Bill</th>
-    </tr>
+    <Table.Tr>
+      <Table.Th>Product Name</Table.Th>
+      <Table.Th>Code</Table.Th>
+      <Table.Th>Unit purchase price</Table.Th>
+      <Table.Th>Unit label price</Table.Th>
+      <Table.Th>Unit sell price</Table.Th>
+      <Table.Th>Quantity</Table.Th>
+      <Table.Th>Tax rate</Table.Th>
+      <Table.Th>Tax amount</Table.Th>
+      <Table.Th>Net sell price</Table.Th>
+      <Table.Th>Net Profit</Table.Th>
+      <Table.Th>Net Bill</Table.Th>
+    </Table.Tr>
   );
 
   const tfs = (
     <>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Total sell Price
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netSellPrice || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netSellPrice || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Total vat amount
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netTaxAmount || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netTaxAmount || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Total Item wise discount
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netSubtotalDiscount || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netSubtotalDiscount || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Extra discount{" "}
           {invoice?.invoiceDiscountMode == ProductDiscountMode.Percentage
             ? `(${invoice?.invoiceDiscountPercentage}%)`
             : ""}
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.invoiceDiscountAmount || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.invoiceDiscountAmount || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Total applied discount
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netDiscountAmount || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netDiscountAmount || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Net Profit (Purchase price - Sell price)
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netProfit || 0)}</th>
-      </tr>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netProfit || 0)}</Table.Td>
+      </Table.Tr>
 
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Net payable bill (bill - discount + vat)
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.netTotal || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.netTotal || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Paid amount
-        </th>
-        <th>{currencyNumberWithSymbolFormat(invoice?.paidAmount || 0)}</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th></th>
-        <th></th>
-        <th className="text-right!" colSpan={7}>
+        </Table.Td>
+        <Table.Td>{currencyNumberWithSymbolFormat(invoice?.paidAmount || 0)}</Table.Td>
+      </Table.Tr>
+      <Table.Tr>
+        <Table.Td />
+        <Table.Td />
+        <Table.Td />
+        <Table.Td className="text-right!" colSpan={7}>
           Due
-        </th>
-        <th>
+        </Table.Td>
+        <Table.Td>
           {currencyNumberWithSymbolFormat(
             (invoice?.netTotal || 0) - (invoice?.paidAmount || 0) || 0
           )}
-        </th>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
     </>
   );
 
   const trSkeleton = Array.from({ length: 10 })
     .fill(null)
     .map((_, index) => (
-      <tr key={index}>
-        <td>
+      <Table.Tr key={index}>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
     ));
 
   const rows = invoice?.products?.map((element) => (
-    <tr key={element?.referenceId}>
-      <td>
+    <Table.Tr key={element?.referenceId}>
+      <Table.Td>
         <Anchor
           component={Link}
           to={`/${invoice?.client?.tenant}/inventory-management/products/${element.referenceId}`}
@@ -177,18 +177,18 @@ const ProductInvoiceDetails: React.FC<{
           {element?.name}
         </Anchor>
         {}
-      </td>
-      <td>{element?.code} </td>
-      <td>{element?.unitPurchasePrice} </td>
-      <td>{element?.unitPrice} </td>
-      <td>{element?.unitSellPrice} </td>
-      <td>{element?.quantity} </td>
-      <td>{element.taxRate * 100} % </td>
-      <td>{element.taxAmount} </td>
-      <td>{element.netSellPrice} </td>
-      <td>{element.netProfit} </td>
-      <td>{element.netAmount} </td>
-    </tr>
+      </Table.Td>
+      <Table.Td>{element?.code} </Table.Td>
+      <Table.Td>{element?.unitPurchasePrice} </Table.Td>
+      <Table.Td>{element?.unitPrice} </Table.Td>
+      <Table.Td>{element?.unitSellPrice} </Table.Td>
+      <Table.Td>{element?.quantity} </Table.Td>
+      <Table.Td>{element.taxRate * 100} % </Table.Td>
+      <Table.Td>{element.taxAmount} </Table.Td>
+      <Table.Td>{element.netSellPrice} </Table.Td>
+      <Table.Td>{element.netProfit} </Table.Td>
+      <Table.Td>{element.netAmount} </Table.Td>
+    </Table.Tr>
   ));
 
   return (
@@ -265,9 +265,9 @@ const ProductInvoiceDetails: React.FC<{
         <Paper p={"sm"}>
           <Title order={4}>Items</Title>
           <Table mt={"sm"} withColumnBorders withTableBorder captionSide="bottom">
-            <thead className="bg-card-header">{ths}</thead>
-            <tbody>{query.loading ? trSkeleton : rows}</tbody>
-            <tfoot>{tfs}</tfoot>
+            <Table.Thead className="bg-card-header">{ths}</Table.Thead>
+            <Table.Tbody>{query.loading ? trSkeleton : rows}</Table.Tbody>
+            <Table.Tfoot>{tfs}</Table.Tfoot>
           </Table>
         </Paper>
         {invoice?.client?._id && (

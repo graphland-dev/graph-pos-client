@@ -34,24 +34,16 @@ const ThemeSwitcherMenu = () => {
       </Drawer>
       <Flex gap={"md"}>
         <Menu shadow="md" width={200}>
-          {/* <Menu.Target>
-        {colorScheme === "dark" ? (
-          <IconMoon size={22} className="cursor-pointer" />
-          ) : (
-            <IconSunHigh size={22} className="cursor-pointer" />
-            )}
-          </Menu.Target> */}
-
           <Menu.Target>
             {colorScheme === "dark" ? (
               <IconMoon
                 size={22}
-                className="cursor-pointer theme-switcher-icon"
+                className="cursor-pointer text-primary-foreground"
               />
             ) : (
               <IconSunHigh
                 size={22}
-                className="cursor-pointer theme-switcher-icon"
+                className="cursor-pointer text-primary-foreground"
               />
             )}
           </Menu.Target>

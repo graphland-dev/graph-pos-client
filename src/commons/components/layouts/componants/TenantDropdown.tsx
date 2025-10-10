@@ -7,16 +7,15 @@ import {
   Drawer,
   Image,
   Tooltip,
-  UnstyledButton,
 } from "@mantine/core";
 import { useDisclosure, useLocalStorage } from "@mantine/hooks";
-import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
-import { useAtomValue } from "jotai";
-import { Link, useParams } from "react-router-dom";
-import { ArrowDownUp, CircleCheck, Cog } from "lucide-react";
-import { getFileUrl } from "../../../utils/getFileUrl";
-import { clsx } from "clsx";
 import { modals } from "@mantine/modals";
+import { IconSettings, IconSwitchVertical } from "@tabler/icons-react";
+import { clsx } from "clsx";
+import { useAtomValue } from "jotai";
+import { ArrowDownUp, CircleCheck, Cog } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
+import { getFileUrl } from "../../../utils/getFileUrl";
 
 const TenantDropdown = () => {
   const params = useParams<{ tenant: string }>();
@@ -44,20 +43,20 @@ const TenantDropdown = () => {
 
   return (
     <>
-      <div className="flex items-center gap-2 px-2 py-1 rounded-md tenant-dropdown">
-        <UnstyledButton
+      <div className="flex items-center gap-2 px-2 py-1">
+        <button
           onClick={() => modelHandler.open()}
-          className="flex items-center gap-2 px-4 py-1 rounded-md bg-primary-700"
+          className="flex items-center gap-2 px-4 py-1 border border-border rounded-md cursor-pointer"
         >
           <p className="text-primary-foreground">
             {getTenantByUId(params.tenant!)?.name || "Select tenant"}
           </p>
 
           <IconSwitchVertical size={22} className="text-primary-foreground" />
-        </UnstyledButton>
+        </button>
 
         <Link to={`/${params.tenant}/tenant-settings`}>
-          <IconSettings size={22} className="tenant-dropdown__setting-icon" />
+          <IconSettings size={22} className="text-primary-foreground" />
         </Link>
       </div>
       <Drawer

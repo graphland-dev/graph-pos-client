@@ -142,7 +142,7 @@ const RolePermissionForm: React.FC<IRolePermissionFormProps> = ({
           <Text size="sm" color="dimmed" mb="lg">
             {module.description}
           </Text>
-          <div className="flex flex-col gap-4 border">
+          <div className="flex flex-col gap-4 border border-border">
             {module.collections.map((collection) => (
               <div key={collection} className="p-4">
                 <Text fw={500} mb="sm">

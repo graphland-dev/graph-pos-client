@@ -138,8 +138,6 @@ const AccountForm: React.FC<IAccountFormProps> = ({
           }}
           label="Date & Time"
           placeholder="Select your date and time"
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
           mx="auto"
         />
 
