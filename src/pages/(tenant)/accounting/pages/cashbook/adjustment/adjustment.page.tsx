@@ -241,13 +241,13 @@ const AdjustmentPage = () => {
           </Text>
         </div>
         <div className="flex items-center gap-3">
-          <button
+          <Button
+            variant="subtle"
             onClick={handleRefetch}
             disabled={state.refetching}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
           >
             {state.refetching ? "Refreshing..." : "Refresh"}
-          </button>
+          </Button>
           <Button
             leftSection={<IconPlus size={16} />}
             onClick={() =>

@@ -1,19 +1,21 @@
-import { AppNavLink } from '@/commons/models/AppNavLink.type';
+import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import {
   AppShell,
   NavLink,
   ScrollArea,
   UnstyledButton,
   Burger,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import React from 'react';
-import { Link, Outlet, useLocation, useParams } from 'react-router-dom';
-import CommonHeader from './componants/CommonHeader';
-import { navbarIsCollapsedAtom } from '@/commons/states/navbar.atom';
-import { useAtom } from 'jotai';
-import { IconChevronLeft } from '@tabler/icons-react';
-import clsx from 'clsx';
+  Tooltip,
+  Divider,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+import React from "react";
+import { Link, Outlet, useLocation, useParams } from "react-router-dom";
+import CommonHeader from "./componants/CommonHeader";
+import { navbarIsCollapsedAtom } from "@/commons/states/navbar.atom";
+import { useAtom } from "jotai";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import clsx from "clsx";
 
 interface Prop {
   navlinks: AppNavLink[];
@@ -26,7 +28,7 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
   const params = useParams<{ tenant: string }>();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopNavbarCollapsed, setDesktopNavbarCollapsed] = useAtom(
-    navbarIsCollapsedAtom,
+    navbarIsCollapsedAtom
   );
 
   const linkWithTenant = (link: string) => {
@@ -38,9 +40,9 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
     <AppShell
       header={{ height: 56 }}
       navbar={{
-        width: desktopNavbarCollapsed ? 72 : 300,
-        breakpoint: 'sm',
-        collapsed: { mobile: !mobileOpened, desktop: desktopNavbarCollapsed },
+        width: desktopNavbarCollapsed ? 80 : 280,
+        breakpoint: "sm",
+        collapsed: { mobile: !mobileOpened, desktop: false },
       }}
       padding="md"
     >
@@ -48,97 +50,168 @@ const DashboardLayout: React.FC<Prop> = ({ navlinks, title, path }) => {
         <CommonHeader />
       </AppShell.Header>
 
-      <AppShell.Navbar
-        p="md"
-        className="transition-all duration-300 border-0 app-shell__navbar"
-      >
-        {/* Desktop Collapse Button */}
-        <UnstyledButton
-          onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
-          className={clsx(
-            'absolute top-14 -right-4 z-10 bg-primary-500 text-white rounded-full p-1 shadow-md hover:bg-primary-600 transition-colors',
-            'hidden sm:flex items-center justify-center',
-            {
-              '-right-6': desktopNavbarCollapsed,
-            },
+      <AppShell.Navbar className="border-r border-border bg-card!">
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          {!desktopNavbarCollapsed && title && (
+            <div className="flex-1 min-w-0">
+              <h2 className="text-lg font-bold text-card-foreground truncate">
+                {title}
+              </h2>
+              <p className="text-xs text-muted-foreground">Module Navigation</p>
+            </div>
           )}
-        >
-          <IconChevronLeft
-            size={24}
-            className={clsx('transition-all duration-300', {
-              'rotate-180': desktopNavbarCollapsed,
-            })}
-          />
-        </UnstyledButton>
 
-        {/* Mobile Burger (hidden on desktop) */}
-        <div className="sm:hidden mb-4">
-          <Burger
-            opened={mobileOpened}
-            onClick={toggleMobile}
-            size="sm"
-          />
+          {desktopNavbarCollapsed && title && (
+            <Tooltip label={title} position="right" withArrow>
+              <div className="flex items-center justify-center w-full">
+                <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+                  {title.substring(0, 2).toUpperCase()}
+                </div>
+              </div>
+            </Tooltip>
+          )}
+
+          {/* Desktop Collapse Toggle */}
+          <UnstyledButton
+            onClick={() => setDesktopNavbarCollapsed(!desktopNavbarCollapsed)}
+            className={clsx(
+              "hidden sm:flex items-center justify-center",
+              "w-8 h-8 rounded-lg",
+              "hover:bg-muted",
+              "transition-colors",
+              { "ml-auto": !desktopNavbarCollapsed }
+            )}
+          >
+            {desktopNavbarCollapsed ? (
+              <IconChevronRight size={18} className="text-muted-foreground" />
+            ) : (
+              <IconChevronLeft size={18} className="text-muted-foreground" />
+            )}
+          </UnstyledButton>
+
+          {/* Mobile Burger */}
+          <div className="sm:hidden">
+            <Burger opened={mobileOpened} onClick={toggleMobile} size="sm" />
+          </div>
         </div>
 
-        {/* Title Section */}
-        {title && (
-          <div className="p-2 mb-4">
-            <p className="font-semibold uppercase text-sm tracking-wide app-module-title">
-              {title}
-            </p>
-          </div>
-        )}
+        <Divider className="hidden sm:block border-border" />
 
         {/* Navigation Links */}
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 px-3 py-4">
           <div className="space-y-1">
-            {navlinks.map((item, index) => (
-              <NavLink
-                key={index}
-                label={desktopNavbarCollapsed ? undefined : item.label}
-                component={Link}
-                to={linkWithTenant(`${path}/${item?.href}`)}
-                leftSection={
-                  item.icon ? (
-                    <item.icon
-                      size={20}
-                      className="app-navbar-item__icon"
-                    />
-                  ) : undefined
-                }
-                className={clsx(
-                  'rounded-md app-shell__navbar-item',
-                )}
-                active={pathname.includes(item?.href as string)}
-                onClick={() => {
-                  // Close mobile menu when clicking a link
-                  if (mobileOpened) toggleMobile();
-                }}
-              >
-                {item?.children &&
-                  item.children.map((_item, key) => (
-                    <NavLink
-                      key={key}
-                      label={desktopNavbarCollapsed ? undefined : _item.label}
-                      component={Link}
-                      className="app-navbar-item text-sm"
-                      active={pathname.startsWith(
-                        linkWithTenant(`${path}/${item?.href}/${_item.href}`),
-                      )}
-                      to={linkWithTenant(`${path}/${item?.href}/${_item.href}`)}
-                      onClick={() => {
-                        // Close mobile menu when clicking a child link
-                        if (mobileOpened) toggleMobile();
-                      }}
-                    />
-                  ))}
-              </NavLink>
-            ))}
+            {navlinks.map((item, index) => {
+              const isActive = pathname.includes(item?.href as string);
+              const navItem = (
+                <NavLink
+                  key={index}
+                  label={desktopNavbarCollapsed ? undefined : item.label}
+                  component={Link}
+                  to={linkWithTenant(`${path}/${item?.href}`)}
+                  leftSection={
+                    item.icon ? (
+                      <item.icon
+                        size={20}
+                        className={clsx(
+                          "transition-colors",
+                          isActive ? "text-primary" : "text-muted-foreground"
+                        )}
+                        style={
+                          isActive ? { color: "var(--primary)" } : undefined
+                        }
+                      />
+                    ) : undefined
+                  }
+                  className={clsx(
+                    "rounded-lg transition-all duration-200 font-medium",
+                    desktopNavbarCollapsed ? "justify-center px-0" : "px-3",
+                    isActive
+                      ? "bg-accent text-accent-foreground"
+                      : "text-card-foreground hover:bg-muted"
+                  )}
+                  active={isActive}
+                  onClick={() => {
+                    if (mobileOpened) toggleMobile();
+                  }}
+                  styles={{
+                    root: {
+                      borderRadius: "0.5rem",
+                      marginBottom: "0.25rem",
+                    },
+                    label: {
+                      fontSize: "0.875rem",
+                      fontWeight: 500,
+                    },
+                  }}
+                >
+                  {item?.children &&
+                    !desktopNavbarCollapsed &&
+                    item.children.map((_item, key) => {
+                      const isChildActive = pathname.startsWith(
+                        linkWithTenant(`${path}/${item?.href}/${_item.href}`)
+                      );
+                      return (
+                        <NavLink
+                          key={key}
+                          label={_item.label}
+                          component={Link}
+                          to={linkWithTenant(
+                            `${path}/${item?.href}/${_item.href}`
+                          )}
+                          className={clsx(
+                            "rounded-md text-sm transition-all duration-200",
+                            isChildActive
+                              ? "bg-accent/70 text-accent-foreground"
+                              : "text-muted-foreground hover:bg-muted/50"
+                          )}
+                          active={isChildActive}
+                          onClick={() => {
+                            if (mobileOpened) toggleMobile();
+                          }}
+                          styles={{
+                            root: {
+                              paddingLeft: "2.5rem",
+                              marginTop: "0.25rem",
+                            },
+                          }}
+                        />
+                      );
+                    })}
+                </NavLink>
+              );
+
+              // Wrap with Tooltip when collapsed
+              if (desktopNavbarCollapsed) {
+                return (
+                  <Tooltip
+                    key={index}
+                    label={item.label}
+                    position="right"
+                    withArrow
+                    disabled={false}
+                  >
+                    {navItem}
+                  </Tooltip>
+                );
+              }
+
+              return navItem;
+            })}
           </div>
         </ScrollArea>
+
+        {/* Footer Section */}
+        {!desktopNavbarCollapsed && (
+          <div className="px-4 py-3 border-t border-border">
+            <div className="text-xs text-muted-foreground text-center">
+              Graph POS © 2025
+            </div>
+          </div>
+        )}
       </AppShell.Navbar>
 
-      <AppShell.Main>
+      <AppShell.Main className="bg-background">
         <Outlet />
       </AppShell.Main>
     </AppShell>

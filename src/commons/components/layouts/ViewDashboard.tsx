@@ -39,17 +39,25 @@ const ViewDashboardLayout: React.FC<PropsWithChildren<Prop>> = ({
       }}
       padding={0}
     >
-      <AppShell.Navbar p="md" className={clsx({ "app-navbar-collapsed": collapsed })}>
+      <AppShell.Navbar
+        p="md"
+        className={clsx({ "app-navbar-collapsed": collapsed })}
+      >
         <UnstyledButton
           onClick={() => setCollapsed(!collapsed)}
           className={clsx(
-            'absolute top-4 -right-4 z-10 bg-primary-500 text-white rounded-full p-1 shadow-md hover:bg-primary-600 transition-colors',
-            'hidden sm:flex items-center justify-center',
-            { '-right-6': collapsed }
+            "absolute top-4 -right-4 z-10 bg-primary text-white rounded-full p-1 shadow-md hover:bg-primary-600 transition-colors",
+            "hidden sm:flex items-center justify-center",
+            { "-right-6": collapsed }
           )}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          <IconChevronLeft size={20} className={clsx('transition-all duration-300', { 'rotate-180': collapsed })} />
+          <IconChevronLeft
+            size={20}
+            className={clsx("transition-all duration-300", {
+              "rotate-180": collapsed,
+            })}
+          />
         </UnstyledButton>
 
         <div className="sm:hidden mb-4">
@@ -63,7 +71,9 @@ const ViewDashboardLayout: React.FC<PropsWithChildren<Prop>> = ({
         </div>
 
         {TopSection && <div className="p-sm">{TopSection}</div>}
-        {NavSection && <ScrollArea style={{ flex: 1 }}>{NavSection}</ScrollArea>}
+        {NavSection && (
+          <ScrollArea style={{ flex: 1 }}>{NavSection}</ScrollArea>
+        )}
       </AppShell.Navbar>
       <AppShell.Main>{children}</AppShell.Main>
     </AppShell>

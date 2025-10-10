@@ -89,7 +89,7 @@ export function MenuSection({
                         onNavigate(childHref!, modulePrefix);
                       }}
                     >
-                      <Text size="xs" c="gray.8" className="hover:underline">
+                      <Text size="xs" className="hover:underline">
                         {child.label}
                       </Text>
                     </UnstyledButton>

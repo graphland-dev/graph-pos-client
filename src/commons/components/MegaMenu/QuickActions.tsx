@@ -54,30 +54,14 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
 
   return (
     <div>
-      <Text size="sm" fw={600} mb="sm" c="gray.7">
-        Quick Actions
-      </Text>
+      <p className="mb-2">Quick Actions</p>
       <SimpleGrid cols={4} spacing="md">
         {quickActions.map((action) => (
           <UnstyledButton
             key={action.label}
             onClick={() => onNavigate(action.href, action.modulePrefix)}
             p="md"
-            style={{
-              border: "1px solid var(--mantine-color-gray-3)",
-              borderRadius: "8px",
-              transition: "all 0.2s",
-            }}
-            styles={{
-              root: {
-                "&:hover": {
-                  backgroundColor: "var(--mantine-color-gray-0)",
-                  borderColor: "var(--mantine-color-blue-4)",
-                  transform: "translateY(-2px)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
-                },
-              },
-            }}
+            className="border-border border"
           >
             <Group align="center" style={{ flexDirection: "column" }}>
               <ThemeIcon
@@ -92,9 +76,7 @@ export function QuickActions({ onNavigate }: QuickActionsProps) {
                 <Text size="sm" fw={600}>
                   {action.label}
                 </Text>
-                <Text size="xs" c="gray.6">
-                  {action.description}
-                </Text>
+                <Text size="xs">{action.description}</Text>
               </div>
             </Group>
           </UnstyledButton>
