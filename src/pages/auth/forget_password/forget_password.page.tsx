@@ -1,10 +1,12 @@
-// import { Forgot__Password__Mutation } from "@/commons/components/modules/auth/utils/query.auth";
+import { useMutation } from "@apollo/client";
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Input, Paper, Text } from "@mantine/core";
+import { Button, Input, Paper, Text } from "@mantine/core";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
+import { FORGOT_PASSWORD_MUTATION } from "./utils/query";
 
 const ForgetPasswordPage = () => {
   // handle forget password form
@@ -23,25 +25,26 @@ const ForgetPasswordPage = () => {
   });
 
   // forget password mutation
-  //   const [sendRequest, { loading: sending__request }] = useMutation(
-  //     Forgot__Password__Mutation,
-  //     CommonNotifierCallback({
-  //       successTitle: "Reset Password has been sent to your email!",
-  //       successMessage: "Please check your email inbox.",
-  //       errorTitle: "Failed to send reset password to your email!",
-  //       errorMessage: "Please try again later.",
-  //     })
-  //   );
+  const [sendRequest, { loading: sending__request }] = useMutation(
+    FORGOT_PASSWORD_MUTATION,
+    commonNotifierCallback({
+      successTitle: "Reset password link sent!",
+      successMessage: "Please check your email inbox for the reset link.",
+      errorMessage: "Failed to send reset password link. Please try again.",
+    })
+  );
 
-  const handleOnSubmitForm = () => {
-    // sendRequest({
-    //   variables: {
-    //     input: {
-    //       email,
-    //       clientUrl: import.meta.env.VITE_API,
-    //     },
-    //   },
-    // });
+  const handleOnSubmitForm = (data: { email: string }) => {
+    const resetClientUrl = `${window.location.origin}/auth/reset-password?token=RESET_TOKEN&email=${data.email}`;
+
+    sendRequest({
+      variables: {
+        input: {
+          email: data.email,
+          resetClientUrl,
+        },
+      },
+    });
   };
 
   return (
@@ -49,21 +52,37 @@ const ForgetPasswordPage = () => {
       <Paper withBorder p={"sm"}>
         <form
           onSubmit={handleSubmit(handleOnSubmitForm)}
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-3"
         >
+          <div className="mb-2">
+            <Text size="lg" fw={600} className="mb-1">
+              Forgot Password?
+            </Text>
+            <Text size="sm" c="dimmed">
+              Enter your email address and we'll send you a link to reset your
+              password.
+            </Text>
+          </div>
+
           <Input.Wrapper
             label="Email"
             error={<ErrorMessage errors={errors} name="email" />}
           >
-            <Input {...register("email")} />
+            <Input
+              placeholder="Enter your email address"
+              {...register("email")}
+            />
           </Input.Wrapper>
 
-          {/* <Button loading={sending__request} type="submit">
-            Continue
-          </Button> */}
+          <Button loading={sending__request} type="submit" fullWidth>
+            Send Reset Link
+          </Button>
 
-          <Text>
-            Back to <Link to={"/auth/login"}>Login</Link>
+          <Text size="sm" className="text-center">
+            Back to{" "}
+            <Link to={"/auth/login"} className="text-blue-600 hover:underline">
+              Login
+            </Link>
           </Text>
         </form>
       </Paper>
@@ -72,5 +91,3 @@ const ForgetPasswordPage = () => {
 };
 
 export default ForgetPasswordPage;
-
-// can('accounting__Transfer', ['*', 'update'])

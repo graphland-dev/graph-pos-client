@@ -1,15 +1,16 @@
-// import { Reset__Password__Mutation } from "@/commons/components/modules/auth/utils/query.auth";
-// import { CommonNotifierCallback } from "@/commons/utils/CommonNotifierCallback";
+import { useMutation } from "@apollo/client";
+import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback";
 import { ErrorMessage } from "@hookform/error-message";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Input, Paper, PasswordInput, Text } from "@mantine/core";
+import { Button, Input, Paper, PasswordInput, Text } from "@mantine/core";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import * as Yup from "yup";
+import { RESET_PASSWORD_MUTATION } from "./utils/query";
 
 const ResetPasswordPage = () => {
-  //   const [params] = useSearchParams();
-  //   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const navigate = useNavigate();
 
   // handle reset password form
   const {
@@ -17,15 +18,18 @@ const ResetPasswordPage = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<{
-    password: string;
+    newPassword: string;
     confirmPassword: string;
   }>({
     resolver: yupResolver(
       Yup.object().shape({
-        password: Yup.string().required().label("Password"),
+        newPassword: Yup.string()
+          .min(6, "Password must be at least 6 characters")
+          .required()
+          .label("New Password"),
         confirmPassword: Yup.string()
           .oneOf(
-            [Yup.ref("password")],
+            [Yup.ref("newPassword")],
             "Password and confirm password must match"
           )
           .required()
@@ -35,30 +39,37 @@ const ResetPasswordPage = () => {
   });
 
   // reset password mutation
-  //   const [resetPassword, { loading: resetting_password }] = useMutation(
-  //     Reset__Password__Mutation,
-  //     CommonNotifierCallback({
-  //       successTitle: "Password reset successfully!",
-  //       successMessage: "Please login using new password.",
-  //       errorTitle: "Failed to reset password!",
-  //       errorMessage: "Please try again later.",
-  //       onSuccess: () => {
-  //         navigate("/auth/login");
-  //       },
-  //     })
-  //   );
+  const [resetPassword, { loading: resetting_password }] = useMutation(
+    RESET_PASSWORD_MUTATION,
+    commonNotifierCallback({
+      successTitle: "Password reset successfully!",
+      successMessage: "You can now login using your new password.",
+      errorMessage: "Failed to reset password. Please try again or request a new reset link.",
+      onSuccess: () => {
+        navigate("/auth/login");
+      },
+    })
+  );
 
-  //   handle submit form
-  const handleOnSubmitForm = () => {
-    // resetPassword({
-    //   variables: {
-    //     input: {
-    //       password,
-    //       email: params.get("email"),
-    //       token: params.get("token"),
-    //     },
-    //   },
-    // });
+  // handle submit form
+  const handleOnSubmitForm = (data: { newPassword: string; confirmPassword: string }) => {
+    const token = params.get("token");
+    const email = params.get("email");
+
+    if (!token || !email) {
+      return;
+    }
+
+    resetPassword({
+      variables: {
+        input: {
+          token,
+          email,
+          newPassword: data.newPassword,
+          confirmPassword: data.confirmPassword,
+        },
+      },
+    });
   };
 
   return (
@@ -66,34 +77,46 @@ const ResetPasswordPage = () => {
       <Paper withBorder p={"sm"}>
         <form
           onSubmit={handleSubmit(handleOnSubmitForm)}
-          className="flex flex-col gap-2"
+          className="flex flex-col gap-3"
         >
+          <div className="mb-2">
+            <Text size="lg" fw={600} className="mb-1">
+              Reset Your Password
+            </Text>
+            <Text size="sm" c="dimmed">
+              Please enter your new password below. Make sure it's at least 6 characters long.
+            </Text>
+          </div>
+
           <Input.Wrapper
-            label="Password"
-            error={<ErrorMessage errors={errors} name="password" />}
+            label="New Password"
+            error={<ErrorMessage errors={errors} name="newPassword" />}
           >
             <PasswordInput
-              placeholder="New password"
-              {...register("password")}
+              placeholder="Enter new password"
+              {...register("newPassword")}
             />
           </Input.Wrapper>
 
           <Input.Wrapper
-            label="Confirm password"
+            label="Confirm Password"
             error={<ErrorMessage errors={errors} name="confirmPassword" />}
           >
             <PasswordInput
-              placeholder="Confirm password"
+              placeholder="Confirm new password"
               {...register("confirmPassword")}
             />
           </Input.Wrapper>
 
-          {/* <Button loading={resetting_password} type="submit">
-            Reset
-          </Button> */}
+          <Button loading={resetting_password} type="submit" fullWidth>
+            Reset Password
+          </Button>
 
-          <Text>
-            <Link to={"/auth/forget-password"}>Forget password ?</Link>
+          <Text size="sm" className="text-center">
+            Remember your password?{" "}
+            <Link to={"/auth/login"} className="text-blue-600 hover:underline">
+              Login
+            </Link>
           </Text>
         </form>
       </Paper>
