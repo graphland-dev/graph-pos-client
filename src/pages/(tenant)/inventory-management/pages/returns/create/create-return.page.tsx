@@ -280,7 +280,12 @@ const CreateReturnPage = () => {
       // Prepare submission data with debt reduction fields
       const submissionData = {
         ...data,
-        returnDate: data.returnDate?.toISOString(),
+        returnDate:
+          typeof data.returnDate === 'string'
+            ? data.returnDate
+            : data.returnDate
+            ? (data.returnDate as Date).toISOString()
+            : '',
         // Debt reduction removed: only core fields are submitted
       };
 
@@ -669,7 +674,6 @@ const CreateReturnPage = () => {
                         label="Restocking Fee"
                         placeholder="0.00"
                         min={0}
-                        precision={2}
                         error={errors.restockingFee?.message}
                         {...field}
                         value={field.value || 0}

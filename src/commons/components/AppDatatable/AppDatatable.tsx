@@ -1,3 +1,5 @@
+import { Button } from "@mantine/core";
+import { IconFilter } from "@tabler/icons-react";
 import React, { useState } from "react";
 
 export interface ColumnDef<T = any> {
@@ -60,12 +62,16 @@ const AppDatatable = <T extends Record<string, any>>({
   );
 
   // Handle sorting
-  const handleSort = (column: string, sortKey: string | undefined, sortable?: boolean) => {
+  const handleSort = (
+    column: string,
+    sortKey: string | undefined,
+    sortable?: boolean
+  ) => {
     if (!sortable) return;
 
     // Use sortKey if provided, otherwise use column
     const sortColumn = sortKey || column;
-    
+
     let newDirection: "asc" | "desc" | null = "asc";
 
     if (sortState.column === sortColumn) {
@@ -182,32 +188,30 @@ const AppDatatable = <T extends Record<string, any>>({
       {/* Filter Controls */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <button
+          <Button
             onClick={toggleFilters}
-            className={`px-3 py-1 text-sm border rounded-md transition-colors ${
-              showFilters
-                ? "bg-blue-500 text-white border-blue-500"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-            }`}
+            variant="light"
             title="Toggle Filters"
+            leftSection={<IconFilter size={16} />}
           >
             Filter
-          </button>
+          </Button>
           {hasActiveFilters && (
-            <button
+            <Button
+              variant="subtle"
               onClick={clearFilters}
-              className="px-3 py-1 text-sm text-gray-700 transition-colors bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
               title="Clear Filters"
+              color="red.7"
             >
-              Clear
-            </button>
+              Clear Filters
+            </Button>
           )}
         </div>
       </div>
 
       {/* Filters Row */}
       {showFilters && (
-        <div className="p-4 mb-4 border rounded-lg bg-gray-50">
+        <div className="p-4 mb-4 border rounded-lg bg-card border-border">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {columns.map((column, index) => {
               const accessor =
@@ -216,7 +220,7 @@ const AppDatatable = <T extends Record<string, any>>({
                   : `column_${index}`;
               return column.Filter ? (
                 <div key={accessor}>
-                  <label className="block mb-2 text-sm font-medium text-gray-700">
+                  <label className="block mb-2 text-sm font-medium">
                     {column.title}
                   </label>
                   {column.Filter((key, value) => handleFilter(key, value))}
@@ -228,16 +232,16 @@ const AppDatatable = <T extends Record<string, any>>({
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto border border-gray-200 rounded-lg">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="overflow-x-auto border border-border bg-card rounded-md">
+        <table className="min-w-full divide-y divide-border">
+          <thead>
             <tr>
               {columns.map((column, index) => {
                 const accessor =
                   typeof column.accessor === "string"
                     ? column.accessor
                     : `column_${index}`;
-                
+
                 // Use sortKey if provided, otherwise use accessor for sorting comparison
                 const sortColumn = column.sortKey || accessor;
                 const isSorted = sortState.column === sortColumn;
@@ -248,21 +252,21 @@ const AppDatatable = <T extends Record<string, any>>({
                   <th
                     key={accessor}
                     style={{ width: column.width }}
-                    className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
+                    className={`px-6 py-3 text-left text-xs font-medium uppercase tracking-wider whitespace-nowrap align-middle ${
                       column.sortable
-                        ? "cursor-pointer hover:bg-gray-100 select-none"
+                        ? "cursor-pointer hover:bg-muted select-none"
                         : ""
                     }`}
-                    onClick={() => handleSort(accessor, column.sortKey, column.sortable)}
+                    onClick={() =>
+                      handleSort(accessor, column.sortKey, column.sortable)
+                    }
                   >
-                    <div className="flex items-center justify-between">
-                      <span>{column.title}</span>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <span className="truncate">{column.title}</span>
                       {column.sortable && (
                         <div className="flex flex-col ml-1">
                           <svg
-                            className={`w-3 h-3 ${
-                              isAsc ? "text-blue-500" : "text-gray-300"
-                            }`}
+                            className={`w-3 h-3 ${isAsc ? "text-primary" : ""}`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
                           >
@@ -274,7 +278,7 @@ const AppDatatable = <T extends Record<string, any>>({
                           </svg>
                           <svg
                             className={`w-3 h-3 ${
-                              isDesc ? "text-blue-500" : "text-gray-300"
+                              isDesc ? "text-primary" : ""
                             }`}
                             fill="currentColor"
                             viewBox="0 0 20 20"
@@ -292,13 +296,13 @@ const AppDatatable = <T extends Record<string, any>>({
                 );
               })}
               {ActionColumn && (
-                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
+                <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase whitespace-nowrap align-middle">
                   Actions
                 </th>
               )}
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y divide-border">
             {loading ? (
               <tr>
                 <td
@@ -306,7 +310,6 @@ const AppDatatable = <T extends Record<string, any>>({
                   className="px-6 py-12 text-center"
                 >
                   <div className="flex items-center justify-center">
-                    <div className="w-6 h-6 border-b-2 border-blue-500 rounded-full animate-spin"></div>
                     <span className="ml-2 text-gray-500">Loading...</span>
                   </div>
                 </td>
@@ -324,9 +327,7 @@ const AppDatatable = <T extends Record<string, any>>({
               data.map((row, rowIndex) => (
                 <tr
                   key={rowIndex}
-                  className={`hover:bg-gray-50 ${
-                    onRowClick ? "cursor-pointer" : ""
-                  }`}
+                  className={`${onRowClick ? "cursor-pointer" : ""}`}
                   onClick={() => onRowClick?.(row)}
                 >
                   {columns.map((column, colIndex) => {
@@ -339,21 +340,20 @@ const AppDatatable = <T extends Record<string, any>>({
                     return (
                       <td
                         key={accessor}
-                        className="px-6 py-4 text-sm text-gray-900 whitespace-nowrap"
+                        className="px-6 py-4 text-sm whitespace-normal break-words align-middle"
                       >
-                        {value != null ? (
-                          typeof value === 'object' && React.isValidElement(value) ? (
-                            value
-                          ) : (
-                            String(value)
-                          )
-                        ) : ""}
+                        {value != null
+                          ? typeof value === "object" &&
+                            React.isValidElement(value)
+                            ? value
+                            : String(value)
+                          : ""}
                       </td>
                     );
                   })}
                   {ActionColumn && (
                     <td
-                      className="px-6 py-4 text-sm whitespace-nowrap"
+                      className="px-6 py-4 text-sm whitespace-normal break-words align-middle"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {ActionColumn(row)}
@@ -370,7 +370,7 @@ const AppDatatable = <T extends Record<string, any>>({
       {paginationConfig && (
         <div className="flex flex-col gap-4 mt-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-4">
-            <div className="text-sm text-gray-700">
+            <div className="text-sm">
               Showing {(currentPage - 1) * paginationConfig.pageSize + 1} to{" "}
               {Math.min(
                 currentPage * paginationConfig.pageSize,
@@ -378,14 +378,14 @@ const AppDatatable = <T extends Record<string, any>>({
               )}{" "}
               of {paginationConfig.totalItems} entries
             </div>
-            
+
             {/* Page Size Selector */}
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-700">Show:</span>
+              <span className="text-sm">Show:</span>
               <select
                 value={paginationConfig.pageSize}
                 onChange={(e) => handlePageSizeChange(Number(e.target.value))}
-                className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-2 py-1 text-sm border border-border rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value={5}>5</option>
                 <option value={10}>10</option>
@@ -393,46 +393,43 @@ const AppDatatable = <T extends Record<string, any>>({
                 <option value={100}>100</option>
                 <option value={200}>200</option>
               </select>
-              <span className="text-sm text-gray-700">per page</span>
+              <span className="text-sm">per page</span>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-1">
-            <button
+            <Button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-1 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              size="compact-xs"
             >
               Previous
-            </button>
+            </Button>
 
             {getPageNumbers().map((pageNum, index) =>
               pageNum === "..." ? (
-                <span key={index} className="px-3 py-1 text-sm text-gray-500">
+                <span key={index} className="px-3 py-1 text-sm">
                   ...
                 </span>
               ) : (
-                <button
+                <Button
                   key={index}
+                  size="compact-xs"
+                  variant={currentPage === pageNum ? "light" : "subtle"}
                   onClick={() => handlePageChange(pageNum as number)}
-                  className={`px-3 py-1 text-sm border rounded-md transition-colors ${
-                    currentPage === pageNum
-                      ? "bg-blue-500 text-white border-blue-500"
-                      : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
-                  }`}
                 >
                   {pageNum}
-                </button>
+                </Button>
               )
             )}
 
-            <button
+            <Button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1 text-sm text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              size="compact-xs"
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       )}

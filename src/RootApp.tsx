@@ -1,9 +1,11 @@
-import {
-  ColorScheme,
-  ColorSchemeProvider,
-  MantineProvider,
-} from "@mantine/core";
-import { useHotkeys, useLocalStorage } from "@mantine/hooks";
+import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
+import "@mantine/dropzone/styles.css";
+import "@mantine/notifications/styles.css";
+import "@mantine/spotlight/styles.css";
+
+import { createTheme, MantineProvider } from "@mantine/core";
+import { useLocalStorage } from "@mantine/hooks";
 import { Provider as JotaiProvider } from "jotai";
 
 import RootWrapper from "@/commons/components/wrappers/RootWrapper.tsx";
@@ -14,121 +16,50 @@ import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import { rootRouter } from "./root.router";
 
-const RootApp = () => {
-  const [colorScheme, setColorScheme] = useLocalStorage<ColorScheme>({
-    key: "app.pos.graphland.dev.color-scheme",
-    defaultValue: "light",
-    getInitialValueInEffect: true,
-  });
+const theme = createTheme({
+  fontFamily: "Open Sans, sans-serif",
+  colors: {
+    primary: [
+      "var(--primary-50)", // 0
+      "var(--primary-100)", // 1
+      "var(--primary-200)", // 2
+      "var(--primary-300)", // 3
+      "var(--primary-400)", // 4
+      "var(--primary-500)", // 5
+      "var(--primary-600)", // 6
+      "var(--primary-700)", // 7
+      "var(--primary-800)", // 8
+      "var(--primary-900)", // 9
+    ],
+  },
+  primaryColor: "primary",
+});
 
+const RootApp = () => {
   const [colorTheme] = useLocalStorage({
     key: "app.pos.graphland.dev.color-theme",
     defaultValue: "green",
     getInitialValueInEffect: true,
   });
 
-  const toggleColorScheme = (value?: ColorScheme) =>
-    setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
-
-  useHotkeys([["mod+J", () => toggleColorScheme()]]);
-
   useEffect(() => {
     document.querySelector("html")?.setAttribute("data-theme", colorTheme);
   }, [colorTheme]);
 
-  useEffect(() => {
-    if (colorScheme === "dark") {
-      document.querySelector("html")?.setAttribute("data-color-scheme", "dark");
-    } else {
-      document
-        .querySelector("html")
-        ?.setAttribute("data-color-scheme", "light");
-    }
-  }, [colorScheme]);
-
   return (
     <JotaiProvider store={jotaiStore}>
-      <RootWrapper>
-        <ColorSchemeProvider
-          colorScheme={colorScheme}
-          toggleColorScheme={toggleColorScheme}
-        >
-          <MantineProvider
-            withNormalizeCSS
-            withGlobalStyles
-            theme={{
-              colorScheme,
-              components: {
-                Paper: {
-                  defaultProps: {
-                    withBorder: true,
-                    className: "app-card",
-                  },
-                },
-                Card: {
-                  defaultProps: {
-                    withBorder: true,
-                    className: "app-card",
-                  },
-                },
-                Drawer: {
-                  defaultProps: {
-                    classNames: {
-                      content: "app-drawer",
-                      body: "!pt-2",
-                    },
-                  },
-                },
-              },
-              colors: {
-                primary: [
-                  "var(--primary-50)", // 0
-                  "var(--primary-100)", // 1
-                  "var(--primary-200)", // 2
-                  "var(--primary-300)", // 3
-                  "var(--primary-400)", // 4
-                  "var(--primary-500)", // 5
-                  "var(--primary-600)", // 6
-                  "var(--primary-700)", // 7
-                  "var(--primary-800)", // 8
-                  "var(--primary-900)", // 9
-                ],
-                // secondary: [
-                //   "hsl(var(--secondary-50))", // 0
-                //   "hsl(var(--secondary-100))", // 1
-                //   "hsl(var(--secondary-200))", // 2
-                //   "hsl(var(--secondary-300))", // 3
-                //   "hsl(var(--secondary-400))", // 4
-                //   "hsl(var(--secondary-500))", // 5
-                //   "hsl(var(--secondary-600))", // 6
-                //   "hsl(var(--secondary-700))", // 7
-                //   "hsl(var(--secondary-800))", // 8
-                //   "hsl(var(--secondary-900))", // 9
-                // ],
-                // accent: [
-                //   "hsl(var(--accent-50))", // 0
-                //   "hsl(var(--accent-100))", // 1
-                //   "hsl(var(--accent-200))", // 2
-                //   "hsl(var(--accent-300))", // 3
-                //   "hsl(var(--accent-400))", // 4
-                //   "hsl(var(--accent-500))", // 5
-                //   "hsl(var(--accent-600))", // 6
-                //   "hsl(var(--accent-700))", // 7
-                //   "hsl(var(--accent-800))", // 8
-                //   "hsl(var(--accent-900))", // 9
-                // ],
-              },
-              primaryColor: "primary",
-              // primaryShade: 5,
-            }}
-          >
-            <ModalsProvider>
-              <Notifications position="top-right" />
-              <RouterProvider router={rootRouter} />
-            </ModalsProvider>
-          </MantineProvider>
-        </ColorSchemeProvider>
-      </RootWrapper>
+      <MantineProvider
+        theme={theme}
+        classNamesPrefix="graphpos"
+        withGlobalClasses={false}
+      >
+        <RootWrapper>
+          <ModalsProvider>
+            <Notifications position="top-right" />
+            <RouterProvider router={rootRouter} />
+          </ModalsProvider>
+        </RootWrapper>
+      </MantineProvider>
     </JotaiProvider>
   );
 };

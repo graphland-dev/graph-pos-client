@@ -69,7 +69,7 @@ const Departments = () => {
 						/>
 					</ActionIcon>
 					<Button
-						leftIcon={<IconPlus size={16} />}
+						leftSection={<IconPlus size={16} />}
 						onClick={() => {
 							drawerHandler.open();
 							setAction('CREATE');

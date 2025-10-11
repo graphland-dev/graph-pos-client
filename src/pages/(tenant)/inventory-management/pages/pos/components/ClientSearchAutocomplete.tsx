@@ -147,7 +147,7 @@ const ClientSearchAutocomplete: React.FC<{
   return (
     <div>
       <Input.Wrapper size="md">
-        <Flex align={"center"} className="!w-full">
+        <Flex align={"center"} className="w-full!">
           <AutoComplete
             loading={lazySearch || loading}
             data={clients}

@@ -46,9 +46,9 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
   };
 
   return (
-    <Stack spacing="md">
+    <Stack gap="md">
       <Card withBorder p="lg">
-        <Group position="apart" mb="md">
+        <Group justify="space-between" mb="md">
           <Title order={3}>Quotation #{quotation.quotationUID}</Title>
           <Badge color={getStatusColor(quotation.status || "DRAFT")}>
             {quotation.status || "DRAFT"}
@@ -58,15 +58,15 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
         <Group grow>
           <div>
             <Text size="sm" color="dimmed">Client</Text>
-            <Text weight={500}>{quotation.client?.name || "No Client"}</Text>
+            <Text fw={500}>{quotation.client?.name || "No Client"}</Text>
           </div>
           <div>
             <Text size="sm" color="dimmed">Date</Text>
-            <Text weight={500}>{dateTimeFormatter.displayDate(quotation.date)}</Text>
+            <Text fw={500}>{dateTimeFormatter.displayDate(quotation.date)}</Text>
           </div>
           <div>
             <Text size="sm" color="dimmed">Valid Until</Text>
-            <Text weight={500}>{quotation.validUntil ? dateTimeFormatter.displayDate(quotation.validUntil) : "N/A"}</Text>
+            <Text fw={500}>{quotation.validUntil ? dateTimeFormatter.displayDate(quotation.validUntil) : "N/A"}</Text>
           </div>
         </Group>
 
@@ -80,7 +80,7 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
 
       <Card withBorder p="lg">
         <Title order={4} mb="md">Products</Title>
-        <Table striped withBorder>
+        <Table striped withTableBorder>
           <thead>
             <tr>
               <th>Product Name</th>
@@ -106,29 +106,29 @@ const ProductQuotationDetails = ({ quotationId }: ProductQuotationDetailsProps) 
 
       <Card withBorder p="lg">
         <Title order={4} mb="md">Summary</Title>
-        <Stack spacing="xs">
-          <Group position="apart">
+        <Stack gap="xs">
+          <Group justify="space-between">
             <Text>Subtotal:</Text>
             <Text>{currencyNumberWithSymbolFormat(quotation.subTotal || 0)}</Text>
           </Group>
           
           {quotation.netDiscountAmount > 0 && (
-            <Group position="apart">
+            <Group justify="space-between">
               <Text>Discount:</Text>
               <Text>-{currencyNumberWithSymbolFormat(quotation.netDiscountAmount)}</Text>
             </Group>
           )}
           
           {quotation.netTaxAmount > 0 && (
-            <Group position="apart">
+            <Group justify="space-between">
               <Text>Tax:</Text>
               <Text>{currencyNumberWithSymbolFormat(quotation.netTaxAmount)}</Text>
             </Group>
           )}
           
-          <Group position="apart" style={{ borderTop: "1px solid #e0e0e0", paddingTop: 8 }}>
-            <Text weight={700}>Net Total:</Text>
-            <Text weight={700}>{currencyNumberWithSymbolFormat(quotation.netTotal || 0)}</Text>
+          <Group justify="space-between" style={{ borderTop: "1px solid #e0e0e0", paddingTop: 8 }}>
+            <Text fw={700}>Net Total:</Text>
+            <Text fw={700}>{currencyNumberWithSymbolFormat(quotation.netTotal || 0)}</Text>
           </Group>
         </Stack>
       </Card>

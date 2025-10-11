@@ -12,80 +12,142 @@ import { tenantSettingRouter } from "./pages/(tenant)/tenant-settings/tenant-set
 import { authRouter } from "./pages/auth/auth.router";
 import DesignSystem from "./pages/design-system.page";
 import SelectOrganization from "./pages/select-organization.page";
-import SpotlightWrapper from "@/commons/components/SpotlightWrapper";
 import ProductsExample from "./commons/components/AppDatatable/example/ProductsExample.tsx";
 
 export const rootRouter = createBrowserRouter([
+  // {
+  //   path: "/",
+  //   element: <SpotlightWrapper />,
+  //   children: [
+  //     {
+  //       path: "/",
+  //       element: <Navigate to="/select-tenant" />,
+  //     },
+  //     {
+  //       path: "/design-system",
+  //       element: <DesignSystem />,
+  //     },
+  //     {
+  //       path: "/select-tenant",
+  //       element: (
+  //         <RouteGuardWrapper guard="private">
+  //           <SelectOrganization />
+  //         </RouteGuardWrapper>
+  //       ),
+  //     },
+  //     {
+  //       path: "/auth",
+  //       children: authRouter,
+  //     },
+  //     {
+  //       path: "/:tenant",
+  //       element: (
+  //         <RouteGuardWrapper guard="private">
+  //           <TenantResolverForApollo />
+  //         </RouteGuardWrapper>
+  //       ),
+  //       children: [
+  //         {
+  //           path: "",
+  //           element: <ModulesPage />,
+  //         },
+  //         {
+  //           path: "products",
+  //           element: <ProductsExample />,
+  //         },
+  //         {
+  //           path: "accounting",
+  //           children: accountingModuleRouter,
+  //         },
+  //         {
+  //           path: "inventory-management",
+  //           children: inventoryModuleRouter,
+  //         },
+  //         {
+  //           path: "people",
+  //           children: peopleModuleRouter,
+  //         },
+  //         {
+  //           path: "reports",
+  //           children: reportsModuleRouter,
+  //         },
+  //         // {
+  //         //   path: "settings",
+  //         //   children: settingModuleRouter,
+  //         // },
+  //         {
+  //           path: "tenant-settings",
+  //           children: tenantSettingRouter,
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       path: "*",
+  //       element: <NotFoundPage />,
+  //     },
+  //   ],
+  // },
+
   {
     path: "/",
-    element: <SpotlightWrapper />,
+    element: <Navigate to="/select-tenant" />,
+  },
+  {
+    path: "/design-system",
+    element: <DesignSystem />,
+  },
+  {
+    path: "/select-tenant",
+    element: (
+      <RouteGuardWrapper guard="private">
+        <SelectOrganization />
+      </RouteGuardWrapper>
+    ),
+  },
+  {
+    path: "/auth",
+    children: authRouter,
+  },
+  {
+    path: "/:tenant",
+    element: (
+      <RouteGuardWrapper guard="private">
+        <TenantResolverForApollo />
+      </RouteGuardWrapper>
+    ),
     children: [
       {
-        path: "/",
-        element: <Navigate to="/select-tenant" />,
+        path: "",
+        element: <ModulesPage />,
       },
       {
-        path: "/design-system",
-        element: <DesignSystem />,
+        path: "products",
+        element: <ProductsExample />,
       },
       {
-        path: "/select-tenant",
-        element: (
-          <RouteGuardWrapper guard="private">
-            <SelectOrganization />
-          </RouteGuardWrapper>
-        ),
+        path: "accounting",
+        children: accountingModuleRouter,
       },
       {
-        path: "/auth",
-        children: authRouter,
+        path: "inventory-management",
+        children: inventoryModuleRouter,
       },
       {
-        path: "/:tenant",
-        element: (
-          <RouteGuardWrapper guard="private">
-            <TenantResolverForApollo />
-          </RouteGuardWrapper>
-        ),
-        children: [
-          {
-            path: "",
-            element: <ModulesPage />,
-          },
-          {
-            path: "products",
-            element: <ProductsExample />,
-          },
-          {
-            path: "accounting",
-            children: accountingModuleRouter,
-          },
-          {
-            path: "inventory-management",
-            children: inventoryModuleRouter,
-          },
-          {
-            path: "people",
-            children: peopleModuleRouter,
-          },
-          {
-            path: "reports",
-            children: reportsModuleRouter,
-          },
-          // {
-          //   path: "settings",
-          //   children: settingModuleRouter,
-          // },
-          {
-            path: "tenant-settings",
-            children: tenantSettingRouter,
-          },
-        ],
+        path: "people",
+        children: peopleModuleRouter,
       },
       {
-        path: "*",
-        element: <NotFoundPage />,
+        path: "reports",
+        children: reportsModuleRouter,
+      },
+      {
+        path: "tenant-settings",
+        children: tenantSettingRouter,
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);

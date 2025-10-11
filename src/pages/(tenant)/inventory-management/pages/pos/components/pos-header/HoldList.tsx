@@ -34,7 +34,7 @@ const HoldList: React.FC<{
         position="right"
         size={'lg'}
       >
-        <Table withBorder>
+        <Table withTableBorder>
           <thead>
             <tr>
               <th>Client</th>

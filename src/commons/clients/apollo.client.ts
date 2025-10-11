@@ -7,6 +7,7 @@ import {
 } from "@apollo/client";
 import { removeTypenameFromVariables } from "@apollo/client/link/remove-typename";
 import { TokenService } from "../utils/TokenService";
+import { errorLink } from "./errorLink";
 
 const removeTypenameLink = removeTypenameFromVariables();
 
@@ -27,11 +28,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 export const apolloClient = new ApolloClient({
-  link: from([removeTypenameLink, authMiddleware, httpLink]),
+  link: from([errorLink, removeTypenameLink, authMiddleware, httpLink]),
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  // headers: {
-  //   authorization: `Bearer ${TokenService.getToken()}` || "",
-  // },
 });

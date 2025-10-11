@@ -7,8 +7,8 @@ import {
   Skeleton,
   Space,
   Text,
-  clsx,
 } from '@mantine/core';
+import clsx from 'clsx';
 import React, { useMemo } from 'react';
 
 const PurchaseCardList: React.FC<{
@@ -44,7 +44,7 @@ const PurchaseCardList: React.FC<{
             p={10}
             withBorder
             className={clsx('relative cursor-pointer', {
-              'bg-red-200 !cursor-not-allowed': dueAmount(purchase) <= 0,
+              'bg-red-200 cursor-not-allowed!': dueAmount(purchase) <= 0,
             })}
             onClick={() => {
               if (dueAmount(purchase) <= 0) return;
@@ -77,7 +77,7 @@ const PurchaseCardList: React.FC<{
 
       <Space h={'md'} />
 
-      <Group position="left">
+      <Group justify="flex-start">
         <Button
           variant="subtle"
           size="xs"

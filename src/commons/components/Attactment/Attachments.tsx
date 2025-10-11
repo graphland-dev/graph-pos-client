@@ -152,7 +152,7 @@ const Attachments: React.FC<IAttachmentUploadProps> = ({
                 color="teal"
                 stroke={1.5}
               />
-              <Text color="gray.6" align={'center'}>
+              <Text c="gray.6" ta={'center'}>
                 Drag and drop files here
               </Text>
             </Flex>

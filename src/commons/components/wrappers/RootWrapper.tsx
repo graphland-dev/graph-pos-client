@@ -1,17 +1,17 @@
-import { gql, useQuery } from '@apollo/client';
-import { useAtom } from 'jotai/index';
+import { gql, useQuery } from "@apollo/client";
+import { useAtom } from "jotai/index";
 import {
   loadingUserAtom,
   userAtom,
   userTenantsAtom,
-} from '@/commons/states/user.atom.ts';
+} from "@/commons/states/user.atom.ts";
 import {
   TenantsWithPagination,
   User,
-} from '@/commons/graphql-models/graphql.ts';
-import React, { PropsWithChildren, useEffect } from 'react';
-import { $triggerRefetchMe } from '@/commons/rxjs-controllers.ts';
-import { LoadingOverlay } from '@mantine/core';
+} from "@/commons/graphql-models/graphql.ts";
+import React, { PropsWithChildren, useEffect } from "react";
+import { $triggerRefetchMe } from "@/commons/rxjs-controllers.ts";
+import { LoadingOverlay } from "@mantine/core";
 
 const ROOT_QUERY = gql`
   query ROOT_QUERY {
@@ -77,8 +77,6 @@ const RootWrapper: React.FC<PropsWithChildren> = ({ children }) => {
     },
     onError: () => {
       setUserLoading(false);
-      // localStorage.removeItem('erp:accessToken');
-      // window.location.href = '/auth/login';
     },
   });
 
@@ -90,7 +88,10 @@ const RootWrapper: React.FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <div area-label="root-app-wrapper" className="relative">
-      <LoadingOverlay visible={loading} opacity={10000} overlayBlur={1000} />
+      <LoadingOverlay
+        visible={loading}
+        overlayProps={{ opacity: 1, blur: 2 }}
+      />
       {children}
     </div>
   );

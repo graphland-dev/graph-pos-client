@@ -196,7 +196,7 @@ const UnitPage = () => {
       <div className="flex items-center justify-between mb-4">
         <div></div>
         <Button
-          leftIcon={<IconPlus size={16} />}
+          leftSection={<IconPlus size={16} />}
           onClick={() =>
             setState({
               modalOpened: true,

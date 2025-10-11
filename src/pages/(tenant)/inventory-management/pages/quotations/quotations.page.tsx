@@ -1,4 +1,6 @@
-import AppDatatable, { ColumnDef } from "@/commons/components/AppDatatable/AppDatatable";
+import AppDatatable, {
+  ColumnDef,
+} from "@/commons/components/AppDatatable/AppDatatable";
 import PageTitle from "@/commons/components/PageTitle";
 import {
   MatchOperator,
@@ -16,9 +18,9 @@ import { showNotification } from "@mantine/notifications";
 import { IconTrash } from "@tabler/icons-react";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { 
-  INVENTORY_PRODUCT_QUOTATIONS_QUERY, 
-  DELETE_PRODUCT_QUOTATION_MUTATION 
+import {
+  INVENTORY_PRODUCT_QUOTATIONS_QUERY,
+  DELETE_PRODUCT_QUOTATION_MUTATION,
 } from "./utils/query.quotations";
 import { PEOPLE_CLIENTS_QUERY } from "../../../people/pages/client/utils/client.query";
 
@@ -35,8 +37,14 @@ interface SortingState {
 const QuotationsPage = () => {
   const navigate = useNavigate();
   const [refetching, setRefetching] = useState(false);
-  const [pagination, setPagination] = useState<PaginationState>({ page: 1, pageSize: 10 });
-  const [sorting, setSorting] = useState<SortingState>({ column: "", direction: null });
+  const [pagination, setPagination] = useState<PaginationState>({
+    page: 1,
+    pageSize: 10,
+  });
+  const [sorting, setSorting] = useState<SortingState>({
+    column: "",
+    direction: null,
+  });
   const [filters, setFilters] = useState<Record<string, string>>({});
 
   // Build query variables
@@ -144,7 +152,8 @@ const QuotationsPage = () => {
       children: (
         <Text size="sm">
           Are you sure you want to delete quotation{" "}
-          <strong>{quotation.quotationUID}</strong>? This action cannot be undone.
+          <strong>{quotation.quotationUID}</strong>? This action cannot be
+          undone.
         </Text>
       ),
       labels: { confirm: "Delete", cancel: "Cancel" },
@@ -214,7 +223,7 @@ const QuotationsPage = () => {
         ),
       },
       {
-        accessor: (row) => row?.date ? formatTableColumnDate(row?.date) : "",
+        accessor: (row) => (row?.date ? formatTableColumnDate(row?.date) : ""),
         title: "Quotation Date",
         sortKey: "date",
         sortable: true,
@@ -223,8 +232,13 @@ const QuotationsPage = () => {
             <DatePickerInput
               label="Start date"
               value={filters.startDate ? new Date(filters.startDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("startDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "startDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -232,8 +246,13 @@ const QuotationsPage = () => {
             <DatePickerInput
               label="End date"
               value={filters.endDate ? new Date(filters.endDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("endDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "endDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -242,9 +261,10 @@ const QuotationsPage = () => {
         ),
       },
       {
-        accessor: (row) => row?.validUntil ? formatTableColumnDate(row?.validUntil) : "",
+        accessor: (row) =>
+          row?.validUntil ? formatTableColumnDate(row?.validUntil) : "",
         title: "Valid Until",
-        sortKey: "validUntil", 
+        sortKey: "validUntil",
         sortable: true,
       },
       {
@@ -306,6 +326,7 @@ const QuotationsPage = () => {
       filters.status,
       filters.startDate,
       filters.endDate,
+      statusOptions,
     ]
   );
 
@@ -322,7 +343,7 @@ const QuotationsPage = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Text size="xl" weight={600}>
+          <Text size="xl" fw={600}>
             Quotations
           </Text>
           <Text size="sm" color="dimmed">
@@ -330,16 +351,14 @@ const QuotationsPage = () => {
           </Text>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefetch}
-            disabled={refetching}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
-          >
+          <Button onClick={handleRefetch} disabled={refetching} variant="light">
             {refetching ? "Refreshing..." : "Refresh"}
-          </button>
+          </Button>
           <Button
             onClick={() =>
-              navigate(`/${params.tenant}/inventory-management/quotations/create`)
+              navigate(
+                `/${params.tenant}/inventory-management/quotations/create`
+              )
             }
           >
             Create Quotation
@@ -389,8 +408,8 @@ const QuotationsPage = () => {
           setSorting({ column, direction });
         }}
         onFilterChange={(column, value) => {
-          setFilters(prev => ({ ...prev, [column]: value }));
-          setPagination(prev => ({ ...prev, page: 1 }));
+          setFilters((prev) => ({ ...prev, [column]: value }));
+          setPagination((prev) => ({ ...prev, page: 1 }));
         }}
         onPaginationChange={(page, pageSize) => {
           setPagination({ page, pageSize });

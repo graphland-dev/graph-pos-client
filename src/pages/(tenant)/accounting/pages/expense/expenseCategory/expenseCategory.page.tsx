@@ -1,13 +1,12 @@
-import DataTable from "@/commons/components/DataTable.tsx";
-import { ExpenseCategory, ExpenseCategorysWithPagination, MatchOperator } from "@/commons/graphql-models/graphql";
+import AppDatatable, { ColumnDef } from "@/commons/components/AppDatatable/AppDatatable";
+import { CommonPaginationDto, ExpenseCategory, ExpenseCategorysWithPagination, MatchOperator, SortType } from "@/commons/graphql-models/graphql";
 import { useMutation, useQuery } from "@apollo/client";
-import { Button, Drawer, Menu } from "@mantine/core";
+import { Button, Drawer } from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { IconPencil, IconPlus, IconTrash } from "@tabler/icons-react";
 import { ACCOUNTING_EXPENSE_CATEGORY_DELETE_MUTATION, ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST } from "./utils/query";
 import ExpenseCategoryForm from "./components/ExpenseCategoryForm";
-import { MRT_ColumnDef } from "mantine-react-table";
 import { confirmModal } from "@/commons/components/confirm.tsx";
 import PageTitle from "@/commons/components/PageTitle";
 
@@ -28,71 +27,151 @@ const ExpenseCategoryPage = () => {
     refetching: false,
   });
 
+  const [pagination, setPagination] = useState({ page: 1, pageSize: 10 });
+  const [sorting, setSorting] = useState<{
+    column: string;
+    direction: "asc" | "desc" | null;
+  }>({ column: "createdAt", direction: "desc" });
+
+  const buildWhereClause = (): CommonPaginationDto => {
+    return {
+      page: pagination.page,
+      limit: pagination.pageSize,
+      sortBy: sorting.column || "createdAt",
+      sort: sorting.direction === "asc" ? SortType.Asc : SortType.Desc,
+    };
+  };
+
   const { data, loading, refetch } = useQuery<{
     accounting__expenseCategorys: ExpenseCategorysWithPagination;
   }>(ACCOUNTING_EXPENSE_CATEGORY_QUERY_LIST, {
     variables: {
-      where: {
-        limit: 10,
-        page: 1,
-      },
+      where: buildWhereClause(),
     },
   });
 
-
- 
-
-  const handleRefetch = (variables: any) => {
+  const handleRefetch = () => {
     setState({ refetching: true });
-    refetch();
-    refetch(variables).finally(() => {
+    refetch().finally(() => {
       setState({ refetching: false });
     });
   };
 
-  
+  const handleSortChange = (
+    column: string,
+    direction: "asc" | "desc" | null
+  ) => {
+    setSorting({ column, direction });
+  };
 
-  const columns = useMemo<MRT_ColumnDef<any>[]>(
+  const handlePaginationChange = (page: number, pageSize: number) => {
+    setPagination({ page, pageSize });
+  };
+
+  const columns = useMemo<ColumnDef<ExpenseCategory>[]>(
     () => [
       {
-        accessorKey: "name",
-        header: "Name",
+        accessor: "name",
+        title: "Name",
+        sortable: true,
       },
     ],
     []
   );
 
-   const [deleteExpenseCategoryMutation] = useMutation(
-     ACCOUNTING_EXPENSE_CATEGORY_DELETE_MUTATION,
-     { onCompleted: () => handleRefetch({}) }
+  const [deleteExpenseCategoryMutation] = useMutation(
+    ACCOUNTING_EXPENSE_CATEGORY_DELETE_MUTATION,
+    { onCompleted: () => handleRefetch() }
   );
-  
-   const handleDeleteAccount = (_id: string) => {
-     confirmModal({
-       title: "Sure to delete account?",
-       description: "Be careful!! Once you deleted, it can not be undone",
-       isDangerous: true,
-       onConfirm() {
-         deleteExpenseCategoryMutation({
-           variables: {
-             where: { key: "_id", operator: MatchOperator.Eq, value: _id },
-           },
-         });
-       },
-     });
-   };
+
+  const handleDeleteAccount = (_id: string) => {
+    confirmModal({
+      title: "Sure to delete expense category?",
+      description: "Be careful!! Once you deleted, it can not be undone",
+      isDangerous: true,
+      onConfirm() {
+        deleteExpenseCategoryMutation({
+          variables: {
+            where: { key: "_id", operator: MatchOperator.Eq, value: _id },
+          },
+        });
+      },
+    });
+  };
+
+  const ActionColumn = (row: ExpenseCategory) => (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          setState({
+            modalOpened: true,
+            operationType: "update",
+            operationId: row._id,
+            operationPayload: row,
+          });
+        }}
+        className="flex items-center gap-1 px-2 py-1 text-sm text-orange-600 transition-colors hover:text-orange-700"
+        title="Edit"
+      >
+        <IconPencil size={16} />
+        Edit
+      </button>
+      <button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDeleteAccount(row._id);
+        }}
+        className="flex items-center gap-1 px-2 py-1 text-sm text-red-600 transition-colors hover:text-red-700"
+        title="Delete"
+      >
+        <IconTrash size={16} />
+        Delete
+      </button>
+    </div>
+  );
 
   return (
     <>
       <PageTitle title="expense-category" />
+
+      <div className="mb-4 flex justify-end">
+        <Button
+          leftSection={<IconPlus size={16} />}
+          onClick={() =>
+            setState({ modalOpened: true, operationPayload: {}, operationType: "create" })
+          }
+          size="sm"
+        >
+          Add new
+        </Button>
+      </div>
+
+      <AppDatatable
+        columns={columns}
+        data={data?.accounting__expenseCategorys?.nodes ?? []}
+        paginationConfig={{
+          pageSize: pagination.pageSize,
+          totalItems: data?.accounting__expenseCategorys?.meta?.totalCount || 0,
+          currentPage: pagination.page,
+        }}
+        ActionColumn={ActionColumn}
+        onSortChange={handleSortChange}
+        onPaginationChange={handlePaginationChange}
+        loading={loading || state.refetching}
+        emptyMessage="No expense categories found."
+      />
+
       <Drawer
         opened={state.modalOpened}
         onClose={() => setState({ modalOpened: false })}
         position="right"
+        title={state.operationType === "create" ? "Create Expense Category" : "Update Expense Category"}
+        withCloseButton={true}
       >
         <ExpenseCategoryForm
           onSubmissionDone={() => {
-            handleRefetch({});
+            handleRefetch();
             setState({ modalOpened: false });
           }}
           operationType={state.operationType}
@@ -100,49 +179,6 @@ const ExpenseCategoryPage = () => {
           formData={state.operationPayload}
         />
       </Drawer>
-      <DataTable
-        columns={columns}
-        data={data?.accounting__expenseCategorys?.nodes ?? []}
-        refetch={handleRefetch}
-        totalCount={data?.accounting__expenseCategorys?.meta?.totalCount ?? 10}
-        RowActionMenu={(row: ExpenseCategory) => (
-          <>
-            <Menu.Item
-              onClick={() =>
-                setState({
-                  modalOpened: true,
-                  operationType: "update",
-                  operationId: row._id,
-                  operationPayload: row,
-                })
-              }
-              icon={<IconPencil size={18} />}
-            >
-              Edit
-            </Menu.Item>
-            <Menu.Item
-              onClick={() => handleDeleteAccount(row._id)}
-              icon={<IconTrash size={18} />}
-            >
-              Delete
-            </Menu.Item>
-          </>
-        )}
-        ActionArea={
-          <>
-            <Button
-              leftIcon={<IconPlus size={16} />}
-              onClick={() =>
-                setState({ modalOpened: true, operationPayload: {} })
-              }
-              size="sm"
-            >
-              Add new
-            </Button>
-          </>
-        }
-        loading={loading || state.refetching}
-      />
     </>
   );
 };

@@ -36,25 +36,25 @@ const ViewSupplierDetails: React.FC<ISupplierDetailsProps> = ({
           <>
             <NavLink
               label={"Basic Information"}
-              icon={<IconUserBolt size={16} />}
+              leftSection={<IconUserBolt size={16} />}
               onClick={() => setActiveTab(0)}
               active={activeTab === 0}
             />
             <NavLink
               label={"Purchase"}
-              icon={<IconShoppingCart size={16} />}
+              leftSection={<IconShoppingCart size={16} />}
               onClick={() => setActiveTab(1)}
               active={activeTab === 1}
             />
             <NavLink
               label={"Return"}
-              icon={<IconTruckReturn size={16} />}
+              leftSection={<IconTruckReturn size={16} />}
               onClick={() => setActiveTab(2)}
               active={activeTab === 2}
             />
             <NavLink
               label={"Documents"}
-              icon={<IconPaperclip size={16} />}
+              leftSection={<IconPaperclip size={16} />}
               onClick={() => setActiveTab(3)}
               active={activeTab === 3}
             />

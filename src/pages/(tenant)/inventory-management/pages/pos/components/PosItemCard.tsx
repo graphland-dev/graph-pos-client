@@ -34,7 +34,7 @@ const PosItemCard: React.FC<IProp> = ({ product, onClick }) => {
           });
         }
       }}
-      className="overflow-hidden border cursor-pointer border-neutral-muted hover:border-blue-500"
+      className="overflow-hidden border border-border cursor-pointer border-neutral-muted hover:border-primary"
     >
       {isStockout && (
         <div className="absolute inset-0 bg-slate-500/10 backdrop-blur-[1px]"></div>

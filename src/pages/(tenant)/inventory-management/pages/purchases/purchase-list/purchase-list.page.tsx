@@ -243,8 +243,13 @@ const PurchaseListPage = () => {
                   ? new Date(datatableFilters.purchaseDateStart)
                   : null
               }
-              onChange={(value: Date | null) =>
-                setValue("purchaseDateStart", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "purchaseDateStart",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -256,8 +261,13 @@ const PurchaseListPage = () => {
                   ? new Date(datatableFilters.purchaseDateEnd)
                   : null
               }
-              onChange={(value: Date | null) =>
-                setValue("purchaseDateEnd", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "purchaseDateEnd",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -279,8 +289,13 @@ const PurchaseListPage = () => {
                   ? new Date(datatableFilters.orderDateStart)
                   : null
               }
-              onChange={(value: Date | null) =>
-                setValue("orderDateStart", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "orderDateStart",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -292,8 +307,13 @@ const PurchaseListPage = () => {
                   ? new Date(datatableFilters.orderDateEnd)
                   : null
               }
-              onChange={(value: Date | null) =>
-                setValue("orderDateEnd", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "orderDateEnd",
+                  (value && typeof value !== 'string'
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -388,7 +408,7 @@ const PurchaseListPage = () => {
       <div className="flex items-center justify-between mb-4">
         <div></div>
         <Button
-          leftIcon={<IconPlus size={16} />}
+          leftSection={<IconPlus size={16} />}
           component={Link}
           to={`/${params.tenant}/inventory-management/purchases/create`}
           size="sm"

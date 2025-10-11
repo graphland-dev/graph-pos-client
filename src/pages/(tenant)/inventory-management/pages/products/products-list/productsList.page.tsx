@@ -2,6 +2,7 @@ import AppDatatable, {
   ColumnDef,
 } from "@/commons/components/AppDatatable/AppDatatable";
 import { commonNotifierCallback } from "@/commons/components/Notification/commonNotifierCallback.ts";
+import PageTitle from "@/commons/components/PageTitle";
 import { confirmModal } from "@/commons/components/confirm.tsx";
 import {
   BrandsWithPagination,
@@ -13,7 +14,14 @@ import {
 } from "@/commons/graphql-models/graphql";
 import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
 import { useMutation, useQuery } from "@apollo/client";
-import { ActionIcon, Button, Input, NumberInput, Select, Title } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Input,
+  NumberInput,
+  Select,
+  Title,
+} from "@mantine/core";
 import { useSetState } from "@mantine/hooks";
 import {
   IconBrandProducthunt,
@@ -22,10 +30,12 @@ import {
   IconRefresh,
   IconTrash,
 } from "@tabler/icons-react";
+import { clsx } from "clsx";
 import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CategoryPicker } from "../../../shared/components";
 import { CategoryTreeNode } from "../../../shared/types";
+import ImportExportCSV from "./ImportExportCSV";
 import {
   BRANDS_QUERY,
   GET_ROOT_CATEGORIES_WITH_CHILDREN_QUERY,
@@ -33,9 +43,6 @@ import {
   INVENTORY_PRODUCT_CREATE,
   INVENTORY_PRODUCT_REMOVE,
 } from "./utils/product.query";
-import PageTitle from "@/commons/components/PageTitle";
-import ImportExportCSV from "./ImportExportCSV";
-import clsx from "clsx";
 
 interface IState {
   refetching: boolean;
@@ -156,7 +163,7 @@ const ProductListPage = () => {
     inventory__products: ProductsWithPagination;
   }>(INVENTORY_PRODUCTS_LIST_QUERY, {
     variables: { where: buildFilterVariables() },
-    fetchPolicy: "cache-and-network",
+    // fetchPolicy: "cache-and-network",
   });
 
   // Fetch categories for filter
@@ -307,15 +314,27 @@ const ProductListPage = () => {
           <div className="flex gap-2" style={{ minWidth: 200 }}>
             <NumberInput
               placeholder="Min"
-              value={datatableFilters.minPrice ? Number(datatableFilters.minPrice) : undefined}
-              onChange={(value) => setValue("minPrice", value?.toString() || "")}
+              value={
+                datatableFilters.minPrice
+                  ? Number(datatableFilters.minPrice)
+                  : undefined
+              }
+              onChange={(value) =>
+                setValue("minPrice", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />
             <NumberInput
               placeholder="Max"
-              value={datatableFilters.maxPrice ? Number(datatableFilters.maxPrice) : undefined}
-              onChange={(value) => setValue("maxPrice", value?.toString() || "")}
+              value={
+                datatableFilters.maxPrice
+                  ? Number(datatableFilters.maxPrice)
+                  : undefined
+              }
+              onChange={(value) =>
+                setValue("maxPrice", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />
@@ -332,15 +351,27 @@ const ProductListPage = () => {
           <div className="flex gap-2" style={{ minWidth: 200 }}>
             <NumberInput
               placeholder="Min"
-              value={datatableFilters.minPurchasePrice ? Number(datatableFilters.minPurchasePrice) : undefined}
-              onChange={(value) => setValue("minPurchasePrice", value?.toString() || "")}
+              value={
+                datatableFilters.minPurchasePrice
+                  ? Number(datatableFilters.minPurchasePrice)
+                  : undefined
+              }
+              onChange={(value) =>
+                setValue("minPurchasePrice", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />
             <NumberInput
               placeholder="Max"
-              value={datatableFilters.maxPurchasePrice ? Number(datatableFilters.maxPurchasePrice) : undefined}
-              onChange={(value) => setValue("maxPurchasePrice", value?.toString() || "")}
+              value={
+                datatableFilters.maxPurchasePrice
+                  ? Number(datatableFilters.maxPurchasePrice)
+                  : undefined
+              }
+              onChange={(value) =>
+                setValue("maxPurchasePrice", value?.toString() || "")
+              }
               size="sm"
               min={0}
             />

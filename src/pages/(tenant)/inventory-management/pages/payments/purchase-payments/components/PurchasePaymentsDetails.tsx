@@ -59,7 +59,7 @@ const PurchasePaymentsDetails: React.FC<{
     <tr>
       <th></th>
       <th></th>
-      <th className="!text-center">Total Amount</th>
+      <th className="text-center!">Total Amount</th>
       <th>{currencyNumberWithSymbolFormat(totalAmount!)}</th>
     </tr>
   );

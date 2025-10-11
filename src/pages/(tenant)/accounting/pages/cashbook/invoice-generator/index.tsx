@@ -52,7 +52,7 @@ const InvoiceGenerator: React.FC = () => {
           </div>
         </div>
         <Space h={"lg"} />
-        <div className="lg:flex !items-start justify-between">
+        <div className="lg:flex items-start! justify-between">
           <div>
             <Textarea
               label="Invoice from"
@@ -89,7 +89,7 @@ const InvoiceGenerator: React.FC = () => {
           </div>
         </div>
         <Space h={"lg"} />
-        <Table withBorder={false} withColumnBorders={false}>
+        <Table withTableBorder={false} withColumnBorders={false}>
           <thead>
             <tr>
               <th className="w-6/12">Item</th>
@@ -154,7 +154,7 @@ const InvoiceGenerator: React.FC = () => {
           Add new
         </Button>
         <Space h={"lg"} />
-        <div className="lg:flex !items-start justify-between">
+        <div className="lg:flex items-start! justify-between">
           <div>
             <Textarea label="Notes" w={300} placeholder="Invoice notes..." />
             <Space h={"sm"} />
@@ -238,8 +238,7 @@ const InvoiceGenerator: React.FC = () => {
             <div className="flex items-center justify-end">
               {!isTax && (
                 <Button
-                  size="sm"
-                  compact
+                  size="compact-sm"
                   variant="subtle"
                   color="teal"
                   onClick={() => setIsTax(true)}
@@ -249,8 +248,7 @@ const InvoiceGenerator: React.FC = () => {
               )}
               {!isDiscount && (
                 <Button
-                  size="sm"
-                  compact
+                  size="compact-sm"
                   variant="subtle"
                   color="teal"
                   onClick={() => setIsDiscount(true)}
@@ -261,8 +259,7 @@ const InvoiceGenerator: React.FC = () => {
 
               {!isShipping && (
                 <Button
-                  size="sm"
-                  compact
+                  size="compact-sm"
                   variant="subtle"
                   color="teal"
                   onClick={() => setIsShipping(true)}
@@ -290,7 +287,7 @@ const InvoiceGenerator: React.FC = () => {
           </div>
         </div>
         <Space h={50} />
-        <Group position="right">
+        <Group justify="flex-end">
           <Button color="orange" variant="subtle">
             Save as Default
           </Button>

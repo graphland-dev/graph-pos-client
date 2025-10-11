@@ -39,25 +39,25 @@ const ViewEmployeeDetails: React.FC<IEmployeesDetailsFormProps> = ({
         <>
           <NavLink
             label={"Basic Information"}
-            icon={<IconUserBolt size={16} />}
+            leftSection={<IconUserBolt size={16} />}
             onClick={() => setActiveTab(0)}
             active={activeTab === 0}
           />
           <NavLink
             label={"Payrolls"}
-            icon={<IconCurrencyTaka size={16} />}
+            leftSection={<IconCurrencyTaka size={16} />}
             onClick={() => setActiveTab(1)}
             active={activeTab === 1}
           />
           <NavLink
             label={"Increments"}
-            icon={<IconChartArrowsVertical size={16} />}
+            leftSection={<IconChartArrowsVertical size={16} />}
             onClick={() => setActiveTab(2)}
             active={activeTab === 2}
           />
           <NavLink
             label={"Documents"}
-            icon={<IconPaperclip size={16} />}
+            leftSection={<IconPaperclip size={16} />}
             onClick={() => setActiveTab(3)}
             active={activeTab === 3}
           />

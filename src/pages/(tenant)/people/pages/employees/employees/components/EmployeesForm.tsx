@@ -284,15 +284,12 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
           </Input.Wrapper>
 
           <DateTimePicker
-            onPointerEnterCapture={() => {}}
-            onPointerLeaveCapture={() => {}}
             className="w-full"
             valueFormat="DD MMM YYYY"
             value={new Date(watch("dateOfBirth"))}
-            onChange={(e) => {
-              const dateTimeValue =
-                e?.toISOString() || new Date().toISOString();
-              setValue("dateOfBirth", dateTimeValue);
+            onChange={(value) => {
+              const d = value && typeof value !== 'string' ? (value as Date) : new Date(value as any);
+              setValue("dateOfBirth", d.toISOString());
             }}
             label="Date Of Birth"
             placeholder="Select your date and time"
@@ -326,32 +323,26 @@ const EmployeesForm: React.FC<IEmployeesFormProps> = ({
 
         <div className="grid gap-3 lg:grid-cols-2">
           <DateTimePicker
-            onPointerEnterCapture={() => {}}
-            onPointerLeaveCapture={() => {}}
             withAsterisk
             className="w-full"
             valueFormat="DD MMM YYYY hh:mm A"
             value={new Date(watch("appointmentDate"))}
-            onChange={(e) => {
-              const dateTimeValue =
-                e?.toISOString() || new Date().toISOString();
-              setValue("appointmentDate", dateTimeValue);
+            onChange={(value) => {
+              const d = value && typeof value !== 'string' ? (value as Date) : new Date(value as any);
+              setValue("appointmentDate", d.toISOString());
             }}
             label="Appointment Date"
             placeholder="Select your date and time"
             mx="auto"
           />
           <DateTimePicker
-            onPointerEnterCapture={() => {}}
-            onPointerLeaveCapture={() => {}}
             withAsterisk
             className="w-full"
             valueFormat="DD MMM YYYY hh:mm A"
             value={new Date(watch("joiningDate"))}
-            onChange={(e) => {
-              const dateTimeValue =
-                e?.toISOString() || new Date().toISOString();
-              setValue("joiningDate", dateTimeValue);
+            onChange={(value) => {
+              const d = value && typeof value !== 'string' ? (value as Date) : new Date(value as any);
+              setValue("joiningDate", d.toISOString());
             }}
             label="Joining Date"
             placeholder="Select your date and time"

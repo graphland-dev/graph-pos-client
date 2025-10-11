@@ -4,7 +4,7 @@ import {
   ComboboxOption,
   ComboboxOptions,
 } from "@headlessui/react";
-import { clsx } from "@mantine/core";
+import { clsx } from "clsx";
 import { useDebouncedState } from "@mantine/hooks";
 import React, { Fragment, useEffect } from "react";
 

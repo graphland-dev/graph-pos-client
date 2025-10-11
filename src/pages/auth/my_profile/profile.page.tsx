@@ -115,7 +115,7 @@ const MyProfilePage = () => {
         onClick={
           window.history.state.idx ? () => navigate(-1) : () => navigate('/')
         }
-        leftIcon={<IconArrowLeft />}
+        leftSection={<IconArrowLeft />}
         variant="subtle"
       >
         Back

@@ -1,36 +1,115 @@
-@layer tailwind {
-  @tailwind base;
+@plugin 'tailwindcss-animate';
+/*
+  ---break---
+*/
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --animate-reverse-spin: reverse-spin 1s linear infinite;
+
+  --color-background: oklch(var(--background));
+  --color-foreground: oklch(var(--foreground));
+
+  --color-card: oklch(var(--card));
+  --color-card-foreground: oklch(var(--card-foreground));
+
+  --color-popover: oklch(var(--popover));
+  --color-popover-foreground: oklch(var(--popover-foreground));
+
+  --color-white: oklch(var(--white));
+  --color-primary: var(--primary-500);
+  --color-primary-foreground: oklch(var(--primary-foreground));
+
+  --color-secondary-50: oklch(var(--secondary-50));
+  --color-secondary-100: oklch(var(--secondary-100));
+  --color-secondary-200: oklch(var(--secondary-200));
+  --color-secondary-300: oklch(var(--secondary-300));
+  --color-secondary-400: oklch(var(--secondary-400));
+  --color-secondary-500: oklch(var(--secondary-500));
+  --color-secondary-600: oklch(var(--secondary-600));
+  --color-secondary-700: oklch(var(--secondary-700));
+  --color-secondary-800: oklch(var(--secondary-800));
+  --color-secondary-900: oklch(var(--secondary-900));
+  --color-secondary-950: oklch(var(--secondary-950));
+  --color-secondary: oklch(var(--secondary));
+  --color-secondary-foreground: oklch(var(--secondary-foreground));
+
+  --color-muted: oklch(var(--muted));
+  --color-muted-foreground: oklch(var(--muted-foreground));
+
+  --color-accent: oklch(var(--accent));
+  --color-accent-foreground: oklch(var(--accent-foreground));
+
+  --color-destructive: oklch(var(--destructive));
+  --color-destructive-foreground: oklch(var(--destructive-foreground));
+
+  --color-border: oklch(var(--border));
+  --color-input: oklch(var(--input));
+  --color-ring: oklch(var(--ring));
+
+  --color-chart-1: oklch(var(--chart-1));
+  --color-chart-2: oklch(var(--chart-2));
+  --color-chart-3: oklch(var(--chart-3));
+  --color-chart-4: oklch(var(--chart-4));
+  --color-chart-5: oklch(var(--chart-5));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  @keyframes reverse-spin {
+    from {
+      transform: rotate(360deg);
+    }
+  }
 }
-@tailwind components;
-@tailwind utilities;
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@layer tailwind {
+  @import "tailwindcss";
+}
 
 @layer base {
   :root {
-    --test: 0, 100%, 50%;
-
     --white: 0 0% 100%;
-    --background: 60 9.1% 97.8%; /* stone-50 */
-    --foreground: 264, 37%, 8%;
+    --background: 97% 0.001 106.424;
+    --foreground: 21.6% 0.006 56.043;
 
-    --card: 0 0% 100%;
+    --card: 98.5% 0.001 106.423;
     --card-foreground: 264, 37%, 8%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary-50: #f4f8ee;
-    --primary-100: #e9ede1;
-    --primary-200: #d1dac3;
-    --primary-300: #b8c5a1;
-    --primary-400: #a3b385;
-    --primary-500: #95a873;
-    --primary-600: #8ea368;
-    --primary-700: #7a8e57;
-    --primary-800: #6d804c;
-    --primary-900: #5b6d3c;
-
-    --primary: var(--primary-500);
-    --primary-foreground: 0, 0%, 0%;
+    --primary-50: #f4f5fa;
+    --primary-100: #e6e8f3;
+    --primary-200: #d3d6ea;
+    --primary-300: #b5bcdb;
+    --primary-400: #9199c9;
+    --primary-500: #777cba;
+    --primary-600: #5d5ea8;
+    --primary-700: #5c599c;
+    --primary-800: #4f4c81;
+    --primary-900: #414068;
+    --primary-950: #2b2a41;
+    --primary-foreground: 96.8% 0.007 247.896;
 
     --secondary-50: 180, 23%, 95%;
     --secondary-100: 189, 25%, 90%;
@@ -55,8 +134,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 86.9% 0.005 56.366;
+    --input: 70.9% 0.01 56.259;
     --ring: 222.2 84% 4.9%;
 
     --chart-1: 12 76% 61%;
@@ -69,32 +148,17 @@
   }
 
   .dark,
-  [data-color-scheme="dark"] {
+  [data-mantine-color-scheme="dark"] {
     --white: 20 14.3% 4.1%;
 
-    --background: 12 6.5% 15.1%; /* stone-800 */
+    --background: 27.4% 0.006 286.033;
     --foreground: 210 40% 98%;
 
-    --card: 300, 20%, 1%;
+    --card: 21.6% 0.006 56.043;
     --card-foreground: 210 40% 98%;
 
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-
-    /* --primary-50: 80, 23%, 95%;
-    --primary-100: 83, 25%, 90%;
-    --primary-200: 83, 25%, 80%;
-    --primary-300: 82, 25%, 70%;
-    --primary-400: 82, 25%, 60%;
-    --primary-500: 82, 25%, 50%;
-    --primary-600: 82, 25%, 40%;
-    --primary-700: 82, 25%, 30%;
-    --primary-800: 83, 25%, 20%;
-    --primary-900: 83, 25%, 10%;
-    --primary-950: 80, 23%, 5%;
-
-    --primary: var(--primary-500);
-    --primary-foreground: 0, 100%, 100%; */
 
     --secondary-50: 33, 36%, 5%;
     --secondary-100: 28, 37%, 10%;
@@ -119,7 +183,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
+    --border: 26.8% 0.007 34.298;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
 
@@ -131,37 +195,18 @@
   }
 }
 @layer base {
-  * {
-    @apply border-border;
-  }
-
-  body,
-  .app-shell-root,
-  .app-drawer {
-    @apply !bg-background !text-foreground;
-    /* @apply !px-0; */
-  }
-
-  .app-card {
-    @apply !bg-card !text-card-foreground;
-  }
-
-  [data-with-border] {
-    border-color: hsl(var(--border)) !important;
-  }
-
   /* App Shell */
   .app-shell {
     &__navbar {
-      background-color: hsl(var(--muted)) !important;
+      background-color: oklch(var(--muted)) !important;
     }
 
     &__navbar-item {
-      color: hsl(var(--muted-foreground)) !important;
+      color: oklch(var(--muted-foreground)) !important;
 
       &[data-active],
       &:hover {
-        background-color: hsl(var(--primary-variant)) !important;
+        background-color: oklch(var(--primary-variant)) !important;
         @apply transition-colors duration-300;
       }
     }
@@ -277,23 +322,60 @@
   grid-template-columns: repeat(6, 1fr);
 }
 
-/* App Header */
-.app-common-header {
-  background-color: var(--primary);
-  color: hsl(var(--primary-foreground)) !important;
+/*
+  ---break---
+*/
 
-  &__logo {
-    color: var(--primary-foreground) !important;
+:root {
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/*
+  ---break---
+*/
+
+.dark {
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+/*
+  ---break---
+*/
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-
-  .spotlight {
-    background-color: var(--primary-700);
-    &__search-icon {
-      color: hsl(var(--primary-foreground));
-    }
-    &__command-label {
-      background-color: var(--primary-500);
-      color: hsl(var(--primary-foreground));
-    }
+  body {
+    @apply bg-background text-foreground;
   }
 }

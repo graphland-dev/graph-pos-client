@@ -253,9 +253,9 @@ const CreatePurchasePayment = () => {
         <Space h={"md"} />
 
         {itemsFields?.length ? (
-          <Table withBorder withColumnBorders>
+          <Table withTableBorder withColumnBorders>
             <thead className="bg-card-header">
-              <tr className="!p-2 rounded-md">
+              <tr className="p-2! rounded-md">
                 <th>Purchase UID</th>
                 <th>Due Amount</th>
                 <th>Pay Amount</th>
@@ -288,7 +288,6 @@ const CreatePurchasePayment = () => {
                         min={0.01}
                         max={(item?.netTotal || 0) - (item?.paidAmount || 0)}
                         step={0.01}
-                        precision={2}
                         value={watch(`items.${idx}.amount`) || 0}
                         error={errors?.items?.[idx]?.amount?.message}
                       />
@@ -315,7 +314,7 @@ const CreatePurchasePayment = () => {
                 </tr>
               ))}
               <tr>
-                <td colSpan={2} className="!text-right">
+                <td colSpan={2} className="text-right!">
                   Net Payment
                 </td>
                 <td colSpan={2}>{netPaymentAmount()}</td>
@@ -383,7 +382,14 @@ const CreatePurchasePayment = () => {
         >
           <DateInput
             value={watch("date")}
-            onChange={(date) => setValue("date", date!)}
+            onChange={(value) =>
+              setValue(
+                "date",
+                (value && typeof value !== "string"
+                  ? (value as Date)
+                  : new Date((value as string) || new Date())) as Date
+              )
+            }
           />
         </Input.Wrapper>
 

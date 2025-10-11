@@ -69,29 +69,29 @@ const ProductInvoiceReturnsTable: React.FC<{ invoiceId: string; tenant?: string 
 
   const rows = (data?.inventory__productReturns?.nodes || []).map(
     (row: ProductReturn) => (
-      <tr key={row._id}>
-        <td>
+      <Table.Tr key={row._id}>
+        <Table.Td>
           <Anchor
             component={Link}
             to={`/${effectiveTenant}/inventory-management/returns/${row._id}`}
           >
             {row.returnUID}
           </Anchor>
-        </td>
-        <td>{formatTableColumnDate(row.returnDate as any)}</td>
-        <td>
+        </Table.Td>
+        <Table.Td>{formatTableColumnDate(row.returnDate as any)}</Table.Td>
+        <Table.Td>
           <Badge color={statusColor(String(row.status))} variant="light">
             {String(row.status).replace("_", " ")}
           </Badge>
-        </td>
-        <td>{String(row.reason).replace("_", " ")}</td>
-        <td className="text-right">
+        </Table.Td>
+        <Table.Td>{String(row.reason).replace("_", " ")}</Table.Td>
+        <Table.Td className="text-right">
           {currencyNumberWithSymbolFormat(Number(row.totalReturnAmount) || 0)}
-        </td>
-        <td className="text-right">
+        </Table.Td>
+        <Table.Td className="text-right">
           {currencyNumberWithSymbolFormat(Number(row.netRefundAmount) || 0)}
-        </td>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
     )
   );
 
@@ -101,41 +101,40 @@ const ProductInvoiceReturnsTable: React.FC<{ invoiceId: string; tenant?: string 
         <Title order={4}>Returns</Title>
         <Button
           size="xs"
-          leftIcon={<IconPlus size={14} />}
+          leftSection={<IconPlus size={14} />}
           component={Link}
           to={`/${effectiveTenant}/inventory-management/returns/create/${invoiceId}`}
         >
           Create Return
         </Button>
       </div>
-      <Table withBorder withColumnBorders>
-        <thead>
-          <tr>
-            <th>Return ID</th>
-            <th>Date</th>
-            <th>Status</th>
-            <th>Reason</th>
-            <th className="text-right">Return Amount</th>
-            <th className="text-right">Net Refund</th>
-          </tr>
-        </thead>
-        <tbody>
+      <Table withTableBorder withColumnBorders>
+        <Table.Thead>
+          <Table.Tr>
+            <Table.Th>Return ID</Table.Th>
+            <Table.Th>Date</Table.Th>
+            <Table.Th>Status</Table.Th>
+            <Table.Th>Reason</Table.Th>
+            <Table.Th className="text-right">Return Amount</Table.Th>
+            <Table.Th className="text-right">Net Refund</Table.Th>
+          </Table.Tr>
+        </Table.Thead>
+        <Table.Tbody>
           {loading ? (
-            <tr>
-              <td colSpan={6}>Loading...</td>
-            </tr>
+            <Table.Tr>
+              <Table.Td colSpan={6}>Loading...</Table.Td>
+            </Table.Tr>
           ) : rows.length === 0 ? (
-            <tr>
-              <td colSpan={6}>No returns for this invoice yet.</td>
-            </tr>
+            <Table.Tr>
+              <Table.Td colSpan={6}>No returns for this invoice yet.</Table.Td>
+            </Table.Tr>
           ) : (
             rows
           )}
-        </tbody>
+        </Table.Tbody>
       </Table>
     </Paper>
   );
 };
 
 export default ProductInvoiceReturnsTable;
-

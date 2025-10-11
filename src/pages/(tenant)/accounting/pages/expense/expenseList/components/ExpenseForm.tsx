@@ -204,16 +204,13 @@ const ExpenseForm: React.FC<IExpenseFormProps> = ({
           <Input placeholder="Check Number" {...register("checkNo")} />
         </Input.Wrapper>
         <DateTimePicker
-          onPointerEnterCapture={() => {}}
-          onPointerLeaveCapture={() => {}}
           {...register("date")}
           value={new Date(watch("date"))}
           className="w-full"
           valueFormat="DD MMM YYYY hh:mm A"
-          onChange={(e) => {
-            const dateTimeValue =
-              e?.toISOString() || new Date()?.toISOString() || "";
-            setValue("date", dateTimeValue);
+          onChange={(value) => {
+            const d = value && typeof value !== 'string' ? (value as Date) : new Date(value as any);
+            setValue("date", d.toISOString());
           }}
           label="Date & Time"
           placeholder="Select your date and time"

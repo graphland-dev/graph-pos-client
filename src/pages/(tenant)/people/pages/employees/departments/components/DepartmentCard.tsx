@@ -41,7 +41,7 @@ const DepartmentCard: React.FC<{
           </Menu.Target>
           <Menu.Dropdown>
             <Menu.Item
-              icon={<IconPencil size={16} />}
+              leftSection={<IconPencil size={16} />}
               color="orange"
               onClick={() => {
                 onAction();
@@ -52,7 +52,7 @@ const DepartmentCard: React.FC<{
               Edit
             </Menu.Item>
             <Menu.Item
-              icon={<IconTrash size={16} />}
+              leftSection={<IconTrash size={16} />}
               color="red"
               onClick={() =>
                 confirmModal({
@@ -72,7 +72,7 @@ const DepartmentCard: React.FC<{
       </Flex>
       <Space h={5} />
 
-      <Text size={15}>{departmentData?.note}</Text>
+      <Text fz={15}>{departmentData?.note}</Text>
     </Paper>
   );
 };

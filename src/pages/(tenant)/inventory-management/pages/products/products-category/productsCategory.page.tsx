@@ -208,13 +208,13 @@ const ProductCategoryPage = () => {
 
 
 	return (
-		<Stack spacing="md">
+		<Stack gap="md">
 			<PageTitle title="Product Categories" />
 			
 			{/* Header Controls */}
-			<Group position="apart">
+			<Group justify="space-between">
 				<Button
-					leftIcon={<IconPlus size={16} />}
+					leftSection={<IconPlus size={16} />}
 					onClick={() => handleCategoryCreate()}
 					size="sm"
 				>

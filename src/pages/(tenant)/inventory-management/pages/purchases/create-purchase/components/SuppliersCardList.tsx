@@ -55,7 +55,7 @@ const SuppliersCardList: React.FC<{
 
       <Space h={"md"} />
 
-      <Group position="left">
+      <Group justify="flex-start">
         <Button
           variant="subtle"
           size="xs"

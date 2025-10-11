@@ -195,7 +195,14 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
           <DateInput
             placeholder="Pick a date"
             defaultValue={watch('salaryDate')}
-            onChange={(d) => setValue('salaryDate', d!)}
+            onChange={(value) =>
+              setValue(
+                'salaryDate',
+                (value && typeof value !== 'string'
+                  ? (value as Date)
+                  : new Date((value as string) || new Date())) as Date
+              )
+            }
           />
         </Input.Wrapper>
 
@@ -277,7 +284,7 @@ const PayrollForm: React.FC<IIncrementFormProps> = ({
         <Button
           variant="subtle"
           size="xs"
-          leftIcon={<IconPlus size={16} />}
+          leftSection={<IconPlus size={16} />}
           onClick={() =>
             append({
               name: '',

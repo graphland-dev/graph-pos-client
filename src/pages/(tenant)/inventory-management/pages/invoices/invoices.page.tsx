@@ -215,8 +215,13 @@ const InvoicesPage = () => {
             <DatePickerInput
               label="Start date"
               value={filters.startDate ? new Date(filters.startDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("startDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "startDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -224,8 +229,13 @@ const InvoicesPage = () => {
             <DatePickerInput
               label="End date"
               value={filters.endDate ? new Date(filters.endDate) : null}
-              onChange={(value: Date | null) =>
-                setValue("endDate", value?.toISOString() || "")
+              onChange={(value) =>
+                setValue(
+                  "endDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date).toISOString()
+                    : (value as string)) || ""
+                )
               }
               size="sm"
               clearable
@@ -304,7 +314,7 @@ const InvoicesPage = () => {
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <Text size="xl" weight={600}>
+          <Text size="xl" fw={600}>
             Invoices
           </Text>
           <Text size="sm" color="dimmed">
@@ -312,13 +322,9 @@ const InvoicesPage = () => {
           </Text>
         </div>
         <div className="flex items-center gap-3">
-          <button
-            onClick={handleRefetch}
-            disabled={refetching}
-            className="px-4 py-2 text-sm text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 disabled:opacity-50"
-          >
+          <Button onClick={handleRefetch} disabled={refetching} variant="light">
             {refetching ? "Refreshing..." : "Refresh"}
-          </button>
+          </Button>
           <Button
             onClick={() =>
               navigate(`/${params.tenant}/inventory-management/invoices/create`)

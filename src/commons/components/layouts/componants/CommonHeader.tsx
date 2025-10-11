@@ -1,8 +1,6 @@
-import { Header, Modal, UnstyledButton } from "@mantine/core";
+import { Modal, Tooltip, UnstyledButton } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { spotlight } from "@mantine/spotlight";
-import { IconSearch } from "@tabler/icons-react";
-import { clsx } from "clsx";
+import { IconMenu2 } from "@tabler/icons-react";
 import { LayoutGridIcon } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { MegaMenu } from "../../MegaMenu";
@@ -11,58 +9,66 @@ import ThemeSwitcher from "./ThemeSwitcher";
 import UserMenu from "./UserMenu";
 
 const CommonHeader = () => {
-  // const { colorScheme } = useMantineColorScheme();
   const params = useParams<{ tenant: string }>();
-  // const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
-  // const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [mobileMenuOpened, mobileMenuHandler] = useDisclosure(false);
 
   return (
-    <Header
-      height={45}
-      className="flex items-center justify-between px-2 border-0 app-common-header"
-    >
-      <div className="flex items-center gap-2">
-        <HamburgerButton />
-        <Link
-          className="no-underline uppercase app-common-header__logo"
-          to={params?.tenant ? `/${params.tenant}/` : "/"}
-        >
-          Graph POS
-        </Link>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <UnstyledButton
-          onClick={() => spotlight.open()}
-          className={clsx(
-            "flex items-center w-[200px] justify-between px-2 py-1 rounded-md spotlight"
-          )}
-        >
-          <IconSearch className="spotlight__search-icon" size={15} />
-          <div
-            className={clsx("p-1 text-xs rounded-md spotlight__command-label")}
+    <header className="sticky top-0 z-50 w-full bg-primary">
+      <div className="flex h-12 items-center justify-between px-4">
+        {/* Left Section */}
+        <div className="flex items-center gap-3">
+          <HamburgerButton onClick={mobileMenuHandler.toggle} />
+          <Link
+            className="flex items-center gap-2 no-underline transition-opacity hover:opacity-80"
+            to={params?.tenant ? `/${params.tenant}/` : "/"}
           >
-            ⌘ + k
+            <span className="hidden sm:inline-block text-lg tracking-tight text-primary-foreground">
+              Graph POS
+            </span>
+          </Link>
+        </div>
+
+        {/* Right Section */}
+        <div className="flex items-center gap-2">
+          {/* Search Button */}
+
+          {/* Apps Menu */}
+          <MegaMenuWrapper />
+
+          {/* Theme Switcher */}
+          <div className="hidden sm:block">
+            <ThemeSwitcher />
           </div>
-        </UnstyledButton>
 
-        <MegaMenuWrapper />
-        <ThemeSwitcher />
-        <TenantDropdown />
+          {/* Tenant Dropdown */}
+          <TenantDropdown />
 
-        <UserMenu />
+          {/* User Menu */}
+          <UserMenu />
+        </div>
       </div>
-    </Header>
+
+      {/* Mobile Menu */}
+      <MobileMenu opened={mobileMenuOpened} onClose={mobileMenuHandler.close} />
+    </header>
   );
 };
 
-const HamburgerButton = () => {
+interface HamburgerButtonProps {
+  onClick?: () => void;
+}
+
+const HamburgerButton: React.FC<HamburgerButtonProps> = ({ onClick }) => {
   return (
-    <div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+    <Tooltip label="Menu" position="bottom">
+      <UnstyledButton
+        onClick={onClick}
+        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
+        aria-label="Toggle menu"
+      >
+        <IconMenu2 size={20} className="text-gray-700 dark:text-gray-300" />
+      </UnstyledButton>
+    </Tooltip>
   );
 };
 
@@ -70,27 +76,53 @@ const MegaMenuWrapper = () => {
   const [opened, handler] = useDisclosure(false);
   return (
     <>
-      <UnstyledButton onClick={handler.toggle}>
-        <LayoutGridIcon className="size-5" />
-      </UnstyledButton>
+      <Tooltip label="Apps" position="bottom">
+        <UnstyledButton
+          onClick={handler.toggle}
+          className="p-2 rounded-lg transition-colors"
+          aria-label="Open apps menu"
+        >
+          <LayoutGridIcon className="size-5 text-primary-foreground" />
+        </UnstyledButton>
+      </Tooltip>
       <Modal
         opened={opened}
-        size={"80%"}
+        size="80%"
         onClose={handler.close}
-        title="Graph POS"
+        title={
+          <div className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-white font-bold text-sm">
+              GP
+            </div>
+            <span className="text-lg font-semibold">Graph POS</span>
+          </div>
+        }
+        centered
       >
         <MegaMenu />
       </Modal>
     </>
   );
-  // return (
-  //   <MegaMenu
-  //     isOpen={true}
-  //     onClose={function (): void {
-  //       throw new Error("Function not implemented.");
-  //     }}
-  //   />
-  // );
+};
+
+interface MobileMenuProps {
+  opened: boolean;
+  onClose: () => void;
+}
+
+const MobileMenu: React.FC<MobileMenuProps> = ({ opened }) => {
+  if (!opened) return null;
+
+  return (
+    <div className="border-t lg:hidden">
+      <div className="p-4 space-y-4">
+        <div className="sm:hidden">
+          <ThemeSwitcher />
+        </div>
+        {/* Add more mobile menu items here */}
+      </div>
+    </div>
+  );
 };
 
 export default CommonHeader;

@@ -168,7 +168,14 @@ const InvoicePaymentEntry: React.FC<IProps> = ({
         >
           <DateInput
             placeholder="Pick a Date"
-            onChange={(e) => form.setValue(`date`, e!)}
+            onChange={(value) =>
+              form.setValue(
+                `date`,
+                (value && typeof value !== "string"
+                  ? (value as Date)
+                  : new Date((value as string) || new Date())) as Date
+              )
+            }
             defaultValue={form.watch(`date`)}
           />
         </Input.Wrapper>
@@ -240,7 +247,7 @@ const InvoicePaymentEntry: React.FC<IProps> = ({
           </Input.Wrapper>
           <Space h={5} />
 
-          <Group position="right">
+          <Group justify="flex-end">
             <Button color="red" onClick={() => remove(idx)} size="xs">
               Remove
             </Button>

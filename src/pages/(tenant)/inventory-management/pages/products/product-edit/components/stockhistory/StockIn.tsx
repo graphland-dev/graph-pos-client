@@ -28,7 +28,7 @@ const StockIn: React.FC<IStockProps> = ({ data, removeStock }) => {
   ));
   return (
     <>
-      <Table withBorder withColumnBorders>
+      <Table withTableBorder withColumnBorders>
         <thead>
           <tr>
             <th>Purchase ID</th>

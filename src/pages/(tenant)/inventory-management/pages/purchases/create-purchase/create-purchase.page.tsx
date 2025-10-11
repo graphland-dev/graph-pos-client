@@ -352,7 +352,7 @@ const CreatePurchasePage = () => {
 
             <Button
               variant="light"
-              leftIcon={<IconPlus />}
+              leftSection={<IconPlus />}
               onClick={() => createSupplierDrawerHandler.open()}
             >
               Add new
@@ -379,7 +379,7 @@ const CreatePurchasePage = () => {
             </div>
             <Button
               variant="light"
-              leftIcon={<IconPlus />}
+              leftSection={<IconPlus />}
               onClick={() => createProductDrawerHandler.open()}
             >
               Add new
@@ -499,9 +499,9 @@ const CreatePurchasePage = () => {
 
           {Boolean(productFields?.length) && (
             <>
-              <Table withBorder withColumnBorders>
+              <Table withTableBorder withColumnBorders>
                 <thead className="bg-card-header">
-                  <tr className="!p-2 rounded-md">
+                  <tr className="p-2! rounded-md">
                     <th>Name</th>
                     <th>Quantity</th>
                     <th>Unit purchase price</th>
@@ -588,7 +588,14 @@ const CreatePurchasePage = () => {
             error={<ErrorMessage errors={errors} name={"purchaseDate"} />}
           >
             <DateInput
-              onChange={(d) => setValue("purchaseDate", d!)}
+              onChange={(value) =>
+                setValue(
+                  "purchaseDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date)
+                    : new Date((value as string) || new Date())) as Date
+                )
+              }
               placeholder="Pick a date"
             />
           </Input.Wrapper>
@@ -599,7 +606,14 @@ const CreatePurchasePage = () => {
             error={<ErrorMessage errors={errors} name={`purchaseOrderDate`} />}
           >
             <DateInput
-              onChange={(d) => setValue("purchaseOrderDate", d!)}
+              onChange={(value) =>
+                setValue(
+                  "purchaseOrderDate",
+                  (value && typeof value !== "string"
+                    ? (value as Date)
+                    : new Date((value as string) || new Date())) as Date
+                )
+              }
               placeholder="Pick a date"
             />
           </Input.Wrapper>
@@ -635,7 +649,7 @@ const CreatePurchasePage = () => {
             <Title order={4}>Extra cost</Title>
             <Button
               variant="light"
-              leftIcon={<IconPlus />}
+              leftSection={<IconPlus />}
               onClick={() =>
                 appendCosts({
                   amount: 0,

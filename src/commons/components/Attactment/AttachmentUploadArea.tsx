@@ -80,7 +80,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
                     </Text>
                   </div>
 
-                  <Group position="right" align="center">
+                  <Group justify="flex-end" align="center">
                     <ActionIcon color="blue" variant="subtle">
                       <IconDownload size={18} />
                     </ActionIcon>
@@ -122,7 +122,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
           ) : (
             <div className="flex items-center justify-center gap-2">
               <IconFiles color="red" size={24} />
-              <Title order={5} color="red">
+              <Title order={5} c="red">
                 No documents found!
               </Title>
             </div>
@@ -132,7 +132,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
         {isGridStyle && <Divider h={1} />}
 
         <div
-          className={isGridStyle ? 'pl-5' : 'border-l-[2px] border-solid  pl-5'}
+          className={isGridStyle ? 'pl-5' : 'border-l-2 border-solid  pl-5'}
         >
           <Input.Wrapper size="md" label="Upload attachments">
             <Dropzone
@@ -197,7 +197,7 @@ const AttachmentUploadArea: React.FC<IAttachmentUploadProps> = ({
               ))}
 
               <Space h={'sm'} />
-              <Group position="right">
+              <Group justify="flex-end">
                 <Button
                   color="orange"
                   loading={uploading || updating}

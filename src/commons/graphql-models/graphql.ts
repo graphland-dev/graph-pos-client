@@ -553,6 +553,11 @@ export type ExpensesWithPagination = {
   nodes?: Maybe<Array<Expense>>;
 };
 
+export type ForgotPasswordInput = {
+  email: Scalars['String']['input'];
+  resetClientUrl: Scalars['String']['input'];
+};
+
 export enum Invoice_Status {
   Draft = 'DRAFT',
   Finalized = 'FINALIZED'
@@ -702,8 +707,11 @@ export type Mutation = {
   identity__createRole: CommonMutationResponse;
   identity__createTenant: CommonMutationResponse;
   identity__createUser: CommonMutationResponse;
+  /** Generate a password reset link. Provide resetClientUrl with RESET_TOKEN placeholder (e.g., https://client.example.com/reset-password?token=RESET_TOKEN) */
+  identity__forgotPassword: Scalars['Boolean']['output'];
   identity__login: LoginResponseDto;
   identity__removeUserTenantMembership: Scalars['Boolean']['output'];
+  identity__resetPassword: Scalars['Boolean']['output'];
   identity__updateCurrentTenant: Scalars['Boolean']['output'];
   identity__updateCurrentTenantUserRole: Scalars['Boolean']['output'];
   identity__updateMe?: Maybe<Scalars['Boolean']['output']>;
@@ -879,6 +887,11 @@ export type MutationIdentity__CreateUserArgs = {
 };
 
 
+export type MutationIdentity__ForgotPasswordArgs = {
+  input: ForgotPasswordInput;
+};
+
+
 export type MutationIdentity__LoginArgs = {
   input: LoginInput;
 };
@@ -886,6 +899,11 @@ export type MutationIdentity__LoginArgs = {
 
 export type MutationIdentity__RemoveUserTenantMembershipArgs = {
   userId: Scalars['ID']['input'];
+};
+
+
+export type MutationIdentity__ResetPasswordArgs = {
+  input: ResetPasswordInput;
 };
 
 
@@ -1971,6 +1989,13 @@ export enum Return_Payment_Status {
   Pending = 'PENDING',
   Processing = 'PROCESSING'
 }
+
+export type ResetPasswordInput = {
+  confirmPassword: Scalars['String']['input'];
+  email: Scalars['String']['input'];
+  newPassword: Scalars['String']['input'];
+  token: Scalars['String']['input'];
+};
 
 export type ReturnPayment = {
   __typename?: 'ReturnPayment';

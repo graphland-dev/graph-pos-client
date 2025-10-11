@@ -56,46 +56,46 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
   });
 
   const paymentsThs = (
-    <tr>
-      <th>Payments UID</th>
-      <th>Date</th>
-      <th>Amount</th>
-    </tr>
+    <Table.Tr>
+      <Table.Th>Payments UID</Table.Th>
+      <Table.Th>Date</Table.Th>
+      <Table.Th>Amount</Table.Th>
+    </Table.Tr>
   );
 
   const trSkeleton = Array.from({ length: 10 })
     .fill(null)
     .map(() => (
-      <tr>
-        <td>
+      <Table.Tr>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-        <td>
+        </Table.Td>
+        <Table.Td>
           <Skeleton h={35} />
-        </td>
-      </tr>
+        </Table.Td>
+      </Table.Tr>
     ));
 
   const rows = data?.accounting__inventoryInvoicePayments?.nodes?.map(
     (element) => (
-      <tr key={element.inventoryInvoicePaymentUID}>
-        <td>
+      <Table.Tr key={element.inventoryInvoicePaymentUID}>
+        <Table.Td>
           <Anchor
             component={Link}
             to={`/${element.tenant}/inventory-management/payments/invoice-payments/?invoiceId=${element._id}`}
           >
             {element.inventoryInvoicePaymentUID}
           </Anchor>
-        </td>
-        <td>{element?.date ? formatTableColumnDate(element.date) : ""}</td>
-        <td>{element.netAmount} </td>
-      </tr>
+        </Table.Td>
+        <Table.Td>{element?.date ? formatTableColumnDate(element.date) : ""}</Table.Td>
+        <Table.Td>{element.netAmount} </Table.Td>
+      </Table.Tr>
     )
   );
 
@@ -108,9 +108,9 @@ const ProductInvoiceDetailsPaymentsTable: React.FC<IProps> = ({
             Add Payment
           </Button>
         </div>
-        <Table mt={"sm"} withColumnBorders withBorder captionSide="bottom">
-          <thead className="bg-card-header">{paymentsThs}</thead>
-          <tbody>{loading ? trSkeleton : rows}</tbody>
+        <Table mt={"sm"} withColumnBorders withTableBorder captionSide="bottom">
+          <Table.Thead className="bg-card-header">{paymentsThs}</Table.Thead>
+          <Table.Tbody>{loading ? trSkeleton : rows}</Table.Tbody>
         </Table>
       </Paper>
       <Drawer

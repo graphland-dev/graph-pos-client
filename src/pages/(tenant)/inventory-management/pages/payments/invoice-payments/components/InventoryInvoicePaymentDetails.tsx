@@ -53,7 +53,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
   const tfs = (
     <tr>
       <th></th>
-      <th className="!text-center">Total Amount</th>
+      <th className="text-center!">Total Amount</th>
       <th>{currencyNumberWithSymbolFormat(totalAmount!)}</th>
     </tr>
   );
@@ -233,7 +233,7 @@ const InventoryInvoicePaymentDetails: React.FC<{
         </Paper>
       </div>
 
-      <Table mt={'md'} withColumnBorders withBorder captionSide="bottom">
+      <Table mt={'md'} withColumnBorders withTableBorder captionSide="bottom">
         <thead className="bg-card-header">{ths}</thead>
         <tbody>{loading ? trSkeleton : rows}</tbody>
         <tfoot>{tfs}</tfoot>

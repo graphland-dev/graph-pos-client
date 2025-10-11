@@ -10,9 +10,9 @@ import {
   Text,
   Textarea,
   Title,
-  clsx,
   rem,
 } from "@mantine/core";
+import clsx from "clsx";
 import { Dropzone } from "@mantine/dropzone";
 import { IconPhoto } from "@tabler/icons-react";
 import { FaCamera } from "react-icons/fa";

@@ -116,7 +116,7 @@ const StockHistory = () => {
       <Tabs
         defaultValue="Stock In"
         className="flex flex-col justify-between"
-        onTabChange={(event) =>
+        onChange={(event) =>
           setState((prev: any) => {
             return { ...prev, operationType: event };
           })
@@ -124,7 +124,7 @@ const StockHistory = () => {
       >
         <div className="flex justify-end">
           <Button
-            leftIcon={<IconPlus size={16} />}
+            leftSection={<IconPlus size={16} />}
             onClick={() =>
               setState({
                 modalOpened: true,
