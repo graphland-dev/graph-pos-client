@@ -70,6 +70,19 @@ export type AddUserToTenantInput = {
   roles?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+/** Alert severity level: CRITICAL for out of stock (quantity = 0), WARNING for low stock (quantity <= reorderLevel) */
+export enum AlertLevel {
+  Critical = 'CRITICAL',
+  Warning = 'WARNING'
+}
+
+/** Type of stock alert to filter: LOW_STOCK (items with stock <= reorderLevel but > 0), OUT_OF_STOCK (items with 0 stock), BOTH (all alerts) */
+export enum AlertType {
+  Both = 'BOTH',
+  LowStock = 'LOW_STOCK',
+  OutOfStock = 'OUT_OF_STOCK'
+}
+
 export type Brand = {
   __typename?: 'Brand';
   _id: Scalars['ID']['output'];
@@ -85,6 +98,85 @@ export type BrandsWithPagination = {
   __typename?: 'BrandsWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Brand>>;
+};
+
+export type CashFlowCategory = {
+  __typename?: 'CashFlowCategory';
+  /** Total amount for this category during the reporting period */
+  amount: Scalars['Float']['output'];
+  /** Category name (e.g., SALES, EXPENSES, REFUNDS, WITHDRAWALS, RETURNS) */
+  category: Scalars['String']['output'];
+  /** Percentage of total inflows (if INFLOW) or total outflows (if OUTFLOW) */
+  percentage: Scalars['Float']['output'];
+  /** Number of transactions in this category */
+  transactionCount: Scalars['Int']['output'];
+  /** Whether this category represents cash inflow or outflow */
+  type: CashFlowType;
+};
+
+export type CashFlowDataPoint = {
+  __typename?: 'CashFlowDataPoint';
+  /** Running cash balance at the end of this time period, includes all previous periods */
+  balance: Scalars['Float']['output'];
+  /** Date or period label formatted according to the groupBy parameter (e.g., "2024-10-12", "2024-W42", "2024-10") */
+  date: Scalars['String']['output'];
+  /** Total cash inflows for this time period */
+  inflows: Scalars['Float']['output'];
+  /** Net cash flow for this time period (inflows - outflows) */
+  netFlow: Scalars['Float']['output'];
+  /** Total cash outflows for this time period */
+  outflows: Scalars['Float']['output'];
+};
+
+export type CashFlowFilterInput = {
+  /** End date for the cash flow report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Time grouping for the cash flow time series (DAILY, WEEKLY, MONTHLY). If not specified, system will auto-infer based on date range */
+  groupBy?: InputMaybe<TimeGrouping>;
+  /** Start date for the cash flow report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+};
+
+export type CashFlowResponse = {
+  __typename?: 'CashFlowResponse';
+  /** Breakdown of cash flows by category (sales, expenses, etc.) sorted by amount descending */
+  categories: Array<CashFlowCategory>;
+  /** Summary totals for the entire reporting period including opening/closing balances */
+  summary: CashFlowSummary;
+  /** Time series data showing cash flow changes over time, grouped by the specified period */
+  timeSeries: Array<CashFlowDataPoint>;
+};
+
+export type CashFlowSummary = {
+  __typename?: 'CashFlowSummary';
+  /** Cash balance at the end of the reporting period, calculated as (openingBalance + netCashFlow) */
+  closingBalance: Scalars['Float']['output'];
+  /** Net change in cash during the period, calculated as (totalInflows - totalOutflows) */
+  netCashFlow: Scalars['Float']['output'];
+  /** Cash balance at the beginning of the reporting period, calculated from transactions before the start date */
+  openingBalance: Scalars['Float']['output'];
+  /** Total cash received during the period from all sources (sales, returns, etc.) */
+  totalInflows: Scalars['Float']['output'];
+  /** Total cash paid out during the period for all purposes (expenses, refunds, withdrawals) */
+  totalOutflows: Scalars['Float']['output'];
+};
+
+/** Direction of cash flow: INFLOW (money in) or OUTFLOW (money out) */
+export enum CashFlowType {
+  Inflow = 'INFLOW',
+  Outflow = 'OUTFLOW'
+}
+
+export type CategorySales = {
+  __typename?: 'CategorySales';
+  /** Category name */
+  category: Scalars['String']['output'];
+  /** Number of distinct products sold in this category during the specified period */
+  productCount: Scalars['Int']['output'];
+  /** Total revenue for all products in this category. Sum of all line item netSellPrice values within the category, not affected by pagination */
+  totalRevenue: Scalars['Float']['output'];
+  /** Total units sold across all products in this category. Sum of all line item quantities within the category, not affected by pagination */
+  totalUnits: Scalars['Int']['output'];
 };
 
 export type Client = {
@@ -447,6 +539,24 @@ export type CsvValidationError = {
   value?: Maybe<Scalars['String']['output']>;
 };
 
+export type CurrentStockFilterInput = {
+  brand?: InputMaybe<Scalars['String']['input']>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  searchTerm?: InputMaybe<Scalars['String']['input']>;
+  sort?: InputMaybe<SortType>;
+  sortBy?: InputMaybe<StockSortBy>;
+  stockStatus?: InputMaybe<StockStatus>;
+};
+
+export type CurrentStockResponse = {
+  __typename?: 'CurrentStockResponse';
+  meta: PaginationMeta;
+  nodes: Array<StockItem>;
+  summary: StockSummary;
+};
+
 export type Employee = {
   __typename?: 'Employee';
   _id: Scalars['ID']['output'];
@@ -541,10 +651,99 @@ export type ExpenseCategory = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type ExpenseCategoryBreakdown = {
+  __typename?: 'ExpenseCategoryBreakdown';
+  /** Total amount spent in this category during the period */
+  amount: Scalars['Float']['output'];
+  /** Expense category name */
+  category: Scalars['String']['output'];
+  /** Percentage of total expenses represented by this category */
+  percentage: Scalars['Float']['output'];
+};
+
+export type ExpenseCategoryTotal = {
+  __typename?: 'ExpenseCategoryTotal';
+  /** Total amount spent in this category */
+  amount: Scalars['Float']['output'];
+  /** Expense category name */
+  category: Scalars['String']['output'];
+  /** Percentage of total expenses */
+  percentage: Scalars['Float']['output'];
+  /** Number of transactions in this category */
+  transactionCount: Scalars['Int']['output'];
+};
+
 export type ExpenseCategorysWithPagination = {
   __typename?: 'ExpenseCategorysWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<ExpenseCategory>>;
+};
+
+export type ExpenseItem = {
+  __typename?: 'ExpenseItem';
+  /** Expense amount */
+  amount: Scalars['Float']['output'];
+  /** Category name */
+  category: Scalars['String']['output'];
+  /** Check number if payment was by check */
+  checkNo?: Maybe<Scalars['String']['output']>;
+  /** Expense date */
+  date: Scalars['String']['output'];
+  /** Expense ID */
+  expenseId: Scalars['String']['output'];
+  /** Additional notes */
+  note?: Maybe<Scalars['String']['output']>;
+  /** Purpose/description of the expense */
+  purpose: Scalars['String']['output'];
+  /** Voucher number for tracking */
+  voucherNo?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExpenseReportFilterInput = {
+  /** Filter by expense category name */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** End date for the expense report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Start date for the expense report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+  /** Number of top expenses to return (default: 10) */
+  topExpensesLimit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ExpenseReportResponse = {
+  __typename?: 'ExpenseReportResponse';
+  /** Breakdown of expenses by category, sorted by amount descending */
+  categories: Array<ExpenseCategoryTotal>;
+  /** Summary statistics for the reporting period */
+  summary: ExpenseReportSummary;
+  /** Daily time series of expenses showing amounts and transaction counts */
+  timeSeries: Array<ExpenseTimeSeries>;
+  /** Top N expenses sorted by amount descending (N specified by topExpensesLimit) */
+  topExpenses: Array<ExpenseItem>;
+};
+
+export type ExpenseReportSummary = {
+  __typename?: 'ExpenseReportSummary';
+  /** Average daily expense amount for the period */
+  averageExpensePerDay: Scalars['Float']['output'];
+  /** Number of distinct expense categories */
+  categoryCount: Scalars['Int']['output'];
+  /** Category with the highest total expenses */
+  largestExpenseCategory?: Maybe<Scalars['String']['output']>;
+  /** Total expenses during the reporting period */
+  totalExpenses: Scalars['Float']['output'];
+  /** Total number of expense transactions */
+  transactionCount: Scalars['Int']['output'];
+};
+
+export type ExpenseTimeSeries = {
+  __typename?: 'ExpenseTimeSeries';
+  /** Total expenses for this date */
+  amount: Scalars['Float']['output'];
+  /** Date label (YYYY-MM-DD) */
+  date: Scalars['String']['output'];
+  /** Number of transactions on this date */
+  transactionCount: Scalars['Int']['output'];
 };
 
 export type ExpensesWithPagination = {
@@ -710,6 +909,7 @@ export type Mutation = {
   /** Generate a password reset link. Provide resetClientUrl with RESET_TOKEN placeholder (e.g., https://client.example.com/reset-password?token=RESET_TOKEN) */
   identity__forgotPassword: Scalars['Boolean']['output'];
   identity__login: LoginResponseDto;
+  identity__removeRole: Scalars['Boolean']['output'];
   identity__removeUserTenantMembership: Scalars['Boolean']['output'];
   identity__resetPassword: Scalars['Boolean']['output'];
   identity__updateCurrentTenant: Scalars['Boolean']['output'];
@@ -894,6 +1094,11 @@ export type MutationIdentity__ForgotPasswordArgs = {
 
 export type MutationIdentity__LoginArgs = {
   input: LoginInput;
+};
+
+
+export type MutationIdentity__RemoveRoleArgs = {
+  where: CommonFindDocumentDto;
 };
 
 
@@ -1215,6 +1420,14 @@ export enum Purchase_Invoice_Status {
   PartiallyPaid = 'PARTIALLY_PAID'
 }
 
+export type PaginationMeta = {
+  __typename?: 'PaginationMeta';
+  currentPage: Scalars['Int']['output'];
+  hasNextPage: Scalars['Boolean']['output'];
+  totalCount: Scalars['Int']['output'];
+  totalPages: Scalars['Int']['output'];
+};
+
 export type PagniationMeta = {
   __typename?: 'PagniationMeta';
   currentPage: Scalars['Float']['output'];
@@ -1534,6 +1747,50 @@ export type ProductReturnsWithPagination = {
   nodes?: Maybe<Array<ProductReturn>>;
 };
 
+export type ProductSales = {
+  __typename?: 'ProductSales';
+  /** Category name the product belongs to, defaults to "Uncategorized" if no category is assigned */
+  category: Scalars['String']['output'];
+  /** Unique identifier of the product */
+  productId: Scalars['String']['output'];
+  /** Name of the product, retrieved from invoice line item or product master data */
+  productName: Scalars['String']['output'];
+  /** Total profit from this product. Sum of line item netProfit, with fallback to (netSellPrice - netPurchaseAmount) if netProfit is unavailable */
+  profit: Scalars['Float']['output'];
+  /** Profit margin as a ratio of profit to revenue, calculated as (profit / revenue). Returns 0 if revenue is 0 to avoid division by zero */
+  profitMargin: Scalars['Float']['output'];
+  /** Total revenue generated from this product. Sum of line item netSellPrice, with fallback to (unitSellPrice × quantity) if netSellPrice is unavailable */
+  revenue: Scalars['Float']['output'];
+  /** Total quantity of units sold for this product across all invoices in the specified date range. Sum of line item quantities from ProductInvoice.products.quantity */
+  unitsSold: Scalars['Int']['output'];
+};
+
+export type ProductSalesFilterInput = {
+  category?: InputMaybe<Scalars['String']['input']>;
+  endDate?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<SortType>;
+  sortBy?: InputMaybe<ProductSortBy>;
+  startDate?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ProductSalesResponse = {
+  __typename?: 'ProductSalesResponse';
+  /** Aggregated sales totals grouped by category. Computed across the entire filtered dataset regardless of pagination, sorted by total revenue descending */
+  categoryTotals: Array<CategorySales>;
+  /** Pagination metadata including total count, current page, total pages, and whether more pages exist */
+  meta: PaginationMeta;
+  /** Paginated list of product sales records sorted by the specified criteria */
+  nodes: Array<ProductSales>;
+};
+
+export enum ProductSortBy {
+  Profit = 'profit',
+  Revenue = 'revenue',
+  UnitsSold = 'unitsSold'
+}
+
 export type ProductStock = {
   __typename?: 'ProductStock';
   _id: Scalars['ID']['output'];
@@ -1579,6 +1836,59 @@ export type ProductsWithPagination = {
   __typename?: 'ProductsWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Product>>;
+};
+
+export type ProfitLossDataPoint = {
+  __typename?: 'ProfitLossDataPoint';
+  /** Cost of goods sold for this period */
+  cogs: Scalars['Float']['output'];
+  /** Total operating expenses for this period */
+  expenses: Scalars['Float']['output'];
+  /** Gross profit for this period (revenue - cogs) */
+  grossProfit: Scalars['Float']['output'];
+  /** Net profit for this period (grossProfit - expenses) */
+  netProfit: Scalars['Float']['output'];
+  /** Period label formatted according to groupBy (e.g., "2024-10-12", "2024-W42", "2024-10") */
+  period: Scalars['String']['output'];
+  /** Total revenue for this period */
+  revenue: Scalars['Float']['output'];
+};
+
+export type ProfitLossFilterInput = {
+  /** End date for the profit & loss report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Time grouping for the P&L time series (DAILY, WEEKLY, MONTHLY, YEARLY). If not specified, system will auto-infer based on date range */
+  groupBy?: InputMaybe<TimeGrouping>;
+  /** Start date for the profit & loss report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+};
+
+export type ProfitLossResponse = {
+  __typename?: 'ProfitLossResponse';
+  /** Breakdown of operating expenses by category, sorted by amount descending */
+  expenseBreakdown: Array<ExpenseCategoryBreakdown>;
+  /** Summary totals and profit margins for the entire reporting period */
+  summary: ProfitLossSummary;
+  /** Time series data showing revenue, costs, and profit over time grouped by the specified period */
+  timeSeries: Array<ProfitLossDataPoint>;
+};
+
+export type ProfitLossSummary = {
+  __typename?: 'ProfitLossSummary';
+  /** Cost of goods sold - total purchase cost of products sold (sum of ProductInvoice.products.netPurchaseAmount) */
+  costOfGoodsSold: Scalars['Float']['output'];
+  /** Gross profit before expenses, calculated as (totalRevenue - costOfGoodsSold) */
+  grossProfit: Scalars['Float']['output'];
+  /** Gross profit margin as a percentage, calculated as (grossProfit / totalRevenue) × 100 */
+  grossProfitMargin: Scalars['Float']['output'];
+  /** Net profit after all expenses, calculated as (grossProfit - totalExpenses) */
+  netProfit: Scalars['Float']['output'];
+  /** Net profit margin as a percentage, calculated as (netProfit / totalRevenue) × 100 */
+  netProfitMargin: Scalars['Float']['output'];
+  /** Total operating expenses during the period (sum of all expenses from accounting__Expense) */
+  totalExpenses: Scalars['Float']['output'];
+  /** Total revenue during the period from all sales (sum of ProductInvoice.netSellPrice) */
+  totalRevenue: Scalars['Float']['output'];
 };
 
 export type PurchasePayment = {
@@ -1635,12 +1945,18 @@ export type Query = {
   accounting__InventoryInvoicePayment: InventoryInvoicePayment;
   accounting__account: Account;
   accounting__accounts: AccountsWithPagination;
+  /** Cash flow report tracking all money in/out with opening/closing balances, time series, and category breakdowns for daily reconciliation */
+  accounting__cashFlowReport: CashFlowResponse;
   accounting__expense: Expense;
   accounting__expenseCategory: ExpenseCategory;
   accounting__expenseCategorys: ExpenseCategorysWithPagination;
+  /** Detailed expense report with category breakdowns, top expenses, and daily time series for operational expense tracking and analysis */
+  accounting__expenseReport: ExpenseReportResponse;
   accounting__expenses: ExpensesWithPagination;
   accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   accounting__payrolls: PayrollsWithPagination;
+  /** Profit & Loss statement showing revenue, COGS, expenses, gross profit, and net profit with time series and expense breakdown for financial planning */
+  accounting__profitAndLossSummaryReport: ProfitLossResponse;
   accounting__purchasePayments: PurchasePaymentsWithPagination;
   accounting__returnPayment: ReturnPayment;
   accounting__returnPayments: ReturnPaymentsWithPagination;
@@ -1662,6 +1978,8 @@ export type Query = {
   inventory__categoryDeletePreview: Scalars['Float']['output'];
   inventory__categoryDescendants: Array<ProductCategory>;
   inventory__categoryTree: Array<ProductCategory>;
+  /** Get current stock levels for all products */
+  inventory__currentStockReport: CurrentStockResponse;
   inventory__invoiceReport: InvoiceReportResponse;
   inventory__invoiceReportTimeSeries: InvoiceTimeSeriesResponse;
   inventory__product: Product;
@@ -1679,6 +1997,12 @@ export type Query = {
   inventory__products: ProductsWithPagination;
   inventory__rootCategories: Array<ProductCategory>;
   inventory__rootCategoriesWithChildren: Array<ProductCategory>;
+  /** Sales by product with category grouping and totals */
+  inventory__salesByProductReport: ProductSalesResponse;
+  /** Sales KPIs (revenue, profit, avg sale) with time series */
+  inventory__salesSummaryReport: SalesSummaryResponse;
+  /** Get low stock and out of stock alerts */
+  inventory__stockAlertsReport: StockAlertResponse;
   people__client: Client;
   people__clients: ClientsWithPagination;
   people__employee: Employee;
@@ -1713,6 +2037,11 @@ export type QueryAccounting__AccountsArgs = {
 };
 
 
+export type QueryAccounting__CashFlowReportArgs = {
+  input: CashFlowFilterInput;
+};
+
+
 export type QueryAccounting__ExpenseArgs = {
   where: CommonFindDocumentDto;
 };
@@ -1728,6 +2057,11 @@ export type QueryAccounting__ExpenseCategorysArgs = {
 };
 
 
+export type QueryAccounting__ExpenseReportArgs = {
+  input: ExpenseReportFilterInput;
+};
+
+
 export type QueryAccounting__ExpensesArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
@@ -1740,6 +2074,11 @@ export type QueryAccounting__InventoryInvoicePaymentsArgs = {
 
 export type QueryAccounting__PayrollsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryAccounting__ProfitAndLossSummaryReportArgs = {
+  input: ProfitLossFilterInput;
 };
 
 
@@ -1833,6 +2172,11 @@ export type QueryInventory__CategoryTreeArgs = {
 };
 
 
+export type QueryInventory__CurrentStockReportArgs = {
+  input?: InputMaybe<CurrentStockFilterInput>;
+};
+
+
 export type QueryInventory__InvoiceReportArgs = {
   filter?: InputMaybe<InvoiceReportFilterInput>;
 };
@@ -1905,6 +2249,21 @@ export type QueryInventory__ProductStocksArgs = {
 
 export type QueryInventory__ProductsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryInventory__SalesByProductReportArgs = {
+  input: ProductSalesFilterInput;
+};
+
+
+export type QueryInventory__SalesSummaryReportArgs = {
+  input: SalesSummaryFilterInput;
+};
+
+
+export type QueryInventory__StockAlertsReportArgs = {
+  input?: InputMaybe<StockAlertFilter>;
 };
 
 
@@ -2058,6 +2417,30 @@ export type RolesWithPagination = {
   nodes?: Maybe<Array<Role>>;
 };
 
+export type SalesDataPoint = {
+  __typename?: 'SalesDataPoint';
+  date: Scalars['String']['output'];
+  profit: Scalars['Float']['output'];
+  revenue: Scalars['Float']['output'];
+  transactions: Scalars['Int']['output'];
+};
+
+export type SalesSummaryFilterInput = {
+  endDate: Scalars['String']['input'];
+  groupBy?: InputMaybe<TimeGrouping>;
+  startDate: Scalars['String']['input'];
+};
+
+export type SalesSummaryResponse = {
+  __typename?: 'SalesSummaryResponse';
+  averageSaleValue: Scalars['Float']['output'];
+  timeSeries: Array<SalesDataPoint>;
+  totalDiscounts: Scalars['Float']['output'];
+  totalProfit: Scalars['Float']['output'];
+  totalRevenue: Scalars['Float']['output'];
+  totalTransactions: Scalars['Int']['output'];
+};
+
 export type ServerFileInput = {
   meta?: InputMaybe<Scalars['String']['input']>;
   path?: InputMaybe<Scalars['String']['input']>;
@@ -2083,6 +2466,110 @@ export enum SortType {
   Asc = 'ASC',
   Desc = 'DESC'
 }
+
+export type StockAlert = {
+  __typename?: 'StockAlert';
+  /** Alert severity level: 'CRITICAL' when out of stock (quantity = 0), 'WARNING' when low stock (quantity <= reorderLevel) */
+  alertLevel: AlertLevel;
+  /** Current available quantity in stock */
+  currentQuantity: Scalars['Int']['output'];
+  /** Estimated days until stock runs out based on average daily sales over the last 30 days. Calculated as floor(currentQuantity / avgDailySales). Returns null if no sales history available */
+  daysUntilStockout?: Maybe<Scalars['Int']['output']>;
+  /** Estimated cost to reorder the suggested quantity, calculated as suggestedReorderQty × purchasePrice */
+  estimatedCost: Scalars['Float']['output'];
+  /** Ideal stock level to maintain for optimal inventory management (set to 50) */
+  optimalQuantity: Scalars['Int']['output'];
+  /** Unique identifier of the product */
+  productId: Scalars['String']['output'];
+  /** Name of the product */
+  productName: Scalars['String']['output'];
+  /** Minimum stock level threshold that triggers a low stock alert (set to 10) */
+  reorderLevel: Scalars['Int']['output'];
+  /** Stock Keeping Unit (SKU) code for product identification */
+  sku: Scalars['String']['output'];
+  /** Recommended quantity to reorder, calculated as max(optimalQuantity - currentQuantity, reorderLevel) to bring stock back to optimal level */
+  suggestedReorderQty: Scalars['Int']['output'];
+  /** Preferred supplier for reordering this product */
+  supplier?: Maybe<Scalars['String']['output']>;
+};
+
+export type StockAlertFilter = {
+  alertType?: InputMaybe<AlertType>;
+  category?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  page?: InputMaybe<Scalars['Int']['input']>;
+  sort?: InputMaybe<SortType>;
+  sortBy?: InputMaybe<StockAlertSortBy>;
+};
+
+export type StockAlertResponse = {
+  __typename?: 'StockAlertResponse';
+  meta: PaginationMeta;
+  nodes: Array<StockAlert>;
+  summary: StockAlertSummary;
+};
+
+/** Stock alert sort by field */
+export enum StockAlertSortBy {
+  CurrentQuantity = 'currentQuantity',
+  DaysUntilStockout = 'daysUntilStockout',
+  EstimatedCost = 'estimatedCost',
+  ProductName = 'productName',
+  SuggestedReorderQty = 'suggestedReorderQty'
+}
+
+export type StockAlertSummary = {
+  __typename?: 'StockAlertSummary';
+  criticalCount: Scalars['Int']['output'];
+  warningCount: Scalars['Int']['output'];
+};
+
+export type StockItem = {
+  __typename?: 'StockItem';
+  brand?: Maybe<Scalars['String']['output']>;
+  category?: Maybe<Scalars['String']['output']>;
+  currentQuantity: Scalars['Int']['output'];
+  lastUpdated: Scalars['String']['output'];
+  netProfitableAmount: Scalars['Float']['output'];
+  netPurchasePrice: Scalars['Float']['output'];
+  netSellPrice: Scalars['Float']['output'];
+  productId: Scalars['String']['output'];
+  productName: Scalars['String']['output'];
+  reorderLevel?: Maybe<Scalars['Int']['output']>;
+  sku: Scalars['String']['output'];
+  stockStatus: Scalars['String']['output'];
+  unitPurchasePrice: Scalars['Float']['output'];
+  unitSellPrice?: Maybe<Scalars['Float']['output']>;
+};
+
+/** Stock sort by field */
+export enum StockSortBy {
+  CurrentQuantity = 'currentQuantity',
+  LastUpdated = 'lastUpdated',
+  NetProfitableAmount = 'netProfitableAmount',
+  NetPurchasePrice = 'netPurchasePrice',
+  NetSellPrice = 'netSellPrice',
+  ProductName = 'productName'
+}
+
+/** Stock status */
+export enum StockStatus {
+  All = 'ALL',
+  InStock = 'IN_STOCK',
+  LowStock = 'LOW_STOCK',
+  OutOfStock = 'OUT_OF_STOCK'
+}
+
+export type StockSummary = {
+  __typename?: 'StockSummary';
+  inStockCount: Scalars['Int']['output'];
+  lowStockCount: Scalars['Int']['output'];
+  netProfitableAmount: Scalars['Float']['output'];
+  netStockPurchasePrice: Scalars['Float']['output'];
+  netStockSellPrice: Scalars['Float']['output'];
+  outOfStockCount: Scalars['Int']['output'];
+  totalProductsCount: Scalars['Int']['output'];
+};
 
 export enum SubscriptionType {
   Free = 'FREE',
@@ -2129,6 +2616,14 @@ export type TenantsWithPagination = {
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<Tenant>>;
 };
+
+/** Time period grouping for report data */
+export enum TimeGrouping {
+  Daily = 'DAILY',
+  Monthly = 'MONTHLY',
+  Weekly = 'WEEKLY',
+  Yearly = 'YEARLY'
+}
 
 export type TimeSeriesDataPoint = {
   __typename?: 'TimeSeriesDataPoint';
@@ -2677,12 +3172,26 @@ export type GetProductQueryVariables = Exact<{
 
 export type GetProductQuery = { __typename?: 'Query', inventory__product: { __typename?: 'Product', _id: string, name: string, code?: string | null, currentStockQuantity: number, isSellableWithoutStock?: boolean | null, price?: number | null, purchasePrice?: number | null } };
 
+export type Identity__ForgotPasswordMutationVariables = Exact<{
+  input: ForgotPasswordInput;
+}>;
+
+
+export type Identity__ForgotPasswordMutation = { __typename?: 'Mutation', identity__forgotPassword: boolean };
+
 export type Identity__LoginMutationVariables = Exact<{
   input: LoginInput;
 }>;
 
 
 export type Identity__LoginMutation = { __typename?: 'Mutation', identity__login: { __typename?: 'LoginResponseDto', accessToken: string } };
+
+export type Identity__ResetPasswordMutationVariables = Exact<{
+  input: ResetPasswordInput;
+}>;
+
+
+export type Identity__ResetPasswordMutation = { __typename?: 'Mutation', identity__resetPassword: boolean };
 
 export type Identity__MyTenantsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -2720,5 +3229,7 @@ export const VatProfilesFilteredDocument = {"kind":"Document","definitions":[{"k
 export const SharedCategoryPicker__CategoriesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"SharedCategoryPicker__categories"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__rootCategoriesWithChildren"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"children"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"level"}},{"kind":"Field","name":{"kind":"Name","value":"path"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<SharedCategoryPicker__CategoriesQuery, SharedCategoryPicker__CategoriesQueryVariables>;
 export const GetClientDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetClient"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"people__client"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"contactNumber"}},{"kind":"Field","name":{"kind":"Name","value":"email"}},{"kind":"Field","name":{"kind":"Name","value":"address"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"updatedAt"}}]}}]}}]} as unknown as DocumentNode<GetClientQuery, GetClientQueryVariables>;
 export const GetProductDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetProduct"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"where"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"CommonFindDocumentDto"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"inventory__product"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"where"},"value":{"kind":"Variable","name":{"kind":"Name","value":"where"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"code"}},{"kind":"Field","name":{"kind":"Name","value":"currentStockQuantity"}},{"kind":"Field","name":{"kind":"Name","value":"isSellableWithoutStock"}},{"kind":"Field","name":{"kind":"Name","value":"price"}},{"kind":"Field","name":{"kind":"Name","value":"purchasePrice"}}]}}]}}]} as unknown as DocumentNode<GetProductQuery, GetProductQueryVariables>;
+export const Identity__ForgotPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__forgotPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ForgotPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__forgotPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<Identity__ForgotPasswordMutation, Identity__ForgotPasswordMutationVariables>;
 export const Identity__LoginDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__login"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"LoginInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__login"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"accessToken"}}]}}]}}]} as unknown as DocumentNode<Identity__LoginMutation, Identity__LoginMutationVariables>;
+export const Identity__ResetPasswordDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"mutation","name":{"kind":"Name","value":"Identity__resetPassword"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"input"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ResetPasswordInput"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__resetPassword"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"input"},"value":{"kind":"Variable","name":{"kind":"Name","value":"input"}}}]}]}}]} as unknown as DocumentNode<Identity__ResetPasswordMutation, Identity__ResetPasswordMutationVariables>;
 export const Identity__MyTenantsDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"identity__myTenants"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"nodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"uid"}},{"kind":"Field","name":{"kind":"Name","value":"createdAt"}},{"kind":"Field","name":{"kind":"Name","value":"logo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"meta"}},{"kind":"Field","name":{"kind":"Name","value":"path"}},{"kind":"Field","name":{"kind":"Name","value":"provider"}}]}}]}}]}}]}}]} as unknown as DocumentNode<Identity__MyTenantsQuery, Identity__MyTenantsQueryVariables>;
