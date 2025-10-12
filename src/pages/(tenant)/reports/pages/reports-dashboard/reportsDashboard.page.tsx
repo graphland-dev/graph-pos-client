@@ -10,8 +10,13 @@ import {
 import { useQuery } from "@apollo/client";
 import { Text } from "@mantine/core";
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { DASHBOARD_SUMMARY_QUERY, RECENT_EXPENSES_QUERY, RECENT_PURCHASES_QUERY, RECENT_SALES_QUERY } from "./utils/query.reports-dashboard";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  DASHBOARD_SUMMARY_QUERY,
+  RECENT_EXPENSES_QUERY,
+  RECENT_PURCHASES_QUERY,
+  RECENT_SALES_QUERY,
+} from "./utils/query.reports-dashboard";
 import ExecutiveKpiCards from "./ExecutiveKpiCards";
 import QuickStatsRow from "./QuickStatsRow";
 import LatestExpenses from "./LatestExpenses";
@@ -23,7 +28,7 @@ import { MatchOperator } from "@/commons/graphql-models/graphql";
 
 const ReportsDashboardPage = () => {
   const navigate = useNavigate();
-
+  const params = useParams<{ tenant: string }>();
   // Shared date range (default last 30 days)
   const defaultEnd = new Date().toISOString().split("T")[0];
   const oneYearAgo = new Date();
@@ -71,10 +76,22 @@ const ReportsDashboardPage = () => {
         limit: 10,
         filters: [
           ...(dateRange.startDate
-            ? [{ key: "date", operator: MatchOperator.Gte, value: dateRange.startDate }]
+            ? [
+                {
+                  key: "date",
+                  operator: MatchOperator.Gte,
+                  value: dateRange.startDate,
+                },
+              ]
             : []),
           ...(dateRange.endDate
-            ? [{ key: "date", operator: MatchOperator.Lte, value: dateRange.endDate }]
+            ? [
+                {
+                  key: "date",
+                  operator: MatchOperator.Lte,
+                  value: dateRange.endDate,
+                },
+              ]
             : []),
         ],
       },
@@ -92,10 +109,22 @@ const ReportsDashboardPage = () => {
         limit: 10,
         filters: [
           ...(dateRange.startDate
-            ? [{ key: "purchaseDate", operator: MatchOperator.Gte, value: dateRange.startDate }]
+            ? [
+                {
+                  key: "purchaseDate",
+                  operator: MatchOperator.Gte,
+                  value: dateRange.startDate,
+                },
+              ]
             : []),
           ...(dateRange.endDate
-            ? [{ key: "purchaseDate", operator: MatchOperator.Lte, value: dateRange.endDate }]
+            ? [
+                {
+                  key: "purchaseDate",
+                  operator: MatchOperator.Lte,
+                  value: dateRange.endDate,
+                },
+              ]
             : []),
         ],
       },
@@ -113,10 +142,22 @@ const ReportsDashboardPage = () => {
         limit: 10,
         filters: [
           ...(dateRange.startDate
-            ? [{ key: "date", operator: MatchOperator.Gte, value: dateRange.startDate }]
+            ? [
+                {
+                  key: "date",
+                  operator: MatchOperator.Gte,
+                  value: dateRange.startDate,
+                },
+              ]
             : []),
           ...(dateRange.endDate
-            ? [{ key: "date", operator: MatchOperator.Lte, value: dateRange.endDate }]
+            ? [
+                {
+                  key: "date",
+                  operator: MatchOperator.Lte,
+                  value: dateRange.endDate,
+                },
+              ]
             : []),
         ],
       },
@@ -170,12 +211,16 @@ const ReportsDashboardPage = () => {
         <RecentPurchases
           loading={purchasesLoading}
           purchases={purchasesData?.inventory__productPurchases}
-          onViewAll={() => navigate("/inventory-management/purchases")}
+          onViewAll={() =>
+            navigate(`/${params.tenant}/inventory-management/purchases`)
+          }
         />
         <RecentSales
           loading={salesLoading}
           sales={salesData?.inventory__productInvoices}
-          onViewAll={() => navigate("/inventory-management/invoices")}
+          onViewAll={() =>
+            navigate(`/${params.tenant}/inventory-management/invoices`)
+          }
         />
       </div>
 
