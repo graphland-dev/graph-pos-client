@@ -2,10 +2,9 @@ import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import {
   IconChartBar,
   IconExplicit,
-  IconFileInvoice,
-  IconMoodConfuzed,
-  IconPageBreak,
+  IconPackages,
   IconReport,
+  IconReportMoney,
 } from "@tabler/icons-react";
 
 export const reportNavlinks: AppNavLink[] = [
@@ -15,28 +14,23 @@ export const reportNavlinks: AppNavLink[] = [
     href: "reports",
   },
   {
-    label: "Balance Shit",
-    href: "balance-shit",
-    icon: IconFileInvoice,
-  },
-  {
-    label: "Summary Report",
-    href: "summary-report",
-    icon: IconPageBreak,
-  },
-  {
     label: "Expense Report",
     href: "expense-report",
     icon: IconExplicit,
   },
   {
-    label: "Loss Profit Report",
-    href: "loss-profit-report",
-    icon: IconMoodConfuzed,
-  },
-  {
     label: "Sales Analytics",
     href: "sales-analytics",
     icon: IconChartBar,
+  },
+  {
+    label: "Current Stock",
+    href: "current-stock",
+    icon: IconPackages,
+  },
+  {
+    label: "Financial Reports",
+    href: "financial-reports",
+    icon: IconReportMoney,
   },
 ];

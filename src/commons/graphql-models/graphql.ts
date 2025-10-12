@@ -100,6 +100,73 @@ export type BrandsWithPagination = {
   nodes?: Maybe<Array<Brand>>;
 };
 
+export type CashFlowCategory = {
+  __typename?: 'CashFlowCategory';
+  /** Total amount for this category during the reporting period */
+  amount: Scalars['Float']['output'];
+  /** Category name (e.g., SALES, EXPENSES, REFUNDS, WITHDRAWALS, RETURNS) */
+  category: Scalars['String']['output'];
+  /** Percentage of total inflows (if INFLOW) or total outflows (if OUTFLOW) */
+  percentage: Scalars['Float']['output'];
+  /** Number of transactions in this category */
+  transactionCount: Scalars['Int']['output'];
+  /** Whether this category represents cash inflow or outflow */
+  type: CashFlowType;
+};
+
+export type CashFlowDataPoint = {
+  __typename?: 'CashFlowDataPoint';
+  /** Running cash balance at the end of this time period, includes all previous periods */
+  balance: Scalars['Float']['output'];
+  /** Date or period label formatted according to the groupBy parameter (e.g., "2024-10-12", "2024-W42", "2024-10") */
+  date: Scalars['String']['output'];
+  /** Total cash inflows for this time period */
+  inflows: Scalars['Float']['output'];
+  /** Net cash flow for this time period (inflows - outflows) */
+  netFlow: Scalars['Float']['output'];
+  /** Total cash outflows for this time period */
+  outflows: Scalars['Float']['output'];
+};
+
+export type CashFlowFilterInput = {
+  /** End date for the cash flow report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Time grouping for the cash flow time series (DAILY, WEEKLY, MONTHLY). If not specified, system will auto-infer based on date range */
+  groupBy?: InputMaybe<TimeGrouping>;
+  /** Start date for the cash flow report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+};
+
+export type CashFlowResponse = {
+  __typename?: 'CashFlowResponse';
+  /** Breakdown of cash flows by category (sales, expenses, etc.) sorted by amount descending */
+  categories: Array<CashFlowCategory>;
+  /** Summary totals for the entire reporting period including opening/closing balances */
+  summary: CashFlowSummary;
+  /** Time series data showing cash flow changes over time, grouped by the specified period */
+  timeSeries: Array<CashFlowDataPoint>;
+};
+
+export type CashFlowSummary = {
+  __typename?: 'CashFlowSummary';
+  /** Cash balance at the end of the reporting period, calculated as (openingBalance + netCashFlow) */
+  closingBalance: Scalars['Float']['output'];
+  /** Net change in cash during the period, calculated as (totalInflows - totalOutflows) */
+  netCashFlow: Scalars['Float']['output'];
+  /** Cash balance at the beginning of the reporting period, calculated from transactions before the start date */
+  openingBalance: Scalars['Float']['output'];
+  /** Total cash received during the period from all sources (sales, returns, etc.) */
+  totalInflows: Scalars['Float']['output'];
+  /** Total cash paid out during the period for all purposes (expenses, refunds, withdrawals) */
+  totalOutflows: Scalars['Float']['output'];
+};
+
+/** Direction of cash flow: INFLOW (money in) or OUTFLOW (money out) */
+export enum CashFlowType {
+  Inflow = 'INFLOW',
+  Outflow = 'OUTFLOW'
+}
+
 export type CategorySales = {
   __typename?: 'CategorySales';
   /** Category name */
@@ -584,10 +651,99 @@ export type ExpenseCategory = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type ExpenseCategoryBreakdown = {
+  __typename?: 'ExpenseCategoryBreakdown';
+  /** Total amount spent in this category during the period */
+  amount: Scalars['Float']['output'];
+  /** Expense category name */
+  category: Scalars['String']['output'];
+  /** Percentage of total expenses represented by this category */
+  percentage: Scalars['Float']['output'];
+};
+
+export type ExpenseCategoryTotal = {
+  __typename?: 'ExpenseCategoryTotal';
+  /** Total amount spent in this category */
+  amount: Scalars['Float']['output'];
+  /** Expense category name */
+  category: Scalars['String']['output'];
+  /** Percentage of total expenses */
+  percentage: Scalars['Float']['output'];
+  /** Number of transactions in this category */
+  transactionCount: Scalars['Int']['output'];
+};
+
 export type ExpenseCategorysWithPagination = {
   __typename?: 'ExpenseCategorysWithPagination';
   meta?: Maybe<PagniationMeta>;
   nodes?: Maybe<Array<ExpenseCategory>>;
+};
+
+export type ExpenseItem = {
+  __typename?: 'ExpenseItem';
+  /** Expense amount */
+  amount: Scalars['Float']['output'];
+  /** Category name */
+  category: Scalars['String']['output'];
+  /** Check number if payment was by check */
+  checkNo?: Maybe<Scalars['String']['output']>;
+  /** Expense date */
+  date: Scalars['String']['output'];
+  /** Expense ID */
+  expenseId: Scalars['String']['output'];
+  /** Additional notes */
+  note?: Maybe<Scalars['String']['output']>;
+  /** Purpose/description of the expense */
+  purpose: Scalars['String']['output'];
+  /** Voucher number for tracking */
+  voucherNo?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExpenseReportFilterInput = {
+  /** Filter by expense category name */
+  category?: InputMaybe<Scalars['String']['input']>;
+  /** End date for the expense report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Start date for the expense report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+  /** Number of top expenses to return (default: 10) */
+  topExpensesLimit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ExpenseReportResponse = {
+  __typename?: 'ExpenseReportResponse';
+  /** Breakdown of expenses by category, sorted by amount descending */
+  categories: Array<ExpenseCategoryTotal>;
+  /** Summary statistics for the reporting period */
+  summary: ExpenseReportSummary;
+  /** Daily time series of expenses showing amounts and transaction counts */
+  timeSeries: Array<ExpenseTimeSeries>;
+  /** Top N expenses sorted by amount descending (N specified by topExpensesLimit) */
+  topExpenses: Array<ExpenseItem>;
+};
+
+export type ExpenseReportSummary = {
+  __typename?: 'ExpenseReportSummary';
+  /** Average daily expense amount for the period */
+  averageExpensePerDay: Scalars['Float']['output'];
+  /** Number of distinct expense categories */
+  categoryCount: Scalars['Int']['output'];
+  /** Category with the highest total expenses */
+  largestExpenseCategory?: Maybe<Scalars['String']['output']>;
+  /** Total expenses during the reporting period */
+  totalExpenses: Scalars['Float']['output'];
+  /** Total number of expense transactions */
+  transactionCount: Scalars['Int']['output'];
+};
+
+export type ExpenseTimeSeries = {
+  __typename?: 'ExpenseTimeSeries';
+  /** Total expenses for this date */
+  amount: Scalars['Float']['output'];
+  /** Date label (YYYY-MM-DD) */
+  date: Scalars['String']['output'];
+  /** Number of transactions on this date */
+  transactionCount: Scalars['Int']['output'];
 };
 
 export type ExpensesWithPagination = {
@@ -1682,6 +1838,59 @@ export type ProductsWithPagination = {
   nodes?: Maybe<Array<Product>>;
 };
 
+export type ProfitLossDataPoint = {
+  __typename?: 'ProfitLossDataPoint';
+  /** Cost of goods sold for this period */
+  cogs: Scalars['Float']['output'];
+  /** Total operating expenses for this period */
+  expenses: Scalars['Float']['output'];
+  /** Gross profit for this period (revenue - cogs) */
+  grossProfit: Scalars['Float']['output'];
+  /** Net profit for this period (grossProfit - expenses) */
+  netProfit: Scalars['Float']['output'];
+  /** Period label formatted according to groupBy (e.g., "2024-10-12", "2024-W42", "2024-10") */
+  period: Scalars['String']['output'];
+  /** Total revenue for this period */
+  revenue: Scalars['Float']['output'];
+};
+
+export type ProfitLossFilterInput = {
+  /** End date for the profit & loss report period (ISO 8601 format) */
+  endDate: Scalars['String']['input'];
+  /** Time grouping for the P&L time series (DAILY, WEEKLY, MONTHLY, YEARLY). If not specified, system will auto-infer based on date range */
+  groupBy?: InputMaybe<TimeGrouping>;
+  /** Start date for the profit & loss report period (ISO 8601 format) */
+  startDate: Scalars['String']['input'];
+};
+
+export type ProfitLossResponse = {
+  __typename?: 'ProfitLossResponse';
+  /** Breakdown of operating expenses by category, sorted by amount descending */
+  expenseBreakdown: Array<ExpenseCategoryBreakdown>;
+  /** Summary totals and profit margins for the entire reporting period */
+  summary: ProfitLossSummary;
+  /** Time series data showing revenue, costs, and profit over time grouped by the specified period */
+  timeSeries: Array<ProfitLossDataPoint>;
+};
+
+export type ProfitLossSummary = {
+  __typename?: 'ProfitLossSummary';
+  /** Cost of goods sold - total purchase cost of products sold (sum of ProductInvoice.products.netPurchaseAmount) */
+  costOfGoodsSold: Scalars['Float']['output'];
+  /** Gross profit before expenses, calculated as (totalRevenue - costOfGoodsSold) */
+  grossProfit: Scalars['Float']['output'];
+  /** Gross profit margin as a percentage, calculated as (grossProfit / totalRevenue) × 100 */
+  grossProfitMargin: Scalars['Float']['output'];
+  /** Net profit after all expenses, calculated as (grossProfit - totalExpenses) */
+  netProfit: Scalars['Float']['output'];
+  /** Net profit margin as a percentage, calculated as (netProfit / totalRevenue) × 100 */
+  netProfitMargin: Scalars['Float']['output'];
+  /** Total operating expenses during the period (sum of all expenses from accounting__Expense) */
+  totalExpenses: Scalars['Float']['output'];
+  /** Total revenue during the period from all sales (sum of ProductInvoice.netSellPrice) */
+  totalRevenue: Scalars['Float']['output'];
+};
+
 export type PurchasePayment = {
   __typename?: 'PurchasePayment';
   _id: Scalars['ID']['output'];
@@ -1736,12 +1945,18 @@ export type Query = {
   accounting__InventoryInvoicePayment: InventoryInvoicePayment;
   accounting__account: Account;
   accounting__accounts: AccountsWithPagination;
+  /** Cash flow report tracking all money in/out with opening/closing balances, time series, and category breakdowns for daily reconciliation */
+  accounting__cashFlowReport: CashFlowResponse;
   accounting__expense: Expense;
   accounting__expenseCategory: ExpenseCategory;
   accounting__expenseCategorys: ExpenseCategorysWithPagination;
+  /** Detailed expense report with category breakdowns, top expenses, and daily time series for operational expense tracking and analysis */
+  accounting__expenseReport: ExpenseReportResponse;
   accounting__expenses: ExpensesWithPagination;
   accounting__inventoryInvoicePayments: InventoryInvoicePaymentsWithPagination;
   accounting__payrolls: PayrollsWithPagination;
+  /** Profit & Loss statement showing revenue, COGS, expenses, gross profit, and net profit with time series and expense breakdown for financial planning */
+  accounting__profitAndLossSummaryReport: ProfitLossResponse;
   accounting__purchasePayments: PurchasePaymentsWithPagination;
   accounting__returnPayment: ReturnPayment;
   accounting__returnPayments: ReturnPaymentsWithPagination;
@@ -1822,6 +2037,11 @@ export type QueryAccounting__AccountsArgs = {
 };
 
 
+export type QueryAccounting__CashFlowReportArgs = {
+  input: CashFlowFilterInput;
+};
+
+
 export type QueryAccounting__ExpenseArgs = {
   where: CommonFindDocumentDto;
 };
@@ -1837,6 +2057,11 @@ export type QueryAccounting__ExpenseCategorysArgs = {
 };
 
 
+export type QueryAccounting__ExpenseReportArgs = {
+  input: ExpenseReportFilterInput;
+};
+
+
 export type QueryAccounting__ExpensesArgs = {
   where?: InputMaybe<CommonPaginationDto>;
 };
@@ -1849,6 +2074,11 @@ export type QueryAccounting__InventoryInvoicePaymentsArgs = {
 
 export type QueryAccounting__PayrollsArgs = {
   where?: InputMaybe<CommonPaginationDto>;
+};
+
+
+export type QueryAccounting__ProfitAndLossSummaryReportArgs = {
+  input: ProfitLossFilterInput;
 };
 
 

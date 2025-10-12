@@ -77,9 +77,11 @@ const SalesAnalyticsPage = () => {
     direction: "desc",
   });
   const [filters, setFilters] = useState<FilterState>({
-    startDate: new Date(new Date().setDate(new Date().getDate() - 30))
-      .toISOString()
-      .split("T")[0],
+    startDate: (() => {
+      const d = new Date();
+      d.setFullYear(d.getFullYear() - 1);
+      return d.toISOString().split("T")[0];
+    })(),
     endDate: new Date().toISOString().split("T")[0],
   });
   const [timeGrouping, setTimeGrouping] = useState<TimeGrouping>(

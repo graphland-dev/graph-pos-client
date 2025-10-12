@@ -1,8 +1,9 @@
 import DashboardLayout from "@/commons/components/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
-import BalanceShit from "./pages/balance-shit/balanceShit.page";
+import CurrentStockPage from "./pages/current-stock/currentStock.page";
 import ExpenseReport from "./pages/expense-report/expenseReport.page";
-import LossProfitReport from "./pages/loss-profit-report/lossProfitReport.page";
+import FinancialReportsPage from "./pages/financial-reports/financialReports.page";
+import ReportsDashboardPage from "./pages/reports-dashboard/reportsDashboard.page";
 import SalesAnalyticsPage from "./pages/sales-analytics/salesAnalytics.page";
 import SummeryReport from "./pages/summary-report/summaryReport.page";
 import { reportNavlinks } from "./report.navlinks";
@@ -24,10 +25,7 @@ export const reportsModuleRouter: RouteObject[] = [
       // },
       {
         path: "reports",
-      },
-      {
-        path: "balance-shit",
-        element: <BalanceShit />,
+        element: <ReportsDashboardPage />,
       },
       {
         path: "summary-report",
@@ -38,12 +36,16 @@ export const reportsModuleRouter: RouteObject[] = [
         element: <ExpenseReport />,
       },
       {
-        path: "loss-profit-report",
-        element: <LossProfitReport />,
-      },
-      {
         path: "sales-analytics",
         element: <SalesAnalyticsPage />,
+      },
+      {
+        path: "current-stock",
+        element: <CurrentStockPage />,
+      },
+      {
+        path: "financial-reports",
+        element: <FinancialReportsPage />,
       },
     ],
   },
