@@ -3,6 +3,7 @@ import { RouteObject } from "react-router-dom";
 import BalanceShit from "./pages/balance-shit/balanceShit.page";
 import ExpenseReport from "./pages/expense-report/expenseReport.page";
 import LossProfitReport from "./pages/loss-profit-report/lossProfitReport.page";
+import SalesAnalyticsPage from "./pages/sales-analytics/salesAnalytics.page";
 import SummeryReport from "./pages/summary-report/summaryReport.page";
 import { reportNavlinks } from "./report.navlinks";
 
@@ -39,6 +40,10 @@ export const reportsModuleRouter: RouteObject[] = [
       {
         path: "loss-profit-report",
         element: <LossProfitReport />,
+      },
+      {
+        path: "sales-analytics",
+        element: <SalesAnalyticsPage />,
       },
     ],
   },

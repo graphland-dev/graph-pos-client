@@ -1,5 +1,6 @@
 import { AppNavLink } from "@/commons/models/AppNavLink.type";
 import {
+  IconChartBar,
   IconExplicit,
   IconFileInvoice,
   IconMoodConfuzed,
@@ -32,5 +33,10 @@ export const reportNavlinks: AppNavLink[] = [
     label: "Loss Profit Report",
     href: "loss-profit-report",
     icon: IconMoodConfuzed,
+  },
+  {
+    label: "Sales Analytics",
+    href: "sales-analytics",
+    icon: IconChartBar,
   },
 ];
