@@ -1,15 +1,16 @@
+import PrintableFullInvoice from '@/commons/components/invoice/PrintableFullInvoice';
 import {
   ProductDiscountMode,
   ProductItemReference,
   VatsWithPagination,
-} from "@/commons/graphql-models/graphql";
+} from '@/commons/graphql-models/graphql';
 import {
   currencyNumberFormat,
   currencyNumberWithSymbolFormat,
-} from "@/commons/utils/commaNumber";
-import { useQuery } from "@apollo/client";
-import { ErrorMessage } from "@hookform/error-message";
-import { yupResolver } from "@hookform/resolvers/yup";
+} from '@/commons/utils/commaNumber';
+import { useQuery } from '@apollo/client';
+import { ErrorMessage } from '@hookform/error-message';
+import { yupResolver } from '@hookform/resolvers/yup';
 import {
   ActionIcon,
   Button,
@@ -24,9 +25,9 @@ import {
   Table,
   Text,
   Title,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { showNotification } from "@mantine/notifications";
+} from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { showNotification } from '@mantine/notifications';
 import {
   IconBox,
   IconCalculator,
@@ -36,25 +37,24 @@ import {
   IconRefresh,
   IconUsers,
   IconX,
-} from "@tabler/icons-react";
-import { useState } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
-import { Link, useParams } from "react-router-dom";
-import * as Yup from "yup";
-import { SETTINGS_VAT_QUERY } from "../settings/pages/vat/utils/query";
-import ClientSearchAutocomplete from "./components/ClientSearchAutocomplete";
-import POSProductGallery from "./components/POSProductGalary";
-import ProductSearchAutocomplete from "./components/ProductSearchAutocomplete";
-import PaymentForm from "./components/form-actions/PaymentForm";
-import { ProductItemReferenceWithStockQuantity } from "./utils/pos.types";
-import { getPercentageAmount } from "./utils/utils.calc";
-import PrintableFullInvoice from "@/commons/components/invoice/PrintableFullInvoice";
+} from '@tabler/icons-react';
+import { useState } from 'react';
+import { useFieldArray, useForm } from 'react-hook-form';
+import { Link, useParams } from 'react-router-dom';
+import * as Yup from 'yup';
+import { SETTINGS_VAT_QUERY } from '../settings/pages/vat/utils/query';
+import ClientSearchAutocomplete from './components/ClientSearchAutocomplete';
+import POSProductGallery from './components/POSProductGalary';
+import ProductSearchAutocomplete from './components/ProductSearchAutocomplete';
+import PaymentForm from './components/form-actions/PaymentForm';
+import { ProductItemReferenceWithStockQuantity } from './utils/pos.types';
+import { getPercentageAmount } from './utils/utils.calc';
 
 const PosPage = () => {
   // const [openedHoldModal, holdModalHandler] = useDisclosure();
   const params = useParams<{ tenant: string }>();
   const [openedPaymentModal, paymentModalHandler] = useDisclosure();
-  const [action, setAction] = useState<"ADD_TO_HOLD_LIST" | "PAYMENT">();
+  const [action, setAction] = useState<'ADD_TO_HOLD_LIST' | 'PAYMENT'>();
   const [createdInvoiceId, setCreatedInvoiceId] = useState<string>();
   // const [successFullpaymentInvoiceId, setSuccessFullpaymentInvoiceId] =
   //   useState<string>();
@@ -92,7 +92,7 @@ const PosPage = () => {
       invoiceDiscountMode: ProductDiscountMode.Percentage,
     } as IPosFormType,
     resolver: yupResolver(Pos_Form_Validation_Schema),
-    mode: "onChange",
+    mode: 'onChange',
   });
 
   const {
@@ -110,24 +110,24 @@ const PosPage = () => {
     remove: removeProduct,
   } = useFieldArray({
     control,
-    name: "products",
+    name: 'products',
   });
 
   // handle add product to list
   function handleAddProductToList(
-    productReference: ProductItemReferenceWithStockQuantity
+    productReference: ProductItemReferenceWithStockQuantity,
   ) {
-    const productCart: ProductItemReference[] = watch("products");
+    const productCart: ProductItemReference[] = watch('products');
 
     const index = productCart?.findIndex(
-      (item) => item.referenceId == productReference.referenceId
+      (item) => item.referenceId == productReference.referenceId,
     );
 
     if (index == -1) {
       appendProduct({
-        referenceId: productReference?.referenceId || "",
-        code: productReference?.code || "",
-        name: productReference?.name || "",
+        referenceId: productReference?.referenceId || '',
+        code: productReference?.code || '',
+        name: productReference?.name || '',
         quantity: 1,
         unitPrice: productReference?.unitPrice || 0,
         unitSellPrice: productReference?.unitSellPrice || 0,
@@ -144,20 +144,20 @@ const PosPage = () => {
         !productReference.isSellableWithoutStock
       ) {
         showNotification({
-          message: "You can not add more of this item",
-          color: "red",
+          message: 'You can not add more of this item',
+          color: 'red',
         });
       } else {
         setValue(
           `products.${index}.quantity`,
-          watch(`products.${index}.quantity`) + 1
+          watch(`products.${index}.quantity`) + 1,
         );
       }
     }
   }
 
   const getNetSellPrice = () => {
-    const products = watch("products") || [];
+    const products = watch('products') || [];
     return (
       products
         ?.map((p: ProductItemReference) => {
@@ -170,7 +170,7 @@ const PosPage = () => {
   };
 
   const getNetSubtotal = () => {
-    const products = watch("products") || [];
+    const products = watch('products') || [];
     return (
       products
         ?.map((p: ProductItemReference) => {
@@ -184,7 +184,7 @@ const PosPage = () => {
 
   const getNetSubtotalDiscount = () => {
     return (
-      watch("products")
+      watch('products')
         ?.map((p: ProductItemReference) => {
           const unitSellPrice = p?.unitSellPrice || 0;
           const unitPrice = p?.unitPrice || 0;
@@ -196,20 +196,20 @@ const PosPage = () => {
   };
 
   const getNetExtraDiscount = () => {
-    if (watch("invoiceDiscountMode") === ProductDiscountMode.Amount) {
-      return watch("discountValue") || 0;
+    if (watch('invoiceDiscountMode') === ProductDiscountMode.Amount) {
+      return watch('discountValue') || 0;
     }
 
-    if (watch("invoiceDiscountMode") === ProductDiscountMode.Percentage) {
+    if (watch('invoiceDiscountMode') === ProductDiscountMode.Percentage) {
       const netSellPrice =
-        watch("products")
+        watch('products')
           ?.map((p: ProductItemReference) => {
             const unitSellPrice = p?.unitSellPrice || 0;
             const quantity = p?.quantity || 0;
             return unitSellPrice * quantity;
           })
           .reduce((a, b) => a + b, 0) || 0;
-      return (watch("discountValue") || 0) * (netSellPrice / 100);
+      return (watch('discountValue') || 0) * (netSellPrice / 100);
     }
 
     return 0;
@@ -217,7 +217,7 @@ const PosPage = () => {
 
   const getNetTaxAmount = () => {
     return (
-      watch("products")
+      watch('products')
         ?.map((p) => {
           return p.unitSellPrice * p.quantity * p.taxRate || 0;
         })
@@ -246,7 +246,7 @@ const PosPage = () => {
 
   // submit pos form
   const onSubmitPOS = () => {
-    if (action === "ADD_TO_HOLD_LIST") {
+    if (action === 'ADD_TO_HOLD_LIST') {
       // holdModalHandler.open();
     } else {
       paymentModalHandler.open();
@@ -258,8 +258,8 @@ const PosPage = () => {
       {/* Header */}
       <Flex
         className="px-3 pb-0 h-[45px] border-b"
-        justify={"space-between"}
-        align={"center"}
+        justify={'space-between'}
+        align={'center'}
       >
         <div className="font-bold">
           <Flex>
@@ -267,7 +267,7 @@ const PosPage = () => {
               variant="subtle"
               color="accent"
               component={Link}
-              to={"/"}
+              to={'/'}
               leftSection={<IconDashboard size={16} />}
             >
               Dashboard
@@ -306,7 +306,7 @@ const PosPage = () => {
               leftSection={<IconCalculator size={16} />}
               onClick={() =>
                 reset({
-                  clientId: "",
+                  clientId: '',
                   discountValue: 0,
                   invoiceDiscountMode: ProductDiscountMode.Amount,
                   netTaxAmount: 0,
@@ -343,10 +343,10 @@ const PosPage = () => {
               <div className="grid grid-cols-2 gap-3 place-content-center">
                 <ClientSearchAutocomplete
                   prefilledClientId={
-                    watch("clientId")
+                    watch('clientId')
                     // watch("clientId") ?? selectedInvoice?.client?._id
                   }
-                  onSelectClientId={(_id) => setValue("clientId", _id)}
+                  onSelectClientId={(_id) => setValue('clientId', _id)}
                 />
 
                 <ProductSearchAutocomplete
@@ -388,7 +388,7 @@ const PosPage = () => {
                                 onChange={(v) =>
                                   setValue(
                                     `products.${idx}.quantity`,
-                                    parseInt(v as string)
+                                    parseInt(v as string),
                                   )
                                 }
                                 min={1}
@@ -404,7 +404,7 @@ const PosPage = () => {
                                 onChange={(v) =>
                                   setValue(
                                     `products.${idx}.unitSellPrice`,
-                                    parseInt(v as string)
+                                    parseInt(v as string),
                                   )
                                 }
                                 min={1}
@@ -412,10 +412,10 @@ const PosPage = () => {
                               />
 
                               <p className="mt-1 text-xs">
-                                Purchase Price:{" "}
+                                Purchase Price:{' '}
                                 {currencyNumberFormat(
                                   watch(`products.${idx}.unitPurchasePrice`) ||
-                                    0
+                                    0,
                                 )}
                               </p>
                             </td>
@@ -425,7 +425,7 @@ const PosPage = () => {
                             >
                               {currencyNumberFormat(
                                 watch(`products.${idx}.unitSellPrice`) *
-                                  watch(`products.${idx}.quantity`)
+                                  watch(`products.${idx}.quantity`),
                               )}
                             </td>
                             <td
@@ -436,16 +436,36 @@ const PosPage = () => {
                                 data={
                                   vatProfile?.setup__vats.nodes?.map((v) => ({
                                     label: `${v.name} (${v.percentage}%)`,
-                                    value: v.percentage.toString(),
+                                    value: v._id,
                                   })) || []
                                 }
-                                value={(
-                                  watch(`products.${idx}.taxRate`) * 100
-                                ).toString()}
-                                onChange={(v) => {
-                                  const rateP = parseFloat(v!) || 0;
-                                  const rate = rateP / 100 || 0;
-                                  setValue(`products.${idx}.taxRate`, rate);
+                                value={(() => {
+                                  const currentTaxRate = watch(
+                                    `products.${idx}.taxRate`,
+                                  );
+                                  const currentTaxRatePercent =
+                                    currentTaxRate * 100;
+                                  // Find the first VAT profile that matches the current tax rate
+                                  const matchingVat =
+                                    vatProfile?.setup__vats.nodes?.find(
+                                      (v) =>
+                                        Math.abs(
+                                          v.percentage - currentTaxRatePercent,
+                                        ) < 0.01,
+                                    );
+                                  return matchingVat?._id || null;
+                                })()}
+                                onChange={(vatId) => {
+                                  if (!vatId) return;
+                                  // Find the VAT profile by ID and set its percentage
+                                  const selectedVat =
+                                    vatProfile?.setup__vats.nodes?.find(
+                                      (v) => v._id === vatId,
+                                    );
+                                  if (selectedVat) {
+                                    const rate = selectedVat.percentage / 100;
+                                    setValue(`products.${idx}.taxRate`, rate);
+                                  }
                                 }}
                                 placeholder="Select vat profile"
                                 disabled={vatProfileLoading}
@@ -455,8 +475,8 @@ const PosPage = () => {
                               {currencyNumberWithSymbolFormat(
                                 watch(`products.${idx}.unitSellPrice`) *
                                   watch(`products.${idx}.quantity`) *
-                                  watch(`products.${idx}.taxRate`)
-                              ) || 0}{" "}
+                                  watch(`products.${idx}.taxRate`),
+                              ) || 0}{' '}
                             </td>
                             <td data-name="total-cost" className="font-medium">
                               {currencyNumberWithSymbolFormat(
@@ -465,16 +485,16 @@ const PosPage = () => {
                                   getPercentageAmount(
                                     watch(`products.${idx}.unitSellPrice`) *
                                       watch(`products.${idx}.quantity`),
-                                    watch(`products.${idx}.taxRate`) * 100
-                                  )
-                              ) || 0}{" "}
+                                    watch(`products.${idx}.taxRate`) * 100,
+                                  ),
+                              ) || 0}{' '}
                             </td>
 
                             <td className="font-medium">
                               <ActionIcon
                                 variant="filled"
                                 color="red"
-                                size={"sm"}
+                                size={'sm'}
                                 onClick={() => {
                                   removeProduct(idx);
                                 }}
@@ -483,7 +503,7 @@ const PosPage = () => {
                               </ActionIcon>
                             </td>
                           </tr>
-                        )
+                        ),
                       )}
                     </tbody>
                   </Table>
@@ -505,16 +525,16 @@ const PosPage = () => {
                       label="Discount Mode"
                       placeholder="Discount Mode"
                       size="md"
-                      onChange={(e) => setValue("invoiceDiscountMode", e!)}
+                      onChange={(e) => setValue('invoiceDiscountMode', e!)}
                       radius={0}
-                      value={watch("invoiceDiscountMode")}
+                      value={watch('invoiceDiscountMode')}
                       data={[
                         {
-                          label: "Fixed Amount",
+                          label: 'Fixed Amount',
                           value: ProductDiscountMode.Amount,
                         },
                         {
-                          label: "Percentage (%)",
+                          label: 'Percentage (%)',
                           value: ProductDiscountMode.Percentage,
                         },
                       ]}
@@ -533,48 +553,48 @@ const PosPage = () => {
                       radius={0}
                       size="md"
                       min={0}
-                      defaultValue={watch("discountValue") || 0}
+                      defaultValue={watch('discountValue') || 0}
                       onChange={(e) =>
-                        setValue("discountValue", parseInt(e as string))
+                        setValue('discountValue', parseInt(e as string))
                       }
                       placeholder="Enter discount"
                     />
                   </Input.Wrapper>
 
-                  <Space h={"sm"} />
+                  <Space h={'sm'} />
                 </div>
               </div>
 
-              <Space h={"sm"} />
+              <Space h={'sm'} />
 
-              <Paper withBorder p={"sm"} mb={"xl"}>
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Sub total</Text>
+              <Paper withBorder p={'sm'} mb={'xl'}>
+                <Flex justify={'space-between'}>
+                  <Text fw={'bold'}>Sub total</Text>
                   <Text>
                     {currencyNumberWithSymbolFormat(getNetSubtotal())}
                   </Text>
                 </Flex>
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Sell price</Text>
+                <Flex justify={'space-between'}>
+                  <Text fw={'bold'}>Sell price</Text>
                   <Text>
                     {currencyNumberWithSymbolFormat(getNetSellPrice())}
                   </Text>
                 </Flex>
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Sub total discount</Text>
+                <Flex justify={'space-between'}>
+                  <Text fw={'bold'}>Sub total discount</Text>
                   <Text>
                     {currencyNumberWithSymbolFormat(getNetSubtotalDiscount())}
                   </Text>
                 </Flex>
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Extra discount</Text>
+                <Flex justify={'space-between'}>
+                  <Text fw={'bold'}>Extra discount</Text>
                   <Text>
                     {currencyNumberWithSymbolFormat(getNetExtraDiscount())}
                   </Text>
                 </Flex>
 
-                <Flex justify={"space-between"}>
-                  <Text fw={"bold"}>Tax amount</Text>
+                <Flex justify={'space-between'}>
+                  <Text fw={'bold'}>Tax amount</Text>
                   <Text>
                     {currencyNumberWithSymbolFormat(getNetTaxAmount())}
                   </Text>
@@ -582,9 +602,9 @@ const PosPage = () => {
 
                 {/* const sum = productsPrice - discountAmount + costAmount + salesVatAmount; */}
 
-                <Space h={"sm"} />
+                <Space h={'sm'} />
                 <div className="flex justify-between p-3 text-xl font-bold text-center rounded-sm bg-primary text-primary-foreground">
-                  <div>Net Total (SellPrice + Tax - Discount)</div>{" "}
+                  <div>Net Total (SellPrice + Tax - Discount)</div>{' '}
                   <div>{currencyNumberWithSymbolFormat(invoiceNetTotal())}</div>
                 </div>
               </Paper>
@@ -644,8 +664,8 @@ const PosPage = () => {
                   size="md"
                   type="submit"
                   leftSection={<IconCreditCard size={16} />}
-                  onClick={() => setAction("PAYMENT")}
-                  disabled={!watch("products")?.length || !watch("clientId")}
+                  onClick={() => setAction('PAYMENT')}
+                  disabled={!watch('products')?.length || !watch('clientId')}
                 >
                   Proceed order
                 </Button>
@@ -653,7 +673,7 @@ const PosPage = () => {
                   size="md"
                   onClick={() =>
                     reset({
-                      clientId: "",
+                      clientId: '',
                       invoiceDiscountMode: ProductDiscountMode.Amount,
                       netTaxAmount: 0,
                       products: [],
@@ -684,20 +704,20 @@ const PosPage = () => {
         opened={openedPaymentModal}
         onClose={paymentModalHandler.close}
         title="Proceed order"
-        size={"lg"}
+        size={'lg'}
         position="right"
       >
         <PaymentForm
           formData={{
-            clientId: watch("clientId"),
-            products: watch("products"),
-            discountValue: watch("discountValue"),
-            invoiceDiscountMode: watch("invoiceDiscountMode"),
+            clientId: watch('clientId'),
+            products: watch('products'),
+            discountValue: watch('discountValue'),
+            invoiceDiscountMode: watch('invoiceDiscountMode'),
             invoiceDiscountPercentage:
-              watch("invoiceDiscountMode") === ProductDiscountMode.Percentage
-                ? watch("discountValue")
+              watch('invoiceDiscountMode') === ProductDiscountMode.Percentage
+                ? watch('discountValue')
                 : 0,
-            costAmount: watch("costAmount"),
+            costAmount: watch('costAmount'),
             netTaxAmount: getNetTaxAmount(),
             invoiceNetTotalBill: invoiceNetTotal(),
           }}
@@ -706,7 +726,7 @@ const PosPage = () => {
             setCreatedInvoiceId(invoiceId);
             console.log({ invoiceId });
             reset({
-              clientId: "",
+              clientId: '',
               invoiceDiscountMode: ProductDiscountMode.Amount,
               discountValue: 0,
               products: [],
@@ -723,15 +743,15 @@ const PosPage = () => {
       </Drawer>
       <Drawer
         opened={Boolean(createdInvoiceId)}
-        onClose={() => setCreatedInvoiceId("")}
+        onClose={() => setCreatedInvoiceId('')}
         title="Print Invoice"
-        size={"100%"}
+        size={'100%'}
         position="right"
       >
         {createdInvoiceId && (
           <PrintableFullInvoice
             invoiceId={createdInvoiceId}
-            tenant={params.tenant ?? ""}
+            tenant={params.tenant ?? ''}
           />
         )}
       </Drawer>
@@ -742,17 +762,17 @@ const PosPage = () => {
 export default PosPage;
 
 const Pos_Form_Validation_Schema = Yup.object().shape({
-  clientId: Yup.string().required().label("Client"),
+  clientId: Yup.string().required().label('Client'),
   products: Yup.array()
     .required()
-    .min(1, "You must have to select at least one product")
-    .label("Purchase products"),
+    .min(1, 'You must have to select at least one product')
+    .label('Purchase products'),
 
-  invoiceDiscountMode: Yup.string().default("").label("Discount type"),
-  discountValue: Yup.number().default(0).label("Discount value"), // amount, %
+  invoiceDiscountMode: Yup.string().default('').label('Discount type'),
+  discountValue: Yup.number().default(0).label('Discount value'), // amount, %
 
-  costAmount: Yup.number().default(0).label("Transport cost"),
-  netTaxAmount: Yup.number().default(0).label("Tax amount"),
+  costAmount: Yup.number().default(0).label('Transport cost'),
+  netTaxAmount: Yup.number().default(0).label('Tax amount'),
 });
 
 export type IPosFormType = Yup.InferType<typeof Pos_Form_Validation_Schema>;

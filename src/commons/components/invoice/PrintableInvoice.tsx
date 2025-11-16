@@ -1,11 +1,11 @@
-import { ProductDiscountMode } from "@/commons/graphql-models/graphql";
-import { currencyNumberWithSymbolFormat } from "@/commons/utils/commaNumber";
-import { Button } from "@mantine/core";
-import { Printer } from "lucide-react";
-import numberToWords from "number-to-words";
+import { ProductDiscountMode } from '@/commons/graphql-models/graphql';
+import { currencyNumberWithSymbolFormat } from '@/commons/utils/commaNumber';
+import { Button, Tabs } from '@mantine/core';
+import { Printer } from 'lucide-react';
+import numberToWords from 'number-to-words';
 
-import React, { useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import React, { useRef, useState } from 'react';
+import { useReactToPrint } from 'react-to-print';
 
 interface InvoiceItem {
   name: string;
@@ -55,42 +55,296 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
   paidAmount,
   netTaxAmount,
   netDiscountAmount,
+  invoiceDiscountAmount,
+  invoiceDiscountPercentage,
+  invoiceDiscountMode,
   note,
-  // invoiceDiscountMode,
-  // invoiceDiscountPercentage,
-  // invoiceDiscountAmount,
 }) => {
-  const printRef = useRef<HTMLDivElement | null>(null);
-  // const handlePrint = () => {
-  //   window.print();
-  // };
+  const fullInvoicePrintRef = useRef<HTMLDivElement | null>(null);
+  const posInvoicePrintRef = useRef<HTMLDivElement | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('pos');
 
-  const handlePrint = useReactToPrint({
-    contentRef: printRef,
+  const handleFullInvoicePrint = useReactToPrint({
+    contentRef: fullInvoicePrintRef,
+  });
+
+  const handlePOSPrint = useReactToPrint({
+    contentRef: posInvoicePrintRef,
   });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
     });
   };
 
   return (
-    <div className="min-h-screen p-4">
-      {/* Print Controls */}
-      <div className="my-10 text-center print:hidden">
-        <Button onClick={handlePrint}>
-          <Printer className="w-4 h-4" />
-          Print
-        </Button>
-      </div>
+    <div className="min-h-screen p-4 print:p-0">
+      <Tabs
+        defaultValue="pos"
+        value={activeTab}
+        onChange={(value) => setActiveTab(value || 'pos')}
+      >
+        <div className="my-10 print:hidden">
+          <div className="flex justify-between items-center mb-4">
+            <Tabs.List>
+              <Tabs.Tab value="pos">POS Invoice</Tabs.Tab>
+              <Tabs.Tab value="full">Full Invoice</Tabs.Tab>
+            </Tabs.List>
+            <div className="flex gap-2">
+              {activeTab === 'pos' ? (
+                <Button onClick={handlePOSPrint}>
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print POS Invoice
+                </Button>
+              ) : (
+                <Button onClick={handleFullInvoicePrint}>
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print Full Invoice
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
 
-      {/* Invoice Container */}
+        {/* POS Invoice Tab */}
+        <Tabs.Panel value="pos">
+          <POSInvoiceTemplate
+            ref={posInvoicePrintRef}
+            invoiceUID={invoiceUID}
+            date={date}
+            customer={customer}
+            company={company}
+            items={items}
+            subtotal={subtotal}
+            netTotal={netTotal}
+            paidAmount={paidAmount}
+            netTaxAmount={netTaxAmount}
+            netDiscountAmount={netDiscountAmount}
+            invoiceDiscountAmount={invoiceDiscountAmount}
+            invoiceDiscountPercentage={invoiceDiscountPercentage}
+            invoiceDiscountMode={invoiceDiscountMode}
+            formatDateTime={formatDateTime}
+          />
+        </Tabs.Panel>
+
+        {/* Full Invoice Tab */}
+        <Tabs.Panel value="full">
+          <FullInvoiceTemplate
+            ref={fullInvoicePrintRef}
+            invoiceUID={invoiceUID}
+            date={date}
+            customer={customer}
+            company={company}
+            items={items}
+            subtotal={subtotal}
+            netTotal={netTotal}
+            paidAmount={paidAmount}
+            netTaxAmount={netTaxAmount}
+            netDiscountAmount={netDiscountAmount}
+            invoiceDiscountAmount={invoiceDiscountAmount}
+            invoiceDiscountPercentage={invoiceDiscountPercentage}
+            invoiceDiscountMode={invoiceDiscountMode}
+            note={note}
+            formatDate={formatDate}
+          />
+        </Tabs.Panel>
+      </Tabs>
+    </div>
+  );
+};
+
+// POS Invoice Component (Compact Receipt Style)
+const POSInvoiceTemplate = React.forwardRef<
+  HTMLDivElement,
+  InvoiceData & { formatDateTime: (date: string) => string }
+>(
+  (
+    {
+      invoiceUID,
+      date,
+      customer,
+      company,
+      items,
+      subtotal,
+      netTotal,
+      paidAmount,
+      netTaxAmount,
+      netDiscountAmount,
+      note,
+      formatDateTime,
+    },
+    ref,
+  ) => {
+    return (
       <div
-        ref={printRef}
-        className={`invoice-container flex flex-col max-w-4xl mx-auto bg-card print-font-small`}
+        ref={ref}
+        className="flex justify-center text-sm font-mono w-full min-h-[50vh] py-[50px] box-border print:justify-start print:py-0"
+      >
+        {/* Box Ticket */}
+        <div className="w-[300px] px-5 py-2.5 cursor-default relative shadow-[0px_5px_10px_rgb(0_0_0_/_10%)] print:w-full print:shadow-none print:px-0">
+          {/* Box Header */}
+          <div className="text-sm text-center px-[17px] leading-[0.3rem] print:px-4">
+            {company.logoUrl && (
+              <img
+                className="h-12 mx-auto mb-2"
+                src={company.logoUrl}
+                alt="logo"
+              />
+            )}
+            <p className="text-[17px] font-black">{company.name}</p>
+            {company.address && (
+              <p className="text-xs mt-1">{company.address}</p>
+            )}
+            <h3 className="py-3 border-t border-b border-dashed border-[#333333] mt-2 mb-2">
+              Invoice
+            </h3>
+          </div>
+
+          {/* Box Content */}
+          <div className="px-[17px] my-5 print:px-4">
+            {/* Invoice Details */}
+            <div className="flex justify-between w-full leading-[0.1em] mb-3">
+              <p>Invoice#</p>
+              <p className="font-semibold">{invoiceUID}</p>
+            </div>
+            <div className="flex justify-between w-full leading-[0.1em] mb-3">
+              <p>Date</p>
+              <p>{formatDateTime(date)}</p>
+            </div>
+            {customer.name && (
+              <div className="flex justify-between w-full leading-[0.1em] mb-3">
+                <p>Customer</p>
+                <p>{customer.name}</p>
+              </div>
+            )}
+
+            {/* Main Table */}
+            <table className="w-full border-collapse my-4 border-b border-dashed border-[#333333]">
+              <tbody>
+                <tr className="text-center border-t border-b border-dashed border-[#333333]">
+                  <td className="w-[22mm] text-left py-2"># Item</td>
+                  <td className="text-right py-2">Qty</td>
+                  <td className="text-right py-2">Rate</td>
+                  <td className="text-right py-2">Total</td>
+                </tr>
+                {items.map((item, index) => (
+                  <tr key={index} className="leading-6">
+                    <td className="text-left py-1">{item.name}</td>
+                    <td className="text-right py-1">{item.quantity}</td>
+                    <td className="text-right py-1">
+                      {currencyNumberWithSymbolFormat(item.unitPrice)}
+                    </td>
+                    <td className="text-right py-1">
+                      {currencyNumberWithSymbolFormat(item.netAmount)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Sub Table */}
+            <table className="w-full border-collapse my-4 border-b border-solid border-[#333333]">
+              <tbody>
+                <tr className="flex justify-between py-1">
+                  <th className="text-left">SubTotal:</th>
+                  <td>{currencyNumberWithSymbolFormat(subtotal)}</td>
+                </tr>
+                {netTaxAmount > 0 && (
+                  <tr className="flex justify-between py-1">
+                    <th className="text-left">Tax:</th>
+                    <td>{currencyNumberWithSymbolFormat(netTaxAmount)}</td>
+                  </tr>
+                )}
+                {netDiscountAmount > 0 && (
+                  <tr className="flex justify-between py-1">
+                    <th className="text-left">Discount:</th>
+                    <td>{currencyNumberWithSymbolFormat(netDiscountAmount)}</td>
+                  </tr>
+                )}
+                <tr className="flex justify-between py-1 font-bold border-t border-[#333333] mt-2 pt-2">
+                  <th className="text-left">Total:</th>
+                  <td>{currencyNumberWithSymbolFormat(netTotal)}</td>
+                </tr>
+                {paidAmount > 0 && (
+                  <tr className="flex justify-between py-1">
+                    <th className="text-left">Paid:</th>
+                    <td>{currencyNumberWithSymbolFormat(paidAmount)}</td>
+                  </tr>
+                )}
+                {paidAmount > 0 && netTotal - paidAmount > 0 && (
+                  <tr className="flex justify-between py-1">
+                    <th className="text-left">Due:</th>
+                    <td>
+                      {currencyNumberWithSymbolFormat(netTotal - paidAmount)}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            {/* Legal Copy */}
+            {note && (
+              <div className="my-4 text-xs">
+                <p>
+                  <strong>Terms & Conditions:</strong>
+                  <br />
+                  {note}
+                </p>
+              </div>
+            )}
+
+            {/* Footer - Powered by Graphland */}
+            <div className="mt-6 pt-4 border-t border-dashed border-[#333333] text-center text-xs text-muted-foreground">
+              <p>Powered by Graphland</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+);
+
+POSInvoiceTemplate.displayName = 'POSInvoiceTemplate';
+
+// Full Invoice Component (Existing Template)
+const FullInvoiceTemplate = React.forwardRef<
+  HTMLDivElement,
+  InvoiceData & { formatDate: (date: string) => string }
+>(
+  (
+    {
+      invoiceUID,
+      date,
+      customer,
+      company,
+      items,
+      subtotal,
+      netTotal,
+      paidAmount,
+      netTaxAmount,
+      netDiscountAmount,
+      note,
+      formatDate,
+    },
+    ref,
+  ) => {
+    return (
+      <div
+        ref={ref}
+        className={`invoice-container flex flex-col max-w-4xl mx-auto print-font-small print:max-w-full print:mx-0 print:mt-0`}
       >
         <div className="relative invoice-container-inner">
           {/* Header */}
@@ -273,10 +527,17 @@ export const InvoiceTemplate: React.FC<InvoiceData> = ({
           {/* Signature Blocks - Always at Bottom */}
         </div>
         <SignatureBlock />
+
+        {/* Footer - Powered by Graphland */}
+        <div className="mt-6 pt-4 border-t border-border text-center text-sm text-muted-foreground print:mt-4">
+          <p>Powered by Graphland</p>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
+
+FullInvoiceTemplate.displayName = 'FullInvoiceTemplate';
 
 export default InvoiceTemplate;
 
