@@ -44,6 +44,7 @@
   --color-destructive-foreground: oklch(var(--destructive-foreground));
 
   --color-border: oklch(var(--border));
+  --color-border-30: color-mix(in oklch, oklch(var(--border)), transparent 70%);
   --color-input: oklch(var(--input));
   --color-ring: oklch(var(--ring));
 
@@ -78,12 +79,12 @@
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-border-30);
   }
 }
 
 @layer tailwind {
-  @import "tailwindcss";
+  @import 'tailwindcss';
 }
 
 @layer base {
@@ -148,7 +149,7 @@
   }
 
   .dark,
-  [data-mantine-color-scheme="dark"] {
+  [data-mantine-color-scheme='dark'] {
     --white: 20 14.3% 4.1%;
 
     --background: 27.4% 0.006 286.033;
@@ -373,7 +374,7 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border/30 outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;

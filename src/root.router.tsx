@@ -13,6 +13,8 @@ import { authRouter } from "./pages/auth/auth.router";
 import DesignSystem from "./pages/design-system.page";
 import SelectOrganization from "./pages/select-organization.page";
 import ProductsExample from "./commons/components/AppDatatable/example/ProductsExample.tsx";
+import { UnifiedDashboardLayout } from "@/commons/components/layouts/UnifiedDashboardLayout";
+import { modulesNavlinks } from "./pages/(tenant)/modules.navlinks";
 
 export const rootRouter = createBrowserRouter([
   // {
@@ -118,31 +120,43 @@ export const rootRouter = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <ModulesPage />,
-      },
-      {
-        path: "products",
-        element: <ProductsExample />,
-      },
-      {
-        path: "accounting",
-        children: accountingModuleRouter,
-      },
-      {
-        path: "inventory-management",
-        children: inventoryModuleRouter,
-      },
-      {
-        path: "people",
-        children: peopleModuleRouter,
-      },
-      {
-        path: "reports",
-        children: reportsModuleRouter,
-      },
-      {
-        path: "tenant-settings",
-        children: tenantSettingRouter,
+        element: (
+          <UnifiedDashboardLayout
+            navlinks={modulesNavlinks}
+            title="Graph POS"
+            path=""
+          />
+        ),
+        children: [
+          {
+            path: "",
+            element: <ModulesPage />,
+          },
+          {
+            path: "products",
+            element: <ProductsExample />,
+          },
+          {
+            path: "accounting",
+            children: accountingModuleRouter,
+          },
+          {
+            path: "inventory-management",
+            children: inventoryModuleRouter,
+          },
+          {
+            path: "people",
+            children: peopleModuleRouter,
+          },
+          {
+            path: "reports",
+            children: reportsModuleRouter,
+          },
+          {
+            path: "tenant-settings",
+            children: tenantSettingRouter,
+          },
+        ],
       },
     ],
   },

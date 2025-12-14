@@ -1,6 +1,4 @@
-import DashboardLayout from "@/commons/components/layouts/DashboardLayout";
 import { RouteObject } from "react-router-dom";
-import { inventoryNavlinks } from "./inventory.navlinks";
 import CreatePurchasePayment from "./pages/payments/create-purchase-payment/create-purchase-payment.page";
 import PurchasePaymentPage from "./pages/payments/purchase-payments/purchase-payments.page";
 import PosPage from "./pages/pos/pos.page";
@@ -27,160 +25,144 @@ import InventoryManagementRoot from "./module-root.page";
 
 export const inventoryModuleRouter: RouteObject[] = [
   {
+    path: "",
+    element: <InventoryManagementRoot />,
+  },
+  {
     path: "pos",
     element: <PosPage />,
   },
   {
-    path: "",
-    element: (
-      <DashboardLayout
-        navlinks={inventoryNavlinks}
-        title="Inventory Management"
-        path="inventory-management"
-      />
-    ),
+    path: "invoices",
     children: [
       {
         path: "",
-        element: <InventoryManagementRoot />,
+        element: <InvoicesPage />,
       },
       {
-        path: "invoices",
-        children: [
-          {
-            path: "",
-            element: <InvoicesPage />,
-          },
-          {
-            path: "create",
-            element: <CreateOrUpdateInvoicePage />,
-          },
-          {
-            path: ":invoiceId",
-            element: <InvoiceDetailsPage />,
-          },
-          {
-            path: ":invoiceId/edit",
-            element: <CreateOrUpdateInvoicePage />,
-          },
-        ],
+        path: "create",
+        element: <CreateOrUpdateInvoicePage />,
       },
       {
-        path: "quotations",
-        children: [
-          {
-            path: "",
-            element: <QuotationsPage />,
-          },
-          {
-            path: "create",
-            element: <CreateOrUpdateQuotationPage />,
-          },
-          {
-            path: ":quotationId",
-            element: <CreateOrUpdateQuotationPage />,
-          },
-        ],
+        path: ":invoiceId",
+        element: <InvoiceDetailsPage />,
       },
       {
-        path: "products",
-        children: [
-          {
-            path: "products-list",
-            element: <ProductListPage />,
-          },
-          {
-            path: ":productId",
-            element: <ProductEditPage />,
-          },
-          {
-            path: "products-category",
-            element: <ProductCategoryPage />,
-          },
-          {
-            path: "barcode",
-            element: <Barcode />,
-          },
-        ],
+        path: ":invoiceId/edit",
+        element: <CreateOrUpdateInvoicePage />,
+      },
+    ],
+  },
+  {
+    path: "quotations",
+    children: [
+      {
+        path: "",
+        element: <QuotationsPage />,
       },
       {
-        path: "purchases",
-        children: [
-          {
-            path: "",
-            element: <PurchaseListPage />,
-          },
-          {
-            path: "create",
-            element: <CreatePurchasePage />,
-          },
-          {
-            path: "return",
-            element: <Return />,
-          },
-        ],
+        path: "create",
+        element: <CreateOrUpdateQuotationPage />,
       },
       {
-        path: "payments",
-        children: [
-          {
-            path: "purchase-payments",
-            element: <PurchasePaymentPage />,
-          },
-          {
-            path: "invoice-payments",
-            element: <InvoicePaymentsPage />,
-          },
-          {
-            // query strings
-            // - supplierId
-            // - purchaseId
-            path: "create-purchase-payment",
-            element: <CreatePurchasePayment />,
-          },
-        ],
+        path: ":quotationId",
+        element: <CreateOrUpdateQuotationPage />,
+      },
+    ],
+  },
+  {
+    path: "products",
+    children: [
+      {
+        path: "products-list",
+        element: <ProductListPage />,
       },
       {
-        path: "returns",
-        children: [
-          {
-            path: "",
-            element: <ReturnsPage />,
-          },
-          {
-            path: "create/:invoiceId",
-            element: <CreateReturnPage />,
-          },
-          {
-            path: ":returnId",
-            element: <ReturnDetailsPage />,
-          },
-          {
-            path: ":returnId/edit",
-            element: <CreateReturnPage />,
-          },
-        ],
+        path: ":productId",
+        element: <ProductEditPage />,
       },
       {
-        path: "settings",
-        children: [
-          // {
-          //   path: "",
-          //   element: <Navigate to={"/settings/vat-profiles"} />,
-          // },
-          {
-            path: "vat-profiles",
-            element: <VatPage />,
-          },
-          {
-            path: "units",
-            element: <UnitPage />,
-          },
-          {
-            path: "brands",
-            element: <BrandPage />,
-          },
-        ],
+        path: "products-category",
+        element: <ProductCategoryPage />,
+      },
+      {
+        path: "barcode",
+        element: <Barcode />,
+      },
+    ],
+  },
+  {
+    path: "purchases",
+    children: [
+      {
+        path: "",
+        element: <PurchaseListPage />,
+      },
+      {
+        path: "create",
+        element: <CreatePurchasePage />,
+      },
+      {
+        path: "return",
+        element: <Return />,
+      },
+    ],
+  },
+  {
+    path: "payments",
+    children: [
+      {
+        path: "purchase-payments",
+        element: <PurchasePaymentPage />,
+      },
+      {
+        path: "invoice-payments",
+        element: <InvoicePaymentsPage />,
+      },
+      {
+        // query strings
+        // - supplierId
+        // - purchaseId
+        path: "create-purchase-payment",
+        element: <CreatePurchasePayment />,
+      },
+    ],
+  },
+  {
+    path: "returns",
+    children: [
+      {
+        path: "",
+        element: <ReturnsPage />,
+      },
+      {
+        path: "create/:invoiceId",
+        element: <CreateReturnPage />,
+      },
+      {
+        path: ":returnId",
+        element: <ReturnDetailsPage />,
+      },
+      {
+        path: ":returnId/edit",
+        element: <CreateReturnPage />,
+      },
+    ],
+  },
+  {
+    path: "settings",
+    children: [
+      {
+        path: "vat-profiles",
+        element: <VatPage />,
+      },
+      {
+        path: "units",
+        element: <UnitPage />,
+      },
+      {
+        path: "brands",
+        element: <BrandPage />,
       },
     ],
   },
